@@ -1,0 +1,1227 @@
+#!/bin/bash
+#
+#
+# Script to backup, fix, restore mail settings and stores
+# Works on Mac OS X 10.5, Mac OS X 10.4.x and 10.3.x
+#
+# Written by 
+# Athanasios Alexandrides
+# Dale Walsh
+#
+
+#
+# Terminal Check
+#
+if [ "$TERM" != "dumb" ]; then
+case $TERM in
+	# for the most important terminal types we directly know the sequences
+	xterm|xterm*|vt220|vt220*)
+		 bold=`awk 'BEGIN { printf("%c%c%c%c", 27, 91, 49, 109); }' </dev/null 2>/dev/null`
+		norm=`awk 'BEGIN { printf("%c%c%c", 27, 91, 109); }' </dev/null 2>/dev/null`
+		;;
+	vt100|vt100*|cygwin)
+		bold=`awk 'BEGIN { printf("%c%c%c%c%c%c", 27, 91, 49, 109, 0, 0); }' </dev/null 2>/dev/null`
+		norm=`awk 'BEGIN { printf("%c%c%c%c%c", 27, 91, 109, 0, 0); }' </dev/null 2>/dev/null`
+		;;
+esac
+fi
+
+#
+# Show splash screen
+#
+color_1=`echo -en "\e[37;40m"`
+color_2=`echo -en "\e[37;41m"`
+PROJECT_NAME=$(basename "$0")
+PROJECT_VERSION=0.8.5
+
+
+if [ "$TERM" != "dumb" ]; then
+clear
+cat <<X
+${color_1} +--------------------------------------------------------------------+ 
+ |                                                                    | 
+ |                             ${color_2} ${PROJECT_NAME} ${color_1}                              | 
+ |                                                                    | 
+ |                           Version ${PROJECT_VERSION}                            | 
+ |                                                                    | 
+ |                      Copyright (c) 2005 - 2007                     | 
+ |                Dale R. Walsh <dale@daleenterprise.com>             | 
+ |             Athanasios Alexandrides <tools@topicdesk.com>          | 
+ |                                                                    | 
+ +--------------------------------------------------------------------+ 
+
+X
+tput sgr0
+fi
+
+#
+# Check for root user
+#
+if [ `whoami` != "root" ]; then
+	echo
+	echo "$(basename "$0") must be run as ${bold}root${norm} user."
+	echo
+	exit 1
+fi
+
+#
+# Check for OS X Server Version
+#
+
+os_version=`uname -r | cut -d. -f1`
+case $os_version in
+	9)
+		cyrus_user="_cyrus"
+		reconstruct_user="root"
+		spamav_user="_amavisd"
+		;;
+	8)
+		cyrus_user="cyrusimap"
+		reconstruct_user="cyrusimap"
+		spamav_user="clamav"
+		;;
+	7)
+		cyrus_user="cyrus"
+		reconstruct_user="cyrus"
+		spamav_user="clamav"
+		;;
+	*)
+		echo "${bold}$(basename "$0") works only on Leopard, Tiger and Panther${norm}"
+		exit 1
+		;;
+esac
+
+
+#
+# Check for mail service status
+#
+mailstatus=""
+if (! `/usr/sbin/serveradmin status mail | cut -d'"' -f2 | grep 'RUNNING' | sed -e 's^RUNNING^true^g'` false); then
+	mailstatus="stopped"
+else
+	mailstatus="started"
+fi
+
+
+#
+# Set/Read Variables and Directories
+#
+if [ -f "/private/etc/imapd.conf" ]; then
+	cyrus_config_DIR=`cat /private/etc/imapd.conf | grep configdirectory | sed 's/^.* / /' | sed 's/^[ ^t]*//'`
+	cyrus_default_partition_DIR=( $(cat /private/etc/imapd.conf | grep partition-default | sed 's/^.* / /') )
+	cyrus_partitions_DIRS=( $(cat /private/etc/imapd.conf | grep partition | sed 's/^.* / /') )
+	cyrus_partitions_NAMES=( $(cat /private/etc/imapd.conf | grep partition | sed 's/ //' | awk '{split($1,a,":"); print a[1]}' | awk '{split($1,a,"-"); print a[2]}') )
+	cyrus_sieve_DIR=`cat /private/etc/imapd.conf | grep sievedir | sed 's/^.* / /' | sed 's/^[ ^t]*//'`
+	if [[ $cyrus_config_DIR = "" ]]; then
+		echo
+		echo "${bold}Fatal error! Your configuration directory is not set."
+		echo "mailbfr will now exit!${norm}"
+		echo
+		exit 1
+	fi
+	if [[ $cyrus_default_partition_DIR = "" ]]; then
+		echo
+		echo "${bold}Fatal error! Your default partition directory is not set."
+		echo "mailbfr will now exit!${norm}"
+		echo
+		exit 1
+	fi
+else
+	echo
+	echo "${bold}Fatal error! Your Cyrus configuration file is not present."
+	echo "mailbfr cannot continue. Please make sure a properly configured"
+	echo "/etc/imapd.conf is present."
+	echo
+	echo "If you have made a backup with mailbfr you can find a copy"
+	echo "of said file inside 'yourbackupdirectory/mailbackup/private/etc'"
+	echo "mailbfr will now exit!${norm}"
+	echo
+	exit 1
+fi
+
+if [ -f "/private/etc/postfix/main.cf" ]; then
+	postfix_queue_DIR=`cat /private/etc/postfix/main.cf | grep "queue_directory =" | sed 's/^.* / /'`
+	if [[ $postfix_queue_DIR = "" ]]; then
+		echo
+		echo "${bold}Fatal error! Your postfix queue directory is not set."
+		echo "mailbfr will now exit!${norm}"
+		echo
+		exit 1
+	fi
+else
+	echo
+	echo "${bold}Fatal error! Your postfix configuration file is not present."
+	echo "mailbfr cannot continue. Please make sure a properly configured"
+	echo "/etc/postfix/main.conf is present."
+	echo
+	echo "If you have made a backup with mailbfr you can find a copy"
+	echo "of said file inside 'yourbackupdirectory/mailbackup/private/etc'"
+	echo "mailbfr will now exit!${norm}"
+	echo
+	exit 1
+fi
+
+plist_PATH="/System/Library/Launchdaemons"
+
+active_commands=$@; # save the commands just in case
+remote_url="http://downloads.topicdesk.com/buildsmart"
+
+#
+# Consistency and configuration checks
+#
+
+for ((element=0; element <= ${#cyrus_partitions_DIRS[@]} - 1 ; element++))
+  do              
+    if [ ${cyrus_partitions_DIRS[$element]} = ${cyrus_config_DIR} ]; then
+        echo
+        echo "${bold}Your configuration directory: ${cyrus_config_DIR} is the same as" 
+        echo "the directory for the mail partition: ${cyrus_partitions_NAMES[$element]}"
+        echo
+        echo "This is a serious configuration problem which must be fixed!!!"
+        echo "'mailbfr' will now exit.${norm}"
+        echo
+        exit 1
+    fi
+done
+
+
+#
+# Check For Updates
+# Script snippet by Dale Walsh
+#
+
+# to call : get_remote_file <filename> <path_to_save>
+function get_remote_file() {
+	file_to_get="$1"
+	path_to_save="$2"
+	echo -n "Getting : ${file_to_get} ..."
+	curl -fsL ${remote_url}/subproj/${file_to_get} -o ${path_to_save}/${file_to_get}
+	if test "$(echo "${file_to_get}" | grep '\.' )" = ""; then
+		chmod 0755 ${path_to_save}/${file_to_get}
+	else
+		chmod 0644 ${path_to_save}/${file_to_get}
+	fi
+	if test $? != 0; then
+		echo "${bold}Error:${norm} $?."
+		exit
+	else
+		echo "done."
+	fi
+}
+
+nag() {
+if [ "$TERM" != "dumb" ]; then
+	echo "${bold}"
+fi
+echo
+echo "You are using mailbfr to backup and safeguard your mail data. If you find"
+echo "the software useful, please consider a voluntary contribution to help us"
+echo "cover hosting and development costs. Thank you!"
+echo "See: http://osx.topicdesk.com/donations/"
+echo
+if [ "$TERM" != "dumb" ]; then
+	echo "${norm}"
+fi
+}
+
+check_new_version() {
+
+testconn=`curl -fsL ${remote_url}/version_list | cat | grep "${PROJECT_NAME}_VERSION" | cut -d= -f2 | sed -e 's^\.^^g' | cat`
+if [[ $testconn != "" ]]; then
+	if test $testconn -gt $(echo "${PROJECT_VERSION}" | sed -e 's^\.^^g' | cat); then
+		echo "${bold}A new version of $PROJECT_NAME is available. Would you like to update it? (yes/no)${norm}"
+		read hamlet
+		if [[ "$hamlet" == "yes" ]]; then
+			echo "Getting a newer version for "$PROJECT_NAME
+			get_remote_file ${PROJECT_NAME} /usr/sbin;  chmod 0755 /usr/sbin/${PROJECT_NAME};
+			get_remote_file ${PROJECT_NAME}.1 /usr/share/man/man1;  chmod 0644 /usr/share/man/man1/${PROJECT_NAME}.1;
+			"$0" $active_commands; # rerun the project with the same paramaters
+			exit
+		fi
+	fi
+else
+	echo "${bold}Cannot connect to update server. You will have to visit the site"
+	echo "where you downloaded this software to check for updates.${norm}"
+fi
+}
+
+# Get Version Information
+#
+get_version() {
+
+echo
+echo "${bold}$(basename "$0") Version: $PROJECT_VERSION${norm}"
+echo
+echo "Additional components:"
+echo -n "Postfix: "
+/usr/sbin/postconf mail_version 2>/dev/null
+if [[ "$os_version" == "8" ]] || [[ "$os_version" == "9" ]]; then
+	
+	if [[ "$os_version" == "8" ]]; then
+		sudo -u $spamav_user /usr/bin/amavisd -V 2>/dev/null
+	fi
+	if [[ "$os_version" == "9" ]]; then
+                sudo -u $spamav_user /usr/bin/amavisd -V
+        fi 
+	/usr/bin/spamassassin -V 2>/dev/null
+	
+	if [ -e /usr/bin/clamscan ]; then
+		echo -n "/usr/bin: "
+		sudo -u $spamav_user /usr/bin/clamscan -V 2>/dev/null
+	fi
+	if [ -e /usr/local/bin/clamscan ]; then
+		echo -n "/usr/local/bin: "
+		sudo -u $spamav_user /usr/local/bin/clamscan -V 2>/dev/null
+	fi
+	
+	/usr/share/mailman/bin/version 2>/dev/null
+fi
+echo
+}
+
+
+#
+# Print usage
+#
+
+usage() {
+cat << TXT
+
+${bold}$(basename "$0")${norm} Script for OS X 10.5.x/10.4.x/10.3.x Mail Services.
+
+ Usage: $(basename "$0") <action> <path> 
+ [ -b | --backup      ] <path> <options> : to make a backup.
+ [ -f | --fixdb       ]                  : repair db.
+ [ -m | --fixmailbox  ] <username>       : repair a single user/mailbox.
+ [ -o | --fixowner    ]                  : fix owner and perms of mail stores.
+ [ -q | --fixquota    ]                  : fix quota.
+ [ -r | --restore     ] <path> <options> : perform a restore.
+                                         : SEE "man mailbfr" for available
+                                         : options.
+                                         :
+ [ -s | --show        ] <username>       : show detailed mailbox information.
+ [ -i | --init        ]                  : install a cron job for this script.
+ [ -v | --version     ]                  : display the version of this script.
+ [ -h | --help        ]                  : display this help message.
+
+TXT
+	exit 1
+}
+
+#
+# Clean up after error or signal
+#
+
+cleanupexit() {
+	if [ "$TERM" != "dumb" ]; then
+	   stty
+	fi
+
+echo "${bold}$(basename "$0") was aborted. The process was NOT completed successfully.${norm}"
+
+	if [ $mailstatus == "started" ]; then
+		if (! `/usr/sbin/serveradmin status mail | cut -d'"' -f2 | grep 'RUNNING' | sed -e 's^RUNNING^true^g'` false); then
+	   startmail
+	   exit 1
+		fi
+	fi
+	if [ -e /Library/AdminServer/conf/caretaker.postfix.master.plist ] || [ -e /Library/AdminServer/conf/caretaker.cyrus.master.plist ]; then
+		startmail
+		exit 1
+	fi
+}
+
+#
+# Stop mail Services
+#
+
+stopmail(){
+	
+	if [ -e /Library/AdminServer/conf/caretaker.postfix.master.plist ]; then
+		/bin/launchctl unload /Library/AdminServer/conf/caretaker.postfix.master.plist
+		sleep 1
+		echo "Postfix successfully stopped."
+	fi
+	if [ -e /Library/AdminServer/conf/caretaker.cyrus.master.plist ]; then
+		/bin/launchctl unload /Library/AdminServer/conf/caretaker.cyrus.master.plist
+		sleep 1
+		echo "Cyrus successfully stopped."
+	fi
+	
+	if [ -e /Library/AdminServer/conf/caretaker.postfix.master.plist ] || [ -e /Library/AdminServer/conf/caretaker.cyrus.master.plist ]; then
+		echo 
+	else
+		if [ $mailstatus == "started" ]; then
+			echo "${bold}Stopping Mail Services${norm}"
+			/usr/sbin/serveradmin stop mail
+		else
+			echo "${bold}Mail Services were already stopped before"
+			echo "running mailbfr.${norm}"
+		fi
+	fi
+	sleep 1
+	
+	trap "cleanupexit; exit" SIGHUP SIGINT SIGTERM ERR
+}
+
+#
+# Start mail Services
+#
+
+startmail(){
+	
+	trap - SIGHUP SIGINT SIGTERM ERR
+	
+	if [ -e /Library/AdminServer/conf/caretaker.postfix.master.plist ]; then
+		/bin/launchctl load /Library/AdminServer/conf/caretaker.postfix.master.plist
+		sleep 1
+		echo "Postfix successfully started."
+	fi
+	if [ -e /Library/AdminServer/conf/caretaker.cyrus.master.plist ]; then
+		/bin/launchctl load /Library/AdminServer/conf/caretaker.cyrus.master.plist
+		sleep 1
+		echo "Cyrus successfully started."
+	fi
+	
+	if [ -e /Library/AdminServer/conf/caretaker.postfix.master.plist ] || [ -e /Library/AdminServer/conf/caretaker.cyrus.master.plist ]; then
+		echo 
+	else
+		if [ $mailstatus == "started" ]; then
+			echo "${bold}Starting Mail Services${norm}"
+			/usr/sbin/serveradmin start mail
+		else
+			echo "${bold}Mail Services were already stopped before"
+			echo "running mailbfr. Will not start them!${norm}"
+		fi
+	fi
+	
+}
+
+
+#
+# Check/Install Startup Item
+#
+
+#
+# Remove mailbfr cron job
+#
+
+remove_mailbfr_cronjob() {
+    crontab -u root -l > /tmp/mailbfrcrontempfile
+    originalsubstcron=$(grep 'mailbfr' /tmp/mailbfrcrontempfile | sed "s/[*]/[\*]/g")
+    disabledcron=""
+    sed -e "s@$originalsubstcron@$disabledcron@g" /tmp/mailbfrcrontempfile > /tmp/mailbfrcrontempfile2
+    crontab -u root /tmp/mailbfrcrontempfile2
+    rm /tmp/mailbfrcrontempfile
+    rm /tmp/mailbfrcrontempfile2  
+    echo "'mailbfr' cron job has been removed'"
+    echo "You can re-enable it by running 'mailbfr -i'"
+}
+
+
+#
+# Add mailbfr cron job
+#
+
+add_cronjob() {
+newcron=""
+delflag=""
+cronpath=""
+cronjunk=""
+cronnotjunk=""
+
+echo "if you want to use 'mailbfr' it is recommended that this be added"
+echo "Would you like me to enable it for you (yes/no)"
+read hamlet
+if [[ "$hamlet" == "yes" ]]; then
+    echo "What time would you like the job to run (24-hour format)?"
+    echo "Please enter the hour (1)"
+    read cronhour
+    if [[ "$cronhour" == "" ]]; then
+        cronhour=1; fi
+    
+    echo "Please enter the minutes (0)"
+    read cronminutes
+    if [[ "$cronminutes" == "" ]]; then
+        cronminutes=0; fi
+        
+    echo "Enter the path you would like to backup to? Enter for default (/mailbfrBackups)"
+    read cronpath
+    if [[ "$cronpath" == "" ]]; then
+        cronpath=" -b /mailbfrBackups"
+    else
+        cronpath=" -b "$cronpath; fi
+    
+    echo "Enter the type of backup you would like? (incremental/full/rotate) Enter for default (incremental)"
+    read cronmode
+    if [[ "$cronmode" == "" ]]; then
+        cronmode="--mode incremental"
+    fi
+    if [[ "$cronmode" == "incremental" ]]; then
+        cronmode="--mode incremental"
+    fi
+    if [[ "$cronmode" == "full" ]]; then
+        cronmode="--mode full"
+    fi
+    if [[ "$cronmode" == "rotate" ]]; then
+        cronmode="--mode rotate"
+    fi
+        
+  
+    newcron=$cronminutes"      "$cronhour"       *       *       *       /usr/sbin/mailbfr"$cronpath" "$cronmode
+    
+    echo "The following cron job for 'mailbfr' has been prepared"
+    echo "$newcron"
+    echo "Would you like to add it? (yes/no)"
+    read hamlet
+    if [[ "$hamlet" == "yes" ]]; then
+        crontab -u root -l > /tmp/crontempfile
+        echo -e "$newcron" >> /tmp/crontempfile
+        crontab -u root /tmp/crontempfile
+        rm /tmp/crontempfile
+        echo "The following cron job for 'mailbfr' has been enabled'"
+        echo "$newcron"
+    else
+        echo
+        echo "The cron job has NOT been added. Re-run $(basename "$0") with the -i or --init option to add it"
+    fi
+fi
+}
+
+#
+# Detection of existing startup items
+#
+
+startup_check() {
+echo "Checking if there is a startup item for 'mailbfr'"
+echo 
+if (grep -q mailbfr $plist_PATH/*)
+then
+    plist_NAME=`grep -l mailbfr $plist_PATH/*`
+    
+    echo "There IS a plist for mailbfr"
+        if (grep -q Disabled $plist_NAME)
+        then
+            echo "... but it is DISABLED"
+        else
+            echo "... and it is ENABLED"
+        fi
+else
+    echo "There IS NO plist for mailbfr"
+fi
+echo
+if (crontab -u root -l | grep -q mailbfr)
+    then
+        crontab -u root -l > /tmp/mailbfrcrontempfile
+        originalcron=$(grep 'mailbfr' /tmp/mailbfrcrontempfile)
+        if [[ "${originalcron:0:1}" == "#" ]]; then
+            echo "There IS a cron job for mailbfr, but it is DISABLED"
+            add_cronjob
+        else
+            echo "There IS a cron job for mailbfr"
+            echo "Would you like me to remove it (yes/no)"
+			echo "You will lose 'mailbfr' functionality"
+			read hamlet
+			if [[ "$hamlet" == "yes" ]]; then
+				remove_mailbfr_cronjob
+			fi
+        fi
+    else
+        if (cat /etc/crontab | grep -q mailbfr)
+        then
+            cat /etc/crontab > /tmp/mailbfrcrontempfile
+            originalcron=$(grep 'mailbfr' /tmp/mailbfrcrontempfile)
+            if [[ "${originalcron:0:1}" == "#" ]]; then
+                echo "There IS a cron job for mailbfr, but it is disabled"
+                add_cronjob
+            else
+                echo "There IS a cron job for mailbfr"
+            	echo "Would you like me to remove it (yes/no)"
+				echo "You will lose 'mailbfr' functionality"
+				read hamlet
+				if [[ "$hamlet" == "yes" ]]; then
+					remove_mailbfr_cronjob
+				fi
+			fi
+        else
+            echo "There IS NO cron job for mailbfr"
+            add_cronjob
+        fi
+fi
+
+}
+
+#
+# Backup Mail Stores and Settings
+#
+
+backup_mail() {
+	backup_root_DIR="$backup_DIR"
+	
+	if [ ! -d $backup_root_DIR ]; then
+		if [ "$TERM" != "dumb" ]; then
+			echo "${bold}"
+		fi
+		echo ""
+		echo "---WARNING---"
+		echo "The specified path" $backup_root_DIR "does not exist or the volume was not available."
+		echo "Please check that the specified volume is available and contains the specified path!"
+		echo ""
+		echo "Your files were NOT backed up!"
+		echo ""
+		if [ "$TERM" != "dumb" ]; then
+			echo "${norm}"
+		fi
+		exit 1
+	fi
+	
+	backup_DIR="$backup_DIR/mailbackup"
+	stopmail
+
+echo
+echo "Starting backup on "$(date "+%d.%m.%Y at %H:%M:%S")
+nag
+echo "Backing up mail to $backup_DIR using mailbfr Version ${PROJECT_VERSION}"
+
+echo -n "Backing up Postfix, Cyrus, ClamAV, SpamAssassin and Amavisd settings to ${backup_DIR}/private/etc"
+
+mkdir -p $backup_DIR
+chmod 0755 $backup_DIR
+/usr/sbin/chown root:wheel $backup_DIR
+mkdir -p $backup_DIR/private/etc
+rsync -arHlp /private/etc/postfix $backup_DIR/private/etc
+rsync -ap /private/etc/aliases.db $backup_DIR/private/etc
+rsync -ap /private/etc/imapd.conf $backup_DIR/private/etc
+rsync -ap /private/etc/cyrus.conf $backup_DIR/private/etc
+if [[ "$os_version" == "8" ]] || [[ "$os_version" == "9" ]]; then
+    rsync -ap /private/etc/amavisd.conf $backup_DIR/private/etc
+    if [ -f "/private/etc/clamav.conf" ]; then
+    	rsync -ap /private/etc/clamav.conf $backup_DIR/private/etc
+    fi
+    if [ -f "/private/etc/clamd.conf" ]; then
+    	rsync -ap /private/etc/clamd.conf $backup_DIR/private/etc
+    fi
+    if [ -f "/private/etc/freshclam.conf" ]; then
+    	rsync -ap /private/etc/freshclam.conf $backup_DIR/private/etc
+    fi
+    if [ -d "/private/etc/spam/clamav" ]; then
+    	rsync -arHlp /private/etc/spam/clamav $backup_DIR/private/etc/spam
+    fi
+    rsync -arHlp /private/etc/mail/spamassassin $backup_DIR/private/etc/mail
+fi
+echo " - Done!"
+
+echo -n "Backing up the Postfix Queue to "$backup_DIR"/postfix_queue_DIR"
+rsync -arHlp --exclude='*/pid/*' --exclude='*/public/*'  --exclude='*/private/*' $postfix_queue_DIR $backup_DIR"/postfix_queue_DIR"
+echo " - Done!"
+
+echo -n "Backing up the Cyrus Config Database to "$backup_DIR"/cyrus_config_DIR"
+rsync -arHlp --exclude='*/socket/*' $cyrus_config_DIR $backup_DIR"/cyrus_config_DIR"
+echo " - Done!"
+
+if [ -d $cyrus_sieve_DIR ] && [[ $cyrus_sieve_DIR != "" ]]; then
+	mkdir -p $backup_DIR"/cyrus_sieve_DIR"
+	echo -n "Backing up the Cyrus Sieve Directory to "$backup_DIR"/cyrus_sieve_DIR"
+	rsync -arHlp $cyrus_sieve_DIR"/" $backup_DIR"/cyrus_sieve_DIR"
+	echo " - Done!"
+fi
+
+
+echo "Backing up the Cyrus mail stores to "$backup_DIR"/cyrus_partitions_DIRS"
+
+for ((element=0; element <= ${#cyrus_partitions_DIRS[@]} - 1 ; element++))
+  do                
+  echo "Backing up store: "${cyrus_partitions_NAMES[$element]}" from "${cyrus_partitions_DIRS[$element]}/" to "$backup_DIR"/cyrus_partitions_DIRS/"${cyrus_partitions_NAMES[$element]}
+  du -h -d 2 ${cyrus_partitions_DIRS[$element]}
+  echo ""
+  mkdir -p $backup_DIR"/cyrus_partitions_DIRS/"${cyrus_partitions_NAMES[$element]}
+  rsync -arHlp ${cyrus_partitions_DIRS[$element]}/ $backup_DIR"/cyrus_partitions_DIRS/"${cyrus_partitions_NAMES[$element]}
+  
+done
+
+timestamped_BACKDIR=$backup_DIR"_full_"$(date "+%m%d%Y-%H%M%S")
+
+if [ $mode == "inc" -o $mode == "notset" ]; then
+	echo "Finished Incremental Backup to "$backup_DIR
+fi
+
+if [ $mode == "ful" ]; then
+	mv $backup_DIR $timestamped_BACKDIR
+	echo "Finished Full Backup to "$timestamped_BACKDIR
+fi
+
+if [ $mode == "rot" ]; then
+	dayofweek=`date +%u` 
+	if [ $dayofweek == 6 ]; then
+		mv $backup_DIR $timestamped_BACKDIR
+		echo "Finished Incremental Backup to "$backup_DIR
+		echo $backup_DIR" has been moved to "$timestamped_BACKDIR
+		echo "Backup on Sunday will start as full backup."
+	else
+		echo "Finished Incremental Backup to "$backup_DIR
+	fi
+	
+fi
+	startmail
+	nag
+	echo "Done backing up on "$(date "+%d.%m.%Y at %H:%M:%S")
+	echo
+	exit 0
+}
+
+#
+# Restore Postfix Settings
+#
+
+restore_settings_postfix(){
+	echo "Restoring Postfix settings"
+	echo "$restore_DIR/private/etc/postfix /private/etc"
+	rsync -arHlp $restore_DIR/private/etc/postfix /private/etc
+	rsync -ap $restore_DIR/private/etc/aliases.db /private/etc
+	echo "Postfix settings restored"
+}
+
+#
+# Restore Cyrus Settings
+#
+
+restore_settings_cyrus(){
+	echo "Restoring Cyrus settings"
+	echo "$restore_DIR/private/etc/imapd.conf /private/etc"
+	echo "$restore_DIR/private/etc/cyrus.conf /private/etc"
+	rsync -ap $restore_DIR/private/etc/imapd.conf /private/etc
+	rsync -ap $restore_DIR/private/etc/cyrus.conf /private/etc
+	echo "Cyrus settings restored"
+}
+
+#
+# Restore ClamAV, SpamAssassin and Amavsid Settings
+#
+
+restore_settings_spamav(){
+if [[ "$os_version" == "8" ]] || [[ "$os_version" == "9" ]]; then
+	echo "Restoring ClamAV, SpamAssassin and Amavsid settings"
+	echo "$restore_DIR/private/etc/spam/clamav /private/etc/spam"
+	echo "$restore_DIR/private/etc/mail/spamassassin /private/etc/mail"
+	echo "$restore_DIR/private/etc/amavisd.conf /private/etc"
+
+	if [ -d "$restore_DIR/private/etc/spam/clamav" ]; then
+		rsync -arHlp $restore_DIR/private/etc/spam/clamav /private/etc/spam
+	fi
+	rsync -arHlp $restore_DIR/private/etc/mail/spamassassin /private/etc/mail
+	rsync -ap $restore_DIR/private/etc/amavisd.conf /private/etc
+	if [ -f "$restore_DIR/private/etc/clamd.conf" ]; then
+		rsync -ap $restore_DIR/private/etc/clamd.conf /private/etc
+	fi
+	if [ -f "$restore_DIR/private/etc/clamav.conf" ]; then
+		rsync -ap $restore_DIR/private/etc/clamav.conf /private/etc
+	fi
+	if [ -f "$restore_DIR/private/etc/freshclam.conf" ]; then
+		rsync -ap $restore_DIR/private/etc/freshclam.conf /private/etc
+	fi
+	
+	echo "ClamAV, SpamAssassin and Amavsid settings restored"
+fi
+}
+
+#
+# Restore All Settings
+#
+
+restore_settings_all() {
+	restore_settings_postfix
+	restore_settings_cyrus
+	restore_settings_spamav
+}
+
+#
+# Restore Single Mailstore
+#
+
+restore_single_mailstore() {
+	local mailstore="$1"
+    mailstore_DIR=$restore_DIR"/cyrus_partitions_DIRS/"$mailstore"/"
+    mailstore_DIR_dest=`cat /private/etc/imapd.conf | grep partition-$mailstore | sed 's/^.* / /'`
+    echo "Restoring and reconstructing Mail Store "$mailstore" from "$mailstore_DIR" to "$mailstore_DIR_dest
+    rsync -arHlp $mailstore_DIR $mailstore_DIR_dest
+    reconstruct_maildb
+    fix_perm_owner
+    echo "Done restoring and reconstructing Mail Store "$mailstore
+}
+
+#
+# Restore Single User
+#
+
+restore_single_user() {
+	local username="$1"
+    
+    username_DIR_dest=`sudo -u ${cyrus_user} /usr/bin/cyrus/bin/mbpath user/$username`
+
+    useroriginpath=`sudo -u ${cyrus_user} /usr/bin/cyrus/bin/mbpath user/$username | sed 's/\/user\/'${username}'//'`
+    userpartition=`cat /private/etc/imapd.conf | grep $useroriginpath | awk '{split($1,a,":"); print a[1]}' | awk '{split($1,a,"-"); print a[2]}'`
+    
+    userstore_DIR=$restore_DIR"/cyrus_partitions_DIRS/"$userpartition"/"user"/"$username"/"
+    
+	echo "Restoring and reconstructing user: "$username" from "$userstore_DIR" to "$username_DIR_dest
+    
+    rsync -arHlp $userstore_DIR $username_DIR_dest
+    sudo -u ${reconstruct_user} /usr/bin/cyrus/bin/reconstruct -r -f user/$username
+
+	rsync -arHlp $restore_DIR"/cyrus_config_DIR/imap/user/"${username:0:1}"/"$username".seen" $cyrus_config_DIR/user/"${username:0:1}"/"$username".seen
+    rsync -arHlp $restore_DIR"/cyrus_config_DIR/imap/user/"${username:0:1}"/"$username".seen" $cyrus_config_DIR/user/"${username:0:1}"/"$username".sub
+    
+    echo -e "Fixing directory ownership" && find $username_DIR_dest -type d  -print0 | xargs -0 -n 1 /usr/sbin/chown ${cyrus_user}:mail
+    echo -e "Fixing file ownership"  && find $username_DIR_dest  -type f -print0 | xargs -0 -n 1 /usr/sbin/chown ${cyrus_user}:mail
+    echo -e "Fixing directory permissions" && find $username_DIR_dest  -type d -print0 | xargs -0 -n 1 chmod 0700
+    echo -e "Fixing file permissions"  && find $username_DIR_dest  -type f -print0 | xargs -0 -n 1 chmod 0600
+    echo
+    echo "Done restoring and reconstructing User: "$username
+}
+
+#
+# Restore All Mail Settings and Stores
+#
+
+restore_mail_all() {
+	echo "Fully restoring Mail Service settings and Mail Stores"
+restore_settings_all
+echo
+echo "Restoring the Postfix Queue from "$restore_DIR"/postfix_queue_DIR to "$postfix_queue_DIR
+rsync -arHlp --exclude='*/pid/*' --exclude='*/public/*'  --exclude='*/private/*' $restore_DIR"/postfix_queue_DIR" $postfix_queue_DIR
+echo "Done restoring Postfix Queue."
+echo "${bold}The postfix queue directory has been copied to "$postfix_queue_DIR"/postfix_queue_DIR"
+echo "Unless necessary, it is not recommended to replace live queue files."
+echo "If you need messages from the backed up queue, move them into the maildrop"
+echo "directory where postfix will pick them up and re-inject them properly into the queue.${norm}"
+echo
+
+echo "Restoring the Cyrus Config Database from "$restore_DIR"/cyrus_config_DIR to "$cyrus_config_DIR
+rsync -arHlp --exclude='*/socket/*' $restore_DIR"/cyrus_config_DIR" $cyrus_config_DIR
+echo "Done restoring the Cyrus Config Database"
+
+if [ -d $cyrus_sieve_DIR ] && [[ $cyrus_sieve_DIR != "" ]]; then
+	echo "Restoring the Cyrus Sieve Directory from "$restore_DIR"/cyrus_sieve_DIR to "$cyrus_sieve_DIR
+	rsync -arHlp $restore_DIR"/cyrus_sieve_DIR/" $cyrus_sieve_DIR
+	echo "Done restoring the Cyrus Sieve Directory"
+fi
+
+for ((element=0; element <= ${#cyrus_partitions_DIRS[@]} - 1 ; element++))
+  do                
+  echo "" 
+  echo "Restoring Mail Store "${cyrus_partitions_NAMES[$element]}" from "$restore_DIR"/cyrus_partitions_DIRS/"${cyrus_partitions_NAMES[$element]}"/ to "${cyrus_partitions_DIRS[$element]}
+  rsync -arHlp $restore_DIR"/cyrus_partitions_DIRS/"${cyrus_partitions_NAMES[$element]}"/" ${cyrus_partitions_DIRS[$element]} 
+  echo "Done restoring Mail Store "${cyrus_partitions_NAMES[$element]}
+done
+	if [[ "$transfer" != "yes" ]]; then
+		reconstruct_maildb
+	fi
+	fix_perm_owner
+	echo "Done! Mail Service settings and Mail Stores fully restored."
+}
+
+#
+# Fix Diagnostics
+#
+
+run_diagnostics() {
+
+echo "Not implemented!"
+}
+
+#
+# Fix Quota
+#
+
+fix_quota() {
+
+echo "Fixing quota"
+sudo -u ${cyrus_user} /usr/bin/cyrus/bin/cyrus-quota -f 
+echo "Done!"
+}
+
+#
+# Fix Mail Store Permissions and Ownerships
+#
+
+fix_perm_owner() {
+
+for ((element=0; element <= ${#cyrus_partitions_DIRS[@]} - 1 ; element++)); do
+    echo ${cyrus_partitions_DIRS[$element]}
+    echo -e "Fixing directory ownership" && find ${cyrus_partitions_DIRS[$element]}/user -type d  -print0 | xargs -0 -n 1 /usr/sbin/chown ${cyrus_user}:mail
+    echo -e "Fixing file ownership"  && find ${cyrus_partitions_DIRS[$element]}/user  -type f -print0 | xargs -0 -n 1 /usr/sbin/chown ${cyrus_user}:mail
+    echo -e "Fixing directory permissions" && find ${cyrus_partitions_DIRS[$element]}/user  -type d -print0 | xargs -0 -n 1 chmod 0700
+    echo -e "Fixing file permissions"  && find ${cyrus_partitions_DIRS[$element]}/user  -type f -print0 | xargs -0 -n 1 chmod 0600
+done
+
+/usr/sbin/chown -R ${cyrus_user}:mail ${cyrus_config_DIR} 
+
+if [ -d $cyrus_sieve_DIR ] && [[ $cyrus_sieve_DIR != "" ]]; then
+/usr/sbin/chown -R ${cyrus_user}:wheel ${cyrus_sieve_DIR} 
+fi
+
+}
+
+#
+# Reconstruct Mail db
+#
+
+function reconstruct_maildb() {
+	echo "Reconstructing the Mail database."
+    timestamped_DIR=${cyrus_config_DIR}_old_$(date "+%m%d%Y-%H%M%S")
+	echo "Moving database: ${cyrus_config_DIR} -> $timestamped_DIR"
+	mv ${cyrus_config_DIR} $timestamped_DIR 
+	echo "Making new database: -> ${cyrus_config_DIR}"
+	mkdir -p ${cyrus_config_DIR} 
+	/usr/bin/cyrus/tools/mkimap 
+	echo "Fixing owner: -> ${cyrus_user}:mail"
+	/usr/sbin/chown -R ${cyrus_user}:mail ${cyrus_config_DIR} 
+	echo "Reconstructing the database: -> ${cyrus_config_DIR}"
+	echo "This can take a while. Please be patient."
+	
+	#sudo -u ${reconstruct_user} /usr/bin/cyrus/bin/reconstruct -i 
+	
+	partitionstring=""
+	for ((element=0; element <= ${#cyrus_partitions_DIRS[@]} - 1 ; element++))
+    do                
+        #partitionstring=$partitionstring"-p "${cyrus_partitions_NAMES[$element]}" "  
+        sudo -u ${reconstruct_user} /usr/bin/cyrus/bin/reconstruct -p ${cyrus_partitions_NAMES[$element]} -i
+    done
+    
+    #sudo -u ${reconstruct_user} /usr/bin/cyrus/bin/reconstruct ${partitionstring} -i 
+	
+	fix_quota
+}
+
+#
+# Restore Single User
+#
+
+reconstruct_single_user() {
+	local username="$1"
+    username_DIR_dest=`sudo -u ${cyrus_user} /usr/bin/cyrus/bin/mbpath user/$username`
+    sudo -u ${reconstruct_user} /usr/bin/cyrus/bin/reconstruct -r -f user/$username
+    
+    echo -e "Fixing directory ownership" && find $username_DIR_dest -type d  -print0 | xargs -0 -n 1 /usr/sbin/chown ${cyrus_user}:mail
+    echo -e "Fixing file ownership"  && find $username_DIR_dest  -type f -print0 | xargs -0 -n 1 /usr/sbin/chown ${cyrus_user}:mail
+    echo -e "Fixing directory permissions" && find $username_DIR_dest  -type d -print0 | xargs -0 -n 1 chmod 0700
+    echo -e "Fixing file permissions"  && find $username_DIR_dest  -type f -print0 | xargs -0 -n 1 chmod 0600
+    echo
+    echo "Done reconstructing User: "$username
+}
+
+
+#
+# Decide whether to check for a new version
+#
+
+if [ "$TERM" != "dumb" ]; then
+    check_new_version
+fi
+
+
+#
+# Check for options
+#
+
+while test $# -gt 0; do
+	if test "$1" = "--backup" -o "$1" = "-b"; then
+		shift
+		if test "$1" != ""; then
+			backup_DIR="$1"
+			shift
+			mode="notset"
+			case "$1" in
+				--mode|-mo)
+				shift
+				if test "$1" = "incremental" ; then
+					shift
+					mode="inc"
+				fi
+				if test "$1" = "full" ; then
+					shift
+					mode="ful"
+				fi
+				if test "$1" = "rotate" ; then
+					shift
+					mode="rot"
+				fi
+				if [ $mode = "notset" ]; then
+					usage
+				fi
+			echo
+			;;
+			esac
+			backup_mail
+		else
+			usage
+		fi
+		exit
+	fi
+	
+	
+	if test "$1" = "--fixdb" -o "$1" = "-f"; then
+		shift
+		echo "${color_2}You have selected to reconstruct your mail database."
+		echo "Are you sure you want to continue (yes/no):${norm}"
+		read hamlet
+		if [[ "$hamlet" == "yes" ]]; then
+			echo "${bold}Reconstruct operation confirmed.${norm}"
+		else
+			echo "${bold}Reconstruct operation aborted.${norm}"
+			exit 0
+		fi
+		stopmail
+		reconstruct_maildb
+		startmail
+		exit 0
+	fi
+	
+	if test "$1" = "--fixmailbox" -o "$1" = "-m"; then
+		shift
+		if test "$1" != ""; then
+			username="$1"
+			username_test=`sudo -u ${cyrus_user} /usr/bin/cyrus/bin/mbpath user/$username`
+			if [[ "$username_test" = "" ]]; then
+				echo "${bold}You must indicate an existing username${norm}"
+				exit 0
+			fi
+			else
+			echo "${bold}You must indicate an existing username${norm}"
+			echo
+			usage
+		fi
+		echo "${color_2}You have selected to reconstruct user: "$username"."
+		echo "Are you sure you want to continue (yes/no):${norm}"
+		read hamlet
+		if [[ "$hamlet" == "yes" ]]; then
+			echo "${bold}Reconstruct operation confirmed.${norm}"
+		else
+			echo "${bold}Reconstruct operation aborted.${norm}"
+			exit 0
+		fi
+		stopmail
+		reconstruct_single_user $username
+		startmail
+		exit 0
+	fi
+	
+	if test "$1" = "--fixowner" -o "$1" = "-o"; then
+		shift
+		stopmail
+		fix_perm_owner
+		startmail
+		exit 0
+	fi
+	
+	if test "$1" = "--fixquota" -o "$1" = "-q"; then
+		shift
+		stopmail
+		fix_quota
+		startmail
+		exit 0
+	fi
+	
+	if test "$1" = "--restore" -o "$1" = "-r"; then
+		shift
+		restore_DIR=$1
+		shift
+		if [ ! -d $restore_DIR ]; then
+			echo "You must indicate an existing mailbackup directory"
+			usage
+		else
+			echo "Directory to restore from: ${restore_DIR}"
+		fi
+		echo "${color_2}You have selected a restore operation."
+		echo "Are you sure you want to continue (yes/no):${norm}"
+		read hamlet
+		if [[ "$hamlet" == "yes" ]]; then
+			echo "${bold}Restore operation confirmed.${norm}"
+		else
+			echo "${bold}Restore operation aborted.${norm}"
+			exit 0
+		fi
+		case "$1" in
+		--settings|-se)
+			shift
+			if test "$1" = "all" ; then
+			    shift
+			    stopmail
+			    restore_settings_all
+			    startmail
+			    exit 0
+			fi
+			if test "$1" = "postfix" ; then
+			    shift
+			    stopmail
+			    restore_settings_postfix
+			    startmail
+			    exit 0
+			fi
+			if test "$1" = "cyrus" ; then
+			    shift
+			    stopmail
+			    restore_settings_cyrus
+			    startmail
+			    exit 0
+			fi
+			if test "$1" = "spamav" ; then
+			    shift
+			    stopmail
+			    restore_settings_spamav
+			    startmail
+			    exit 0
+			fi
+			echo
+			usage
+			;;
+		--storelist|-sl)
+			shift
+			echo "Available partitions inside: ${restore_DIR}"
+			for ((element=0; element <= ${#cyrus_partitions_NAMES[@]} - 1 ; element++))
+			do      
+			echo ${cyrus_partitions_NAMES[$element]}
+			done
+			echo
+			exit
+			;;
+		--store|-st)
+			shift
+			if test "$1" != ""; then
+			    mailstore="$1"
+			    mailstore_DIR=$restore_DIR"/cyrus_partitions_DIRS/"$mailstore"/"
+			else
+			    echo "You must indicate an existing mail store"
+			    echo
+			    usage
+			fi
+			if [ ! -d $mailstore_DIR ]; then
+			    echo "You must indicate an existing mail store"
+			    echo
+			    usage
+			else
+			    stopmail
+			    restore_single_mailstore $mailstore
+			    startmail
+			fi
+			exit 0
+			;;
+		--userlist|-ul)
+			shift
+			echo "Available users inside: ${restore_DIR}"
+			for ((element=0; element <= ${#cyrus_partitions_NAMES[@]} - 1 ; element++))
+			do      
+			echo "Users in partition: "${cyrus_partitions_NAMES[$element]}" located in: "${cyrus_partitions_DIRS[$element]}
+			ls -1 ${cyrus_partitions_DIRS[$element]}/user
+			echo
+			done
+			echo
+			exit
+			;;
+		--user|-us)
+			shift
+			if test "$1" != ""; then
+			    username="$1"
+			    username_test=`sudo -u ${cyrus_user} /usr/bin/cyrus/bin/mbpath user/$username`
+			if [[ "$username_test" = "" ]]; then
+				echo "${bold}You must indicate an existing username${norm}"
+				exit 0
+			fi
+			else
+			    echo "${bold}You must indicate an existing username${norm}"
+			    echo
+			    usage
+			fi
+			if [ ! -d $username_DIR ]; then
+			    echo "You must indicate an existing mail store"
+			    echo
+			    usage
+			else
+			    stopmail
+			    restore_single_user $username
+			    startmail
+			fi
+			exit 0
+			;;
+		--all|-a)
+			shift
+			stopmail
+			restore_mail_all
+			startmail
+			exit 0
+			;;
+		--transfer|-t)
+			shift
+			echo "${color_2}You have selected a restore operation of type transfer."
+			echo "This type is intended to transfer/migrate your mail data from one server to another!"
+			echo "This will only work between any combination of 10.4.x and/or 10.5.x!"
+			echo "Make sure the backup you are restoring from is a FULL backup!"
+			echo "Are you sure you want to continue (yes/no):${norm}"
+			read hamlet
+			if [[ "$hamlet" == "yes" ]]; then
+				echo "${bold}Transfer operation confirmed.${norm}"
+			else
+				echo "${bold}Transfer operation aborted.${norm}"
+				exit 0
+			fi
+			stopmail
+			transfer=yes
+			restore_mail_all
+			startmail
+			exit 0
+			;;
+		esac
+	fi
+	
+	if test "$1" = "--init" -o "$1" = "-i"; then
+		startup_check
+		exit
+	fi
+	
+	if test "$1" = "--show" -o "$1" = "-s"; then
+		shift
+		if test "$1" != ""; then
+			username="$1"
+			username_test=`sudo -u ${cyrus_user} /usr/bin/cyrus/bin/mbpath user/$username`
+			if [[ "$username_test" = "" ]]; then
+				echo "${bold}You must indicate an existing username${norm}"
+				exit 0
+			fi
+			else
+			echo "${bold}You must indicate an existing username${norm}"
+			echo
+			usage
+		fi
+		sudo -u ${cyrus_user} /usr/bin/cyrus/bin/mbexamine user/$username
+		exit 0
+	fi
+	
+	if test "$1" = "--version" -o "$1" = "-v"; then
+		get_version
+		exit 0
+	fi
+	
+	if test "$1" = "--update" -o "$1" = "-u"; then
+	    # for development use only
+		echo "Forcing update"
+		get_remote_file ${PROJECT_NAME} /usr/sbin;  chmod 0755 /usr/sbin/${PROJECT_NAME};
+        get_remote_file ${PROJECT_NAME}.1 /usr/share/man/man1;  chmod 0644 /usr/share/man/man1/${PROJECT_NAME}.1;
+		exit
+	fi
+	
+	if test "$1" = "--help" -o "$1" = "-h"; then
+		usage
+		exit
+	fi
+	
+	shift
+done
+
+usage
+exit 0
+
+#
+# If we get here, something is wrong
+#
+
+echo "oops"

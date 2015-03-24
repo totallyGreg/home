@@ -1,0 +1,33 @@
+#! /usr/bin/perl
+#
+# by Kino
+
+# --- FormBreakParagraphs.pl --- #
+
+use strict;
+use utf8;
+binmode(STDIN, ":utf8");
+binmode(STDOUT, ":utf8");
+
+local undef $/;
+$_ = <>;
+
+s/\r\n?/\n/g;	#Standardize EOL to LF
+s/^[\t\x20]+|[\t\x20]+$//gm;	#Remove beginning or trailing space/tab
+s/(?<!\n)\n(?![\n>:])/\x20/g;
+	#Form paragraphs skipping those which are empty or begin with > or : 
+#s/\x20{2,}/\x20/g;	#Remove extra spaces (now commented out)
+
+my @lines = split(/\n/);
+
+foreach my $line (@lines) {
+	if ($ENV{"PIPE_REVERSE_TRANSFORM"}) {
+		if ($line =~ /^[^>:]/) {	#Skip lines beginning with > or :
+			$line =~ s/(.{1,72})(?:\x20|$)/$1\n/g; #fold -w 72
+		}
+	}
+	$line =~ s/\n$//;
+	print "$line\n";
+}
+
+#end of script

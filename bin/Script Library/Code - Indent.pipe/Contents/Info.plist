@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PipeEditorWindowProperties</key>
+	<dict>
+		<key>horizontalSplitRatio</key>
+		<real>0.16624365746974945</real>
+		<key>savedFrame</key>
+		<string>66 339 795 576 0 0 1280 1002 </string>
+		<key>selectedInputRange</key>
+		<string>{109, 0}</string>
+		<key>selectedScriptRange</key>
+		<string>{17, 0}</string>
+		<key>verticalSplitRatio</key>
+		<real>0.5</real>
+	</dict>
+	<key>PipeExecutesDirectly</key>
+	<true/>
+	<key>PipeInputStringEncoding</key>
+	<integer>4</integer>
+	<key>PipeLastSaved</key>
+	<date>2005-03-29T13:01:41Z</date>
+	<key>PipeOutputStringEncoding</key>
+	<integer>4</integer>
+	<key>PipeOutputType</key>
+	<integer>1</integer>
+	<key>PipeScriptStringEncoding</key>
+	<integer>4</integer>
+	<key>PipeScriptVersion</key>
+	<integer>1</integer>
+</dict>
+</plist>

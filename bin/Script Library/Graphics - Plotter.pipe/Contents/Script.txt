@@ -1,0 +1,236 @@
+#!/usr/bin/perl -w
+#
+# steffi v0.5, (C) Macodiseas 2005, Postscript version
+# 
+# Permission is hereby granted to anyone to use this script freely, as long as
+# the author is given a due credit
+# (e.g. "Graph generation by 'steffi', (c) Macodiseas" in the About dialog or
+# similar.)
+#
+use strict;
+use warnings;
+
+# ALOCCYUS NoCCA (A lot of crappy constants you usually should not care about)
+#
+#
+#
+my $color = 1;
+my $TTdefault = $ENV{'Graph_title'}; # Default graph title when none specified.
+                                     # Set to " " if not needed.
+
+# RGB palette, used in this order. 0=minimum, 1=maximum.
+# Only color #1 used at the moment
+my @colors = ("0 0 0", $ENV{'Graph_color'}, "0 1 0", "1 0 1", "0 1 1", "1 1 0", "1 0 0");
+# Mx My
+
+my $Mx = 640;
+my $My = 480;
+
+# How many grid lines to produce for X and Y?
+my $Xgrid = $ENV{'Xgrid_lines'};
+my $Ygrid = $ENV{'Ygrid_lines'};
+my $TXformat = "%0.2f"; # Format of the X axis label
+my $TYformat = "%0.3f"; # Format of the Y axis label
+# For the graph display window.
+my $margin_left  = 48;
+my $margin_right = 20;
+my $margin_bottom = 30;
+my $margin_top    = 20;
+# Text offsets for axis labels. Remember: 0,0 is the _lower left corner_ !!!
+my $TXxoffs  = 0;    # X axis, x offset. But see $Tcharwidth below!
+my $TXyoffs  = 10;   # X axis, y offset
+my $TYxoffs  = 5;    # Y axis, x offset
+my $TYyoffs  = -4.5; # Y axis, y offset (for Helvetica 12 ~ 4.5)
+
+my $TTxoffs = 0;     # Graph title X offset from the Tcharwidth-calced pos
+my $TTyoffs  = 15;   # Offset from TOP(!)
+
+# The program will attempt to center the x-axis labels on the respective
+# grid line. Since it is totally dumb, you have to specify the average
+# character width as appears in the font you are using
+# (With default Helvetica 12 it seems to be 6.)
+my $Tcharwidth = 5;  # Average character width in user space points.
+
+# Postscript code for the zero line style:
+# Fat ugly dotted line
+# my $zerohead="[2 3] 4 setdash 1.5 setlinewidth\n";
+# Thin dotted line
+# my $zerohead="[2 3] 4 setdash 0.2 setlinewidth\n";
+# Thin full line
+my $zerohead="[] 0 setdash 0.2 setlinewidth\n";
+
+###################### User parameters end here ########################
+#
+# Compute width and height of the remaining display
+my $MW    = $Mx-($margin_left+$margin_right);
+my $MH    = $My-($margin_top+$margin_bottom);
+
+my $data='';
+
+sub w($) { $data .= pop; }
+
+
+sub grid($$$$$$) {
+# Draw a grid (static, for now) and the text that belongs to it
+ my ($vmin, $vmax, $count, $dmin, $dmax, $title) = @_;
+
+  my $yzero;
+  if ($vmax>=0 && $vmin <= 0)
+  {
+    $yzero = -$vmin * ($MH / ($vmax-$vmin));
+    w($zerohead);
+    w("newpath" # Zero
+     . ' '. ($margin_left) . ' ' . ($margin_bottom+$yzero) . ' moveto '
+     . ' '. ($margin_left+$MW) . ' ' . ($margin_bottom+$yzero) . " lineto\n"
+     . "stroke\n");
+  }
+  my $xzero;
+  if (($dmax >= 0 && $dmin <= 0) || ($dmax <= 0 && $dmin >= 0))
+  {
+    my $vermin = $dmin<$dmax?$dmin:$dmax;
+    $xzero = -$vermin * ($MW / abs($dmin-$dmax));
+    w($zerohead) unless defined($yzero);
+    w("newpath" # X Zero
+     . ' '. ($margin_left+$xzero) . ' ' . ($margin_bottom) . ' moveto '
+     . ' '. ($margin_left+$xzero) . ' ' . ($margin_bottom+$MH) . " lineto\n"
+     . "stroke\n");
+  }
+
+  w("[4 6] 0 setdash 0.2 setlinewidth\n");
+  my $xscale = $MW / $Xgrid;
+  my $yscale = $MH / $Ygrid;
+  my $xvscale = ($count - 1) / $Xgrid;
+  my $xvalinc = ($dmax - $dmin) / $Xgrid ;
+  my $yvscale = ($vmax - $vmin) / $Ygrid;
+  w("newpath\n");
+  for(my $i=0; $i<($Xgrid + 1); $i++) # vertical lines
+  {
+    w(' ' .($margin_left+$i*$xscale).' '.$margin_bottom.' moveto '
+     .($margin_left+$i*$xscale).' '.($margin_bottom+$MH)." lineto\n"
+    );
+  }
+  for(my $i=0; $i<($Ygrid+1); $i++) # horizontal lines
+  {
+    w(' ' . $margin_left.' '.($margin_bottom+$i*$yscale).' moveto '
+     .($margin_left+$MW).' '.($margin_bottom+$i*$yscale)." lineto\n"
+    );
+     # unless (abs($i*$yscale - $yzero)<$Tcharwidth*2);
+  }
+
+  w("stroke\n");
+  
+  w("grestore gsave /Helvetica findfont 12 scalefont setfont newpath\n");
+  
+  if (defined $yzero)
+  {
+    w(' '. ($TYxoffs) . ' ' . ($TYyoffs+$margin_bottom+$yzero) . ' moveto '
+    .  '(- 0 -) show '."\n");
+  }
+  for(my $i=0; $i<($Xgrid + 1); $i++) # horizontal text
+  {
+    my $text = sprintf($TXformat, $xvalinc*$i + $dmin);
+    my $xof = $TXxoffs - $Tcharwidth * length($text)/2;
+     w(' ' . ($xof+$margin_left+$i*$xscale).' '.$TXyoffs.' moveto '
+     .  '('.$text.') show '."\n");
+  }
+  # title
+  my $xof = $TTxoffs - $Tcharwidth * length($title)/2 + $Mx/2;
+  $title =~ s/([()\\])/\\$1/g;
+  w(' ' . $xof . ' '.($My-$TTyoffs).' moveto '
+  .  '('.$title.') show '."\n");
+ 
+  for(my $i=0; $i<($Ygrid+1); $i++) # vertical text
+  {
+    w(' ' . $TYxoffs.' '.($TYyoffs+$margin_bottom+$i*$yscale).' moveto '
+     .'('.sprintf($TYformat,($yvscale*$i+$vmin)).') show'."\n")
+     unless (abs($i*$yscale - $yzero)<$Tcharwidth*2);
+  }
+}
+sub plot($$$$$@) { # Plot the values
+  my ($vmin, $vmax, $xscale, $yscale, $color, @values) = @_;
+  w("[] 0 setdash 0.5  setlinewidth $color setrgbcolor newpath\n");
+  my $x = $margin_left;
+  w(' ' .$x.' '.($margin_bottom+$yscale*(shift(@values)-$vmin))." moveto\n");
+  for my $val (@values) {
+   my $y = $margin_bottom + $yscale*($val-$vmin);
+   $x += $xscale;
+   w(' ' . $x . ' ' . $y . " lineto\n"); # draw next line
+  }
+  w(" stroke\n"); # Stroke (apply ink to the drawn line)
+}
+my $date=localtime time;
+my $head=<<eohead
+%!PS-Adobe-2.0 EPSF-1.2
+%%Title: Some value graph
+%%Creator: steffi, by Macodiseas 05 for Kiza and RenÃ©
+%%Pages: 1
+%%CreationDate: $date
+%%DocumentFonts: Helvetica
+%%BoundingBox: 0 0 $Mx $My
+
+gsave
+eohead
+;
+sub fun {
+	my @values = ();
+	my $a = $ENV{'a'};
+	my $e = $ENV{'e'};;
+	my $step = $ENV{'Steps'};
+	my $s = ($e-$a)/$step;
+	my $fun = <STDIN>;
+	my $data='';
+	for (my $x=$a;$x<=$e;$x += $s)
+	{
+ 		$data = eval($fun) . ' ';
+ 		push(@values,$data);
+	}
+#	print $data . "\n";
+	return @values;
+}
+# "Main"
+my @values     = fun();
+my @headings   = ();
+my $i          = -1;
+
+while(<STDIN>)
+{
+  my $data;
+  if (/^(\[[^\]]+\])(.*)$/)
+  {
+    @headings = (@headings, split(/[\s,;\[\]]+/,$1));
+    $data = $2;  
+  } else 
+  {
+    $data = $_;
+  }
+  
+  @values =  (@values, split(/[\s,;]+/,$data));
+}
+
+  my @sorted = sort { $a <=> $b } @values; # slight overkill for min and max ;)
+  my $vmin = $sorted[0];
+  my $vmax = pop @sorted;
+  my $count = (scalar @sorted) + 1;
+  my $dmin = 1;
+  my $dmax = $count;
+  if (defined $headings[0])
+  {
+    $dmin = $headings[1];
+    $dmax = $headings[2];
+    shift @headings;
+    shift @headings;
+    shift @headings;
+    print STDERR "Min: $dmin | Max: $dmax\n";
+  }
+  my $title=$TTdefault;
+  if (defined $headings[0])
+  {
+    $title = join(' ', @headings);
+  }
+  my $xscale  = $MW / ($count - 1);
+  my $yscale  = $MH / ($vmax - $vmin);
+  grid($vmin, $vmax, $count, $dmin, $dmax, $title);
+  plot($vmin, $vmax, $xscale, $yscale, $colors[$color], @values);
+  w("\ngrestore");
+  print $head.$data."\nshowpage\n";
+1;

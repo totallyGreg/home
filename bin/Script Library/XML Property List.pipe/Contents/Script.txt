@@ -1,0 +1,8 @@
+#!/bin/sh
+
+TMPFILE=$PIPE_TEMP_PATH/input.plist
+cat > $TMPFILE
+
+plutil -convert xml1 $TMPFILE
+
+cat $TMPFILE

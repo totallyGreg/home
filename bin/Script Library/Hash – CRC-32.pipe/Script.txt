@@ -1,0 +1,4 @@
+#!/bin/sh
+
+INTVAL=`/usr/bin/cksum -o 3 | cut -d ' ' -f 1`
+printf %08x $INTVAL

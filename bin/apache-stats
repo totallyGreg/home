@@ -1,0 +1,80 @@
+#!/usr/bin/perl -w 
+# 
+#  ApacheStats 0.5 
+# 
+#  Copyright (C) 2004 Rolf Poser <rolf@stasolutions.co.za> 
+#  Copyright (C) 2004 Luis R. Rodriguez <mcgrof@ruslug.rutgers.edu> 
+# 
+#  This program is free software; you can redistribute it and/or modify 
+#  it under the terms of the GNU General Public License as published by 
+#  the Free Software Foundation; either version 2 of the License 
+# 
+#  This program is distributed in the hope that it will be useful, 
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of 
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+#  GNU General Public License for more details. 
+# 
+#  You should have received a copy of the GNU General Public License 
+#  along with this program; if not, write to the Free Software 
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+
+use strict; 
+use Switch; 
+
+my $output = ""; 
+my $response = ""; 
+my $bin  = "/usr/bin/"; 
+my $wget = $bin . "wget"; 
+my $lynx = $bin . "lynx"; 
+my $hostname = ($#ARGV <= 0) ? "svaha.com" : chomp $ARGV[0]; 
+my $url = "http:\/\/".$hostname."\/svaha-status?auto"; 
+
+# Change the following if you have an environment variable of "http_proxy" 
+# that interferes with your direct access to the web server in question. 
+# The symptoms are that the ACL on the server disallows you access because 
+# you are connecting via a proxy server: 
+delete $ENV{'HTTP_PROXY'}; 
+delete $ENV{'http_proxy'}; 
+
+my $method = ( -f $wget ) ? $wget : (-f $lynx) ? $lynx : "perl"; 
+
+switch($method) { 
+        case "$wget" { 
+                $method .= " --user-agent=\"ApacheStats\/0.4 wget\/1.8\" -q -O -"; 
+                $output = `$method $url`; 
+        } 
+        case "$lynx" { 
+                $method .= " -useragent=\"ApacheStats\/0.4 Lynx\/2.8\" -dump"; 
+                $output = `$method $url`; 
+        } 
+        case "perl" { 
+                use LWP::UserAgent; 
+                use HTTP::Request; 
+                use HTTP::Response; 
+                my $userAgent = new LWP::UserAgent; 
+                $userAgent->agent("ApacheStats/0.4 "); 
+                my $request = new HTTP::Request('GET', $url); 
+                my $response = $userAgent->request($request); 
+                print $response->error_as_HTML and exit() if (!$response->is_success); 
+                $output = $response->content; 
+        } 
+} 
+
+print "No method usable" and exit() if ($output eq ""); 
+
+$output =~ /Total Accesses: (.*)/; 
+print "apache_total_hits:$1 "; 
+$output =~ /Total kBytes: (.*)/; 
+print "apache_total_kbytes:".$1." "; 
+$output =~ /CPULoad: (.*)/; 
+print "apache_cpu_load:".$1." "; 
+$output =~ /ReqPerSec: (.*)/; 
+print "apache_req_per_sec:".$1." "; 
+$output =~ /BytesPerSec: (.*)/; 
+print "apache_bytes_per_sec:".$1." "; 
+$output =~ /BytesPerReq: (.*)/; 
+print "apache_bytes_per_req:".$1." "; 
+$output =~ /Busy.*: (.*)/; 
+print "apache_busy_workers:$1 "; 
+$output =~ /Idle.*: (.*)/; 
+print "apache_idle_workers:$1 "; 

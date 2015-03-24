@@ -1,0 +1,4 @@
+ヒラギノ[^/]+
+textedit\.app [^/]*grep "Address Book.app"
+awk(\.[^/])* Finder(\.app)* iconv Normalize.pm
+font\ book

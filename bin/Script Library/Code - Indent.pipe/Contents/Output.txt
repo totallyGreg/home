@@ -1,0 +1,11 @@
+int             main(void) {
+	printf("Hello, World!\n");
+	for (i = 0; i < 10; i++) {
+		printf("Indent me!\n");
+	} /* Much better, eh? */ 
+}
+void            func(void) {
+	int             foo = bar;
+	if (foo == bar)
+		printf("This code is pretty pointless.\n");	/* Don't you think? */
+}

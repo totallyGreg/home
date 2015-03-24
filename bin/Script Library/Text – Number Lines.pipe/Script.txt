@@ -1,0 +1,8 @@
+#! /bin/sh
+
+if [ "$PIPE_REVERSE_TRANSFORM" == "1" ]; then
+	sed -e 's/ *[0-9]*	//g'
+	exit
+fi
+
+cat -b -

@@ -1,0 +1,106 @@
+#! /bin/sh
+
+cmdname=`cat -`
+
+if [ "$cmdname" = "" ]; then
+
+	echo "no input, exit..." >&2
+	exit
+
+fi
+
+
+mantmp="$PIPE_TEMP_PATH/manpage"
+
+if [ "$PIPE_EXPECTED_OUTPUT_TYPE" = "text" ]; then
+
+	if [ "$PIPE_REVERSE_TRANSFORM" = "1" ]; then
+
+		man -k $cmdname | col -b
+
+	else
+
+		man $cmdname | col -b > $mantmp
+
+		if [ ! -s $mantmp ]; then
+
+			echo "No manual entry for $cmdname" > $mantmp
+
+		fi
+
+		which $cmdname
+		echo ""
+		echo "-------------------------------------------------------"
+		echo ""
+		cat $mantmp
+
+	fi
+
+elif [ "$PIPE_EXPECTED_OUTPUT_TYPE" = "html" ]; then
+
+	if [ "$PIPE_REVERSE_TRANSFORM" = "1" ]; then
+
+		man -k $cmdname \
+		| perl -pe 's/\"/&quot;/g; s/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g;' \
+		| perl -pe 's/^((?:\S+\(\d\w*\))(?:,\x20(?:\S+\(\d\w*\)))*)\x20+-\x20(.+)$/<tr><td valign=\"top\"\x20width=\"20%\"><tt>$1<\/tt><\/td><td valign=\"top\"><p>$2<\/p><\/td><\/tr><tr>/;' \
+		| perl -pe 's/^[^<].*\n//' > $mantmp
+
+		if [ ! -s $mantmp ]; then
+
+			echo "<html><head><title></title></head><body>"
+			echo "<tt><b>$cmdname</b>: nothing appropriate</tt>"
+			echo "</body></html>"
+
+		else
+
+			echo "<html><head><title></title></head><body>"
+			echo "<table border=\"1\" cellpadding=\"2\" width=\"100%\">"
+			cat $mantmp
+			echo "</table></body></html>"
+
+		fi
+
+	else
+
+		man $cmdname > $mantmp
+
+		if [ ! -s $mantmp ]; then
+
+			echo "<html><head><title></title></head><body>"
+			echo "<tt>No manual entry for <b>$cmdname</b></tt>"
+			echo "</body></html>"
+
+		else
+
+			rmanbin="/Library/Application Support/Apple/Developer Tools/Plug-ins"
+			rmanbin=$rmanbin"/DocViewerPlugIn.xcplugin/Contents/Resources/rman"
+
+			if [ ! -f "$rmanbin" ]; then
+
+				rmanbin=/usr/X11R6/bin/rman
+
+				if [ ! -f "$rmanbin" ]; then
+
+					echo "<html><head><title></title></head><body>"
+					echo "<p>Cannot generate html from man pages because <b>rman</b> is not found.</p>"
+					echo "<p><b>rman</b> comes with <i>Xcode Tools</i> or <i>X11</i>.</p>"
+					echo "</body></html>"
+					rm -f $mantmp
+					exit
+				fi
+			fi
+			
+			"$rmanbin" -f html $mantmp  | \
+			tr -d "[\000-\008\010\011\013-\037]"
+
+		fi
+	fi
+
+else
+
+	echo "Only text and html are supported as output format." >&2
+	echo "exit..." >&2
+
+fi
+
+#end of script

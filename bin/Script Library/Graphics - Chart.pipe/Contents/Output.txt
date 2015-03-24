@@ -1,0 +1,50 @@
+%!PS-Adobe-2.0 EPSF-1.2
+%%Title: Some value graph
+%%Creator: steffi, by Macodiseas 05 for Kiza and René
+%%Pages: 1
+%%CreationDate: Tue Mar 15 12:57:30 2005
+%%DocumentFonts: Helvetica
+%%BoundingBox: 0 0 640 480
+
+gsave
+[] 0 setdash 0.2 setlinewidth
+newpath 48 56.875 moveto  620 56.875 lineto
+stroke
+[4 6] 0 setdash 0.2 setlinewidth
+newpath
+ 48 30 moveto 48 460 lineto
+ 162.4 30 moveto 162.4 460 lineto
+ 276.8 30 moveto 276.8 460 lineto
+ 391.2 30 moveto 391.2 460 lineto
+ 505.6 30 moveto 505.6 460 lineto
+ 620 30 moveto 620 460 lineto
+ 48 30 moveto 620 30 lineto
+ 48 137.5 moveto 620 137.5 lineto
+ 48 245 moveto 620 245 lineto
+ 48 352.5 moveto 620 352.5 lineto
+ 48 460 moveto 620 460 lineto
+stroke
+grestore gsave /Helvetica findfont 12 scalefont setfont newpath
+ 5 52.375 moveto (- 0 -) show 
+ 38 10 moveto (1.00) show 
+ 152.4 10 moveto (1.80) show 
+ 266.8 10 moveto (2.60) show 
+ 381.2 10 moveto (3.40) show 
+ 495.6 10 moveto (4.20) show 
+ 610 10 moveto (5.00) show 
+ 317.5 465 moveto ( ) show 
+ 5 25.5 moveto (-2.000) show
+ 5 133 moveto (6.000) show
+ 5 240.5 moveto (14.000) show
+ 5 348 moveto (22.000) show
+ 5 455.5 moveto (30.000) show
+[] 0 setdash 0.5  setlinewidth 0 0 1 setrgbcolor newpath
+ 48 197.96875 moveto
+ 191 30 lineto
+ 334 191.25 lineto
+ 477 325.625 lineto
+ 620 460 lineto
+ stroke
+
+grestore
+showpage

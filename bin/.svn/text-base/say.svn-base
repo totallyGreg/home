@@ -1,0 +1,2 @@
+#!/bin/tcsh
+osascript -e 'say "$1" using "Zarvox"'

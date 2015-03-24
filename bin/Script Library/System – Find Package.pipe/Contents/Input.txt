@@ -1,0 +1,7 @@
+login grep egrep
+"awk(\..+)?"
+
+Address\ Book\.app
+"system preferences\.app"
+
+ヒラキ.+ノ.+

@@ -1,0 +1,17 @@
+# PipeGames - TicTacToe
+# =====================
+#
+# Enter 'X' or 'O' to choose a side.
+# Enter coordinate numbers to make your move.
+# See the info panel for more instructions.
+#
+#        A    B    C
+#     +---------------+
+#     |               |
+#   1 |  -    -    -  |
+#     |               |
+#   2 |  -    -    -  |
+#     |               |
+#   3 |  -    -    -  |
+#     |               |
+#     +---------------+

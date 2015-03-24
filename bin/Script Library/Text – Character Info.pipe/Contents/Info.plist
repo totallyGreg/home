@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PipeEditorWindowProperties</key>
+	<dict>
+		<key>horizontalSplitRatio</key>
+		<real>0.47880691289901733</real>
+		<key>infoDrawerOpen</key>
+		<false/>
+		<key>savedFrame</key>
+		<string>128 435 644 357 0 0 1280 1002 </string>
+		<key>selectedInputRange</key>
+		<string>{27, 0}</string>
+		<key>selectedScriptRange</key>
+		<string>{114, 34}</string>
+		<key>verticalSplitRatio</key>
+		<real>0.50154799222946167</real>
+	</dict>
+	<key>PipeExecutesDirectly</key>
+	<true/>
+	<key>PipeHomeURL</key>
+	<string>http://quinon.com/files/Pipe/</string>
+	<key>PipeInputStringEncoding</key>
+	<integer>4</integer>
+	<key>PipeInputWritingDirection</key>
+	<integer>0</integer>
+	<key>PipeLastSaved</key>
+	<date>2005-05-02T08:08:14Z</date>
+	<key>PipeOutputStringEncoding</key>
+	<integer>4</integer>
+	<key>PipeOutputType</key>
+	<integer>1</integer>
+	<key>PipeOutputWritingDirection</key>
+	<integer>0</integer>
+	<key>PipeScriptStringEncoding</key>
+	<integer>4</integer>
+	<key>PipeScriptVersion</key>
+	<integer>1</integer>
+	<key>PipeServiceCapable</key>
+	<true/>
+	<key>PipeVariables</key>
+	<array/>
+</dict>
+</plist>

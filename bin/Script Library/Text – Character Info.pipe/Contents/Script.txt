@@ -1,0 +1,66 @@
+#! /usr/bin/perl
+
+use strict;
+use utf8;
+binmode (STDIN, ":utf8");
+binmode (STDOUT, ":utf8");
+
+my $nameslist = "";
+my $nlinfo = "";
+my $hexval = "";
+my $range = "";
+my $noinfo = "<No info in NamesList.txt, unassigned?>";
+my $pver = $];
+
+if ( $pver == 5.006 ) {
+	$nameslist = "/Library/Perl/unicore/NamesList.txt";
+} else {
+	$pver =~ s/\.?00/./g;
+	$nameslist = "/System/Library/Perl/${pver}/unicore/NamesList.txt";
+}
+
+my @lines = <>;
+
+if ( "@lines" eq "" ) {
+	print STDERR "No input/selection!\n";
+	exit;
+}
+
+if ( ! -f $nameslist ) {
+	print STDERR "${nameslist} not found!\n";
+	exit;
+}
+
+foreach my $line (@lines) {
+	foreach (split //, $line) {
+		$hexval = sprintf("%04X", ord);
+		if ( $hexval ge "3400" && $hexval le "4DB5" ) {
+			$range = "CJK Unified Ideographs Extension A";
+		}
+		if ( $hexval ge "4E00" && $hexval le "9FA5" ) {
+			$range = "CJK Unified Ideographs";
+		}
+		if ( $hexval ge "AC00" && $hexval le "D7A3" ) {
+			$range = "Hangul Syllables";
+		}
+		if ( $hexval ge "E000" && $hexval le "F8FF" ) {
+			$range = "Private Use Area";
+		}
+		if ( $hexval ge "20000" && $hexval le "2A6D6" ) {
+			$range = "CJK Unified Ideographs Extension B";
+		}
+		if ( "$range" ne "" ) {
+			print "U+${hexval}\t${range}\n";
+			$range = "";
+		} else {
+			chomp ($nlinfo = `grep "^${hexval}" ${nameslist}`);
+			if ( "${nlinfo}" ne "" ) {
+				print "U+${nlinfo}\n";
+			} else {
+				print "U+${hexval}\t${noinfo}\n";
+			}
+		}
+	}
+}
+
+# end of script

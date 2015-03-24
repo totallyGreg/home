@@ -1,0 +1,7 @@
+#!/bin/sh
+
+kextunload /System/Library/Extensions/AppleUSBAudio.kext
+sleep 1
+kextunload /System/Library/Extensions/AppleUSBAudio.kext
+kextload /System/Library/Extensions/AppleUSBAudio.kext
+

@@ -1,0 +1,15 @@
+#!/bin/sh
+
+if [ "$PIPE_REVERSE_TRANSFORM" = "1" ]; then
+	MODE="-d"
+else
+	MODE="-e"
+fi
+
+if [ "$salt" = "1" ]; then
+	SALT="-salt"
+else
+	SALT="-nosalt"
+fi
+
+/usr/bin/openssl enc $MODE $SALT -pass env:password -$algorithm -salt -a

@@ -1,0 +1,44 @@
+#! /bin/sh
+
+if [ "$PIPE_EXPECTED_OUTPUT_TYPE" != "text" ]; then
+	echo "Please set the Output type to Text." >&2
+	exit
+fi
+
+appnames=`cat - | tr "\n\t" " " |\
+	perl -pe 'while ( /"[^"\s]+ / ) { s/("[^" ]+) +/$1/g};'`
+#echo $appnames	#for debugging
+
+
+if [ "$appnames" = "" -o "$1" = "-h" -o "$1" = "-help" \
+	-o "$1" = "--help" ]; then
+	echo "Find Preferences plist files corresponding to applications."
+	echo ""
+ 	echo -n "If a, -a or --all is given as argument, not only *.plist "
+ 	echo "but also files with any or no extension in"
+	echo "	~/Library/Preferences"
+	echo "will be searched for."
+	echo "No input, exit" >&2
+	exit
+fi
+
+if [ "$PIPE_REVERSE_TRANSFORM" = "1" ]; then
+	echo "No Reverse Transformations for this script." >&2
+fi
+
+PrefDir=${HOME}/Library/Preferences
+
+for n in $appnames; do
+	n=${n//.app/}; n=${n//\"/}
+	echo "Serching for \"$n\"..."
+	if [ "$1" = "a" -o "$1" = "-a" -o "$1" = "--all" ]; then
+		found=`find $PrefDir -type f -iname *$n* -print`
+	else
+		found=`find $PrefDir -iname *$n*.plist -print`
+	fi
+	found=`echo $found `
+	found=${found//$HOME/~}
+	echo $found | perl -pe 's/^$/\tnothing found!/g; s/ (?=~\/Library)/\n/g;'
+done
+
+#end of script

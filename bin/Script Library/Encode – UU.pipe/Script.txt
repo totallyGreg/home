@@ -1,0 +1,7 @@
+#!/bin/sh	
+
+if [ "$PIPE_REVERSE_TRANSFORM" == "1" ]; then
+	/usr/bin/uudecode -p
+else	
+	/usr/bin/uuencode file
+fi

@@ -1,0 +1,322 @@
+#!/usr/bin/perl
+#
+# PipeGames - TicTacToe
+# http://www.kcore.de/software/pipe/
+# Copyright 2005, Oliver Feiler <kiza@kcore.de>
+#
+# This is really just a proof of concept game. Don't
+# expect anything fancy. But nevertheless, it works. ;)
+########################################################
+
+#use Data::Dumper;
+use strict;
+
+my @fieldRow1 = ("-", "-", "-");
+my @fieldRow2 = ("-", "-", "-");
+my @fieldRow3 = ("-", "-", "-");
+my @field = (\@fieldRow1, \@fieldRow2, \@fieldRow3);
+my @coltable_rev = ("a", "b", "c");
+my @mooves = ();
+my $turn = 0;				# 0 = player, 1 = computer, I think
+my $winside;
+my $inputProcessed = 0;		# no
+my $numturns;
+
+# Process all input data to recreate a game
+while (<STDIN>) {
+	if (/^[#\n]/) {
+		next;
+	}
+	chomp;
+	push(@mooves,$_);
+	$inputProcessed = 1;
+}
+
+if (!$inputProcessed) {
+	printBanner();
+}
+
+# Game loop
+if ($inputProcessed) {
+	$mooves[0] = uc($mooves[0]);
+	
+	if (($mooves[0] ne "X") && ($mooves[0] ne "O")) {
+		print "# The first line of input must either be \"X\" or \"O\".\n";
+	}
+	
+	printCaption($mooves[0]);
+	
+	# Process moves
+	my $matrixa;
+	my $matrixb;
+	my $moveobj = "X";
+	$numturns = 0;
+	foreach (@mooves) {
+		if (($_ eq "X") || ($_ eq "O")) { next; }
+		
+		$matrixa = substr ($_, 0, 1);
+		$matrixb = substr ($_, 1, 1);
+		$matrixb--;
+		if (uc($matrixa) eq "A") { $matrixa = 0; }
+		elsif (uc($matrixa) eq "B") { $matrixa = 1; }
+		elsif (uc($matrixa) eq "C") { $matrixa = 2; }
+		
+		$field[$matrixa]->[$matrixb] = $moveobj;
+		
+		if ($moveobj eq "X") { $moveobj = "O"; } 
+		else { $moveobj = "X" };
+		
+		$numturns++;
+		
+		if ($turn == 0) { $turn = 1; }
+		else { $turn = 0; }
+	}
+		
+	if ((($numturns == 0) && ($turn == 1)) || ($turn == 1)) {
+		if (checkWin()) { printWin(); }
+		else { chooseMoove($moveobj); }
+	}
+}
+
+printPlayField();
+if (checkWin()) { printWin(); }
+printMooveHistory();
+
+# exit(0); # Game over man
+
+# AD (artificial dumbness)
+sub chooseMoove {
+	my $obj = shift;
+	my $notmyobj;
+	if ($obj eq "X") { $notmyobj = "O"; }
+	else { $notmyobj = "X"; }
+	my $matrixa;
+	my $matrixb;
+	my $i;
+	my $j;
+	my $moove;
+	
+	# Start with a random position
+	if ($numturns == 0) {
+		srand(time);	
+		my $miranda = int(rand 3);	
+		my $randy = int(rand 3);	
+		$field[$miranda]->[$randy] = $obj;	
+		$moove = $coltable_rev[$miranda].($randy+1);	
+		push(@mooves,$moove);
+		$numturns++;
+		return;
+	}
+
+	# Prevent player from winning (check for two in a row)
+	# Place third stone in case of two per row exist
+	# vertical
+	for ($i = 0; $i <= 2; $i++) {
+		# 0 + 1
+		if (((($field[$i]->[0] eq $notmyobj) && ($field[$i]->[1] eq $notmyobj)) || (($field[$i]->[0] eq $obj) && ($field[$i]->[1] eq $obj))) && ($field[$i]->[2] eq "-")) {
+			$field[$i]->[2] = $obj;
+			$moove = $coltable_rev[$i]."3";
+			push(@mooves,$moove);
+			return;
+		}
+		# 1 + 2
+		if (((($field[$i]->[1] eq $notmyobj) && ($field[$i]->[2] eq $notmyobj)) || (($field[$i]->[1] eq $obj) && ($field[$i]->[2] eq $obj))) && ($field[$i]->[0] eq "-")) {
+			$field[$i]->[0] = $obj;
+			$moove = $coltable_rev[$i]."1";
+			push(@mooves,$moove);
+			return;
+		}
+		# 0 + 2
+		if (((($field[$i]->[0] eq $notmyobj) && ($field[$i]->[2] eq $notmyobj)) || (($field[$i]->[0] eq $obj) && ($field[$i]->[2] eq $obj))) && ($field[$i]->[1] eq "-")) {
+			$field[$i]->[1] = $obj;
+			$moove = $coltable_rev[$i]."2";
+			push(@mooves,$moove);
+			return;
+		}
+	}
+	# horizontal
+	for ($i = 0; $i <= 2; $i++) {
+		# a + b
+		if (((($field[0]->[$i] eq $notmyobj) && ($field[1]->[$i] eq $notmyobj)) || (($field[0]->[$i] eq $obj) && ($field[1]->[$i] eq $obj))) && ($field[2]->[$i] eq "-")) {
+			$field[2]->[$i] = $obj;
+			$moove = "c".($i+1);
+			push(@mooves,$moove);
+			return;
+		}
+		# b + c
+		if (((($field[1]->[$i] eq $notmyobj) && ($field[2]->[$i] eq $notmyobj)) || (($field[1]->[$i] eq $obj) && ($field[2]->[$i] eq $obj))) && ($field[0]->[$i] eq "-")) {
+			$field[0]->[$i] = $obj;
+			$moove = "a".($i+1);
+			push(@mooves,$moove);
+			return;
+		}
+		# a + c
+		if (((($field[0]->[$i] eq $notmyobj) && ($field[2]->[$i] eq $notmyobj)) || (($field[0]->[$i] eq $obj) && ($field[2]->[$i] eq $obj))) && ($field[1]->[$i] eq "-")) {
+			$field[1]->[$i] = $obj;
+			$moove = "b".($i+1);
+			push(@mooves,$moove);
+			return;
+		}
+	}
+	# digonal
+	# a1 -> c3
+	# a1 + b2
+	if (((($field[0]->[0] eq $notmyobj) && ($field[1]->[1] eq $notmyobj)) || (($field[0]->[0] eq $obj) && ($field[1]->[1] eq $obj))) && ($field[2]->[2] eq "-")) {
+		$field[2]->[2] = $obj;
+		push(@mooves,"c3");
+		return;
+	}
+	# b2 + c3
+	if (((($field[1]->[1] eq $notmyobj) && ($field[2]->[2] eq $notmyobj)) || (($field[1]->[1] eq $obj) && ($field[2]->[2] eq $obj))) && ($field[0]->[0] eq "-")) {
+		$field[0]->[0] = $obj;
+		push(@mooves,"a1");
+		return;
+	}
+	# a1 + c3
+	if (((($field[0]->[0] eq $notmyobj) && ($field[2]->[2] eq $notmyobj)) || (($field[0]->[0] eq $obj) && ($field[2]->[2] eq $obj))) && ($field[1]->[1] eq "-")) {
+		$field[1]->[1] = $obj;
+		push(@mooves,"b2");
+		return;
+	}
+	# a3 -> c1
+	# a3 + b2
+	if (((($field[0]->[2] eq $notmyobj) && ($field[1]->[1] eq $notmyobj)) || (($field[0]->[2] eq $obj) && ($field[1]->[1] eq $obj))) && ($field[2]->[0] eq "-")) {
+		$field[2]->[0] = $obj;
+		push(@mooves,"c1");
+		return;
+	}
+	# b2 + c1
+	if (((($field[1]->[1] eq $notmyobj) && ($field[2]->[0] eq $notmyobj)) || (($field[1]->[1] eq $obj) && ($field[2]->[0] eq $obj))) && ($field[0]->[2] eq "-")) {
+		$field[0]->[2] = $obj;
+		push(@mooves,"a3");
+		return;
+	}
+	# a3 + c1
+	if (((($field[0]->[2] eq $notmyobj) && ($field[2]->[0] eq $notmyobj)) || (($field[0]->[2] eq $obj) && ($field[2]->[0] eq $obj))) && ($field[1]->[1] eq "-")) {
+		$field[1]->[1] = $obj;
+		push(@mooves,"b2");
+		return;
+	}
+		
+	# Next avail
+	for ($i = 0; $i <= 2; $i++) {
+		for ($j = 0; $j <= 2; $j++) {
+			if ($field[$i]->[$j] eq "-") {
+				$field[$i]->[$j] = $obj;
+				$moove = $coltable_rev[$i].($j+1);
+				push(@mooves,$moove);
+				return;
+			}
+		}
+	}
+}
+
+sub checkWin {
+	# Horizontal
+	if (($field[0]->[0] eq $field[1]->[0]) &&
+		($field[0]->[0] eq $field[2]->[0]) &&
+		($field[0]->[0] ne "-")) {
+		$winside = $field[0]->[0];
+		return 1;
+	}
+	if (($field[0]->[1] eq $field[1]->[1]) &&
+		($field[0]->[1] eq $field[2]->[1]) &&
+		($field[0]->[1] ne "-")) {
+		$winside = $field[0]->[1];
+		return 1;
+	}
+	if (($field[0]->[2] eq $field[1]->[2]) &&
+		($field[0]->[2] eq $field[2]->[2]) &&
+		($field[0]->[2] ne "-")) {
+		$winside = $field[0]->[2];
+		return 1;
+	}
+	
+	# Vertical
+	if (($field[0]->[0] eq $field[0]->[1]) &&
+		($field[0]->[0] eq $field[0]->[2]) &&
+		($field[0]->[0] ne "-")) {
+		$winside = $field[0]->[0];
+		return 1;
+	}
+	if (($field[1]->[0] eq $field[1]->[1]) &&
+		($field[1]->[0] eq $field[1]->[2]) &&
+		($field[1]->[0] ne "-")) {
+		$winside = $field[1]->[0];
+		return 1;
+	}
+	if (($field[2]->[0] eq $field[2]->[1]) &&
+		($field[2]->[0] eq $field[2]->[2]) &&
+		($field[2]->[0] ne "-")) {
+		$winside = $field[2]->[0];
+		return 1;
+	}
+	
+	# Diagonal
+	if (($field[0]->[0] eq $field[1]->[1]) &&
+		($field[0]->[0] eq $field[2]->[2]) &&
+		($field[0]->[0] ne "-")) {
+		$winside = $field[0]->[0];
+		return 1;
+	}
+	if (($field[2]->[0] eq $field[1]->[1]) &&
+		($field[2]->[0] eq $field[0]->[2]) &&
+		($field[2]->[0] ne "-")) {
+		$winside = $field[2]->[0];
+		return 1;
+	}
+	
+	return 0;
+}
+
+sub printWin {
+	print "# \"$winside\" has won!\n#\n";
+}
+
+# Print instructions
+sub printBanner {
+	print "# PipeGames - TicTacToe\n".
+	      "# =====================\n#\n".
+	      "# Enter 'X' or 'O' to choose a side.\n".
+	      "# Enter coordinate numbers to make your move.\n".
+	      "# See the info panel for more instructions.\n#\n";
+}
+
+sub printCaption {
+	my $object = shift;
+	
+	print "# Your turn\n#\n";
+	print     "# You:       $object\n";
+	if ($object eq "X") {
+		print "# Computer:  O\n#\n";
+		$turn = 0;
+	} else {
+		print "# Computer:  X\n#\n";
+		$turn = 1;
+	}
+}
+
+# Print the playfield to the screen
+sub printPlayField {
+#	print Dumper(@field);
+	
+	print "#        A    B    C\n".
+          "#     +---------------+\n".
+          "#     |               |\n".
+          "#   1 |  $field[0]->[0]    $field[1]->[0]    $field[2]->[0]  |\n".
+          "#     |               |\n".
+          "#   2 |  $field[0]->[1]    $field[1]->[1]    $field[2]->[1]  |\n".
+          "#     |               |\n".
+          "#   3 |  $field[0]->[2]    $field[1]->[2]    $field[2]->[2]  |\n".
+          "#     |               |\n".
+          "#     +---------------+\n";
+          
+}
+
+sub printMooveHistory {
+	if ($numturns > 0) {
+		print "#\n# Move history (cut&paste to \"save\" game):\n";
+		#print Dumper(@mooves);
+		foreach (@mooves) { print "$_\n"; }
+	}
+}

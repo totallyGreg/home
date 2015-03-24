@@ -1,0 +1,2 @@
+#!/bin/bash
+/usr/sbin/ioreg -p IODeviceTree -n battery -w 0 | grep IOBatteryInfo |cut -d { -f 2 |cut -d } -f 1 |tr -d \" |tr , \\n

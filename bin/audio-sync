@@ -1,0 +1,10 @@
+echo
+#echo "Starting Library/Audio Sync to Praxis..."
+#rsync -avz --progress --delete --max-delete=50 --exclude .DS_Store ~/Library/Audio praxis.dingo.nu:Library
+echo
+echo "Syncing Music to the FreeNASty..."
+#rsync -avzE -e "ssh -c blowfish" --stats --progress --delete --max-delete 500 --exclude .DS_Store --exclude iTunes --exclude Podcasts ~/Music swamp.svaha.com:
+
+#rsync -navz -e "ssh -c blowfish" --stats --progress --delete --max-delete 500 --exclude .DS_Store ~/Music/iTunes/iTunes\ Media/Music  totally@freenasty.local:/mnt/Hitachi/Media
+
+rsync -avz -e "ssh -c blowfish" --stats --progress --delete --max-delete 500 --exclude .DS_Store ~/Music/iTunes/iTunes\ Media/Music  totally@freenasty.local:/mnt/Hitachi/Media

@@ -1,0 +1,5 @@
+Find Preferences plist files corresponding to applications.
+
+If a, -a or --all is given as argument, not only *.plist but also files with any or no extension in
+	~/Library/Preferences
+will be searched for.

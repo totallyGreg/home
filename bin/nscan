@@ -1,0 +1,4 @@
+#!/bin/bash
+#to be used against the idiots who are constantly trying to break in.  
+
+nmap -sS -P0 -sV -O $1

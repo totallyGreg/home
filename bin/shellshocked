@@ -1,0 +1,1 @@
+env x='() { :;}; echo vulnerable' bash -c "echo test" | grep -v "test"

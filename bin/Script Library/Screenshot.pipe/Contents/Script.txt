@@ -1,0 +1,7 @@
+#!/bin/sh
+
+TEMPFILE=`mktemp /tmp/screencapture.XXXXX`
+
+/usr/sbin/screencapture -m "$TEMPFILE"
+cat $TEMPFILE
+rm -f $TEMPFILE

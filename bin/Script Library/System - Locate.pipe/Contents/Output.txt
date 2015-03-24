@@ -1,0 +1,27 @@
+PipeLocate: find a file with locate
+===================================
+
+Type a file name in Input field and hit Run with argument(s) if necessary.
+
+arguments: [-b|-e|-s|-r|-R] [-c] [-h]
+	-b  begins with
+	-e  ends with
+	-s  is/strict
+	-r  regular expression (base name)
+	-R  regular expression (any match)
+	-c	case sensitive
+	-h	show this help
+
+Only the results matching in their last component of path (base name) will be displayed except when -R is specified.
+
+Both Input and Output encodings should be set to UTF-8.
+
+This script assumes you have a recent version of GNU findutils installed manually or via Fink.
+
+http://www.gnu.org/software/findutils/findutils.html
+
+If they are not found, the script uses /usr/bin/locate which however does not support ignore case nor non-ASCII characters.
+
+Only /usr/local/bin/locate and /sw/bin/locate are checked by default. If your locate is elsewhere, modify the script accordingly.
+
+Regular expression you can use with -r or -R is not that of perl but that of grep. So non-ASCII characters in a set [   ] will not be interpreted correctly.

@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="3"
+   name=""
+   committed-date="2005-02-19T22:16:46.559917Z"
+   url="http://svaha.com/private/totally/bin"
+   last-author="totally"
+   kind="dir"
+   uuid="7a544537-7ef0-0310-8db7-8bb584ef8ae8"
+   revision="3"/>
+<entry
+   committed-rev="2"
+   name="clearfavicons"
+   text-time="2005-02-19T22:19:34.000000Z"
+   committed-date="2005-02-19T22:00:53.512575Z"
+   checksum="4cef200edd4f2863510a45484015c2f3"
+   last-author="totally"
+   kind="file"
+   prop-time="2005-02-19T22:17:39.000000Z"/>
+<entry
+   committed-rev="2"
+   name="prefLint"
+   text-time="2005-02-19T22:19:34.000000Z"
+   committed-date="2005-02-19T22:00:53.512575Z"
+   checksum="2afffc139f42a370e458aa09d83c0e22"
+   last-author="totally"
+   kind="file"
+   prop-time="2005-02-19T22:17:39.000000Z"/>
+<entry
+   committed-rev="2"
+   name="battery-check"
+   text-time="2005-02-19T22:19:34.000000Z"
+   committed-date="2005-02-19T22:00:53.512575Z"
+   checksum="81963aa95a3ca893d65af5f3fcc2def5"
+   last-author="totally"
+   kind="file"
+   prop-time="2005-02-19T22:17:39.000000Z"/>
+<entry
+   committed-rev="2"
+   name="push.sh"
+   text-time="2005-02-19T22:19:34.000000Z"
+   committed-date="2005-02-19T22:00:53.512575Z"
+   checksum="4bdfaa1dabc4089eb3126d69bc39a94c"
+   last-author="totally"
+   kind="file"
+   prop-time="2005-02-19T22:17:39.000000Z"/>
+<entry
+   committed-rev="2"
+   name="makeslaveconf.pl"
+   text-time="2005-02-19T22:19:34.000000Z"
+   committed-date="2005-02-19T22:00:53.512575Z"
+   checksum="63ed0459a38b516c1ec9d5e83923fb20"
+   last-author="totally"
+   kind="file"
+   prop-time="2005-02-19T22:17:39.000000Z"/>
+<entry
+   committed-rev="2"
+   name="safari_cache_cleaner.sh"
+   text-time="2005-02-19T22:19:34.000000Z"
+   committed-date="2005-02-19T22:00:53.512575Z"
+   checksum="aab5373fa45b41ec3f86b71a380e00a3"
+   last-author="totally"
+   kind="file"
+   prop-time="2005-02-19T22:17:40.000000Z"/>
+<entry
+   committed-rev="2"
+   name="convert2dmg"
+   text-time="2005-02-19T22:19:34.000000Z"
+   committed-date="2005-02-19T22:00:53.512575Z"
+   checksum="e566f4024caf2b810e26bc3db229756e"
+   last-author="totally"
+   kind="file"
+   prop-time="2005-02-19T22:17:39.000000Z"/>
+<entry
+   committed-rev="2"
+   name="macjournal"
+   text-time="2005-02-19T22:19:34.000000Z"
+   committed-date="2005-02-19T22:00:53.512575Z"
+   checksum="dfc1383a2c2baac9b231d12afea758cc"
+   last-author="totally"
+   kind="file"
+   prop-time="2005-02-19T22:17:40.000000Z"/>
+<entry
+   committed-rev="2"
+   name="say"
+   text-time="2005-02-19T22:19:35.000000Z"
+   committed-date="2005-02-19T22:00:53.512575Z"
+   checksum="0a03195bbfc5750fd4d2f422c5ace013"
+   last-author="totally"
+   kind="file"
+   prop-time="2005-02-19T22:18:30.000000Z"/>
+<entry
+   committed-rev="2"
+   name="eyeTV"
+   text-time="2005-02-19T22:19:35.000000Z"
+   committed-date="2005-02-19T22:00:53.512575Z"
+   checksum="02ae62212a4f29f0270d641b0e8af8a6"
+   last-author="totally"
+   kind="file"
+   prop-time="2005-02-19T22:18:30.000000Z"/>
+<entry
+   committed-rev="2"
+   name="mencoder"
+   text-time="2005-02-19T22:19:35.000000Z"
+   committed-date="2005-02-19T22:00:53.512575Z"
+   checksum="da85bdf816ff0e1795ce02ec8cff1c5d"
+   last-author="totally"
+   kind="file"
+   prop-time="2005-02-19T22:18:30.000000Z"/>
+<entry
+   committed-rev="2"
+   name="encode"
+   text-time="2005-02-19T22:19:35.000000Z"
+   committed-date="2005-02-19T22:00:53.512575Z"
+   checksum="15f986d77b94e5a9109d6d76ecc92cc7"
+   last-author="totally"
+   kind="file"
+   prop-time="2005-02-19T22:18:30.000000Z"/>
+<entry
+   committed-rev="2"
+   name="ps2pdf.perl"
+   text-time="2005-02-19T22:19:35.000000Z"
+   committed-date="2005-02-19T22:00:53.512575Z"
+   checksum="631e05a52c66ea05f34e85ca380994d3"
+   last-author="totally"
+   kind="file"
+   prop-time="2005-02-19T22:18:30.000000Z"/>
+<entry
+   committed-rev="2"
+   name="mywhois"
+   text-time="2005-02-19T22:19:35.000000Z"
+   committed-date="2005-02-19T22:00:53.512575Z"
+   checksum="f2a1b636dcaa9ea9a282249a45841b8b"
+   last-author="totally"
+   kind="file"
+   prop-time="2005-02-19T22:18:30.000000Z"/>
+<entry
+   committed-rev="2"
+   name="mpeg2enc"
+   text-time="2005-02-19T22:19:35.000000Z"
+   committed-date="2005-02-19T22:00:53.512575Z"
+   checksum="5f1bf70089cf9dbdfffe635e12d55905"
+   last-author="totally"
+   kind="file"
+   prop-time="2005-02-19T22:18:31.000000Z"/>
+<entry
+   committed-rev="2"
+   name="natcheck-darwin"
+   text-time="2005-02-19T22:19:35.000000Z"
+   committed-date="2005-02-19T22:00:53.512575Z"
+   checksum="04ca7295326f89396dd8d7e26632d1f4"
+   last-author="totally"
+   kind="file"
+   prop-time="2005-02-19T22:18:31.000000Z"/>
+<entry
+   committed-rev="2"
+   name="photo-sync"
+   text-time="2005-02-19T22:19:35.000000Z"
+   committed-date="2005-02-19T22:00:53.512575Z"
+   checksum="e974b9ede8cf5f99d80c4321192bc78e"
+   last-author="totally"
+   kind="file"
+   prop-time="2005-02-19T22:18:31.000000Z"/>
+<entry
+   committed-rev="2"
+   name="ASCIIMoviePlayer"
+   text-time="2005-02-19T22:19:35.000000Z"
+   committed-date="2005-02-19T22:00:53.512575Z"
+   checksum="de77f63bc0496705b5ead579ee9f3dc2"
+   last-author="totally"
+   kind="file"
+   prop-time="2005-02-19T22:18:40.000000Z"/>
+<entry
+   committed-rev="2"
+   name="slaver.pl"
+   text-time="2005-02-19T22:19:35.000000Z"
+   committed-date="2005-02-19T22:00:53.512575Z"
+   checksum="be3db35c56efbc274b03717079ba0c75"
+   last-author="totally"
+   kind="file"
+   prop-time="2005-02-19T22:18:40.000000Z"/>
+<entry
+   committed-rev="2"
+   name="itunes"
+   text-time="2005-02-19T22:19:35.000000Z"
+   committed-date="2005-02-19T22:00:53.512575Z"
+   checksum="c18d3d83bc073cc1a21ee377f328169f"
+   last-author="totally"
+   kind="file"
+   prop-time="2005-02-19T22:18:41.000000Z"/>
+<entry
+   committed-rev="2"
+   name="primary.conf"
+   text-time="2005-02-19T22:19:35.000000Z"
+   committed-date="2005-02-19T22:00:53.512575Z"
+   checksum="fcc90b676c713ba70cf7d37b18e5813e"
+   last-author="totally"
+   kind="file"
+   prop-time="2005-02-19T22:18:41.000000Z"/>
+<entry
+   committed-rev="2"
+   name="rename"
+   text-time="2005-02-19T22:19:35.000000Z"
+   committed-date="2005-02-19T22:00:53.512575Z"
+   checksum="204324b9e2451abd68a7d9acf750f9cb"
+   last-author="totally"
+   kind="file"
+   prop-time="2005-02-19T22:18:41.000000Z"/>
+<entry
+   committed-rev="2"
+   name="VCDGear1_76"
+   text-time="2005-02-19T22:19:35.000000Z"
+   committed-date="2005-02-19T22:00:53.512575Z"
+   checksum="948a615eaebff56b67b764072fc12efc"
+   last-author="totally"
+   kind="file"
+   prop-time="2005-02-19T22:18:46.000000Z"/>
+<entry
+   committed-rev="2"
+   name="mplayer"
+   text-time="2005-02-19T22:19:35.000000Z"
+   committed-date="2005-02-19T22:00:53.512575Z"
+   checksum="56ef6e7c6c90d2d4f5d3038f2fae9071"
+   last-author="totally"
+   kind="file"
+   prop-time="2005-02-19T22:19:34.000000Z"/>
+<entry
+   committed-rev="2"
+   name="citunes"
+   text-time="2005-02-19T22:19:36.000000Z"
+   committed-date="2005-02-19T22:00:53.512575Z"
+   checksum="30af0bac7dcd9cd8429fe73262217e0f"
+   last-author="totally"
+   kind="file"
+   prop-time="2005-02-19T22:19:34.000000Z"/>
+<entry
+   committed-rev="2"
+   name="audio-sync"
+   text-time="2005-02-19T22:19:36.000000Z"
+   committed-date="2005-02-19T22:00:53.512575Z"
+   checksum="9aefd4b570a5c0384cb22ed610ecbcec"
+   last-author="totally"
+   kind="file"
+   prop-time="2005-02-19T22:19:34.000000Z"/>
+<entry
+   committed-rev="2"
+   name="memtest"
+   text-time="2005-02-19T22:19:36.000000Z"
+   committed-date="2005-02-19T22:00:53.512575Z"
+   checksum="66556705aaa7428bb813b8ef7e527f09"
+   last-author="totally"
+   kind="file"
+   prop-time="2005-02-19T22:19:34.000000Z"/>
+</wc-entries>

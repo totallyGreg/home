@@ -1,0 +1,6 @@
+{
+	hello = "world";
+	someDictionary = {
+		someArray = ( "foo", "bar", "baz" );
+	};
+}

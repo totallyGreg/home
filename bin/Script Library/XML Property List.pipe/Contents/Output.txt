@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>hello</key>
+	<string>world</string>
+	<key>someDictionary</key>
+	<dict>
+		<key>someArray</key>
+		<array>
+			<string>foo</string>
+			<string>bar</string>
+			<string>baz</string>
+		</array>
+	</dict>
+</dict>
+</plist>

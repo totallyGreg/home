@@ -1,0 +1,9 @@
+#!/bin/sh
+
+if [ "$PIPE_REVERSE_TRANSFORM" == "1" ]; then
+	CMD=/usr/bin/unvis
+else
+	CMD=/usr/bin/vis
+fi
+
+$CMD

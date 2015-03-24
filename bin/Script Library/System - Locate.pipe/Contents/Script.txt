@@ -1,0 +1,177 @@
+#! /usr/bin/perl
+
+use strict;
+use Getopt::Std;
+use utf8;
+binmode (STDIN, ":utf8");
+binmode (STDOUT, ":utf8");
+use Unicode::Normalize;
+
+our ($opt_b, $opt_e, $opt_s, $opt_c, $opt_h, $opt_r, $opt_R);
+&getopts("beschrR");
+
+if ( $opt_b && $opt_e  || $opt_r && $opt_R || $opt_s && ( $opt_b || $opt_e ) || ( $opt_r || $opt_R ) && ( $opt_b || $opt_e || $opt_s ) ) {
+	print ">>> -b, -e, -s, -r and -R are incompatible";
+	print " with each other <<<\n\n";
+	&Help;
+	exit;
+}
+
+if ( "$ENV{PIPE_EXPECTED_OUTPUT_TYPE}" ne "text" ) {
+	print STDERR "Please set Output View to Text.";
+	exit;
+}
+
+my $inenc = $ENV{PIPE_INPUT_CHARSET};
+my $outenc = $ENV{PIPE_EXPECTED_OUTPUT_CHARSET};
+
+my $input = <>;
+chomp ( $input );
+if ( "$input" eq "" || $opt_h ) {
+	&Help();
+	exit;
+}
+
+my $search = NFD($input);
+
+if ( "$inenc" ne "UTF-8" ) {
+	print STDERR "Input encoding is not UTF-8 but $inenc! ";
+	print STDERR "You may get wrong results.\n";
+}
+
+if ( "$outenc" ne "UTF-8" ) {
+	print STDERR "Output encoding is not UTF-8 but $outenc! ";
+	print STDERR "You may get wrong results.\n";
+}
+
+my $locatebin = "/usr/local/bin/locate";
+
+if ( -x $locatebin ) {
+	$locatebin = $locatebin . " -i";
+} else {
+	$locatebin = "/sw/bin/locate";
+	if ( -x $locatebin ) {
+		$locatebin = $locatebin . " -i";
+	} else {
+		$locatebin = "/usr/bin/locate";
+		if ( ! -x $locatebin ) {
+			print STDERR "\"$locatebin\" is not found ";
+			print STDERR "or unexecutable! exit...\n";
+			&Help();
+			exit;
+		}
+		print STDERR "/usr/bin/locate on OS X 10.3 ";
+		print STDERR "does not support non-ASCII characters ";
+		print STDERR "nor ignore case option.\n";
+		print STDERR "See help of this scriipt.\n";
+	}
+}
+
+my $match = $search;
+
+if ( ( ! $opt_r ) && ( ! $opt_R ) ) {
+	$match =~ s/([$()*+.?\\^{|}])/\\$1/g;
+}
+
+my $options ="";
+
+if ( $opt_b ) {	# begins with
+	$match = "\/" . ${match} . "[^\/]*\$";
+	$options .= "-b (begins with)";
+}
+elsif ( $opt_e ) {	# ends with
+	$match = "\/[^\/]*" . ${match} . "\$";
+	$options .= "-e (ends with)";
+}
+elsif ( $opt_s || $opt_r || $opt_R ) {	# is or regular expression
+	if ( ! $opt_R ) {
+		$match = "\/" . ${match} . "\$";
+	}
+	if ( ! $opt_s ) {
+		$locatebin =~ s/ -i$//;
+	}
+	if ( $opt_s ) {
+		$options .= "-s (is)";
+	}
+	elsif ( $opt_r ) {
+		$options .= "-r (regex)";
+	} else {
+		$options .= "-R (regex - any match)";
+	}
+} else {	# contains (default)
+	$match = "\/[^\/]*" . ${match} . "[^\/]*\$";
+	$options .= "*contains* (default)";
+}
+
+if ( $opt_c ) {	# case sensitive
+	$options .= " and -c (case sensitive)";
+} else {
+	$options .= " and *case insensitive* (default)";
+}
+
+print "\n\tSearching for \"$match\" by $locatebin\n";
+print "\t  with filter options $options...\n\n";
+
+my $i = 0;
+my @founds = ();
+
+my $gopt = "-Ei";
+if ( $opt_c ) {
+	$gopt = "-E";
+}
+
+if ( ( ! $opt_r ) && ( ! $opt_R ) ) {
+	@founds = `$locatebin \"$search\" | grep $gopt \"${match}\"`;
+} else {
+	@founds = `$locatebin \"/\" | grep $gopt \"${match}\"`;
+}
+
+foreach my $found ( @founds ) {
+	utf8::decode($found);
+	print $found;
+	++$i;
+}
+
+
+if ( ! $i ) {
+	print "\n\tNothing found.\n";
+} else {
+	print "\n\t$i items found.\n";
+}
+
+#---------------------------------------------
+
+sub Help {
+	print "PipeLocate: find a file with locate\n";
+	print "===================================\n\n";
+	print "Type a file name in Input field and hit Run with";
+	print " argument(s) if necessary.\n\n";
+	print "arguments: [-b|-e|-s|-r|-R] [-c] [-h]\n";
+	print "\t-b  begins with\n";
+	print "\t-e  ends with\n";
+	print "\t-s  is\/strict\n";
+	print "\t-r  regular expression (base name)\n";
+	print "\t-R  regular expression (any match)\n";
+	print "\t-c\tcase sensitive\n";
+	print "\t-h\tshow this help\n\n";
+	print "Only the results matching in their last component ";
+	print "of path (base name) will be displayed except when ";
+	print "-R is specified.\n\n";
+	print "Both Input and Output encodings should be set ";
+	print "to UTF-8.\n\n";
+	print "This script assumes you have a recent version ";
+	print "of GNU findutils installed manually or via Fink.\n\n";
+	print "http://www.gnu.org/software/findutils/findutils.html\n\n";
+	print "If they are not found, the script uses /usr/bin/locate ";
+	print "which however does not support ignore case nor ";
+	print "non-ASCII characters.\n\n";
+	print "Only /usr/local/bin/locate and /sw/bin/locate are ";
+	print "checked by default. If your locate is elsewhere, ";
+	print "modify the script accordingly.\n\n";
+	print "Regular expression you can use with -r or -R is ";
+	print "not that of perl but that of grep. So non-ASCII ";
+	print "characters in a set [   ] will not be interpreted ";
+	print "correctly.";
+}
+
+# end of script

@@ -1,0 +1,34 @@
+#1/18/02 - added parsing of -h to allow specification of whois server
+#2/20/02 - made it so you can grab .gov addresses.  .mil coming soon!
+#!/bin/sh
+#set -x
+
+while getopts h option
+do
+        case $option in
+                h)
+                /usr/bin/whois $1 $2 $3
+                exit;; 
+        esac
+done
+
+# case for .gov servers
+
+if echo $1 | grep "gov" 2>&1 > /dev/null
+then
+   SRV=whois.nic.gov
+   whois -h $SRV $1
+   exit 
+fi
+
+if whois $1 | grep "Whois Server:";
+then
+        SRV=`whois $1 | grep "Whois Server:" | awk '{print $3'}`
+else
+        SRV=whois.networksolutions.com
+fi
+
+
+
+export SRV
+whois -h $SRV $1

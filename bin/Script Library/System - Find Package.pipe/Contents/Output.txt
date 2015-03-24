@@ -1,0 +1,11 @@
+
+	***** find pkg from which a file came *****
+
+	usage:	whichpkg filename [filename ...]
+
+	   ex.	whichpkg login
+			whichpkg grep egrep
+			whichpkg Address\ Book\.app
+			whichpkg "System Preferences\.app"
+			whichpkg awk(\..+)?
+
