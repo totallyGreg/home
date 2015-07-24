@@ -26,6 +26,9 @@ set history=50		" keep 50 lines of command line history
 set ruler		" show the cursor position all the time
 set showcmd		" display incomplete commands
 set incsearch		" do incremental searching
+set ignorecase
+set smartcase
+set encoding=utf8
 
 " For Win32 GUI: remove 't' flag from 'guioptions': no tearoff menu entries
 " let &guioptions = substitute(&guioptions, "t", "", "g")
@@ -46,7 +49,11 @@ endif
 " Also switch on highlighting the last used search pattern.
 if &t_Co > 2 || has("gui_running")
   syntax on
-  colo desert
+  set background=dark
+  let g:solarized_termcolors=256
+  let g:solarized_termtrans=1
+  colorscheme solarized
+  "colo desert
   set hlsearch
 endif
 
@@ -65,6 +72,8 @@ if has("autocmd")
 
   " For all text files set 'textwidth' to 78 characters.
   autocmd FileType text setlocal textwidth=78
+  autocmd FileType make set noexpandtab shiftwidth=8 softtabstop=0
+  autocmd FileType .py set expandtab shiftwidth=4
 
   " When editing a file, always jump to the last known cursor position.
   " Don't do it when the position is invalid or when inside an event handler
