@@ -94,3 +94,4 @@ alias nyancat='telnet miku.acm.uiuc.edu'
 ##### Completions
 #complete -W "$(ls $HOME/Library/Application\ Support/Screen\ Sharing)" vnc
 
+source /usr/local/opt/dnvm/bin/dnvm.sh
