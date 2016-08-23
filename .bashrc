@@ -47,7 +47,7 @@ export PS1="\[\033]0;\u@\h:\w\007\][\[\e[1m\]\h\[\e[0m\]]Aye, Cap'n? "
 
 # this makes writing to history happen after each prompt
 PROMPT_COMMAND='history -a'
-export HISTSIZE=512
+export HISTSIZE=1024
 export HISTCONTROL=ignoreboth
 export HISTIGNORE="&:ls:[bf]g:exit"
 export HISTTIMEFORMAT="%T - "
@@ -71,12 +71,9 @@ alias grep='grep --color'
 alias cd..='cd ..'
 ## Example of ssh tunneling through a gateway machine
 #alias rupert='ssh -X -A -t jgreg@peabody.ximian.com ssh -X -A totally@rupert.ximian.com'
-alias slab='ssh slab'
 alias gn='growlnotify'
-alias adcube='ssh admin@swamp.svaha.com'
 alias basement='ssh -X -A totally@172.16.1.1 '
 alias netra='ssh -X -A totally@netrabot.svaha.com '
-alias nmai='ssh -X -A admin@68.15.37.149 '
 alias excuse='telnet towel.blinkenlights.nl 666'
 alias dict='curl dict://dict.org/d:$1'
 alias Pattern='cd /Users/PatternBuffer'
@@ -86,12 +83,15 @@ alias eject='hdiutil eject'
 alias ttop='top -ocpu -R -F -s 2 -n30'
 alias mtop='top -o rsize'
 alias quick='open /Applications/Ops/Administration/Quicksilver.app'
-alias azureus='open "/Applications/Comm/File Transfer/Azureus.app"'
 alias futurama='fortune futurama'
 alias tmount='/Applications/Ops/Engineering/Archival/Toast\ 8\ Titanium/Toast\ Titanium.app/Contents/MacOS/ToastImageMounter'
 alias fc='dscacheutil -flushcache'
 alias nyancat='telnet miku.acm.uiuc.edu'
+alias serialscreen='screen -L /dev/cu.usbserial -f 9600,cs8,-parenb,-cstopb,-hupcl'
+# Read Log files with embeded control characters (e.g. screenlog.0)
+alias readlog='less -raw-control-chars'
 ##### Completions
 #complete -W "$(ls $HOME/Library/Application\ Support/Screen\ Sharing)" vnc
 
-source /usr/local/opt/dnvm/bin/dnvm.sh
+#I forget why I had this in here... 
+#source /usr/local/opt/dnvm/bin/dnvm.sh

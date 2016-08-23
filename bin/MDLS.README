@@ -1,0 +1,14 @@
+No Idea where to put anything anymore..... 
+
+Trying to find a way to look for the Purchased by metatag... 
+
+This will give the Purchase date on any file/path it's pointed at.  
+Viewscreen:Glass Animals tv$ mdls -name kMDItemPurchaseDate Gooey\ -\ EP/*
+kMDItemPurchaseDate = (null)
+kMDItemPurchaseDate = 2014-10-04 23:37:52 +0000
+kMDItemPurchaseDate = 2014-10-04 23:37:52 +0000
+kMDItemPurchaseDate = 2014-10-04 23:37:52 +0000
+kMDItemPurchaseDate = 2014-10-04 23:37:52 +0000
+kMDItemPurchaseDate = 2014-10-04 23:37:52 +0000
+
+Tried to find a purchased by but it's protected.  No way in iTunes either

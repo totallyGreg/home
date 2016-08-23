@@ -130,8 +130,12 @@ defhstatus "screen  (t) | $USER@H"
 hardstatus on
 hardstatus alwayslastline 
 
+# From FreeNAS /etc/local/screenrc
+hardstatus string '%{gk}[%{G}%H%{g}][%= %{wk}%?%-Lw%?%{=b kR}(%{W}%n*%f %t%?(%u)%?%{=b kR})%{= kw}%?%+Lw%?%?%= %{g}]%{=b C}[%m/%d/%y %C %A]%{W}'
+#
+#
 #From IBM demo
-hardstatus string "%{.bW}%-w%{.rW}%n %t%{-}%+w %=%{..G} %H %{..Y} %m/%d %C%a "
+#hardstatus string "%{.bW}%-w%{.rW}%n %t%{-}%+w %=%{..G} %H %{..Y} %m/%d %C%a "
 
 ## This one shows just the screen your in (mostly invisible bar)
 #hardstatus string '%{= kK}%-Lw%{= KW}%50>%n%f %t%{= kK}%+Lw%< %{=kG}%-= %d%M %c:%s%{-}'

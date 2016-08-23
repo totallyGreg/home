@@ -1,4 +1,0 @@
-echo
-echo "Starting Photo Sync to Cubiquitous..."
-rsync -avz --progress --delete --max-delete 500 --exclude .DS_Store ~/Pictures/iPhoto\ Library swamp.svaha.com:/Users/totally/Pictures
-echo ""

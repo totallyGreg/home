@@ -1,2 +1,0 @@
-#!/bin/sh
-find ~/Library/Preferences /Library/Preferences -type f -name "*.plist" -print0 | xargs -0 plutil -lint -s

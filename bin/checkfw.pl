@@ -62,7 +62,7 @@ sub check_address {
 
   # There should only be three .s
   $count = $text =~ tr/.//;
-  return undef if $count != 3;
+  retur undef if $count != 3;
 
   my ( $ip, $port ) = split( ':', $text );
 

@@ -1,2 +1,0 @@
-#!/bin/tcsh
-hdiutil convert $1 -format UDZO -o "test.dmg"
