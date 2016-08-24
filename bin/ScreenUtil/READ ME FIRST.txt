@@ -1,9 +1,0 @@
-========================================================
-WARNING:
-
-Please read the FAQ section in the User's Guide covering
-refresh rates BEFORE using the switch or set commands.
-
-Trying to set too high a refresh rate for a CRT monitor
-could damage it.
-========================================================
