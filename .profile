@@ -1,5 +1,8 @@
 export LC_CTYPE=en_US.UTF-8
 
+export HISTTIMEFORMAT='%F %T '
+export TIMEFORMAT='Elapsed Time: %Rs'
+
 # all manual locations
 if [ ! -f /usr/bin/manpath ] ; then
 echo "manpath exported"; export MANPATH=/usr/man
