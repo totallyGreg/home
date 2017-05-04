@@ -153,6 +153,7 @@ alias diff='opendiff'
 alias readlog='less -raw-control-chars'
 ##### Dotfile management through git work-tree
 alias dotadm='/usr/bin/git --git-dir=$HOME/.home/ --work-tree=$HOME'
+alias dotupgrade='/usr/bin/git --git-dir=$HOME/.home --work-tree=$HOME submodule update --init --recursive'
 
 ##### Completions
 #complete -W "$(ls $HOME/Library/Application\ Support/Screen\ Sharing)" vnc
