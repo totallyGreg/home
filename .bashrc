@@ -19,6 +19,7 @@ export IGNOREEOF=3
 export FCEDIT=vim
 export CLICOLOR=1
 export LSCOLORS=hxfxcxdxbxegedabagacad
+export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43'
 
 ## Shell color codes 
 COLOR_WHITE='\033[1;37m'
@@ -108,12 +109,12 @@ prompt ()
         deploy)
             PS1='\h@\t:\#: \$ '
         ;;
-	two)
-		PS1='\[\e[1;33m\](\u@\h \w)\n\[ |\e[1;36m\]\t \$\[\e[m\] '
-	;;
 	red)
 		# Set RED prompt
 		PS1="\[\e[01;31m\]$PS1\[\e[00m\]"
+	;;
+	*)	PS1='\[\e[1;33m\]\u@\h \w\n\[ |\e[1;36m\]\t \$\[\e[m\] '
+		echo "Prompt: error, hw, sh, uh, deploy, red"
 	;;
     esac
 }
@@ -145,6 +146,7 @@ alias tmount='/Applications/Ops/Engineering/Archival/Toast\ 8\ Titanium/Toast\ T
 alias fc='dscacheutil -flushcache'
 alias nyancat='telnet miku.acm.uiuc.edu'
 alias serialscreen='screen -L /dev/cu.usbserial -f 9600,cs8,-parenb,-cstopb,-hupcl'
+alias diff='opendiff'
 # Read Log files with embeded control characters (e.g. screenlog.0)
 alias readlog='less -raw-control-chars'
 ##### Completions

@@ -18,6 +18,10 @@ endif
 " This must be first, because it changes other options as a side effect.
 set nocompatible
 
+execute pathogen#infect()
+
+call togglebg#map("<F5>")
+
 " allow backspacing over everything in insert mode
 set backspace=indent,eol,start
 
