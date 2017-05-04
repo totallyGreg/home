@@ -87,6 +87,8 @@ CDPATH=".:~:~/Library"
 #Known good prompt :)
 export PS1="\[\033]0;\u@\h:\w\007\][\[\e[1m\]\h\[\e[0m\]]Aye, Cap'n? "
 
+[[ $- = *i* ]] && source ~/bin/liquidprompt/liquidprompt
+
 #PROMPT_COMMAND="settitle ${USER}@$(hostname -s):"'${PWD##*/}'
 #export PROMPT_COMMAND='echo -n -e "\033k\033"'
 #export PS1="\][\[\e[1m\]\h\[\e[0m\]]Aye, Cap'n? "
