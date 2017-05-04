@@ -149,6 +149,9 @@ alias serialscreen='screen -L /dev/cu.usbserial -f 9600,cs8,-parenb,-cstopb,-hup
 alias diff='opendiff'
 # Read Log files with embeded control characters (e.g. screenlog.0)
 alias readlog='less -raw-control-chars'
+##### Dotfile management through git work-tree
+alias dotadm='/usr/bin/git --git-dir=$HOME/.home/ --work-tree=$HOME'
+
 ##### Completions
 #complete -W "$(ls $HOME/Library/Application\ Support/Screen\ Sharing)" vnc
 
