@@ -83,45 +83,12 @@ if [ -f /usr/local/bin/dircolors ]; then
 fi
 CDPATH=".:~:~/Library"
 
-## Prompt Shit
+## Old Prompt Prompt Shit
 #Known good prompt :)
-export PS1="\[\033]0;\u@\h:\w\007\][\[\e[1m\]\h\[\e[0m\]]Aye, Cap'n? "
+#export PS1="\[\033]0;\u@\h:\w\007\][\[\e[1m\]\h\[\e[0m\]]Aye, Cap'n? "
 
+## Liquid Prompt if shell is interactive 
 [[ $- = *i* ]] && source ~/bin/liquidprompt/liquidprompt
-
-#PROMPT_COMMAND="settitle ${USER}@$(hostname -s):"'${PWD##*/}'
-#export PROMPT_COMMAND='echo -n -e "\033k\033"'
-#export PS1="\][\[\e[1m\]\h\[\e[0m\]]Aye, Cap'n? "
-
-prompt ()
-{
-    case "$1" in
-	error)
-	    PS1='$( RET=$?; if [ $RET != 0 ] ; then echo "rc: $RET"; fi )\n\$ '
-	;;
-        hw)
-            PS1='\h: \w \$ '
-        ;;
-        sh)
-            PS1='[$SHLVL]<-\h\$ '
-        ;;
-        uh)
-            PS1='\u@\h\$ '
-        ;;
-        deploy)
-            PS1='\h@\t:\#: \$ '
-        ;;
-	red)
-		# Set RED prompt
-		PS1="\[\e[01;31m\]$PS1\[\e[00m\]"
-	;;
-	*)	PS1='\[\e[1;33m\]\u@\h \w\n\[ |\e[1;36m\]\t \$\[\e[m\] '
-		echo "Prompt: error, hw, sh, uh, deploy, red"
-	;;
-    esac
-}
-
-
 
 ## Beginning of Aliases
 alias l='ls -lhF'
@@ -132,21 +99,16 @@ alias cd..='cd ..'
 ## Example of ssh tunneling through a gateway machine
 #alias rupert='ssh -X -A -t jgreg@peabody.ximian.com ssh -X -A totally@rupert.ximian.com'
 alias gn='growlnotify'
-alias basement='ssh -X -A totally@172.16.1.1 '
 alias netra='ssh -X -A totally@netrabot.svaha.com '
 alias excuse='telnet towel.blinkenlights.nl 666'
 alias dict='curl dict://dict.org/d:$1'
-alias Pattern='cd /Users/PatternBuffer'
 alias backscreen='/System/Library/Frameworks/ScreenSaver.framework/Resources/ScreenSaverEngine.app/Contents/MacOS/ScreenSaverEngine -background &'
-alias burn='hdiutil burn'
-alias eject='hdiutil eject'
 alias ttop='top -ocpu -R -F -s 2 -n30'
 alias mtop='top -o rsize'
 alias quick='open /Applications/Ops/Administration/Quicksilver.app'
 alias futurama='fortune futurama'
 alias tmount='/Applications/Ops/Engineering/Archival/Toast\ 8\ Titanium/Toast\ Titanium.app/Contents/MacOS/ToastImageMounter'
 alias fc='dscacheutil -flushcache'
-alias nyancat='telnet miku.acm.uiuc.edu'
 alias serialscreen='screen -L /dev/cu.usbserial -f 9600,cs8,-parenb,-cstopb,-hupcl'
 alias diff='opendiff'
 # Read Log files with embeded control characters (e.g. screenlog.0)
@@ -155,9 +117,4 @@ alias readlog='less -raw-control-chars'
 alias dotadm='/usr/bin/git --git-dir=$HOME/.home/ --work-tree=$HOME'
 alias dotupgrade='/usr/bin/git --git-dir=$HOME/.home --work-tree=$HOME submodule update --init --recursive'
 
-##### Completions
-#complete -W "$(ls $HOME/Library/Application\ Support/Screen\ Sharing)" vnc
-
-#I forget why I had this in here... 
-#source /usr/local/opt/dnvm/bin/dnvm.sh
 
