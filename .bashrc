@@ -110,7 +110,7 @@ alias futurama='fortune futurama'
 alias tmount='/Applications/Ops/Engineering/Archival/Toast\ 8\ Titanium/Toast\ Titanium.app/Contents/MacOS/ToastImageMounter'
 alias fc='dscacheutil -flushcache'
 alias serialscreen='screen -L /dev/cu.usbserial -f 9600,cs8,-parenb,-cstopb,-hupcl'
-alias diff='opendiff'
+alias odiff='opendiff'
 # Read Log files with embeded control characters (e.g. screenlog.0)
 alias readlog='less -raw-control-chars'
 ##### Dotfile management through git work-tree
