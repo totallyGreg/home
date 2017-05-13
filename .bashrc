@@ -94,7 +94,7 @@ CDPATH=".:~:~/Library"
 alias l='ls -lhF'
 alias la='ls -alhF'
 alias lt='ls -alhFtr'
-alias grep='grep --color'
+alias grep='grep --color=auto'
 alias cd..='cd ..'
 ## Example of ssh tunneling through a gateway machine
 #alias rupert='ssh -X -A -t jgreg@peabody.ximian.com ssh -X -A totally@rupert.ximian.com'

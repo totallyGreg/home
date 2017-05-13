@@ -50,13 +50,6 @@ test -r /sw/bin/init.sh && . /sw/bin/init.sh
 export PATH=${PATH}:.
 
 
+echo "Sourcing ~/.bashrc"
 source ~/.bashrc
-
-##
-# Your previous /Users/totally/.profile file was backed up as /Users/totally/.profile.macports-saved_2009-09-29_at_10:24:23
-##
-
-# MacPorts Installer addition on 2009-09-29_at_10:24:23: adding an appropriate PATH variable for use with MacPorts.
-export PATH=/opt/local/bin:/opt/local/sbin:$PATH
-# Finished adapting your PATH environment variable for use with MacPorts.
 
