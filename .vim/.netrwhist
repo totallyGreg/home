@@ -1,5 +1,0 @@
-let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =3
-let g:netrw_dirhist_1='/Users/totally/.spamassassin'
-let g:netrw_dirhist_2='/Users/totally/.MacOSX'
-let g:netrw_dirhist_3='/Users/totally/Projects/Coursera-Python'
