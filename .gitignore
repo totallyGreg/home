@@ -41,6 +41,7 @@ ownCloud
 .hosts
 .matplotlib/
 .python-eggs/
+*.pyc
 TV.vncloc
 .npm
 .home

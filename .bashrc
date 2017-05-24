@@ -91,6 +91,7 @@ CDPATH=".:~:~/Library"
 [[ $- = *i* ]] && source ~/bin/liquidprompt/liquidprompt
 
 ## Beginning of Aliases
+alias gethome='curl https://gist.githubusercontent.com/totallyGreg/4c9a430e6965280a60fcec628e1d03d5/raw | bash'
 alias l='ls -lhF'
 alias la='ls -alhF'
 alias lt='ls -alhFtr'
