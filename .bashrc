@@ -117,5 +117,6 @@ alias readlog='less -raw-control-chars'
 ##### Dotfile management through git work-tree
 alias dotadm='/usr/bin/git --git-dir=$HOME/.home/ --work-tree=$HOME'
 alias dotupgrade='/usr/bin/git --git-dir=$HOME/.home --work-tree=$HOME submodule update --init --recursive'
+alias docker-ips='docker ps | tail -n +2 | while read -a a; do name=${a[$((${#a[@]}-1))]}; echo -ne "$name\t"; docker inspect $name | grep IPAddress | cut -d \" -f 4; done'
 
 
