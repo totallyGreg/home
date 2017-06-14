@@ -96,6 +96,9 @@ LP_ENABLE_VCS_ROOT=0
 # Enable the Git special features.
 # Recommended value is 1
 LP_ENABLE_GIT=1
+# Fix stupid wrapping errors in Vi mode search
+# https://github.com/nojhan/liquidprompt/issues/511
+#LP_MARK_GIT="\[\xc2\xb1\]"   # Doesn't actually fix the issue and introduced artifact to prompt
 
 # Enable the Subversion special features.
 # Recommended value is 1
