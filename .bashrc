@@ -119,4 +119,7 @@ alias dotadm='/usr/bin/git --git-dir=$HOME/.home/ --work-tree=$HOME'
 alias dotupgrade='/usr/bin/git --git-dir=$HOME/.home --work-tree=$HOME submodule update --init --recursive'
 alias docker-ips='docker ps | tail -n +2 | while read -a a; do name=${a[$((${#a[@]}-1))]}; echo -ne "$name\t"; docker inspect $name | grep IPAddress | cut -d \" -f 4; done'
 
+# Generate random mac address for wireless
+alias random-mac='openssl rand -hex 6 | sed '\''s/\(..\)/\1:/g; s/.$//'\'' | xargs sudo ifconfig en1 ether'
+
 
