@@ -78,6 +78,7 @@ if has("autocmd")
   autocmd FileType text setlocal textwidth=78
   autocmd FileType make set noexpandtab shiftwidth=8 softtabstop=0
   autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+  autocmd Filetype javascript setlocal ts=2 sts=2 sw=2 noexpandtab
 
   " When editing a file, always jump to the last known cursor position.
   " Don't do it when the position is invalid or when inside an event handler
@@ -101,6 +102,7 @@ nnoremap <F2> :set invpaste paste?<CR>
 set pastetoggle=<F2>
 set showmode
 
+map <F4> :retab <CR> :w <CR>
 " Convenient command to see the difference between the current buffer and the
 " file it was loaded from, thus the changes you made.
 " Only define it when not defined already.
