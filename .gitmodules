@@ -7,3 +7,6 @@
 [submodule ".vim/bundle/ansible-vim"]
 	path = .vim/bundle/ansible-vim
 	url = https://github.com/pearofducks/ansible-vim
+[submodule ".vim/bundle/vim-fugitive"]
+	path = .vim/bundle/vim-fugitive
+	url = https://github.com/tpope/vim-fugitive
