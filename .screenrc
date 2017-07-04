@@ -5,6 +5,7 @@
 # 1) window titles no longer are being updated by command prompt
 # 2) ls --color does not work within screen  -- undoing the settitle function in .bashrc fixed this problem
 
+term "screen-256color" 
 
 # This is how one can set a reattach password:
 # password ODSJQf.4IJN7E    # "1234"
