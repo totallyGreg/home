@@ -106,6 +106,13 @@ else
 
 endif " has("autocmd")
 
+"Airline Status Options
+" Enable the list of buffers
+let g:airline#extensions#tabline#enabled = 1
+" Show just the filename
+let g:airline#extensions#tabline#fnamemod = ':t'
+
+" Fugitive Git status
 set statusline=%<%f\ %h%m%r%{fugitive#statusline()}%=%-14.(%l,%c%V%)\ %P
 
 nnoremap <F2> :set invpaste paste?<CR>
