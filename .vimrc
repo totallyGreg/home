@@ -80,6 +80,8 @@ if has("autocmd")
   "autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
   autocmd FileType gitconfig setlocal ts=2 sts=2 sw=2 expandtab
   autocmd Filetype javascript setlocal ts=2 sts=2 sw=2 noexpandtab
+  " auto-delete buffers after browing through objects
+  autocmd BufReadPost fugitive://* set bufhidden=delete 
 
   let g:ansible_unindent_after_newline = 1
   let g:ansible_attribute_highlight = "ab"
@@ -103,6 +105,8 @@ else
   set autoindent		" always set autoindenting on
 
 endif " has("autocmd")
+
+set statusline=%<%f\ %h%m%r%{fugitive#statusline()}%=%-14.(%l,%c%V%)\ %P
 
 nnoremap <F2> :set invpaste paste?<CR>
 set pastetoggle=<F2>
