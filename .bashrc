@@ -18,7 +18,9 @@ export TIMEFORMAT="%Rs - "
 export IGNOREEOF=3
 export FCEDIT=vim
 export CLICOLOR=1
-export LSCOLORS=hxfxcxdxbxegedabagacad
+#export LSCOLORS=hxfxcxdxbxegedabagacad
+# Testing a more solarized color scheme
+export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
 export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43'
 
 ## Shell color codes 
@@ -50,8 +52,7 @@ unsetenv()
 }
 
 #MacOS Specific 
-
-export VIM_APP_DIR="/Applications/Comm/Written/MacVim-snapshot-0712B"
+#export VIM_APP_DIR="/Applications/Comm/Written/MacVim-snapshot-0712B"
 
 # display man pages in web browser
 function wman() {
@@ -81,7 +82,8 @@ pman() {
 if [ -f /usr/local/bin/dircolors ]; then
         eval `/usr/local/bin/dircolors -c ~/.dircolors`;
 fi
-CDPATH=".:~:~/Library"
+
+CDPATH=".:~:~/Library"	# I do not remember why this is here
 
 ## Old Prompt Prompt Shit
 #Known good prompt :)
@@ -93,6 +95,7 @@ CDPATH=".:~:~/Library"
 ## Beginning of Aliases
 alias gethome='curl https://gist.githubusercontent.com/totallyGreg/4c9a430e6965280a60fcec628e1d03d5/raw | bash'
 alias l='ls -lhF'
+alias l1='ls -1'
 alias la='ls -alhF'
 alias lt='ls -alhFtr'
 alias grep='grep --color=auto'
