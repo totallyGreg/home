@@ -1,0 +1,36 @@
+[user]
+  email = totallyGreg@gmail.com
+  name = J. Greg Williams
+[alias]
+  co = checkout
+  ci = commit
+  branches = branch -a
+  hist = log --decorate --oneline --graph 
+  ls = log --decorate --oneline --graph
+  ll = log --decorate --oneline --graph --numstat
+  pretty = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+  pr = log --graph --pretty=format:'%Cred%h%Creset %s%C(yellow)%d%Creset %Cgreen(%cr)%Creset [%an]' --abbrev-commit --date=relative # Prettier and Relative
+  remotes = remote -v
+  type = cat-file -t
+  dump = cat-file -p
+	staged = diff --staged    # view the diff of what is currently staged
+	unstage = reset HEAD --  # Remove filename from the staging area
+	last = log -1 HEAD      # view last commit
+	find = "!git log --color -p -S "
+
+[color]
+  status = auto
+[color "branch"]
+  current = yellow reverse
+  local = yellow
+  remote = green
+[color "diff"]
+  meta = yellow bold
+  frag = magenta bold
+  old = red bold
+  new = green bold
+  whitespace = red reverse
+[color "status"]
+  added = yellow
+  changed = green
+  untracked = cyan
