@@ -83,7 +83,7 @@ if has("autocmd")
   " auto-delete buffers after browing through objects
   autocmd BufReadPost fugitive://* set bufhidden=delete 
 
-  let g:ansible_unindent_after_newline = 1
+  let g:ansible_unindent_after_newline = 0
   let g:ansible_attribute_highlight = "ab"
   let g:ansible_name_highlight = 'b'
   let g:ansible_extra_keywords_highlight = 1
