@@ -88,6 +88,13 @@ if has("autocmd")
   let g:ansible_name_highlight = 'b'
   let g:ansible_extra_keywords_highlight = 1
 
+  autocmd FileType mail,text,asciidoc,html setlocal spell spelllang=en
+  autocmd FileType asciidoc
+          \ setlocal autoindent expandtab softtabstop=2 shiftwidth=2 
+  	  \ textwidth=70 wrap formatoptions=tcqn
+          \ formatlistpat=^\\s*\\d\\+\\.\\s\\+\\\\|^\\s*<\\d\\+>\\s\\+\\\\|^\\s*[a-zA-Z.]\\.\\s\\+\\\\|^\\s*[ivxIVX]\\+\\.\\s\\+
+          \ comments=s1:/*,ex:*/,://,b:#,:%,:XCOMM,fb:-,fb:*,fb:+,fb:.,fb:>
+
   " When editing a file, always jump to the last known cursor position.
   " Don't do it when the position is invalid or when inside an event handler
   " (happens when dropping a file on gvim).
@@ -111,6 +118,14 @@ endif " has("autocmd")
 let g:airline#extensions#tabline#enabled = 1
 " Show just the filename
 let g:airline#extensions#tabline#fnamemod = ':t'
+
+" Terraform Options
+" Allow vim-terraform to override your .vimrc indentation syntax for matching
+" files. Defaults to 0 which is off.
+let g:terraform_align=1
+
+" Allow vim-terraform to re-map the spacebar to fold / unfold. Defaults to 0 which is off.
+let g:terraform_remap_spacebar=1
 
 " Fugitive Git status
 set statusline=%<%f\ %h%m%r%{fugitive#statusline()}%=%-14.(%l,%c%V%)\ %P
