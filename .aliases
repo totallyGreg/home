@@ -11,20 +11,20 @@ alias cd..='cd ..'
 ## Example of ssh tunneling through a gateway machine
 #alias rupert='ssh -X -A -t jgreg@peabody.ximian.com ssh -X -A totally@rupert.ximian.com'
 alias gn='growlnotify'
-alias netra='ssh -X -A totally@netrabot.svaha.com '
 alias excuse='telnet towel.blinkenlights.nl 666'
 alias dict='curl dict://dict.org/d:$1'
 alias backscreen='/System/Library/Frameworks/ScreenSaver.framework/Resources/ScreenSaverEngine.app/Contents/MacOS/ScreenSaverEngine -background &'
 alias ttop='top -ocpu -R -F -s 2 -n30'
 alias mtop='top -o rsize'
 alias quick='open /Applications/Ops/Administration/Quicksilver.app'
-alias futurama='fortune futurama'
-alias tmount='/Applications/Ops/Engineering/Archival/Toast\ 8\ Titanium/Toast\ Titanium.app/Contents/MacOS/ToastImageMounter'
+alias futurama='fortune ~/Clouds/iCloud/Bookshelf/Quotes/futurama'
 alias fc='dscacheutil -flushcache'
 alias serialscreen='screen -L /dev/cu.usbserial -f 9600,cs8,-parenb,-cstopb,-hupcl'
 alias odiff='opendiff'
+
 # Read Log files with embeded control characters (e.g. screenlog.0)
 alias readlog='less -raw-control-chars'
+
 ##### Dotfile management through git work-tree
 alias dotadm='/usr/bin/git --git-dir=$HOME/.home/ --work-tree=$HOME'
 alias dotupgrade='/usr/bin/git --git-dir=$HOME/.home --work-tree=$HOME submodule update --init --recursive'

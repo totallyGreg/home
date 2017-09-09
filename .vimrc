@@ -75,8 +75,8 @@ if has("autocmd")
   au!
 
   " For all text files set 'textwidth' to 78 characters.
-  autocmd FileType text setlocal textwidth=78
-  autocmd FileType make set noexpandtab shiftwidth=8 softtabstop=0
+  autocmd FileType text setlocal textwidth=78 ts=2 sw=2 
+  autocmd FileType make set tabstop=8 noexpandtab shiftwidth=8 softtabstop=0
   "autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
   autocmd FileType gitconfig setlocal ts=2 sts=2 sw=2 expandtab
   autocmd Filetype javascript setlocal ts=2 sts=2 sw=2 noexpandtab
@@ -110,6 +110,14 @@ if has("autocmd")
 else
 
   set autoindent		" always set autoindenting on
+  " For everything else, use a tab width of 4 space chars.
+  set tabstop=4		" The width of a TAB is set to 4.
+  			" Still it is a \t. It is just that
+                  	" Vim will interpret it to be having
+                   	" a width of 4.
+  set shiftwidth=4    	" Indents will have a width of 4.
+  set softtabstop=4   	" Sets the number of columns for a TAB.
+  set expandtab       	" Expand TABs to spaces.
 
 endif " has("autocmd")
 
