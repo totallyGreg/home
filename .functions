@@ -1,0 +1,38 @@
+#!/bin/bash
+#echo "sourcing .functions"
+
+setenv()
+{
+	export $1="$2"
+}
+unsetenv()
+{
+	unset $1
+}
+
+
+# display man pages in web browser
+function wman() {
+   url="man -w ${1} | sed 's#.*\(${1}.\)\([[:digit:]]\).*\$#http://developer.apple.com/documentation/Darwin/Reference/ManPages/man\2/\1\2.html#'"
+   open `eval $url`
+}
+
+# Growl function for iTerm 
+growl() { echo -e $'\e]9;'${1}'\007' ; return ; }
+
+#display man pages in Preview.app
+pman() { 
+	man -t "$@" | open -f -a Preview
+}
+
+settitle()
+{
+    case "$TERM" in
+	xterm* )
+	    echo -ne '\e]0;'"$@"'\a'
+	    ;;
+	screen)
+	    echo -ne '\ek'"$@"'\e\\'
+	    ;;
+    esac
+}

@@ -43,43 +43,7 @@ COLOR_CYAN='\033[0;36m'
 COLOR_LIGHTCYAN='\033[1;36m'
 COLOR_DEFAULT='\033[0m'
 
-setenv()
-{
-	export $1="$2"
-}
-unsetenv()
-{
-	unset $1
-}
 
-#MacOS Specific 
-#export VIM_APP_DIR="/Applications/Comm/Written/MacVim-snapshot-0712B"
-
-# display man pages in web browser
-function wman() {
-   url="man -w ${1} | sed 's#.*\(${1}.\)\([[:digit:]]\).*\$#http://developer.apple.com/documentation/Darwin/Reference/ManPages/man\2/\1\2.html#'"
-   open `eval $url`
-}
-
-# Growl function for iTerm 
-growl() { echo -e $'\e]9;'${1}'\007' ; return ; }
-
-#display man pages in Preview.app
-pman() { 
-	man -t "$@" | open -f -a Preview
-}
-
-#settitle()
-#{
-#    case "$TERM" in
-#	xterm* )
-#	    echo -ne '\e]0;'"$@"'\a'
-#	    ;;
-#	screen)
-#	    echo -ne '\ek'"$@"'\e\\'
-#	    ;;
-#    esac
-#}
 if [ -f /usr/local/bin/dircolors ]; then
         eval `/usr/local/bin/dircolors -c ~/.dircolors`;
 fi
@@ -93,38 +57,12 @@ CDPATH=".:~:~/Library"	# I do not remember why this is here
 ## Liquid Prompt if shell is interactive 
 [[ $- = *i* ]] && source ~/bin/liquidprompt/liquidprompt
 
-## Beginning of Aliases
+## Source Aliases
+[ -f ~/.aliases ] && source ~/.aliases
 
-alias gethome='curl https://gist.githubusercontent.com/totallyGreg/4c9a430e6965280a60fcec628e1d03d5/raw | bash'
-alias l='ls -lhF'
-alias l1='ls -1'
-alias la='ls -alhF'
-alias lt='ls -alhFtr'
-alias grep='grep --color=auto'
-alias cd..='cd ..'
-## Example of ssh tunneling through a gateway machine
-#alias rupert='ssh -X -A -t jgreg@peabody.ximian.com ssh -X -A totally@rupert.ximian.com'
-alias gn='growlnotify'
-alias netra='ssh -X -A totally@netrabot.svaha.com '
-alias excuse='telnet towel.blinkenlights.nl 666'
-alias dict='curl dict://dict.org/d:$1'
-alias backscreen='/System/Library/Frameworks/ScreenSaver.framework/Resources/ScreenSaverEngine.app/Contents/MacOS/ScreenSaverEngine -background &'
-alias ttop='top -ocpu -R -F -s 2 -n30'
-alias mtop='top -o rsize'
-alias quick='open /Applications/Ops/Administration/Quicksilver.app'
-alias futurama='fortune futurama'
-alias tmount='/Applications/Ops/Engineering/Archival/Toast\ 8\ Titanium/Toast\ Titanium.app/Contents/MacOS/ToastImageMounter'
-alias fc='dscacheutil -flushcache'
-alias serialscreen='screen -L /dev/cu.usbserial -f 9600,cs8,-parenb,-cstopb,-hupcl'
-alias odiff='opendiff'
-# Read Log files with embeded control characters (e.g. screenlog.0)
-alias readlog='less -raw-control-chars'
-##### Dotfile management through git work-tree
-alias dotadm='/usr/bin/git --git-dir=$HOME/.home/ --work-tree=$HOME'
-alias dotupgrade='/usr/bin/git --git-dir=$HOME/.home --work-tree=$HOME submodule update --init --recursive'
-alias docker-ips='docker ps | tail -n +2 | while read -a a; do name=${a[$((${#a[@]}-1))]}; echo -ne "$name\t"; docker inspect $name | grep IPAddress | cut -d \" -f 4; done'
+## Source Functions
+[ -f ~/.functions ] && source ~/.functions
 
-# Generate random mac address for wireless
-alias random-mac='openssl rand -hex 6 | sed '\''s/\(..\)/\1:/g; s/.$//'\'' | xargs sudo ifconfig en1 ether'
-
-
+# Ruby Path
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"
