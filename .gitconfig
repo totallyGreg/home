@@ -5,7 +5,7 @@
   co = checkout
   ci = commit
   branches = branch -a
-  hist = log --decorate --oneline --graph 
+  hist = log --graph --pretty=format:'%Cred%h%Creset %s%C(yellow)%d%Creset %Cgreen(%cr)%Creset [%an]' --abbrev-commit --date=relative # Prettier and Relative
   ls = log --decorate --oneline --graph
   ll = log --decorate --oneline --graph --numstat
   pretty = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short

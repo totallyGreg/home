@@ -7,3 +7,4 @@ set completion-ignore-case on
 set show-all-if-ambiguous on
 set mark-directories on
 set bell-style visible
+set completion-query-items 50
