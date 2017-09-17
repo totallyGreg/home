@@ -19,3 +19,6 @@
 [submodule ".vim/bundle/vim-terraform"]
 	path = .vim/bundle/vim-terraform
 	url = https://github.com/hashivim/vim-terraform.git
+[submodule ".vim/bundle/VOoM"]
+	path = .vim/bundle/VOoM
+	url = https://github.com/vim-voom/VOoM
