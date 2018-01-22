@@ -8,6 +8,7 @@ alias la='ls -alhF'
 alias lt='ls -alhFtr'
 alias grep='grep --color=auto'
 alias cd..='cd ..'
+alias vi='/usr/local/bin/vim'
 ## Example of ssh tunneling through a gateway machine
 #alias rupert='ssh -X -A -t jgreg@peabody.ximian.com ssh -X -A totally@rupert.ximian.com'
 alias gn='growlnotify'
@@ -31,6 +32,6 @@ alias dotupgrade='/usr/bin/git --git-dir=$HOME/.home --work-tree=$HOME submodule
 alias docker-ips='docker ps | tail -n +2 | while read -a a; do name=${a[$((${#a[@]}-1))]}; echo -ne "$name\t"; docker inspect $name | grep IPAddress | cut -d \" -f 4; done'
 
 # Generate random mac address for wireless
-alias random-mac='openssl rand -hex 6 | sed '\''s/\(..\)/\1:/g; s/.$//'\'' | xargs sudo ifconfig en1 ether'
+alias random-mac="openssl rand -hex 6 | sed 's/\(..\)/\1:/g; s/.$//' | xargs sudo ifconfig en0 ether"
 
 alias testme='echo "Testing!!"'
