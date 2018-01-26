@@ -39,6 +39,7 @@ endif
 
 " Switch syntax highlighting on, when the terminal has colors
 " Also switch on highlighting the last used search pattern.
+" \q will turn off the highlighting
 if &t_Co > 2 || has("gui_running")
   syntax on
   set background=dark
