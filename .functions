@@ -49,6 +49,11 @@ function mask(){
    # echo "New hostname is:" $(hostname)
 }
 
+function unmask(){
+    sudo ifconfig en0 ether $OLDMAC
+    [ "$?" == "0" ] && echo "MAC address returned to $OLDMAC"
+}
+
 # Generate random password of argument length
 # genpasswd 16
 genpasswd() {
