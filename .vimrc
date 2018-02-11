@@ -125,12 +125,12 @@ if has("autocmd")
   let g:ansible_name_highlight = 'b'
   let g:ansible_extra_keywords_highlight = 1
 
-  autocmd FileType mail,text,asciidoc,html setlocal spell spelllang=en
-  autocmd FileType asciidoc
-          \ setlocal autoindent expandtab softtabstop=2 shiftwidth=2 
-	  \ textwidth=70 wrap formatoptions=tcqn
-          \ formatlistpat=^\\s*\\d\\+\\.\\s\\+\\\\|^\\s*<\\d\\+>\\s\\+\\\\|^\\s*[a-zA-Z.]\\.\\s\\+\\\\|^\\s*[ivxIVX]\\+\\.\\s\\+
-          \ comments=s1:/*,ex:*/,://,b:#,:%,:XCOMM,fb:-,fb:*,fb:+,fb:.,fb:>
+  autocmd FileType mail,text,html setlocal spell spelllang=en
+  autocmd BufRead,BufNewFile *.txt,*.asciidoc,README,TODO,CHANGELOG,NOTES,ABOUT
+  	\ setlocal autoindent expandtab tabstop=8 softtabstop=2 shiftwidth=2 filetype=asciidoc
+  	\ textwidth=70 wrap formatoptions=tcqn
+  	\ formatlistpat=^\\s*\\d\\+\\.\\s\\+\\\\|^\\s*<\\d\\+>\\s\\+\\\\|^\\s*[a-zA-Z.]\\.\\s\\+\\\\|^\\s*[ivxIVX]\\+\\.\\s\\+
+  	\ comments=s1:/*,ex:*/,://,b:#,:%,:XCOMM,fb:-,fb:*,fb:+,fb:.,fb:>
 
   " When editing a file, always jump to the last known cursor position.
   " Don't do it when the position is invalid or when inside an event handler
