@@ -62,6 +62,12 @@ set incsearch		" do incremental searching
 set ignorecase
 set smartcase
 set encoding=utf8
+set autoindent		" enable auto-indentation
+set tabstop=2		" no. of spaces for tab in file
+set shiftwidth=2	" no. of spaces for step in autoindent
+set softtabstop=2	" no. of spaces for tab when editing
+set expandtab		" expand tabs into spaces
+set smarttab		" smart tabulation and backspace
 
 " For Win32 GUI: remove 't' flag from 'guioptions': no tearoff menu entries
 " let &guioptions = substitute(&guioptions, "t", "", "g")
@@ -117,6 +123,7 @@ if has("autocmd")
   "autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
   autocmd FileType gitconfig setlocal ts=2 sts=2 sw=2 expandtab
   autocmd Filetype javascript setlocal ts=2 sts=2 sw=2 noexpandtab
+  autocmd BufRead,BufNewFile Vagrantfile setfiletype ruby
   " auto-delete buffers after browing through objects
   autocmd BufReadPost fugitive://* set bufhidden=delete 
 
