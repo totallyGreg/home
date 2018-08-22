@@ -10,6 +10,10 @@ unsetenv()
 	unset $1
 }
 
+## Include file only if it exists
+include () {
+    [[ -f "$1" ]] && source "$1"
+}
 
 # display man pages in web browser
 function wman() {
@@ -123,6 +127,12 @@ save-trick() {
   echo "${new_trick}" >> ~/.tricks
 }
 
+### Convert to Animated Gif
+
+gif_me() {
+	local images="$1"
+	convert -delay 20 -loop 0 images loopingImage.gif
+}
 ### Documenting Functions
 
 csv_table() {
