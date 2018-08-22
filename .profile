@@ -42,13 +42,19 @@ export PATH=/usr/bin:/bin
 [ -d /opt/gnome/bin ] && export PATH=/opt/gnome/bin:${PATH}
 [ -d /usr/sfw/bin ] && export PATH=/usr/sfw/bin:${PATH}
 [ -d /opt/sfw/bin ] && export PATH=/opt/sfw/bin:${PATH}
-[ -d /svaha/courier/sbin ] && export PATH=/svaha/courier/sbin:${PATH}
 [ -d /usr/local/ssl/bin ] && export PATH=/usr/local/ssl/bin:${PATH}
-[ -d /usr/local/BerkeleyDB.3.3/bin ] && export PATH=/usr/local/BerkeleyDB.3.3/bin:${PATH}
+[ -d /usr/local/share/python ] && export PATH=/usr/local/share/python:${PATH}
 test -r /sw/bin/init.sh && . /sw/bin/init.sh
 [ -d ${HOME}/bin ] && export PATH=${HOME}/bin:${PATH}
 export PATH=${PATH}:.
 
+# virtualenv
+export WORKON_HOME=$HOME/.virtualenvs
+export PROJECT_HOME=$HOME/Projects
+export PYTHONPATH=/usr/local/bin/python3
+export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3
+export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
+source /usr/local/bin/virtualenvwrapper.sh
 
 echo "Sourcing ~/.bashrc"
 source ~/.bashrc
