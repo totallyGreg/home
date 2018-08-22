@@ -1,5 +1,6 @@
 ## Beginning of Aliases
 
+alias flushcache='sudo killall -HUP mDNSResponder;say DNS cache has been flushed'
 alias gethome='curl https://gist.githubusercontent.com/totallyGreg/4c9a430e6965280a60fcec628e1d03d5/raw | bash'
 alias l='ls -lhF'
 alias ll='ls -lhF'
@@ -11,6 +12,17 @@ alias cd..='cd ..'
 alias vi='/usr/local/bin/vim'
 ## Example of ssh tunneling through a gateway machine
 #alias rupert='ssh -X -A -t jgreg@peabody.ximian.com ssh -X -A totally@rupert.ximian.com'
+#
+# Python source venv 
+alias sv='source venv/bin/activate'
+
+# Kubernetes
+alias k='kubectl'
+
+## Vagrant Stuff
+alias vgs='vagrant global-status'
+
+## Random Crap
 alias gn='growlnotify'
 alias excuse='telnet towel.blinkenlights.nl 666'
 alias dict='curl dict://dict.org/d:$1'
