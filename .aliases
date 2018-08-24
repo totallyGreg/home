@@ -9,7 +9,6 @@ alias la='ls -alhF'
 alias lt='ls -alhFtr'
 alias grep='grep --color=auto'
 alias cd..='cd ..'
-alias vi='/usr/local/bin/vim'
 ## Example of ssh tunneling through a gateway machine
 #alias rupert='ssh -X -A -t jgreg@peabody.ximian.com ssh -X -A totally@rupert.ximian.com'
 #
