@@ -1,6 +1,6 @@
 [user]
-  email = totallyGreg@gmail.com
-  name = J. Greg Williams
+	email = totallyGreg@gmail.com
+	name = J. Greg Williams
 [alias]
   co = checkout
   ci = commit
@@ -17,6 +17,8 @@
 	unstage = reset HEAD --  # Remove filename from the staging area
 	last = log -1 HEAD      # view last commit
 	find = "!git log --color -p -S "
+  size = "count-objects -vH"
+  review = "log master..origin/master"
 
 [color]
   status = auto
@@ -41,3 +43,15 @@
 	required = true
 [status]
 	submoduleSummary = true
+[core]
+	excludesfile = /Users/jwilliams/.gitignore_global
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path = 
+[mergetool "sourcetree"]
+	cmd = /Applications/Ops/Administration/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
+[commit]
+	template = /Users/jwilliams/.stCommitMsg
+[push]
+	default = simple
