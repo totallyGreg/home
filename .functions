@@ -1,6 +1,43 @@
 #!/bin/bash
 #echo "sourcing .functions"
 
+### alias completion functions do not work as they seem to depend on bash 4.1
+# https://brbsix.github.io/2015/11/23/perform-tab-completion-for-aliases-in-bash/
+function _completion_loader()
+{
+     . "/usr/local/etc/bash_completion.d/$1.sh" >/dev/null 2>&1 && return 124
+}
+
+function alias_completion() {
+    # keep global namespace clean
+    local cmd completion
+
+    # determine first word of alias definition
+    # NOTE: This is really dirty. Is it possible to use
+    #       readline's shell-expand-line or alias-expand-line?
+    cmd=$(alias "$1" | sed 's/^alias .*='\''//;s/\( .\+\|'\''\)//')
+
+    # determine completion function
+    completion=$(complete -p "$1" 2>/dev/null)
+
+    # run _completion_loader only if necessary
+    [[ -n $completion ]] || {
+
+        # load completion
+        _completion_loader "$cmd"
+
+        # detect completion
+        completion=$(complete -p "$cmd" 2>/dev/null)
+    }
+
+    # ensure completion was detected
+    [[ -n $completion ]] || return 1
+
+    # configure completion
+    eval "$(sed "s/$cmd\$/$1/" <<<"$completion")"
+}
+
+
 function dotadm {
    /usr/bin/git --git-dir=$HOME/.home/ --work-tree=$HOME $@
 }
@@ -137,8 +174,9 @@ gif_me() {
 	local images="$1"
 	convert -delay 20 -loop 0 images loopingImage.gif
 }
-### Documenting Functions
 
+### Documenting Functions
+## Attempting to asciidoc wrap a csv file
 csv_table() {
   local csv_file="$1"
   table_string="$(cat <<EOF

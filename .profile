@@ -1,7 +1,6 @@
 export LC_CTYPE=en_US.UTF-8
-
-export HISTTIMEFORMAT='%F %T '
-export TIMEFORMAT='Elapsed Time: %Rs'
+#export HISTTIMEFORMAT='%F %T '
+#export TIMEFORMAT='Elapsed Time: %Rs'
 
 # all manual locations
 if [ ! -f /usr/bin/manpath ] ; then
@@ -54,10 +53,9 @@ export PROJECT_HOME=$HOME/Projects
 export PYTHONPATH=/usr/local/bin/python3
 export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3
 export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
-source /usr/local/bin/virtualenvwrapper.sh
+[ -f /usr/local/bin/virtualenvwrapper.shi ] && source /usr/local/bin/virtualenvwrapper.sh
 
-echo "Sourcing ~/.bashrc"
-source ~/.bashrc
+[ -f ~/.bashrc ] && source ~/.bashrc
 
 
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.

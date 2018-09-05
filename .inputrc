@@ -8,3 +8,12 @@ set show-all-if-ambiguous on
 set mark-directories on
 set bell-style visible
 set completion-query-items 50
+set visible-stats on
+#set expand-tilde on
+
+# Enable incremental history search with up/down arrows (also Readline goodness)
+# Learn more about this here: http://codeinthehole.com/writing/the-most-important-command-line-tip-incremental-history-searching-with-inputrc/
+"\e[A": history-search-backward
+"\e[B": history-search-forward
+"\e[C": forward-char
+"\e[D": backward-char
