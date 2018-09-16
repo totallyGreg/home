@@ -1,7 +1,7 @@
 ## Beginning of Aliases
 
-alias flushcache='sudo killall -HUP mDNSResponder;say DNS cache has been flushed'
 alias git_home='curl https://gist.githubusercontent.com/totallyGreg/4c9a430e6965280a60fcec628e1d03d5/raw | bash'
+alias install_home_brew='/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
 alias l='ls -lhF'
 alias ll='ls -lhF'
 alias l1='ls -1'
@@ -11,11 +11,14 @@ alias grep='grep --color=auto'
 alias cd..='cd ..'
 ## Example of ssh tunneling through a gateway machine
 #alias rupert='ssh -X -A -t jgreg@peabody.ximian.com ssh -X -A totally@rupert.ximian.com'
-#
-[ -f /usr/local/bin/vim ] &&  alias vi='/usr/local/bin/vim' 
-#
+
+
 # Python source venv 
 alias sv='source venv/bin/activate'
+
+# Docker
+alias d='docker'
+alias docker-ips='docker ps | tail -n +2 | while read -a a; do name=${a[$((${#a[@]}-1))]}; echo -ne "$name\t"; docker inspect $name | grep IPAddress | cut -d \" -f 4; done'
 
 # Git 
 alias g='git'
@@ -36,9 +39,11 @@ alias ttop='top -ocpu -R -F -s 2 -n30'
 alias mtop='top -o rsize'
 alias quick='open /Applications/Ops/Administration/Quicksilver.app'
 alias futurama='fortune ~/Clouds/iCloud/Bookshelf/Quotes/futurama'
+alias morbotron="curl -s https://morbotron.com/api/random | jq --raw-output '.Subtitles[] .Content'"
 alias fc='dscacheutil -flushcache'
 alias serialscreen='screen -L /dev/cu.usbserial -f 9600,cs8,-parenb,-cstopb,-hupcl'
 alias odiff='opendiff'
+alias flushcache='sudo killall -HUP mDNSResponder;say DNS cache has been flushed'
 
 # Read Log files with embeded control characters (e.g. screenlog.0)
 alias readlog='less -raw-control-chars'
@@ -47,21 +52,12 @@ alias readlog='less -raw-control-chars'
 alias dotadm='/usr/bin/git --git-dir=$HOME/.home/ --work-tree=$HOME'
 alias dotupgrade='/usr/bin/git --git-dir=$HOME/.home --work-tree=$HOME submodule update --remote --merge'
 
-# Docker
-alias d='docker'
-alias docker-ips='docker ps | tail -n +2 | while read -a a; do name=${a[$((${#a[@]}-1))]}; echo -ne "$name\t"; docker inspect $name | grep IPAddress | cut -d \" -f 4; done'
-
 # Generate random mac address for wireless
 alias random-mac="openssl rand -hex 6 | sed 's/\(..\)/\1:/g; s/.$//' | xargs sudo ifconfig en0 ether"
 
 alias testme='echo "Testing!!"'
 
-
-# Alias completion
-#aliases=(d g k v)
-#for a in "${aliases[@]}"; do
-#    alias_completion "$a"
-#done
-
-# clean up after ourselves
-unset a aliases
+### alias completion functions do not work as they seem to depend on bash 4.1
+# https://brbsix.github.io/2015/11/23/perform-tab-completion-for-aliases-in-bash/
+# Now sourcing this https://superuser.com/questions/436314/how-can-i-get-bash-to-perform-tab-completion-for-my-aliases
+source .alias_completion

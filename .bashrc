@@ -9,6 +9,10 @@ HISTIGNORE="&:[ ]*:exit:ls:[bf]g:history:clear:"
 # %F equivalent to %Y-%m-%d
 # %T equivalent to %H:%M:%S (24-hours format)
 HISTTIMEFORMAT='%F %T '
+export CLICOLOR=1
+# Directorys Blue, Symlinks cyan
+export LSCOLORS=exGxhxDxfxhxhxhxhxcxcx
+export LS_COLORS='di=34:ln=1;36:so=37:pi=1;33:ex=35:bd=37:cd=37:su=31:sg=31:tw=32:ow=32'
 ## Shell color codes 
 COLOR_WHITE='\033[1;37m'
 COLOR_LIGHTGRAY='033[0;37m'
@@ -34,11 +38,6 @@ export IGNOREEOF=3
 export FCEDIT=vim
 export EDITOR=vim
 export XML_CATALOG_FILES=/usr/local/etc/xml/catalog
-export CLICOLOR=1
-#export LSCOLORS=hxfxcxdxbxegedabagacad
-# Testing a more solarized color scheme
-export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
-export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43'
 export HOMEBREW_NO_GITHUB_API=1
 
 ## Options I like
@@ -109,9 +108,12 @@ if ! shopt -oq posix; then
     . /usr/share/bash-completion/bash_completion
   elif [ -f /etc/bash_completion ]; then
     . /etc/bash_completion
+  elif [ -f /usr/local/share/bash-completion/bash_completion ]; then
+    . /usr/local/share/bash-completion/bash_completion ;
   elif [ -f /usr/local/share/bash_completion ]; then
     . /usr/local/share/bash_completion
   fi
+
 fi
 
 ## Liquid Prompt if shell is interactive 
