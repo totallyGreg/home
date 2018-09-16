@@ -155,7 +155,9 @@ EOF
 }
 
 ### Logging Functions
-SCRIPT_LOG=~/Logs/Script.log
+LOG_DIR=~/Logs
+mkdir -p $LOG_DIR
+SCRIPT_LOG=${LOG_DIR}/Script.log
 touch $SCRIPT_LOG
 
 function SCRIPTENTRY() 
