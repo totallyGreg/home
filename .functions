@@ -2,7 +2,7 @@
 #echo "sourcing .functions"
 
 function dotadm {
-   /usr/bin/git --git-dir=$HOME/.home/ --work-tree=$HOME $@
+   `which git` --git-dir=$HOME/.home/ --work-tree=$HOME $@
 }
 
 setenv()
