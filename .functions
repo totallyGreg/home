@@ -1,9 +1,9 @@
 #!/bin/bash
 #echo "sourcing .functions"
 
-function dotadm {
-   `which git` --git-dir=$HOME/.home/ --work-tree=$HOME $@
-}
+# function dotadm {
+#    `which git` --git-dir=$HOME/.home/ --work-tree=$HOME $@
+# }
 
 setenv()
 {

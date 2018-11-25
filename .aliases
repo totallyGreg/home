@@ -31,6 +31,7 @@ alias vgs='vagrant global-status'
 alias v='vagrant'
 
 ## Random Crap
+alias busybox='kubectl run -it --rm --restart=Never busybox --image=busybox sh'
 alias gn='growlnotify'
 alias excuse='telnet towel.blinkenlights.nl 666'
 alias dict='curl dict://dict.org/d:$1'
@@ -44,11 +45,14 @@ alias fc='dscacheutil -flushcache'
 alias serialscreen='screen -L /dev/cu.usbserial -f 9600,cs8,-parenb,-cstopb,-hupcl'
 alias odiff='opendiff'
 alias flushcache='sudo killall -HUP mDNSResponder;say DNS cache has been flushed'
+alias weakssh='ssh -o StrictHostKeyChecking=no '
+alias chrome='open -a "Google Chrome" '
 
 # Read Log files with embeded control characters (e.g. screenlog.0)
 alias readlog='less -raw-control-chars'
 
 ##### Dotfile management through git work-tree
+alias dotadm='git --git-dir=$HOME/.home/ --work-tree=$HOME $@'
 alias dotupgrade='dotadm submodule update --remote --merge'
 
 # Generate random mac address for wireless
@@ -59,4 +63,5 @@ alias testme='echo "Testing!!"'
 ### alias completion functions do not work as they seem to depend on bash 4.1
 # https://brbsix.github.io/2015/11/23/perform-tab-completion-for-aliases-in-bash/
 # Now sourcing this https://superuser.com/questions/436314/how-can-i-get-bash-to-perform-tab-completion-for-my-aliases
-source .alias_completion
+source ~/.alias_completion
+
