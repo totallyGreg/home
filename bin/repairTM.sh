@@ -1,9 +1,13 @@
+#!/bin/bash
+
 if [[ $(whoami) != 'root' ]]; then
-    echo "Must be root to run"
-    exit 1
+  echo "Must have root privileges to run" 
+  exit 1
 fi
 
-read -p 'Enter Time Machine Hostname: ' HOSTNAME
+read -p 'Enter Time Machine Hostname: ' HOSTNAME # freenasty.home.falcone.us
+read -p 'Enter Share: ' SHARE  # totally_reversed
+read -p 'Enter Username: ' USERNAME # username that created the share
 read -s -p 'Enter Password: ' PASSWORD
 
 TM_NAME=$(hostname -s | sed -e 's/-/ /g')
@@ -16,8 +20,7 @@ tmutil disable
 
 echo "Mounting volume"
 mkdir $MOUNT
-#mount_afp afp://ReadyNAS:$PASSWORD@$HOSTNAME/ReadyNAS $MOUNT
-mount_afp afp://totally:$PASSWORD@$HOSTNAME/TimeMachine $MOUNT
+mount_afp afp://$USERNAME:$PASSWORD@$HOSTNAME/$SHARE $MOUNT
 
 echo "Changing file and folder flags"
 chflags -R nouchg "$SPARSEBUNDLE"
@@ -27,7 +30,7 @@ DISK=`hdiutil attach -nomount -readwrite -noverify -noautofsck "$SPARSEBUNDLE" |
 
 echo "Repairing volume"
 #diskutil repairVolume $DISK
-/sbin/fsck_hfs -fry $DISK
+/sbin/fsck_hfs -drfy $DISK
 
 echo "Fixing Properties"
 cp "$PLIST" "$PLIST.backup"
