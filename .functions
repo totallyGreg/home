@@ -5,6 +5,13 @@
 #    `which git` --git-dir=$HOME/.home/ --work-tree=$HOME $@
 # }
 
+sshfun() {
+  HOST=$1
+  COMMAND=$2
+  PARAM="${@:3}"
+  ssh ${HOST} "$(declare -f ${COMMAND}); ${COMMAND} ${PARAM}"
+}
+
 setenv()
 {
   export $1="$2"
@@ -29,7 +36,8 @@ function wman() {
 growl() { echo -e $'\e]9;'${1}'\007' ; return ; }
 
 #display man pages in Preview.app
-pman() {
+pman()
+{
   man -t "$@" | open -f -a Preview || { echo "bar() failed"; return 1; }
 }
 
@@ -190,18 +198,21 @@ kcid() {
   echo
   NS=`echo ${PODS} |awk '{print $1}'`
   kubectl get pod --namespace=${NS} ${PODNAME} -o jsonpath={.status.containerStatuses[0].containerID}
+  echo
 }
 
 ### Docker Helpers
 
-dpid() {
-  CID=$1
+dipid() {
+  #Return Process ID given docker container ID
+  CID=$1  # Expecting Container ID in docker// form
+  [[ -z "$CID" ]] && echo "Expecting containerID" && return 1
   beginswith() { case $2 in "$1"*) true;; *) false;; esac; }
   if beginswith docker "$CID"
   then
     CID=${CID:9}
   fi
-  docker inspect $CID | grep Pid
+  docker inspect --format '{{ .State.Pid }}' $CID
 }
 ### Convert to Animated Gif
 
