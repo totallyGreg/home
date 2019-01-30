@@ -7,11 +7,11 @@
 
 setenv()
 {
-	export $1="$2"
+  export $1="$2"
 }
 unsetenv()
 {
-	unset $1
+  unset $1
 }
 
 ## Include file only if it exists
@@ -25,31 +25,31 @@ function wman() {
    open `eval $url`
 }
 
-# Growl function for iTerm 
+# Growl function for iTerm
 growl() { echo -e $'\e]9;'${1}'\007' ; return ; }
 
 #display man pages in Preview.app
-pman() { 
-	 man -t "$@" | open -f -a Preview || { echo "bar() failed"; return 1; }
+pman() {
+  man -t "$@" | open -f -a Preview || { echo "bar() failed"; return 1; }
 }
 
 function mask(){
-	# Changes MAC address to a random one and sets the hostname to a random word
-	# Tested on OS X 10.9 (Macbook Pro)
-	# Based on http://blog.kejsarmakten.se/all/software/2013/08/30/spoof-mac-on-osx.html
-	# and http://osxdaily.com/2010/09/06/change-your-mac-hostname-via-terminal/
-	# Note: neither are permanent (a reboot resets both)
-	# For a permanent change to hostname: sudo scutil –-set HostName NEWHOST
-	# Consider using SpoofMAC: https://github.com/feross/SpoofMAC
+  # Changes MAC address to a random one and sets the hostname to a random word
+  # Tested on OS X 10.9 (Macbook Pro)
+  # Based on http://blog.kejsarmakten.se/all/software/2013/08/30/spoof-mac-on-osx.html
+  # and http://osxdaily.com/2010/09/06/change-your-mac-hostname-via-terminal/
+  # Note: neither are permanent (a reboot resets both)
+  # For a permanent change to hostname: sudo scutil –-set HostName NEWHOST
+  # Consider using SpoofMAC: https://github.com/feross/SpoofMAC
     OLDMAC=$(ifconfig en0 | awk '/ether/ {print $2}')
     RANDMAC=$(openssl rand -hex 6 | sed 's/\(..\)/\1:/g; s/.$//')
     echo "Attempting to Change MAC $OLDMAC to $RANDMAC"
     sudo ifconfig en0 ether $RANDMAC
     NEWMAC=$(ifconfig en0 | awk '/ether/ {print $2}')
     if [ $OLDMAC == $NEWMAC ] ; then
-	    echo "Mac address was not able to be changed"
+      echo "Mac address was not able to be changed"
     else
-	    echo "New MAC is: " $NEWMAC
+      echo "New MAC is: " $NEWMAC
     fi
    # NEWHOST=$(sed `perl -e "print int rand(99999)"`"q;d" /usr/share/dict/words)
    # echo "Changing hostname: " $(hostname)
@@ -65,30 +65,30 @@ function unmask(){
 # Generate random password of argument length
 # genpasswd 16
 genpasswd() {
-	local l=$1
-       	[ "$l" == "" ] && l=20
-      	tr -dc A-Za-z0-9_ < /dev/urandom | head -c ${l} | xargs
+  local l=$1
+    [ "$l" == "" ] && l=20
+    tr -dc A-Za-z0-9_ < /dev/urandom | head -c ${l} | xargs
 }
 
 settitle()
 {
-    case "$TERM" in
-	xterm* )
-	    echo -ne '\e]0;'"$@"'\a'
-	    ;;
-	screen)
-	    echo -ne '\ek'"$@"'\e\\'
-	    ;;
-    esac
+  case "$TERM" in
+    xterm* )
+      echo -ne '\e]0;'"$@"'\a'
+    ;;
+    screen)
+      echo -ne '\ek'"$@"'\e\\'
+    ;;
+  esac
 }
 
 test_loop()
 {
-	host=$1
-	ssh $host bash -c "'
-	read -r perm id uid gid size month day time file <<< $(ls -l )
-	echo "$time and $file"
-	'"
+  host=$1
+  ssh $host bash -c "'
+  read -r perm id uid gid size month day time file <<< $(ls -l )
+  echo "$time and $file"
+  '"
 }
 
 ##------------------------------------ ##
@@ -97,7 +97,7 @@ test_loop()
  #          $1 = alias new             #
  #          $2 = alias definition      #
 ##------------------------------------ ##
-#new-alias () { 
+#new-alias () {
 #  if [ -z "$1" ]; then
 #    echo "alias name:"
 #    read NAME
@@ -131,11 +131,83 @@ save-trick() {
   echo "${new_trick}" >> ~/.tricks
 }
 
+### Kubernetes Helpers
+klog() {
+    POD=$1
+    INPUT_INDEX=$2
+    INDEX="${INPUT_INDEX:-1}"
+    PODS=`kubectl get pods --all-namespaces|grep ${POD} |head -${INDEX} |tail -1`
+    PODNAME=`echo ${PODS} |awk '{print $2}'`
+    echo "Kenny says its Pod: ${PODNAME}"
+    echo
+    NS=`echo ${PODS} |awk '{print $1}'`
+    kubectl logs -f --namespace=${NS} ${PODNAME}
+}
+
+wpod() {
+    NS=$@
+    NAMESPACE=${NS:-"--all-namespaces"}
+    if [ "$NAMESPACE" != "--all-namespaces" ]
+      then
+      NAMESPACE="-n ${NS}"
+    fi
+
+    watch kubectl get pods $NAMESPACE
+}
+
+kexec() {
+    POD=$1
+    INPUT_INDEX=$2
+    INDEX="${INPUT_INDEX:-1}"
+    PODS=`kubectl get pods --all-namespaces|grep ${POD} |head -${INDEX} |tail -1`
+    PODNAME=`echo ${PODS} |awk '{print $2}'`
+    echo "Pod: ${PODNAME}"
+    echo
+    NS=`echo ${PODS} |awk '{print $1}'`
+    kubectl exec -it --namespace=${NS} ${PODNAME} /bin/bash
+}
+
+kdesc() {
+    POD=$1
+    INPUT_INDEX=$2
+    INDEX="${INPUT_INDEX:-1}"
+    PODS=`kubectl get pods --all-namespaces|grep ${POD} |head -${INDEX} |tail -1`
+    PODNAME=`echo ${PODS} |awk '{print $2}'`
+    echo "Pod: ${PODNAME}"
+    echo
+    NS=`echo ${PODS} |awk '{print $1}'`
+    kubectl describe pod --namespace=${NS} ${PODNAME}
+}
+export -f kdesc
+
+kcid() {
+  POD=$1
+  INPUT_INDEX=$2
+  INDEX="${INPUT_INDEX:-1}"
+  PODS=`kubectl get pods --all-namespaces|grep ${POD} |head -${INDEX} |tail -1`
+  PODNAME=`echo ${PODS} |awk '{print $2}'`
+  echo "Pod: ${PODNAME}"
+  echo
+  NS=`echo ${PODS} |awk '{print $1}'`
+  kubectl get pod --namespace=${NS} ${PODNAME} -o jsonpath={.status.containerStatuses[0].containerID}
+}
+
+### Docker Helpers
+
+dpid() {
+  CID=$1
+  beginswith() { case $2 in "$1"*) true;; *) false;; esac; }
+  if beginswith docker "$CID"
+  then
+    CID=${CID:9}
+  fi
+  docker inspect $CID | grep Pid
+}
 ### Convert to Animated Gif
 
 gif_me() {
-	local images="$1"
-	convert -delay 20 -loop 0 images loopingImage.gif
+  local images="$1"
+  convert -delay 20 -loop 0 images loopingImage.gif
 }
 
 ### Documenting Functions
@@ -160,7 +232,7 @@ mkdir -p $LOG_DIR
 SCRIPT_LOG=${LOG_DIR}/Script.log
 touch $SCRIPT_LOG
 
-function SCRIPTENTRY() 
+function SCRIPTENTRY()
 {
  local timeAndDate="`date`"
  script_name="${0##*/}"
@@ -168,28 +240,28 @@ function SCRIPTENTRY()
  echo "[$timeAndDate] [DEBUG]  > $script_name $FUNCNAME" >> $SCRIPT_LOG
 }
 
-function SCRIPTEXIT() 
+function SCRIPTEXIT()
 {
  script_name=`basename "$0"`
  script_name="${script_name%.*}"
  echo "[$timeAndDate] [DEBUG]  < $script_name $FUNCNAME" >> $SCRIPT_LOG
 }
 
-function ENTRY() 
+function ENTRY()
 {
  local cfn="${FUNCNAME[1]}"
  timeAndDate=`date`
  echo "[$timeAndDate] [DEBUG]  > $cfn $FUNCNAME" >> $SCRIPT_LOG
 }
 
-function EXIT() 
+function EXIT()
 {
  local cfn="${FUNCNAME[1]}"
  timeAndDate=`date`
  echo "[$timeAndDate] [DEBUG]  < $cfn $FUNCNAME" >> $SCRIPT_LOG
 }
 
-function INFO() 
+function INFO()
 {
  local function_name="${FUNCNAME[1]}"
  local msg="$1"
@@ -197,7 +269,7 @@ function INFO()
  echo "[$timeAndDate] [INFO]  $msg" >> $SCRIPT_LOG
 }
 
-function DEBUG() 
+function DEBUG()
 {
  local function_name="${FUNCNAME[1]}"
  local msg="$1"
@@ -205,7 +277,7 @@ function DEBUG()
  echo "[$timeAndDate] [DEBUG]  $msg" >> $SCRIPT_LOG
 }
 
-function ERROR() 
+function ERROR()
 {
  local function_name="${FUNCNAME[1]}"
  local msg="$1"
