@@ -1,129 +1,195 @@
-" don't bother with vi compatibility
+" An example for a vimrc file.
+"
+" Maintainer:	Bram Moolenaar <Bram@vim.org>
+" Last change:	2008 Jul 02
+"
+" To use it, copy it to
+"     for Unix and OS/2:  ~/.vimrc
+"	      for Amiga:  s:.vimrc
+"  for MS-DOS and Win32:  $VIM\_vimrc
+"	    for OpenVMS:  sys$login:.vimrc
+
+" When started as "evim", evim.vim will already have done these settings.
+if v:progname =~? "evim"
+  finish
+endif
+
+" Use Vim settings, rather then Vi settings (much better!).
+" This must be first, because it changes other options as a side effect.
 set nocompatible
 
-" enable syntax highlighting
-syntax enable
+execute pathogen#infect()
 
-" configure Vundle
-filetype on " without this vim emits a zero exit status, later, because of :ft off
-filetype off
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
+call togglebg#map("<F5>")
 
-" install Vundle bundles
-if filereadable(expand("~/.vimrc.bundles"))
-  source ~/.vimrc.bundles
-  source ~/.vimrc.bundles.local
+" yank to clipboard
+if has("clipboard")
+  set clipboard=unnamed " copy to the system clipboard
+
+  if has("unnamedplus") " X11 support
+    set clipboard+=unnamedplus
+  endif
 endif
 
-call vundle#end()
-
-" ensure ftdetect et al work by including this after the Vundle stuff
-filetype plugin indent on
-
-set autoindent
-set autoread                                                 " reload files when changed on disk, i.e. via `git checkout`
-set backspace=2                                              " Fix broken backspace in some setups
-set backupcopy=yes                                           " see :help crontab
-set clipboard=unnamed                                        " yank and paste with the system clipboard
-set directory-=.                                             " don't store swapfiles in the current directory
-set encoding=utf-8
-set expandtab                                                " expand tabs to spaces
-set ignorecase                                               " case-insensitive search
-set incsearch                                                " search as you type
-set laststatus=2                                             " always show statusline
-set list                                                     " show trailing whitespace
-set listchars=tab:▸\ ,trail:▫
-set number                                                   " show line numbers
-set ruler                                                    " show where you are
-set scrolloff=3                                              " show context above/below cursorline
-set shiftwidth=2                                             " normal mode indentation commands use 2 spaces
-set showcmd
-set smartcase                                                " case-sensitive search if any caps
-set softtabstop=2                                            " insert mode tab and backspace use 2 spaces
-set tabstop=8                                                " actual tabs occupy 8 characters
-set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc
-set wildmenu                                                 " show a navigable menu for tab completion
-set wildmode=longest,list,full
-
-" Enable basic mouse behavior such as resizing buffers.
-set mouse=a
-if exists('$TMUX')  " Support resizing in tmux
-  set ttymouse=xterm2
+" In many terminal emulators the mouse works just fine, thus enable it.
+if has('mouse')
+  "set mouse=v   " This doesn't allow selecting split windows with mouse
+  set mouse=a
 endif
 
-" keyboard shortcuts
-let mapleader = ','
-noremap <C-h> <C-w>h
-noremap <C-j> <C-w>j
-noremap <C-k> <C-w>k
-noremap <C-l> <C-w>l
-noremap <leader>l :Align
-nnoremap <leader>a :Ag<space>
-nnoremap <leader>b :CtrlPBuffer<CR>
-nnoremap <leader>d :NERDTreeToggle<CR>
-nnoremap <leader>f :NERDTreeFind<CR>
-nnoremap <leader>t :CtrlP<CR>
-nnoremap <leader>T :CtrlPClearCache<CR>:CtrlP<CR>
-nnoremap <leader>] :TagbarToggle<CR>
-nnoremap <leader><space> :call whitespace#strip_trailing()<CR>
-nnoremap <leader>g :GitGutterToggle<CR>
-noremap <silent> <leader>V :source ~/.vimrc<CR>:filetype detect<CR>:exe ":echo 'vimrc reloaded'"<CR>
-
-" in case you forgot to sudo
-cnoremap w!! %!sudo tee > /dev/null %
-
-" plugin settings
-let g:ctrlp_match_window = 'order:ttb,max:20'
-let g:NERDSpaceDelims=1
-let g:gitgutter_enabled = 0
-
-" Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
-if executable('ag')
-  " Use Ag over Grep
-  set grepprg=ag\ --nogroup\ --nocolor
-
-  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+" Switch syntax highlighting on, when the terminal has colors
+" Also switch on highlighting the last used search pattern.
+" \q will turn off the highlighting
+if &t_Co > 2 || has("gui_running")
+  syntax on
+  set background=dark
+  let g:solarized_termcolors=256
+  let g:solarized_termtrans=1
+  silent! colo desert
+  silent! colorscheme solarized
+  set hlsearch
+  :nmap \q :nohlsearch<CR>
 endif
 
-" fdoc is yaml
-autocmd BufRead,BufNewFile *.fdoc set filetype=yaml
-" md is markdown
-autocmd BufRead,BufNewFile *.md set filetype=markdown
-autocmd BufRead,BufNewFile *.md set spell
-" extra rails.vim help
-autocmd User Rails silent! Rnavcommand decorator      app/decorators            -glob=**/* -suffix=_decorator.rb
-autocmd User Rails silent! Rnavcommand observer       app/observers             -glob=**/* -suffix=_observer.rb
-autocmd User Rails silent! Rnavcommand feature        features                  -glob=**/* -suffix=.feature
-autocmd User Rails silent! Rnavcommand job            app/jobs                  -glob=**/* -suffix=_job.rb
-autocmd User Rails silent! Rnavcommand mediator       app/mediators             -glob=**/* -suffix=_mediator.rb
-autocmd User Rails silent! Rnavcommand stepdefinition features/step_definitions -glob=**/* -suffix=_steps.rb
-" automatically rebalance windows on vim resize
-autocmd VimResized * :wincmd =
+" allow backspacing over everything in insert mode
+set backspace=indent,eol,start
 
-" Fix Cursor in TMUX
-if exists('$TMUX')
-  let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
-  let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
+set nobackup		" do not keep a backup file
+set history=50		" keep 50 lines of command line history
+set ruler		" show the cursor position all the time
+set showcmd		" display incomplete commands
+set incsearch		" do incremental searching
+set ignorecase
+set smartcase
+set encoding=utf8
+set autoindent		" enable auto-indentation
+set tabstop=2		" no. of spaces for tab in file
+set shiftwidth=2	" no. of spaces for step in autoindent
+set softtabstop=2	" no. of spaces for tab when editing
+set expandtab		" expand tabs into spaces
+set smarttab		" smart tabulation and backspace
+
+" For Win32 GUI: remove 't' flag from 'guioptions': no tearoff menu entries
+" let &guioptions = substitute(&guioptions, "t", "", "g")
+
+" Okay trying out some new keybindings, lets start defininig them all here:
+nnoremap <F2> :set invpaste paste?<CR>
+set pastetoggle=<F2>
+set showmode
+
+" open edit buffer
+:nmap <C-e> :e#<CR>
+:nmap <C-n> :bnext<CR>
+:nmap <C-p> :bprev<CR>
+
+nnoremap <silent> + :exe "resize " . (winheight(0) * 3/2)<CR>
+nnoremap <silent> - :exe "resize " . (winheight(0) * 2/3)<CR>
+
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+" For local replace
+nnoremap gr gd[{V%::s/<C-R>///gc<left><left><left>
+
+" " For global replace
+nnoremap gR gD:%s/<C-R>///gc<left><left><left>
+
+" Don't use Ex mode, use Q for formatting
+map Q gq
+
+" CTRL-U in insert mode deletes a lot.  Use CTRL-G u to first break undo,
+" so that you can undo CTRL-U after inserting a line break.
+inoremap <C-U> <C-G>u<C-U>
+
+
+" Only do this part when compiled with support for autocommands.
+if has("autocmd")
+
+  " Enable file type detection.
+  " Use the default filetype settings, so that mail gets 'tw' set to 72,
+  " 'cindent' is on in C files, etc.
+  " Also load indent files, to automatically do language-dependent indenting.
+  filetype plugin indent on
+
+  " Put these in an autocmd group, so that we can delete them easily.
+  augroup vimrcEx
+  au!
+
+  " For all text files set 'textwidth' to 78 characters.
+  autocmd FileType text setlocal textwidth=78 ts=2 sw=2 
+  autocmd FileType make set tabstop=8 noexpandtab shiftwidth=8 softtabstop=0
+  "autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+  autocmd FileType gitconfig setlocal ts=2 sts=2 sw=2 expandtab
+  autocmd Filetype javascript setlocal ts=2 sts=2 sw=2 noexpandtab
+  autocmd BufRead,BufNewFile Vagrantfile setfiletype ruby
+  " auto-delete buffers after browing through objects
+  autocmd BufReadPost fugitive://* set bufhidden=delete 
+
+  let g:ansible_unindent_after_newline = 0
+  let g:ansible_attribute_highlight = "ab"
+  let g:ansible_name_highlight = 'b'
+  let g:ansible_extra_keywords_highlight = 1
+
+  autocmd FileType mail,text,html setlocal spell spelllang=en
+  autocmd BufRead,BufNewFile *.txt,*.asciidoc,README,TODO,CHANGELOG,NOTES,ABOUT
+  	\ setlocal autoindent expandtab tabstop=8 softtabstop=2 shiftwidth=2 filetype=asciidoc
+  	\ textwidth=70 wrap formatoptions=tcqn
+  	\ formatlistpat=^\\s*\\d\\+\\.\\s\\+\\\\|^\\s*<\\d\\+>\\s\\+\\\\|^\\s*[a-zA-Z.]\\.\\s\\+\\\\|^\\s*[ivxIVX]\\+\\.\\s\\+
+  	\ comments=s1:/*,ex:*/,://,b:#,:%,:XCOMM,fb:-,fb:*,fb:+,fb:.,fb:>
+
+  " When editing a file, always jump to the last known cursor position.
+  " Don't do it when the position is invalid or when inside an event handler
+  " (happens when dropping a file on gvim).
+  " Also don't do it when the mark is in the first line, that is the default
+  " position when opening a file.
+  autocmd BufReadPost *
+    \ if line("'\"") > 1 && line("'\"") <= line("$") |
+    \   exe "normal! g`\"" |
+    \ endif
+
+  augroup END
+
 else
-  let &t_SI = "\<Esc>]50;CursorShape=1\x7"
-  let &t_EI = "\<Esc>]50;CursorShape=0\x7"
-endif
 
-" Don't copy the contents of an overwritten selection.
-vnoremap p "_dP
+  set autoindent		" always set autoindenting on
+  " For everything else, use a tab width of 4 space chars.
+  set tabstop=4		" The width of a TAB is set to 4.
+			" Still it is a \t. It is just that
+			" Vim will interpret it to be having
+			" a width of 4.
+  set shiftwidth=4	" Indents will have a width of 4.
+  set softtabstop=4	" Sets the number of columns for a TAB.
+  set expandtab		" Expand TABs to spaces.
 
-" Go crazy!
-if filereadable(expand("~/.vimrc.local"))
-  " In your .vimrc.local, you might like:
-  "
-  " set autowrite
-  " set nocursorline
-  " set nowritebackup
-  " set whichwrap+=<,>,h,l,[,] " Wrap arrow keys between lines
-  "
-  " autocmd! bufwritepost .vimrc source ~/.vimrc
-  " noremap! jj <ESC>
-  source ~/.vimrc.local
+endif " has("autocmd")
+
+"Airline Status Options
+" Enable the list of buffers
+let g:airline#extensions#tabline#enabled = 1
+" Show just the filename
+let g:airline#extensions#tabline#fnamemod = ':t'
+
+let g:voom_tree_width = 40
+let g:voom_default_mode = 'asciidoc'
+
+" Terraform Options
+" Allow vim-terraform to override your .vimrc indentation syntax for matching
+" files. Defaults to 0 which is off.
+let g:terraform_align=1
+
+" Allow vim-terraform to re-map the spacebar to fold / unfold. Defaults to 0 which is off.
+let g:terraform_remap_spacebar=1
+
+" Fugitive Git status
+set statusline=%<%f\ %h%m%r%{fugitive#statusline()}%=%-14.(%l,%c%V%)\ %P
+
+map <F4> :retab <CR> :w <CR>
+" Convenient command to see the difference between the current buffer and the
+" file it was loaded from, thus the changes you made.
+" Only define it when not defined already.
+if !exists(":DiffOrig")
+  command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis
+		  \ | wincmd p | diffthis
 endif
