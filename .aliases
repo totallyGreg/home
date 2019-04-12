@@ -9,22 +9,43 @@ alias la='ls -alhF'
 alias lt='ls -alhFtr'
 alias grep='grep --color=auto'
 alias cd..='cd ..'
+alias cat='bat --theme TwoDark'
+alias ic='cd ~/Library/Mobile\ Documents/com~apple~CloudDocs'
+
 ## Example of ssh tunneling through a gateway machine
 #alias rupert='ssh -X -A -t jgreg@peabody.ximian.com ssh -X -A totally@rupert.ximian.com'
 
 
-# Python source venv 
+# Python source venv
 alias sv='source venv/bin/activate'
 
 # Docker
 alias d='docker'
-alias docker-ips='docker ps | tail -n +2 | while read -a a; do name=${a[$((${#a[@]}-1))]}; echo -ne "$name\t"; docker inspect $name | grep IPAddress | cut -d \" -f 4; done'
+alias dkl='docker logs'
+alias dklf='docker logs -f'
+alias dki='docker images'
+alias dks='docker service'
+alias dkrm='docker rm'
+alias dm='docker-machine'
+alias dmx='docker-machine ssh'
 
-# Git 
+alias docker-ips='docker ps | tail -n +2 | while read -a a; do name=${a[$((${#a[@]}-1))]}; echo -ne "$name\t"; docker inspect $name | grep IPAddress | cut -d \" -f 4; done'
+alias dkps="docker ps --format '{{.ID}} - {{.Names}} - {{.Status}} - {{.Image}}'"
+
+# Git
 alias g='git'
 
 # Kubernetes
 alias k='kubectl'
+alias kg='kubectl get'
+alias kl='kubectl logs'
+alias kx='kubectl exec -i -t'
+alias ksvc='kubectl get services --all-namespaces'
+alias kpod='kubectl get pods --all-namespaces'
+alias kedp='kubectl get endpoints --all-namespaces'
+
+## Tmux stuff
+alias takeover="tmux detach -a"
 
 ## Vagrant Stuff
 alias vgs='vagrant global-status'
@@ -33,7 +54,8 @@ alias v='vagrant'
 ## Random Crap
 alias busybox='kubectl run -it --rm --restart=Never busybox --image=busybox sh'
 alias gn='growlnotify'
-alias excuse='telnet towel.blinkenlights.nl 666'
+alias excuse='nc towel.blinkenlights.nl 666'
+alias starwars='nc towel.blinkenlights.nl 23'
 alias dict='curl dict://dict.org/d:$1'
 alias backscreen='/System/Library/Frameworks/ScreenSaver.framework/Resources/ScreenSaverEngine.app/Contents/MacOS/ScreenSaverEngine -background &'
 alias ttop='top -ocpu -R -F -s 2 -n30'
