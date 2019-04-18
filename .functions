@@ -239,9 +239,9 @@ EOF
 
 ### Logging Functions
 LOG_DIR=~/Logs
-mkdir -p $LOG_DIR
+mkdir -p ${LOG_DIR}
 SCRIPT_LOG=${LOG_DIR}/Script.log
-touch $SCRIPT_LOG
+touch ${SCRIPT_LOG}
 
 function SCRIPTENTRY()
 {
