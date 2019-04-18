@@ -60,7 +60,9 @@ shopt -s checkwinsize
 # This makes writing to history happen after each prompt 
 # So multiple logins are all sharing history
 shopt -s histappend
-PROMPT_COMMAND='history -a'
+#PROMPT_COMMAND='history -a'
+export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r"
+
 
 # Save multi-line commands as one command
 shopt -s cmdhist
@@ -77,7 +79,7 @@ shopt -s cdspell 2> /dev/null
 # This defines where cd looks for targets
 # Add the directories you want to have fast access to, separated by colon
 # Ex: CDPATH=".:~:~/projects" will look for targets in the current working directory, in home and in the ~/projects folder
-CDPATH=".:~:~/Library:~/Projects:~/Projects/Repos:~/Clouds"
+CDPATH=".:~:~/Library:~/Projects:~/Projects/Repos:~/Clouds:$GOPATH/src/github.com:$GOPATH/src"
 
 ## Old Prompt Prompt Shit
 #Known good prompt :)
@@ -131,3 +133,4 @@ include ~/.oci/env-vars
 # Ruby Path
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
+
