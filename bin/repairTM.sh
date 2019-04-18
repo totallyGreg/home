@@ -49,12 +49,20 @@ echo "Repairing volume"
 #diskutil repairVolume $DISK
 /sbin/fsck_hfs -drfy $DISK
 
-echo "Fixing Properties"
-cp "$PLIST" "$PLIST.backup"
-sed -e '/RecoveryBackupDeclinedDate/{N;d;}'   \
+# Check to make sure it was repaired sucessfully
+tail /var/log/fsck_hfs.log
+result=‘The Volume was repaired successfully’
+read -p "Continue if repair sucessful?(Y/y) " -n 1 -r
+echo    # (optional) move to a new line
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+    echo "Fixing Properties"
+    cp "$PLIST" "$PLIST.backup"
+    sed -e '/RecoveryBackupDeclinedDate/{N;d;}'   \
     -e '/VerificationState/{n;s/2/0/;}'       \
     "$PLIST.backup" \
     > "$PLIST"
+fi
 
 echo "Unmounting volumes"
 hdiutil detach $DISK

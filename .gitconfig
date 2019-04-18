@@ -1,6 +1,6 @@
 [user]
-	email = totallyGreg@gmail.com
-	name = J. Greg Williams
+  email = totallyGreg@gmail.com
+  name = J. Greg Williams
 [alias]
   co = checkout
   ci = commit
@@ -13,10 +13,10 @@
   remotes = remote -v
   type = cat-file -t
   dump = cat-file -p
-	staged = diff --staged    # view the diff of what is currently staged
-	unstage = reset HEAD --  # Remove filename from the staging area
-	last = log -1 HEAD      # view last commit
-	find = "!git log --color -p -S "
+  staged = diff --staged    # view the diff of what is currently staged
+  unstage = reset HEAD --  # Remove filename from the staging area
+  last = log -1 HEAD      # view last commit
+  find = "!git log --color -p -S "
   size = "count-objects -vH"
   review = "log master..origin/master"
 
@@ -37,21 +37,22 @@
   changed = green
   untracked = cyan
 [filter "lfs"]
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
-	required = true
-[status]
-	submoduleSummary = true
-[core]
-	excludesfile = /Users/jwilliams/.gitignore_global
-[difftool "sourcetree"]
-	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-	path = 
-[mergetool "sourcetree"]
-	cmd = /Applications/Ops/Administration/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
-	trustExitCode = true
+  clean = git-lfs clean -- %f
+  smudge = git-lfs smudge -- %f
+  process = git-lfs filter-process
+  required = true
+[status] 
+  submoduleSummary = true
+[difftool "sourcetree"] 
+  cmd = opendiff \"$LOCAL\" \"$REMOTE\" 
+  path = 
+[mergetool "sourcetree"] 
+  cmd = /Users/totally/Applications/Ops/Organization/Code Tools/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+  trustExitCode = true
 [commit]
-	template = /Users/jwilliams/.stCommitMsg
+  template = /Users/totally/.stCommitMsg
+  #template = \"$HOME\"/.stCommitMsg
 [push]
-	default = simple
+  default = simple
+[core]
+  excludesfile = /Users/totally/.gitignore_global
