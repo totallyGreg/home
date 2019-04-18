@@ -40,19 +40,31 @@ export PATH=/usr/bin:/bin
 [ -d /opt/sfw/bin ] && export PATH=/opt/sfw/bin:${PATH}
 [ -d /usr/local/ssl/bin ] && export PATH=/usr/local/ssl/bin:${PATH}
 [ -d /usr/local/share/python ] && export PATH=/usr/local/share/python:${PATH}
+[ -d /usr/local/miniconda3/bin ] && export PATH=/usr/local/miniconda3/bin:"$PATH"
 test -r /sw/bin/init.sh && . /sw/bin/init.sh
 [ -d ${HOME}/bin ] && export PATH=${HOME}/bin:${PATH}
 export PATH=${PATH}:.
 
+
+# iCloud
+[ -d "${HOME}/Library/Mobile Documents/com~apple~CloudDocs" ] && export iCloud="${HOME}/Clouds/iCloud"
+
 # virtualenv
 export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/Projects
-export PYTHONPATH=/usr/local/bin/python3
-export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3
+export PYTHONPATH=/usr/local/miniconda3/bin/python3
+export VIRTUALENVWRAPPER_PYTHON=/usr/local/miniconda3/bin/python3
 export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
 [ -f /usr/local/bin/virtualenvwrapper.shi ] && source /usr/local/bin/virtualenvwrapper.sh
 
-# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
-export PATH="$PATH:$HOME/.rvm/bin"
+# Setup Go environment
+export GOPATH="${HOME}/.go"
+# export GOROOT="$(brew --prefix golang)/libexec"
+export GOROOT="/usr/local/go"
+export PATH="$PATH:${GOPATH}/bin:${GOROOT}/bin"
 
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+# export PATH="$PATH:$HOME/.rvm/bin"
+
+# [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
