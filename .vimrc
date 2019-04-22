@@ -2,6 +2,10 @@
 
 set nocompatible
 
+" Neovim Specific configs
+if has('nvim')
+
+endif
 
 "{{{ Plugin Managment
 " Configure Vim-Plug
@@ -78,7 +82,9 @@ Plug 'valloric/youcompleteme'
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
 Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
 " Plug 'benekastah/neomake', Cond(has('nvim'), { 'on': 'Neomake' })
-Plug 'junegunn/vim-xmark', { 'do': 'make' } ", Cond(has('macunix'))
+if has('mac')
+    Plug 'junegunn/vim-xmark'
+endif
 call plug#end()
 
 "{{{ Plugin Settings
@@ -216,6 +222,11 @@ endif
 
 "Enble basic mouse behavior such as resizing buffers.
 set mouse=a
+
+if !has('nvim')
+  set ttymouse=xterm2
+endif
+
 if exists('$TMUX')  " Support resizing in tmux
   " set ttymouse=xterm2
 endif
