@@ -1,6 +1,17 @@
 # Since most of my stuff is in .profile and bash will only source the first profile it finds
 
-export HOMEBREW_CASK_OPTS="--appdir=~/Applications"
+unameOut="$(uname -s)"
+case "${unameOut}" in
+    Linux*)     machine=Linux;;
+    Darwin*)    machine=Mac
+      export HOMEBREW_CASK_OPTS="--appdir=~/Applications"
+      ;;
+    CYGWIN*)    machine=Cygwin;;
+    MINGW*)     machine=MinGw;;
+    *)          machine="UNKNOWN:${unameOut}"
+esac
+echo "Running on ${machine}"
+
 
 # From bash-completion@2
 [[ -f /usr/local/share/bash-completion/bash_completion ]] && source "/usr/local/share/bash-completion/bash_completion"

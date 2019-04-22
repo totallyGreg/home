@@ -2,6 +2,8 @@
 
 alias git_home='curl https://gist.githubusercontent.com/totallyGreg/4c9a430e6965280a60fcec628e1d03d5/raw | bash'
 alias install_home_brew='/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
+
+if [ ! ${machine} == "Mac" ]; then alias ls='ls --color=auto' ; fi
 alias l='ls -lhF'
 alias ll='ls -lhF'
 alias l1='ls -1'
@@ -86,4 +88,3 @@ alias testme='echo "Testing!!"'
 # https://brbsix.github.io/2015/11/23/perform-tab-completion-for-aliases-in-bash/
 # Now sourcing this https://superuser.com/questions/436314/how-can-i-get-bash-to-perform-tab-completion-for-my-aliases
 source ~/.alias_completion
-
