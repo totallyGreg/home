@@ -15,8 +15,8 @@ if empty(glob('~/.vim/autoload/plug.vim'))
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
-" call plug#begin('~/.vim/bundle')
-call plug#begin('~/.local/share/nvim/plugged')
+call plug#begin('~/.vim/bundle')
+" call plug#begin('~/.local/share/nvim/plugged')
 
 " Base Plugins
 Plug 'tpope/vim-sensible'
@@ -75,7 +75,7 @@ let g:UltiSnipsJumpForwardTrigger = '<tab>'
 let g:UltiSnipsJumpBackwardTrigger = '<s-tab>'
 Plug 'honza/vim-snippets'
 " Plug 'ivanov/vim-ipython'
-Plug 'valloric/youcompleteme'
+" Plug 'valloric/youcompleteme'
 " Plug 'davidhalter/jedi-vim' "awesome Python autocompletion with VIM
 
 " On-demand loading
@@ -92,7 +92,8 @@ call plug#end()
 "let python_highlights_all=1
 let g:airline#extensions#ale#enabled = 1
 let g:airline#extensions#tabline#enabled = 1
-let g:airline_theme='solarized'
+" let g:airline_theme='solarized'
+let g:airline_theme='base16_vim'
 let g:ale_statusline_format = ['⨉ %d', '⚠ %d', '⬥ ok']
 let g:ale_open_list = 0
 let g:ale_set_quickfix = 1
@@ -199,7 +200,6 @@ set wildmode=longest,list,full
 " set expandtab             " tabs are spaces
 
 " " }}}
-
 
 " highlight search
 set incsearch           " search as characters are typed

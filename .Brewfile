@@ -1,4 +1,5 @@
 tap "beeftornado/rmtree"
+tap "cloudfoundry/tap"
 tap "homebrew/bundle"
 tap "homebrew/cask"
 tap "homebrew/cask-fonts"
@@ -16,6 +17,8 @@ brew "ansible"
 brew "ansible-lint"
 # Text processor and publishing toolchain for AsciiDoc
 brew "asciidoctor"
+# Microsoft Azure CLI 2.0
+brew "azure-cli"
 # Bourne-Again SHell, a UNIX command interpreter
 brew "bash"
 # Programmable completion for Bash 4.1+
@@ -42,6 +45,8 @@ brew "gitmoji"
 brew "graphviz"
 # GitHub Markdown previewer
 brew "grip"
+# Convert source code to formatted text with syntax highlighting
+brew "highlight"
 # Lightweight and flexible command-line JSON processor
 brew "jq"
 # Swiss-army knife of markup format conversion
@@ -91,11 +96,12 @@ brew "urlview"
 # Bash completion for Vagrant
 brew "vagrant-completion"
 # Vi 'workalike' with many additional features
-brew "vim"
+brew "vim", link: false
 # Executes a program periodically, showing output fullscreen
 brew "watch"
 # Linter for YAML files
 brew "yamllint"
+brew "cloudfoundry/tap/cf-cli"
 brew "martido/brew-graph/brew-graph"
 brew "mczachurski/wallpapper/wallpapper"
 # Maintained ctags implementation
@@ -109,11 +115,11 @@ cask "basictex"
 cask "docker"
 cask "dropbox"
 cask "font-hack-nerd-font"
-cask "handbrake"
+cask "handbrake", { appdir: "~/Applications/Ops/Engineering/Transmutation/" }
 cask "hetimazipql"
 cask "insomnia"
 cask "iterm2"
-cask "macvim"
+cask "krisp"
 cask "makemkv"
 cask "miniconda"
 cask "mkvtools"
@@ -123,14 +129,14 @@ cask "qlmarkdown"
 cask "qlprettypatch"
 cask "qlstephen"
 cask "quicklook-json"
-cask "quicksilver"
+cask "quicksilver" { appdir: "~//Users/totally/Applications/Ops/Administration" }
 cask "qutebrowser"
 cask "skitch"
 cask "slack", args: { appdir: "~/Applications/Comm/Instant" }
 cask "sonic-visualiser"
 cask "vagrant"
-cask "vagrant-manager"
+cask "vagrant-manager" { appdir: "~/Applications/Ops/Engineering" }:x
 cask "virtualbox"
-cask "wireshark"
+cask "wireshark" { appdir: "~//Users/totally/Applications/Astrometrics/Scanners }
 cask "xld"
 cask "yed", args: { appdir: "~/Applications/Comm/Visual" }
