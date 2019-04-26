@@ -77,6 +77,7 @@ alias readlog='less -raw-control-chars'
 
 ##### Dotfile management through git work-tree
 alias dotadm='git --git-dir=$HOME/.home/ --work-tree=$HOME $@'
+alias dadm='git --git-dir=$HOME/.home/ --work-tree=$HOME $@'
 alias dotupgrade='dotadm submodule update --remote --merge'
 
 # Generate random mac address for wireless
