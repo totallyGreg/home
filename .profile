@@ -41,6 +41,7 @@ export PATH=/usr/bin:/bin
 [ -d /usr/local/ssl/bin ] && export PATH=/usr/local/ssl/bin:${PATH}
 [ -d /usr/local/share/python ] && export PATH=/usr/local/share/python:${PATH}
 [ -d /usr/local/miniconda3/bin ] && export PATH=/usr/local/miniconda3/bin:"$PATH"
+[ -d $HOME/.linuxbrew/bin ] && export PATH=$HOME/.linuxbrew/bin:"$PATH"
 [ -d ${HOME}/bin ] && export PATH=${HOME}/bin:${PATH}
 export PATH=${PATH}:.
 
