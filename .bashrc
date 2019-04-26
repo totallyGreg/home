@@ -13,7 +13,7 @@ export CLICOLOR=1
 # Directorys Blue, Symlinks cyan
 export LSCOLORS=exGxhxDxfxhxhxhxhxcxcx
 export LS_COLORS='di=34:ln=1;36:so=37:pi=1;33:ex=35:bd=37:cd=37:su=31:sg=31:tw=32:ow=32'
-## Shell color codes 
+## Shell color codes
 COLOR_WHITE='\033[1;37m'
 COLOR_LIGHTGRAY='033[0;37m'
 COLOR_GRAY='\033[1;30m'
@@ -57,7 +57,7 @@ shopt -s cdable_vars
 # Update window size after every command
 shopt -s checkwinsize
 
-# This makes writing to history happen after each prompt 
+# This makes writing to history happen after each prompt
 # So multiple logins are all sharing history
 shopt -s histappend
 #PROMPT_COMMAND='history -a'
@@ -97,9 +97,14 @@ else
 fi
 
 
-## Test for color should be moved to aliases prior to color aliaseing
-if [ -f /usr/local/bin/dircolors ]; then
-        eval `/usr/local/bin/dircolors -c ~/.dircolors`;
+## Test for color is actually a test for linux over mac
+if [ -f /usr/bin/dircolors ]; then
+  test -r ~/.dir_colors && eval "$(dircolors -b ~/.dir_colors)" || eval "$(dircolors -b)"
+  alias ls='ls --color=auto'
+  alias dir='dir --color=auto'
+  alias grep='grep --color=auto'
+  alias fgrep='fgrep --color=auto'
+  alias egrep='egrep --color=auto'
 fi
 
 # enable programmable completion features (you don't need to enable
@@ -118,7 +123,7 @@ if ! shopt -oq posix; then
 
 fi
 
-## Liquid Prompt if shell is interactive 
+## Liquid Prompt if shell is interactive
 [[ $- = *i* ]] && source ~/bin/liquidprompt/liquidprompt
 
 ## Source Functions
