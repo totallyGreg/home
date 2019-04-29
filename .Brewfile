@@ -7,6 +7,7 @@ tap "homebrew/core"
 tap "martido/brew-graph"
 tap "mczachurski/wallpapper"
 tap "sandreas/tap"
+tap "starkandwayne/cf"
 tap "universal-ctags/universal-ctags"
 tap "watsonbox/cmu-sphinx"
 # Interpreted, interactive, object-oriented programming language
@@ -96,7 +97,7 @@ brew "urlview"
 # Bash completion for Vagrant
 brew "vagrant-completion"
 # Vi 'workalike' with many additional features
-brew "vim", link: false
+brew "vim"
 # Executes a program periodically, showing output fullscreen
 brew "watch"
 # Linter for YAML files
@@ -104,6 +105,7 @@ brew "yamllint"
 brew "cloudfoundry/tap/cf-cli"
 brew "martido/brew-graph/brew-graph"
 brew "mczachurski/wallpapper/wallpapper"
+brew "starkandwayne/cf/om"
 # Maintained ctags implementation
 brew "universal-ctags/universal-ctags/universal-ctags", args: ["HEAD"]
 brew "watsonbox/cmu-sphinx/cmu-sphinxbase", args: ["HEAD"]
@@ -121,7 +123,6 @@ cask "insomnia"
 cask "iterm2"
 cask "krisp"
 cask "makemkv"
-cask "miniconda"
 cask "mkvtools"
 cask "oni"
 cask "qlcolorcode"
