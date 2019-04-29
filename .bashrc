@@ -1,5 +1,4 @@
-#echo "bashrc loading..."
-
+echo "bashrc loading..."
 #Shell Variables
 HISTSIZE=500000
 HISTFILESIZE=100000
@@ -12,25 +11,25 @@ HISTTIMEFORMAT='%F %T '
 export CLICOLOR=1
 # Directorys Blue, Symlinks cyan
 export LSCOLORS=exGxhxDxfxhxhxhxhxcxcx
-export LS_COLORS='di=34:ln=1;36:so=37:pi=1;33:ex=35:bd=37:cd=37:su=31:sg=31:tw=32:ow=32'
-## Shell color codes
-COLOR_WHITE='\033[1;37m'
-COLOR_LIGHTGRAY='033[0;37m'
-COLOR_GRAY='\033[1;30m'
-COLOR_BLACK='\033[0;30m'
-COLOR_RED='\033[0;31m'
-COLOR_LIGHTRED='\033[1;31m'
-COLOR_GREEN='\033[0;32m'
-COLOR_LIGHTGREEN='\033[1;32m'
-COLOR_BROWN='\033[0;33m'
-COLOR_YELLOW='\033[1;33m'
-COLOR_BLUE='\033[0;34m'
-COLOR_LIGHTBLUE='\033[1;34m'
-COLOR_PURPLE='\033[0;35m'
-COLOR_PINK='\033[1;35m'
-COLOR_CYAN='\033[0;36m'
-COLOR_LIGHTCYAN='\033[1;36m'
-COLOR_DEFAULT='\033[0m'
+# export LS_COLORS='di=34:ln=1;36:so=37:pi=1;33:ex=35:bd=37:cd=37:su=31:sg=31:tw=32:ow=32'
+# ## Shell color codes
+# COLOR_WHITE='\033[1;37m'
+# COLOR_LIGHTGRAY='033[0;37m'
+# COLOR_GRAY='\033[1;30m'
+# COLOR_BLACK='\033[0;30m'
+# COLOR_RED='\033[0;31m'
+# COLOR_LIGHTRED='\033[1;31m'
+# COLOR_GREEN='\033[0;32m'
+# COLOR_LIGHTGREEN='\033[1;32m'
+# COLOR_BROWN='\033[0;33m'
+# COLOR_YELLOW='\033[1;33m'
+# COLOR_BLUE='\033[0;34m'
+# COLOR_LIGHTBLUE='\033[1;34m'
+# COLOR_PURPLE='\033[0;35m'
+# COLOR_PINK='\033[1;35m'
+# COLOR_CYAN='\033[0;36m'
+# COLOR_LIGHTCYAN='\033[1;36m'
+# COLOR_DEFAULT='\033[0m'
 
 # ENV variables
 export TIMEFORMAT="%Rs - "
@@ -62,7 +61,6 @@ shopt -s checkwinsize
 shopt -s histappend
 #PROMPT_COMMAND='history -a'
 export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r"
-
 
 # Save multi-line commands as one command
 shopt -s cmdhist
@@ -128,14 +126,11 @@ fi
 
 ## Source Functions
 [ -f ~/.functions ] && source ~/.functions
-
 ## Source Aliases
 [ -f ~/.aliases ] && source ~/.aliases
-
 ## Source Terraform variables
-include ~/.oci/env-vars
+# include ~/.oci/env-vars
 
 # Ruby Path
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
-

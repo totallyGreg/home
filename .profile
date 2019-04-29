@@ -45,7 +45,6 @@ export PATH=/usr/bin:/bin
 [ -d ${HOME}/bin ] && export PATH=${HOME}/bin:${PATH}
 export PATH=${PATH}:.
 
-
 # iCloud
 [ -d "${HOME}/Library/Mobile Documents/com~apple~CloudDocs" ] && export iCloud="${HOME}/Clouds/iCloud"
 
@@ -62,7 +61,6 @@ export GOPATH="${HOME}/.go"
 # export GOROOT="$(brew --prefix golang)/libexec"
 export GOROOT="/usr/local/go"
 export PATH="$PATH:${GOPATH}/bin:${GOROOT}/bin"
-
 
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 # export PATH="$PATH:$HOME/.rvm/bin"
