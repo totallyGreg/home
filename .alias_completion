@@ -1,6 +1,8 @@
 #!/bin/env bash
+## Something about this breaks when there is no internet connection
 # Automatically add completion for all aliases to commands having completion functions
 function alias_completion {
+    # set -x
     local namespace="alias_completion"
 
     # parse function based completion definitions, where capture group 2 => function and 3 => trigger
@@ -66,4 +68,5 @@ function alias_completion {
         echo "$new_completion" >> "$tmp_file"
     done < <(alias -p | sed -Ene "s/$alias_regex/\1 '\2' '\3'/p")
     source "$tmp_file" && rm -f "$tmp_file"
-}; alias_completion
+    set +x
+} ; alias_completion

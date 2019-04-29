@@ -1,8 +1,4 @@
 ## Beginning of Aliases
-
-alias git_home='curl https://gist.githubusercontent.com/totallyGreg/4c9a430e6965280a60fcec628e1d03d5/raw | bash'
-alias install_home_brew='/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
-
 if [ ! ${machine} == "Mac" ]; then alias ls='ls --color=auto' ; fi
 alias l='ls -lhF'
 alias ll='ls -lhF'
@@ -11,12 +7,11 @@ alias la='ls -alhF'
 alias lt='ls -alhFtr'
 alias grep='grep --color=auto'
 alias cd..='cd ..'
-alias cat='bat --theme TwoDark'
 alias ic='cd ~/Library/Mobile\ Documents/com~apple~CloudDocs'
+# if [ -e (which bat) ]; alias cat='bat --theme TwoDark'
 
 ## Example of ssh tunneling through a gateway machine
 #alias rupert='ssh -X -A -t jgreg@peabody.ximian.com ssh -X -A totally@rupert.ximian.com'
-
 
 # Python source venv
 alias sv='source venv/bin/activate'
@@ -45,6 +40,7 @@ alias kx='kubectl exec -i -t'
 alias ksvc='kubectl get services --all-namespaces'
 alias kpod='kubectl get pods --all-namespaces'
 alias kedp='kubectl get endpoints --all-namespaces'
+alias busybox='kubectl run -it --rm --restart=Never busybox --image=busybox sh'
 
 ## Tmux stuff
 alias takeover="tmux detach -a"
@@ -54,17 +50,12 @@ alias vgs='vagrant global-status'
 alias v='vagrant'
 
 ## Random Crap
-alias busybox='kubectl run -it --rm --restart=Never busybox --image=busybox sh'
 alias gn='growlnotify'
-alias excuse='nc towel.blinkenlights.nl 666'
-alias starwars='nc towel.blinkenlights.nl 23'
-alias dict='curl dict://dict.org/d:$1'
 alias backscreen='/System/Library/Frameworks/ScreenSaver.framework/Resources/ScreenSaverEngine.app/Contents/MacOS/ScreenSaverEngine -background &'
 alias ttop='top -ocpu -R -F -s 2 -n30'
 alias mtop='top -o rsize'
 alias quick='open /Applications/Ops/Administration/Quicksilver.app'
 alias futurama='fortune ~/Clouds/iCloud/Bookshelf/Quotes/futurama'
-alias morbotron="curl -s https://morbotron.com/api/random | jq --raw-output '.Subtitles[] .Content'"
 alias fc='dscacheutil -flushcache'
 alias serialscreen='screen -L /dev/cu.usbserial -f 9600,cs8,-parenb,-cstopb,-hupcl'
 alias odiff='opendiff'
@@ -83,9 +74,15 @@ alias dotupgrade='dotadm submodule update --remote --merge'
 # Generate random mac address for wireless
 alias random-mac="openssl rand -hex 6 | sed 's/\(..\)/\1:/g; s/.$//' | xargs sudo ifconfig en0 ether"
 
-alias testme='echo "Testing!!"'
-
 ### alias completion functions do not work as they seem to depend on bash 4.1
 # https://brbsix.github.io/2015/11/23/perform-tab-completion-for-aliases-in-bash/
 # Now sourcing this https://superuser.com/questions/436314/how-can-i-get-bash-to-perform-tab-completion-for-my-aliases
 source ~/.alias_completion
+#
+### Aliases that require a network kept afterwards to it doesn't stall the .alias_completion funciton
+alias morbotron="curl -s https://morbotron.com/api/random | jq --raw-output '.Subtitles[] .Content'"
+alias dict='curl dict://dict.org/d:$1'
+alias excuse='nc towel.blinkenlights.nl 666'
+alias starwars='nc towel.blinkenlights.nl 23'
+alias git_home='curl https://gist.githubusercontent.com/totallyGreg/4c9a430e6965280a60fcec628e1d03d5/raw | bash'
+alias install_home_brew='/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
