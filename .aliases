@@ -51,7 +51,9 @@ alias v='vagrant'
 
 ## Random Crap
 alias gn='growlnotify'
-alias backscreen='/System/Library/Frameworks/ScreenSaver.framework/Resources/ScreenSaverEngine.app/Contents/MacOS/ScreenSaverEngine -background &'
+alias backscreen='/System/Library/CoreServices/ScreenSaverEngine.app/Contents/MacOS/ScreenSaverEngine -background &'
+alias lockscreen='/System/Library/CoreServices/"Menu Extras"/User.menu/Contents/Resources/CGSession -suspend'
+alias screensaver='open -a /System/Library/Frameworks/ScreenSaver.framework/Versions/A/Resources/ScreenSaverEngine.app'
 alias ttop='top -ocpu -R -F -s 2 -n30'
 alias mtop='top -o rsize'
 alias quick='open /Applications/Ops/Administration/Quicksilver.app'

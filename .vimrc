@@ -2,11 +2,11 @@
 
 set nocompatible
 
-" Neovim Specific configs
+"{{{ Neovim Specific configs
 if has('nvim')
 
 endif
-
+"}}}
 "{{{ Plugin Managment
 " Configure Vim-Plug
 if empty(glob('~/.vim/autoload/plug.vim'))
@@ -23,6 +23,7 @@ Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-repeat'
 Plug 'altercation/vim-colors-solarized'
+Plug 'lifepillar/vim-solarized8'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'ctrlpvim/ctrlp.vim'
@@ -34,6 +35,7 @@ set viewoptions=cursor,slash,unix
 let g:skipview_files = ['*\.vim']
 Plug 'junegunn/vim-easy-align'
 Plug 'yggdroot/indentLine'
+Plug 'janko-m/vim-test'
 
 " Tmux Tools
 Plug 'tmux-plugins/vim-tmux'
@@ -69,11 +71,6 @@ Plug 'nvie/vim-flake8'
 Plug 'w0rp/ale'
 nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 nmap <silent> <C-j> <Plug>(ale_next_wrap)
-Plug 'sirver/ultisnips'
-let g:UltiSnipsExpandTrigger = '<tab>'
-let g:UltiSnipsJumpForwardTrigger = '<tab>'
-let g:UltiSnipsJumpBackwardTrigger = '<s-tab>'
-Plug 'honza/vim-snippets'
 " Plug 'ivanov/vim-ipython'
 " Plug 'valloric/youcompleteme'
 " Plug 'davidhalter/jedi-vim' "awesome Python autocompletion with VIM
@@ -82,6 +79,19 @@ Plug 'honza/vim-snippets'
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
 Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
 " Plug 'benekastah/neomake', Cond(has('nvim'), { 'on': 'Neomake' })
+" Load on nothing
+Plug 'SirVer/ultisnips', { 'on': [] }
+Plug 'Valloric/YouCompleteMe', { 'on': [] }
+Plug 'honza/vim-snippets', { 'on': [] }
+
+augroup load_us_ycm
+ autocmd!
+   autocmd InsertEnter * call plug#load('ultisnips', 'YouCompleteMe')
+                        \| autocmd! load_us_ycm
+    let g:UltiSnipsExpandTrigger = '<tab>'
+    let g:UltiSnipsJumpForwardTrigger = '<tab>'
+    let g:UltiSnipsJumpBackwardTrigger = '<s-tab>'
+                        augroup END
 if has('mac')
     Plug 'junegunn/vim-xmark'
 endif
@@ -153,7 +163,7 @@ autocmd BufRead,BufNewFile *.ics set filetype=icalendar
 
 
 autocmd FileType mail,text,html,asciidoc setlocal spell spelllang=en
-inoremap <C-l> <c-g>u<Esc>[s1z=`]a<c-g>u
+" inoremap <C-l> <c-g>u<Esc>[s1z=`]a<c-g>u
 autocmd BufRead,BufNewFile *.txt,*.asciidoc,README,TODO,CHANGELOG,NOTES,ABOUT
     \ setlocal autoindent expandtab tabstop=8 softtabstop=2 shiftwidth=2 filetype=asciidoc
     \ textwidth=70 wrap formatoptions=tcqn
@@ -173,8 +183,10 @@ set backspace=2                                              " Fix broken backsp
 set backupcopy=yes                                           " see :help crontab
 set clipboard=unnamed                                        " yank and paste with the system clipboard
 set directory-=.                                             " don't store swapfiles in the current directory
+set diffopt=filler,vertical,hiddenoff
 set encoding=utf-8
 set expandtab                                                " expand tabs to spaces
+set hidden
 set ignorecase                                               " case-insensitive search
 set incsearch                                                " search as you type
 set laststatus=2                                             " always show statusline
@@ -201,11 +213,6 @@ set wildmode=longest,list,full
 
 " " }}}
 
-" highlight search
-set incsearch           " search as characters are typed
-set hlsearch            " highlight matches
-nmap <leader>hl :let @/ = ""<CR>
-nnoremap <esc> :noh<return><esc> " escape turns off highlight
 
 "}}}
 " GUI Specific  Settings {{{
@@ -264,7 +271,15 @@ nmap <silent> <leader>m :Map<CR>
 " nmap <silent> <leader>: :Commands<CR>
 "}}}
 " Searching {{{
-"
+
+" highlight search
+set incsearch           " search as characters are typed
+set hlsearch            " highlight matches
+nmap <leader>hl :let @/ = ""<CR>
+nnoremap <esc> :noh<return><esc> " escape turns off highlight
+" needed so that vim still understands escape sequences
+nnoremap <esc>^[ <esc>^[
+
 " plugin settings
 let g:ctrlp_match_window = 'order:ttb,max:20'
 let g:NERDSpaceDelims=1
@@ -277,6 +292,7 @@ if executable('ag')
   " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
   let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
 endif
+
 
 " }}}
 " Folding {{{
@@ -306,14 +322,14 @@ nnoremap <silent> <backspace> :GitGutterPrevHunk<cr>
 
 " vim-tmux-pilot settings
 " Uncomment to enable navigation of vim tabs
-let g:pilot_mode='wintab'
+" let g:pilot_mode='wintab'
 
 " Uncomment to enable creation of vim splits automatically
 " 'ignore' ('create', 'reflect') Boundary condition
-let g:pilot_boundary='create'
+let g:pilot_boundary='reflect'
 "
 " defaults to 'tsplit' ('vtab') Precedence between vtabs and tsplits
-let g:pilot_precedence='vtab'
+" let g:pilot_precedence='vtab'
 
 " }}}
 " Custom Functions {{{

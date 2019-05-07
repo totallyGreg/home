@@ -5,11 +5,12 @@
   co = checkout
   ci = commit
   branches = branch -av
-  hist = log --graph --pretty=format:'%Cred%h%Creset %s%C(yellow)%d%Creset %Cgreen(%cr)%Creset [%an]' --abbrev-commit --date=relative # Prettier and Relative
+
+; Useful log aliases
   ls = log --decorate --oneline --graph
   ll = log --decorate --oneline --graph --numstat
   pretty = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
-  pr = log --graph --pretty=format:'%Cred%h%Creset %s%C(yellow)%d%Creset %Cgreen(%cr)%Creset [%an]' --abbrev-commit --date=relative # Prettier and Relative
+  hist = log --graph --pretty=format:'%Cred%h%Creset %s%C(yellow)%d%Creset %Cgreen(%cr)%Creset [%an]' --abbrev-commit --date=relative 
   remotes = remote -v
   type = cat-file -t
   dump = cat-file -p
