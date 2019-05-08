@@ -41,12 +41,17 @@ export PATH=/usr/bin:/bin
 [ -d /usr/local/ssl/bin ] && export PATH=/usr/local/ssl/bin:${PATH}
 [ -d /usr/local/share/python ] && export PATH=/usr/local/share/python:${PATH}
 [ -d /usr/local/miniconda3/bin ] && export PATH=/usr/local/miniconda3/bin:"$PATH"
-[ -d $HOME/.linuxbrew/bin ] && export PATH=$HOME/.linuxbrew/bin:"$PATH"
 [ -d ${HOME}/bin ] && export PATH=${HOME}/bin:${PATH}
-export PATH=${PATH}:.
+[ -d $HOME/.linuxbrew/bin ] && export PATH=$HOME/.linuxbrew/bin:"$PATH"
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+[ -d $HOME/.rvm/bin ] && export PATH="$PATH":$HOME/.rvm/bin
 
 # iCloud
 [ -d "${HOME}/Library/Mobile Documents/com~apple~CloudDocs" ] && export iCloud="${HOME}/Clouds/iCloud"
+
+# Linuxbrew
+test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
+test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
 
 # virtualenv
 export WORKON_HOME=$HOME/.virtualenvs
@@ -62,7 +67,4 @@ export GOPATH="${HOME}/.go"
 export GOROOT="/usr/local/go"
 export PATH="$PATH:${GOPATH}/bin:${GOROOT}/bin"
 
-# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
-# export PATH="$PATH:$HOME/.rvm/bin"
-
-# [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
