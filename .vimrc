@@ -39,6 +39,7 @@ Plug 'janko-m/vim-test'
 
 " Tmux Tools
 Plug 'tmux-plugins/vim-tmux'
+" Plug 'christoomey/vim-tmux-navigator'
 Plug 'urbainvaes/vim-tmux-pilot'
 Plug 'benmills/vimux'
 
@@ -148,6 +149,7 @@ autocmd BufRead,BufNewFile *.fdoc set filetype=yaml
 " md is markdown
 autocmd BufRead,BufNewFile *.md set filetype=markdown
 autocmd BufRead,BufNewFile *.md set spell
+au BufRead,BufNewFile *.{md,markdown,mdown,mkd,mkdn} call s:setupMarkup()
 
 " autocmd BufWritePre *.php,*.py,*.js,*.txt,*.hs,*.java,*.md
 "                 \:call <SID>StripTrailingWhitespaces()
@@ -338,6 +340,10 @@ let g:pilot_boundary='reflect'
 "   let opts = get(a:000, 0, {})
 "   return a:cond ? opts : extend(opts, { 'on': [], 'for': [] })
 " endfunction
+
+function! s:setupMarkup()
+  nnoremap <leader>e :silent !open -a "Marked.app" '%:p'<cr>
+endfunction
 
 function! s:ShowMaps()
   let old_reg = getreg("a")          " save the current content of register a
