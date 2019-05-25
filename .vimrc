@@ -7,7 +7,7 @@ if has('nvim')
 
 endif
 "}}}
-"{{{ Plugin Managment
+" {{{ Plugin Managment
 " Configure Vim-Plug
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
@@ -19,39 +19,58 @@ call plug#begin('~/.vim/bundle')
 " call plug#begin('~/.local/share/nvim/plugged')
 
 " Base Plugins
-Plug 'tpope/vim-sensible'
-Plug 'tpope/vim-unimpaired'
-Plug 'tpope/vim-repeat'
-Plug 'altercation/vim-colors-solarized'
-Plug 'lifepillar/vim-solarized8'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'ctrlpvim/ctrlp.vim'
-Plug 'rking/ag.vim'
+Plug 'tpope/vim-sensible'   " Sensible vim defaults
+Plug 'tpope/vim-unimpaired' " Pairs of handy bracket mappings
+Plug 'tpope/vim-repeat'     " Add repeat support with '.' for lots of plugins
+Plug 'gabesoft/vim-ags'     " A Vim plugin for the silver searcher that focuses on clear display of the search results
 Plug '/usr/local/opt/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'vim-scripts/restore_view.vim'
 set viewoptions=cursor,slash,unix
 let g:skipview_files = ['*\.vim']
-Plug 'junegunn/vim-easy-align'
 Plug 'yggdroot/indentLine'
 Plug 'janko-m/vim-test'
 
 " Tmux Tools
 Plug 'tmux-plugins/vim-tmux'
 " Plug 'christoomey/vim-tmux-navigator'
-Plug 'urbainvaes/vim-tmux-pilot'
-Plug 'benmills/vimux'
+" Plug 'urbainvaes/vim-tmux-pilot'
+Plug 'benmills/vimux'                   " vim plugin to interact with tmux
+
+" Visual
+Plug 'altercation/vim-colors-solarized' " Ethan's best
+Plug 'lifepillar/vim-solarized8'
+Plug 'majutsushi/tagbar'                " Open tag navigation split with :Tagbar
+Plug 'ryanoasis/vim-devicons'
+Plug 'itchyny/lightline.vim'
+" Do not need to show -- Insert --, as lightline handles it already
+set noshowmode 
+" let g:lightline.colorscheme = 'solarized'
+let g:lightline = {
+      \ 'colorscheme': 'solarized',
+      \ }
+" Plug 'vim-airline/vim-airline' " {{{
+" let g:airline#extensions#ale#enabled = 1
+" let g:airline#extensions#tabline#enabled = 1   " }}}
+" Plug 'vim-airline/vim-airline-themes'  " {{{
+" let g:airline_theme='solarized'
+" let g:airline_theme='base16_vim' " }}}
 
 " Syntax
-Plug 'sheerun/vim-polyglot'   " Polyglot autoloads many language packs replacing:
-" Plug 'pearofducks/ansible-vim'
-" Plug 'fatih/vim-go'
-" Plug 'glench/vim-jinja2-syntax'
-" Plug 'hashivim/vim-terraform'
+Plug 'sheerun/vim-polyglot' " Polyglot autoloads many language packs replacing: {{{
+                            " Plug 'pearofducks/ansible-vim'
+                            " Plug 'fatih/vim-go'
+                            " Plug 'glench/vim-jinja2-syntax'
+                            " Plug 'hashivim/vim-terraform'
+let g:polyglot_disabled = ['asciidoc'] " disabled since asciidoc is out of date
+let g:ansible_attribute_highlight = "ab"
+let g:ansible_extra_keywords_highlight = 1
+let g:ansible_name_highlight = 'd'
+" let g:ansible_unindent_after_newline = 1
+let g:terraform_fold_sections=1
+                            " }}}
 Plug 'isene/hyperlist.vim'
 Plug 'towolf/vim-helm'
-let g:polyglot_disabled = ['asciidoc'] " disabled since asciidoc is out of date
 
 " Asciidoc
 Plug 'dahu/vim-asciidoc'
@@ -60,18 +79,33 @@ Plug 'dahu/vimple'
 Plug 'vim-scripts/SyntaxRange'
 Plug 'raimondi/vimregstyle'
 
-" Code Helpers
-Plug 'tpope/vim-surround'
-Plug 'tpope/vim-commentary'
-Plug 'tpope/vim-fugitive'
-Plug 'airblade/vim-gitgutter'
-Plug 'majutsushi/tagbar'
+" Editing
+Plug 'tpope/vim-surround' " Adds the surround motion bound to s
+Plug 'tpope/vim-commentary' " Adds comment action with 'gc'
+Plug 'junegunn/vim-easy-align' " 
+let g:easy_align_ignore_comment = 0 " align comments
+vnoremap <silent> <Enter> :EasyAlign<cr>
+
+" Git
+Plug 'tpope/vim-fugitive'          " Git plugin with commands 'G<command>'
+Plug 'airblade/vim-gitgutter'      " Show git diff in number column {{{
+let g:gitgutter_enabled = 1
+let g:gitgutter_hightlight_lines = 1 " }}}
+Plug 'tpope/vim-rhubarb'           " Github extension for fugitive.vim
+Plug 'jreybert/vimagit'            " Modal git editing with <leader>g
+Plug 'Xuyuanp/nerdtree-git-plugin' " A plugin of NERDTree showing git status flags.
+
 Plug 'mustache/vim-mustache-handlebars'
 let g:mustache_abbreviations = 1
 Plug 'nvie/vim-flake8'
-Plug 'w0rp/ale'
+Plug 'w0rp/ale' " {{{
 nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 nmap <silent> <C-j> <Plug>(ale_next_wrap)
+let g:ale_statusline_format = ['⨉ %d', '⚠ %d', '⬥ ok']
+let g:ale_open_list = 0
+let g:ale_set_quickfix = 1
+" let b:ale_linters = ['pyflakes', 'flake8', 'pylint']
+let g:ale_python_flake8_args="--ignore=E501" " }}}
 " Plug 'ivanov/vim-ipython'
 " Plug 'valloric/youcompleteme'
 " Plug 'davidhalter/jedi-vim' "awesome Python autocompletion with VIM
@@ -82,7 +116,7 @@ Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
 " Plug 'benekastah/neomake', Cond(has('nvim'), { 'on': 'Neomake' })
 " Load on nothing
 Plug 'SirVer/ultisnips', { 'on': [] }
-Plug 'Valloric/YouCompleteMe', { 'on': [] }
+" Plug 'Valloric/YouCompleteMe', { 'on': [] }
 Plug 'honza/vim-snippets', { 'on': [] }
 
 augroup load_us_ycm
@@ -97,39 +131,16 @@ if has('mac')
     Plug 'junegunn/vim-xmark'
 endif
 call plug#end()
-
-"{{{ Plugin Settings
-
-"let python_highlights_all=1
-let g:airline#extensions#ale#enabled = 1
-let g:airline#extensions#tabline#enabled = 1
-" let g:airline_theme='solarized'
-let g:airline_theme='base16_vim'
-let g:ale_statusline_format = ['⨉ %d', '⚠ %d', '⬥ ok']
-let g:ale_open_list = 0
-let g:ale_set_quickfix = 1
-" let b:ale_linters = ['pyflakes', 'flake8', 'pylint']
-let g:ale_python_flake8_args="--ignore=E501"
-let g:ansible_attribute_highlight = "ab"
-let g:ansible_extra_keywords_highlight = 1
-let g:ansible_name_highlight = 'd'
-" let g:ansible_unindent_after_newline = 1
-let g:gitgutter_enabled = 1
-let g:gitgutter_hightlight_lines = 1
-let g:terraform_fold_sections=1
-
-"}}}
-
-"}}}
+" }}}
 " Autogroups {{{
 "
 " automatically rebalance windows on vim resize
 autocmd VimResized * :wincmd =
 
-augroup myvimrc
-    au!
-    au BufWritePost .vimrc,_vimrc,vimrc,init.vim,.gvimrc,_gvimrc,gvimrc so $MYVIMRC | if has('gui_running') | so $MYGVIMRC | endif
-augroup END
+" augroup myvimrc
+"     au!
+"     au BufWritePost .vimrc,_vimrc,vimrc,init.vim,.gvimrc,_gvimrc,gvimrc so $MYVIMRC | if has('gui_running') | so $MYGVIMRC | endif
+" augroup END
 
 " Override for yaml hosts format instead of INI
 " augroup ansible_vim_fthosts
@@ -162,8 +173,6 @@ autocmd BufRead,BufNewFile Vagrantfile setfiletype ruby
 " auto-delete buffers after browing through objects
 autocmd BufReadPost fugitive://* set bufhidden=delete
 autocmd BufRead,BufNewFile *.ics set filetype=icalendar
-
-
 autocmd FileType mail,text,html,asciidoc setlocal spell spelllang=en
 " inoremap <C-l> <c-g>u<Esc>[s1z=`]a<c-g>u
 autocmd BufRead,BufNewFile *.txt,*.asciidoc,README,TODO,CHANGELOG,NOTES,ABOUT
@@ -174,38 +183,38 @@ autocmd BufRead,BufNewFile *.txt,*.asciidoc,README,TODO,CHANGELOG,NOTES,ABOUT
 " }}}
 " Copy/Paste {{{
 " Don't copy the contents of an overwritten selection.
-vnoremap p "_dP
-
+vnoremap p "_dP 
 " }}}
 " UI Config {{{
 " syntax enable
 set autoindent
-set autoread                                                 " reload files when changed on disk, i.e. via `git checkout`
-set backspace=2                                              " Fix broken backspace in some setups
-set backupcopy=yes                                           " see :help crontab
-set clipboard=unnamed                                        " yank and paste with the system clipboard
-set directory-=.                                             " don't store swapfiles in the current directory
+set autoread              " reload files when changed on disk, i.e. via `git checkout`
+set backspace=2           " Fix broken backspace in some setups
+set backupcopy=yes        " see :help crontab
+set clipboard=unnamed     " yank and paste with the system clipboard
+set directory-=.          " don't store swapfiles in the current directory
 set diffopt=filler,vertical,hiddenoff
 set encoding=utf-8
-set expandtab                                                " expand tabs to spaces
+set expandtab             " expand tabs to spaces
 set hidden
-set ignorecase                                               " case-insensitive search
-set incsearch                                                " search as you type
-set laststatus=2                                             " always show statusline
-set list                                                     " show trailing whitespace
+set ignorecase            " case-insensitive search
+set incsearch             " search as you type
+set laststatus=2          " always show statusline
+set list                  " show trailing whitespace
 set listchars=tab:▸\ ,trail:▫
 set modelines=1
-set number                                                   " show line numbers
-set cursorline " don't highlight current line
-set ruler                                                    " show where you are
-set scrolloff=3                                              " show context above/below cursorline
-set shiftwidth=2                                             " normal mode indentation commands use 2 spaces
+set relativenumber number " show line number on current line relative number elsewhere
+set cursorline            " don't highlight current line
+set ruler                 " show where you are
+set scrolloff=3           " show context above/below cursorline
+set shiftwidth=2          " normal mode indentation commands use 2 spaces
 set showcmd
-set smartcase                                                " case-sensitive search if any caps
-set softtabstop=2                                            " insert mode tab and backspace use 2 spaces
-set tabstop=8                                                " actual tabs occupy 8 characters
+set smartcase             " case-sensitive search if any caps
+set softtabstop=2         " insert mode tab and backspace use 2 spaces
+set tabstop=8             " actual tabs occupy 8 characters
+set updatetime=250        " Update sign column
 set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc
-set wildmenu                                                 " show a navigable menu for tab completion
+set wildmenu              " show a navigable menu for tab completion
 set wildmode=longest,list,full
 
 " " Spaces and Tabs {{{
@@ -250,12 +259,9 @@ noremap <C-j> <C-w>j
 noremap <C-k> <C-w>k
 noremap <C-l> <C-w>l
 nnoremap <leader>a :Ag<space>
-" nnoremap <leader>b :CtrlPBuffer<CR>
 nnoremap <leader>d :NERDTreeToggle<CR>
 nnoremap <leader>f :NERDTreeFind<CR>
 noremap <leader>l :EasyAlign
-nnoremap <leader>t :CtrlP<CR>
-nnoremap <leader>T :CtrlPClearCache<CR>:CtrlP<CR>
 nnoremap <leader>s% : source %<CR>
 nnoremap <leader>] :TagbarToggle<CR>
 nnoremap <leader><space> :call whitespace#strip_trailing()<CR>
@@ -264,7 +270,8 @@ noremap <silent> <leader>V :source ~/.vimrc<CR>:filetype detect<CR>:exe ":echo '
 
 " fzf
 " nmap <silent> <C-P> :Files<CR>
-" nmap <silent> <leader>f :Files<CR>
+nmap <silent> <leader>f :GFiles<CR>
+nmap <silent> <leader>F :Files<CR>
 " nmap <silent> <leader>t :Trees<CR>
 nmap <silent> <leader>r :History<CR>
 nmap <silent> <leader>b :Buffers<CR>
@@ -283,16 +290,12 @@ nnoremap <esc> :noh<return><esc> " escape turns off highlight
 nnoremap <esc>^[ <esc>^[
 
 " plugin settings
-let g:ctrlp_match_window = 'order:ttb,max:20'
 let g:NERDSpaceDelims=1
 
 " Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
 if executable('ag')
   " Use Ag over Grep
   set grepprg=ag\ --nogroup\ --nocolor
-
-  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
 endif
 
 
@@ -312,6 +315,12 @@ nnoremap <silent> <cr> :GitGutterNextHunk<cr>
 nnoremap <silent> <backspace> :GitGutterPrevHunk<cr>
 " }}}
 " Tmux {{{
+
+" Intelligently navigate tmux panes and Vim splits using the same keys.
+" See https://sunaku.github.io/tmux-select-pane.html for documentation.
+let progname = substitute($VIM, '.*[/\\]', '', '')
+set title titlestring=%{progname}\ %f\ +%l\ #%{tabpagenr()}.%{winnr()}
+if &term =~ '^screen' && !has('nvim') | exe "set t_ts=\e]2; t_fs=\7" | endif
 
 " allows cursor change in tmux mode
 " if exists('$TMUX')
