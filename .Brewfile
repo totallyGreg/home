@@ -18,6 +18,8 @@ brew "ansible"
 brew "ansible-lint"
 # Text processor and publishing toolchain for AsciiDoc
 brew "asciidoctor"
+# Official Amazon AWS command-line interface
+brew "awscli"
 # Microsoft Azure CLI 2.0
 brew "azure-cli"
 # Bourne-Again SHell, a UNIX command interpreter
@@ -26,6 +28,8 @@ brew "bash"
 brew "bash-completion@2"
 # Clone of cat(1) with syntax highlighting and Git integration
 brew "bat"
+# Tool to obtain certs from Let's Encrypt and autoenable HTTPS
+brew "certbot"
 # Cross-platform make
 brew "cmake"
 # Tool for service discovery, monitoring and configuration
@@ -100,12 +104,19 @@ brew "vagrant-completion"
 brew "vim"
 # Executes a program periodically, showing output fullscreen
 brew "watch"
+# Internet file retriever
+brew "wget"
 # Linter for YAML files
 brew "yamllint"
+# New BOSH CLI (beta)
+brew "cloudfoundry/tap/bosh-cli"
 brew "cloudfoundry/tap/cf-cli"
+# CredHub CLI
+brew "cloudfoundry/tap/credhub-cli"
 brew "martido/brew-graph/brew-graph"
 brew "mczachurski/wallpapper/wallpapper"
 brew "starkandwayne/cf/om"
+brew "starkandwayne/cf/uaa-cli"
 # Maintained ctags implementation
 brew "universal-ctags/universal-ctags/universal-ctags", args: ["HEAD"]
 brew "watsonbox/cmu-sphinx/cmu-sphinxbase", args: ["HEAD"]
@@ -113,6 +124,7 @@ brew "watsonbox/cmu-sphinx/cmu-pocketsphinx", args: ["HEAD"]
 brew "watsonbox/cmu-sphinx/cmu-sphinxtrain", args: ["HEAD"]
 cask "asciidocfx"
 cask "atom"
+cask "aws-vault"
 cask "basictex"
 cask "docker"
 cask "dropbox"
@@ -138,6 +150,7 @@ cask "sonic-visualiser"
 cask "vagrant"
 cask "vagrant-manager" { appdir: "~/Applications/Ops/Engineering" }:x
 cask "virtualbox"
-cask "wireshark" { appdir: "~//Users/totally/Applications/Astrometrics/Scanners }
+cask "virtualbox-extension-pack"
+cask "wireshark"
 cask "xld"
 cask "yed", args: { appdir: "~/Applications/Comm/Visual" }

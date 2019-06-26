@@ -260,20 +260,24 @@ noremap <C-k> <C-w>k
 noremap <C-l> <C-w>l
 nnoremap <leader>a :Ag<space>
 nnoremap <leader>d :NERDTreeToggle<CR>
-nnoremap <leader>f :NERDTreeFind<CR>
+nnoremap <leader>g :GitGutterToggle<CR>
+" nnoremap <leader>f :NERDTreeFind<CR>
 noremap <leader>l :EasyAlign
 nnoremap <leader>s% : source %<CR>
 nnoremap <leader>] :TagbarToggle<CR>
+nmap <Leader>t :BTags<CR>
+nmap <Leader>T :Tags<CR>
 nnoremap <leader><space> :call whitespace#strip_trailing()<CR>
-nnoremap <leader>g :GitGutterToggle<CR>
 noremap <silent> <leader>V :source ~/.vimrc<CR>:filetype detect<CR>:exe ":echo 'vimrc reloaded'"<CR>
+nnoremap  <silent>   <tab>  :if &modifiable && !&readonly && &modified <CR> :write<CR> :endif<CR>:bnext<CR>
+nnoremap  <silent> <s-tab>  :if &modifiable && !&readonly && &modified <CR> :write<CR> :endif<CR>:bprevious<CR>
 
 " fzf
 " nmap <silent> <C-P> :Files<CR>
 nmap <silent> <leader>f :GFiles<CR>
 nmap <silent> <leader>F :Files<CR>
 " nmap <silent> <leader>t :Trees<CR>
-nmap <silent> <leader>r :History<CR>
+nmap <silent> <leader>h :History<CR>
 nmap <silent> <leader>b :Buffers<CR>
 nmap <silent> <leader>m :Map<CR>
 " nmap <silent> <leader>w :Windows<CR>

@@ -10,7 +10,7 @@
   ls = log --decorate --oneline --graph
   ll = log --decorate --oneline --graph --numstat
   pretty = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
-  hist = log --graph --pretty=format:'%Cred%h%Creset %s%C(yellow)%d%Creset %Cgreen(%cr)%Creset [%an]' --abbrev-commit --date=relative 
+  hist = log --graph --pretty=format:'%Cred%h%Creset %s%C(yellow)%d%Creset %Cgreen(%cr)%Creset [%an]' --abbrev-commit --date=relative
   remotes = remote -v
   type = cat-file -t
   dump = cat-file -p
@@ -42,18 +42,20 @@
   smudge = git-lfs smudge -- %f
   process = git-lfs filter-process
   required = true
-[status] 
+[status]
   submoduleSummary = true
-[difftool "sourcetree"] 
-  cmd = opendiff \"$LOCAL\" \"$REMOTE\" 
-  path = 
-[mergetool "sourcetree"] 
+[difftool "sourcetree"]
+  cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+  path =
+[mergetool "sourcetree"]
   cmd = /Users/totally/Applications/Ops/Organization/Code Tools/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
   trustExitCode = true
 [commit]
-  template = /Users/totally/.stCommitMsg
-  #template = \"$HOME\"/.stCommitMsg
+  ; template = /Users/totally/.stCommitMsg
+  template = \"$HOME\"/.stCommitMsg
 [push]
   default = simple
 [core]
   excludesfile = /Users/totally/.gitignore_global
+[github]
+	user = totallyGreg@gmail.com
