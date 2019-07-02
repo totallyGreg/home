@@ -94,6 +94,9 @@ else
 fi
 
 
+# Bash Hook for direnv
+eval "$(direnv hook bash)"
+
 ## Test for color is actually a test for linux over mac
 if [ -f /usr/bin/dircolors ]; then
   test -r ~/.dir_colors && eval "$(dircolors -b ~/.dir_colors)" || eval "$(dircolors -b)"
