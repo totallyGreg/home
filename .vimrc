@@ -45,29 +45,36 @@ Plug 'ryanoasis/vim-devicons'
 Plug 'itchyny/lightline.vim'            " New statusline tool, replaced airline
 " Do not need to show -- Insert --, as lightline handles it already
 set noshowmode
+Plug 'maximbaz/lightline-ale'
+
 " let g:lightline.colorscheme = 'solarized'
-let g:lightline = {
-      \ 'colorscheme': 'solarized',
-      \ 'active': {
+let g:lightline = { 'colorscheme': 'solarized'}
+let g:lightline.active =  {
       \   'left': [ [ 'mode', 'paste' ],
       \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ],
       \   'right': [['lineinfo'], ['percent'],
-      \             ['readonly', 'linter_warnings', 'linter_errors', 'linter_ok']]
-      \ },
-      \ 'component_function': {
-      \   'gitbranch': 'fugitive#head'
-      \ },
-      \ 'component_expand': {
-      \   'linter_warnings': 'LightlineLinterWarnings',
-      \   'linter_errors': 'LightlineLinterErrors',
-      \   'linter_ok': 'LightlineLinterOK'
-      \ },
-      \ 'component_type': {
-      \   'readonly': 'error',
-      \   'linter_warnings': 'warning',
-      \   'linter_errors': 'error'
-      \ },
+      \             ['readonly', 'linter_checking', 'linter_warnings', 'linter_errors', 'linter_ok']]
       \ }
+let g:lightline.component_function = { 'gitbranch': 'fugitive#head' }
+let g:lightline.component_expand = {
+      \   'linter_checking': 'lightline#ale#checking',
+      \   'linter_warnings': 'lightline#ale#warnings',
+      \   'linter_errors': 'lightline#ale#errors',
+      \   'linter_ok': 'lightline#ale#ok',
+      \ }
+let g:lightline.component_type = {
+      \   'readonly': 'error',
+      \   'linter_checking': 'left',
+      \   'linter_warnings': 'warning',
+      \   'linter_errors': 'error',
+      \   'linter_ok': 'left',
+      \ }
+let g:lightline#ale#indicator_checking = "\uf110"
+let g:lightline#ale#indicator_warnings = "⚠ "
+let g:lightline#ale#indicator_errors = "x"
+let g:lightline#ale#indicator_ok = "⬥"
+
+
 " Plug 'vim-airline/vim-airline' " {{{
 " let g:airline#extensions#ale#enabled = 1
 " let g:airline#extensions#tabline#enabled = 1   " }}}
