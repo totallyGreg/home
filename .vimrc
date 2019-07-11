@@ -42,12 +42,31 @@ Plug 'altercation/vim-colors-solarized' " Ethan's best
 Plug 'lifepillar/vim-solarized8'
 Plug 'majutsushi/tagbar'                " Open tag navigation split with :Tagbar
 Plug 'ryanoasis/vim-devicons'
-Plug 'itchyny/lightline.vim'
+Plug 'itchyny/lightline.vim'            " New statusline tool, replaced airline
 " Do not need to show -- Insert --, as lightline handles it already
-set noshowmode 
+set noshowmode
 " let g:lightline.colorscheme = 'solarized'
 let g:lightline = {
       \ 'colorscheme': 'solarized',
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ],
+      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ],
+      \   'right': [['lineinfo'], ['percent'],
+      \             ['readonly', 'linter_warnings', 'linter_errors', 'linter_ok']]
+      \ },
+      \ 'component_function': {
+      \   'gitbranch': 'fugitive#head'
+      \ },
+      \ 'component_expand': {
+      \   'linter_warnings': 'LightlineLinterWarnings',
+      \   'linter_errors': 'LightlineLinterErrors',
+      \   'linter_ok': 'LightlineLinterOK'
+      \ },
+      \ 'component_type': {
+      \   'readonly': 'error',
+      \   'linter_warnings': 'warning',
+      \   'linter_errors': 'error'
+      \ },
       \ }
 " Plug 'vim-airline/vim-airline' " {{{
 " let g:airline#extensions#ale#enabled = 1
@@ -82,7 +101,7 @@ Plug 'raimondi/vimregstyle'
 " Editing
 Plug 'tpope/vim-surround' " Adds the surround motion bound to s
 Plug 'tpope/vim-commentary' " Adds comment action with 'gc'
-Plug 'junegunn/vim-easy-align' " 
+Plug 'junegunn/vim-easy-align' "
 let g:easy_align_ignore_comment = 0 " align comments
 vnoremap <silent> <Enter> :EasyAlign<cr>
 
@@ -119,23 +138,21 @@ Plug 'SirVer/ultisnips', { 'on': [] }
 " Plug 'Valloric/YouCompleteMe', { 'on': [] }
 Plug 'honza/vim-snippets', { 'on': [] }
 
-augroup load_us_ycm
- autocmd!
-   autocmd InsertEnter * call plug#load('ultisnips', 'YouCompleteMe')
-                        \| autocmd! load_us_ycm
-    let g:UltiSnipsExpandTrigger = '<tab>'
-    let g:UltiSnipsJumpForwardTrigger = '<tab>'
-    let g:UltiSnipsJumpBackwardTrigger = '<s-tab>'
-                        augroup END
+" augroup load_us_ycm
+"  autocmd!
+"    autocmd InsertEnter * call plug#load('ultisnips', 'YouCompleteMe')
+"                         \| autocmd! load_us_ycm
+"     let g:UltiSnipsExpandTrigger = '<tab>'
+"     let g:UltiSnipsJumpForwardTrigger = '<tab>'
+"     let g:UltiSnipsJumpBackwardTrigger = '<s-tab>'
+"                         augroup END
 if has('mac')
     Plug 'junegunn/vim-xmark'
 endif
 call plug#end()
 " }}}
 " Autogroups {{{
-"
-" automatically rebalance windows on vim resize
-autocmd VimResized * :wincmd =
+autocmd VimResized * :wincmd =          " automatically rebalance windows on vim resize
 
 " augroup myvimrc
 "     au!
@@ -183,7 +200,7 @@ autocmd BufRead,BufNewFile *.txt,*.asciidoc,README,TODO,CHANGELOG,NOTES,ABOUT
 " }}}
 " Copy/Paste {{{
 " Don't copy the contents of an overwritten selection.
-vnoremap p "_dP 
+vnoremap p "_dP
 " }}}
 " UI Config {{{
 " syntax enable
@@ -216,14 +233,6 @@ set updatetime=250        " Update sign column
 set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc
 set wildmenu              " show a navigable menu for tab completion
 set wildmode=longest,list,full
-
-" " Spaces and Tabs {{{
-" set tabstop=4             " number of visual spaces per TAB
-" set softtabstop=4         " number of spaces in tab when editing
-" set expandtab             " tabs are spaces
-
-" " }}}
-
 
 "}}}
 " GUI Specific  Settings {{{
@@ -319,7 +328,6 @@ nnoremap <silent> <cr> :GitGutterNextHunk<cr>
 nnoremap <silent> <backspace> :GitGutterPrevHunk<cr>
 " }}}
 " Tmux {{{
-
 " Intelligently navigate tmux panes and Vim splits using the same keys.
 " See https://sunaku.github.io/tmux-select-pane.html for documentation.
 let progname = substitute($VIM, '.*[/\\]', '', '')
@@ -334,7 +342,6 @@ if &term =~ '^screen' && !has('nvim') | exe "set t_ts=\e]2; t_fs=\7" | endif
 "     let &t_SI = "\<Esc>]50;CursorShape=1\x7"
 "     let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 " endif
-
 " vim-tmux-pilot settings
 " Uncomment to enable navigation of vim tabs
 " let g:pilot_mode='wintab'
