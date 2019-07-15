@@ -1,3 +1,8 @@
+# -- login ---------------------------------------------------------------------
+# urls-source "inoreader"
+# inoreader-login "totallyGreg@gmail.com"
+# inoreader-password "groovin"
+
 # -- feeds ---------------------------------------------------------------------
 
 auto-reload yes
@@ -18,14 +23,14 @@ color listnormal_unread yellow default
 color listfocus blue default reverse bold
 color listfocus_unread blue default reverse bold
 
-text-width 80
+text-width 0
 
 
 # -- navigation ----------------------------------------------------------------
 
 goto-next-feed no
 
-browser "open -g -a 'Google Chrome' %u"
+browser "open -g -a 'Safari' %u"
 
 bind-key j down feedlist
 bind-key k up feedlist
@@ -39,7 +44,7 @@ bind-key k up article
 
 # -- bookmarks -----------------------------------------------------------------
 
-bookmark-cmd ~/.newsbeuter/bookmark.sh
+# bookmark-cmd ~/.newsbeuter/bookmark.sh
 bookmark-interactive no
 bookmark-autopilot yes
 

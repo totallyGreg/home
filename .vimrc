@@ -128,6 +128,7 @@ Plug 'w0rp/ale' " {{{
 nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 nmap <silent> <C-j> <Plug>(ale_next_wrap)
 let g:ale_statusline_format = ['⨉ %d', '⚠ %d', '⬥ ok']
+let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
 let g:ale_open_list = 0
 let g:ale_set_quickfix = 1
 " let b:ale_linters = ['pyflakes', 'flake8', 'pylint']

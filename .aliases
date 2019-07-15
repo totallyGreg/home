@@ -80,7 +80,10 @@ alias random-mac="openssl rand -hex 6 | sed 's/\(..\)/\1:/g; s/.$//' | xargs sud
 ### alias completion functions do not work as they seem to depend on bash 4.1
 # https://brbsix.github.io/2015/11/23/perform-tab-completion-for-aliases-in-bash/
 # Now sourcing this https://superuser.com/questions/436314/how-can-i-get-bash-to-perform-tab-completion-for-my-aliases
-source ~/._alias_completion
+if [ "${BASH_VERSINFO:-0}" -ge 4 ]; then
+  echo "bash supports associative arrays"
+  source ~/._alias_completion
+fi
 #
 ### Aliases that require a network kept afterwards to it doesn't stall the ._alias_completion funciton
 alias morbotron="curl -s https://morbotron.com/api/random | jq --raw-output '.Subtitles[] .Content'"

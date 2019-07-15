@@ -1,4 +1,11 @@
 #Shell Variables
+# ENV variables
+export TIMEFORMAT="%Rs - "
+export IGNOREEOF=3
+export FCEDIT=vim
+export EDITOR=vim
+export XML_CATALOG_FILES=/usr/local/etc/xml/catalog
+export HOMEBREW_NO_GITHUB_API=1
 HISTSIZE=500000
 HISTFILESIZE=100000
 HISTCONTROL="erasedups:ignoreboth"
@@ -8,7 +15,7 @@ HISTIGNORE="&:[ ]*:exit:ls:[bf]g:history:clear:"
 # %T equivalent to %H:%M:%S (24-hours format)
 HISTTIMEFORMAT='%F %T '
 export CLICOLOR=1
-# Directorys Blue, Symlinks cyan
+# Directories Blue, Symlinks cyan
 export LSCOLORS=exGxhxDxfxhxhxhxhxcxcx
 # export LS_COLORS='di=34:ln=1;36:so=37:pi=1;33:ex=35:bd=37:cd=37:su=31:sg=31:tw=32:ow=32'
 # ## Shell color codes
@@ -29,14 +36,6 @@ export LSCOLORS=exGxhxDxfxhxhxhxhxcxcx
 # COLOR_CYAN='\033[0;36m'
 # COLOR_LIGHTCYAN='\033[1;36m'
 # COLOR_DEFAULT='\033[0m'
-
-# ENV variables
-export TIMEFORMAT="%Rs - "
-export IGNOREEOF=3
-export FCEDIT=vim
-export EDITOR=vim
-export XML_CATALOG_FILES=/usr/local/etc/xml/catalog
-export HOMEBREW_NO_GITHUB_API=1
 
 ## Options I like
 ## See .inputrc for Readline options
@@ -65,7 +64,6 @@ export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; histor
 shopt -s cmdhist
 
 ## BETTER DIRECTORY NAVIGATION ##
-
 # Prepend cd to directory names automatically
 shopt -s autocd 2> /dev/null
 # Correct spelling errors during tab-completion
@@ -109,8 +107,8 @@ fi
 
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
-# sources /etc/bash.bashrc).
-if ! shopt -oq posix; then
+# sources /etc/bash.bashrc). Requires BASH version 4
+if ! shopt -oq posix && [ "${BASH_VERSINFO:-0}" -ge 4 ]; then
   if [ -f /usr/share/bash-completion/bash_completion ]; then
     . /usr/share/bash-completion/bash_completion
   elif [ -f /etc/bash_completion ]; then

@@ -2,26 +2,26 @@
   email = totallyGreg@gmail.com
   name = J. Greg Williams
 [alias]
-  co = checkout
-  ci = commit
   branches = branch -av
-  remotes = remote -v
-  ls = log --decorate --oneline --graph
-  ll = log --decorate --oneline --graph --numstat
-  last = log -
-  pretty = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
-  hist = log --graph --pretty=format:'%Cred%h%Creset %s%C(yellow)%d%Creset %Cgreen(%cr)%Creset [%an]' --abbrev-commit --date=relative
-  type = cat-file -t
+  ci = commit
+  co = checkout
   dump = cat-file -p
-  staged = diff --staged    # view the diff of what is currently staged
-  unstage = reset HEAD --  # Remove filename from the staging area
-  last = log -1 HEAD      # view last commit
   find = "!git log --color -p -S "
-  size = "count-objects -vH"
+  hist = log --graph --pretty=format:'%Cred%h%Creset %s%C(yellow)%d%Creset %Cgreen(%cr)%Creset [%an]' --abbrev-commit --date=relative
+  last = log -
+  last = log -1 HEAD      # view last commit
+  ll = log --decorate --oneline --graph --numstat
+  ls = log --decorate --oneline --graph
+  pretty = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+  remotes = remote -v
   review = "log master..origin/master"
-  yesterday = diff --stat 'HEAD@{yesterday}' 'HEAD@{midnight}'
+  size = "count-objects -vH"
+  staged = diff --staged    # view the diff of what is currently staged
   today = diff --stat 'HEAD@{midnight}'
   tree = log --graph --oneline --all
+  type = cat-file -t
+  unstage = reset HEAD --  # Remove filename from the staging area
+  yesterday = diff --stat 'HEAD@{yesterday}' 'HEAD@{midnight}'
 [color]
   branch = auto
   diff = auto
