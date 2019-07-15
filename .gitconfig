@@ -5,13 +5,12 @@
   co = checkout
   ci = commit
   branches = branch -av
-
-; Useful log aliases
+  remotes = remote -v
   ls = log --decorate --oneline --graph
   ll = log --decorate --oneline --graph --numstat
+  last = log -
   pretty = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
   hist = log --graph --pretty=format:'%Cred%h%Creset %s%C(yellow)%d%Creset %Cgreen(%cr)%Creset [%an]' --abbrev-commit --date=relative
-  remotes = remote -v
   type = cat-file -t
   dump = cat-file -p
   staged = diff --staged    # view the diff of what is currently staged
@@ -20,42 +19,44 @@
   find = "!git log --color -p -S "
   size = "count-objects -vH"
   review = "log master..origin/master"
-
+  yesterday = diff --stat 'HEAD@{yesterday}' 'HEAD@{midnight}'
+  today = diff --stat 'HEAD@{midnight}'
+  tree = log --graph --oneline --all
 [color]
+  branch = auto
+  diff = auto
   status = auto
+  ui = auto
 [color "branch"]
   current = yellow reverse
   local = yellow
   remote = green
 [color "diff"]
-  meta = yellow bold
   frag = magenta bold
-  old = red bold
+  meta = yellow bold
   new = green bold
+  old = red bold
   whitespace = red reverse
 [color "status"]
-  added = yellow
-  changed = green
+  added = green
+  changed = yellow
   untracked = cyan
 [filter "lfs"]
   clean = git-lfs clean -- %f
-  smudge = git-lfs smudge -- %f
   process = git-lfs filter-process
   required = true
+  smudge = git-lfs smudge -- %f
 [status]
   submoduleSummary = true
 [difftool "sourcetree"]
   cmd = opendiff \"$LOCAL\" \"$REMOTE\"
   path =
-[mergetool "sourcetree"]
-  cmd = /Users/totally/Applications/Ops/Organization/Code Tools/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
-  trustExitCode = true
 [commit]
-  ; template = /Users/totally/.stCommitMsg
-  template = \"$HOME\"/.stCommitMsg
+  ; template = \"$HOME\"/.stCommitMsg
 [push]
   default = simple
 [core]
   excludesfile = /Users/totally/.gitignore_global
+  autocrlf = input
 [github]
-	user = totallyGreg@gmail.com
+  user = totallyGreg@gmail.com
