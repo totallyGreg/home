@@ -77,6 +77,8 @@ alias dotupgrade='dotadm submodule update --remote --merge'
 # Generate random mac address for wireless
 alias random-mac="openssl rand -hex 6 | sed 's/\(..\)/\1:/g; s/.$//' | xargs sudo ifconfig en0 ether"
 
+# Setting sensitive values via security
+# alias set_pivenet_token="export PIVNET_TOKEN=$(security find-generic-password -l 'Pivotal Refresh Token' -w Altoros.keychain)"
 ### alias completion functions do not work as they seem to depend on bash 4.1
 # https://brbsix.github.io/2015/11/23/perform-tab-completion-for-aliases-in-bash/
 # Now sourcing this https://superuser.com/questions/436314/how-can-i-get-bash-to-perform-tab-completion-for-my-aliases
