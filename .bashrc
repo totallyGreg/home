@@ -76,6 +76,12 @@ shopt -s cdspell 2> /dev/null
 # Ex: CDPATH=".:~:~/projects" will look for targets in the current working directory, in home and in the ~/projects folder
 CDPATH=".:~:~/Library:~/Projects:~/Repositories:~/Clouds:$GOPATH/src/github.com:$GOPATH/src"
 
+# FZF may make most of this obsolete
+export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git --ignore node_modules --ignore ~/Library --ignore ~/Music/Audio Music Apps/ --ignore Library -g ""'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range :500 {}'"
+export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -100'"
+
 ## Old Prompt Prompt Shit
 #Known good prompt :)
 #export PS1="\[\033]0;\u@\h:\w\007\][\[\e[1m\]\h\[\e[0m\]]Aye, Cap'n? "
@@ -130,4 +136,4 @@ fi
 [ -f ~/.aliases ] && source ~/.aliases
 ## Source Terraform variables
 # include ~/.oci/env-vars
-
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash

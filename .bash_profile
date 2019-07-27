@@ -6,6 +6,7 @@ case "${unameOut}" in
       ;;
     CYGWIN*)    machine=Cygwin;;
     MINGW*)     machine=MinGw;;
+    FreeBSD*)     machine=FreeBSD;;
     *)          machine="UNKNOWN:${unameOut}"
 esac
 echo "Running on ${machine}"

@@ -5,6 +5,9 @@
 #    `which git` --git-dir=$HOME/.home/ --work-tree=$HOME $@
 # }
 
+# FZF keybindings FTW!
+source $(brew --prefix)/opt/fzf/shell/key-bindings.bash
+
 sshfun() {
   HOST=$1
   COMMAND=$2

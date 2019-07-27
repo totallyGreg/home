@@ -10,10 +10,8 @@ alias lsd="find . -maxdepth 1 -type d|columnize"
 alias d="find . -maxdepth 1 -type d|columnize"
 
 alias which='alias | /usr/bin/which --tty-only --read-alias --show-dot --show-tilde'
-
-
-							
-
+export ZPLUG_HOME=/usr/local/opt/zplug
+source $ZPLUG_HOME/init.zsh
 
 # history settings
 HISTFILE=~/.zshhistory
@@ -49,7 +47,7 @@ zstyle ':completion:*' squeeze-slashes 'yes'
 
 zstyle ':completion::complete:*' '\'
 
-#  tag-order 'globbed-files directories' all-files 
+#  tag-order 'globbed-files directories' all-files
 zstyle ':completion::complete:*:tar:directories' file-patterns '*~.*(-/)'
 
 # Don't complete backup files as executables
@@ -62,15 +60,15 @@ zstyle ':completion:*:matches' group 'yes'
 zstyle ':completion:*:descriptions' format "%B---- %d%b"
 
 # Messages/warnings format
-zstyle ':completion:*:messages' format '%B%U---- %d%u%b' 
+zstyle ':completion:*:messages' format '%B%U---- %d%u%b'
 zstyle ':completion:*:warnings' format '%B%U---- no match for: %d%u%b'
- 
+
 # Describe options in full
 zstyle ':completion:*:options' description 'yes'
 zstyle ':completion:*:options' auto-description '%d'
 
 # }}}
-# {{{ Simulate my old dabbrev-expand 3.0.5 patch 
+# {{{ Simulate my old dabbrev-expand 3.0.5 patch
 
 zstyle ':completion:*:history-words' stop verbose
 zstyle ':completion:*:history-words' remove-all-dups yes
@@ -83,14 +81,14 @@ precmd () {
 
     local TERMWIDTH
     (( TERMWIDTH = ${COLUMNS} - 1 ))
- 
-    
+
+
     PR_FILLBAR=""
     PR_PWDLEN=""
-    
+
     local promptsize=${#${(%):---(%n@%m:%l)---()--}}
     local pwdsize=${#${(%):-%~}}
-    
+
     if [[ "$promptsize + $pwdsize" -gt $TERMWIDTH ]]; then
 	    ((PR_PWDLEN=$TERMWIDTH - $promptsize))
     else
