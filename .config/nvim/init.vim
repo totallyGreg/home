@@ -30,16 +30,26 @@ Plug 'yggdroot/indentLine'
 Plug 'janko-m/vim-test'
 " }}}
 " {{{ Code Completion 
-Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
+" Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
 " }}}
 " {{{ Editing
-Plug 'tpope/vim-surround'         " Adds the surround motion bound to s
-Plug 'tpope/vim-commentary'       " Adds comment action with 'gc'
-Plug 'pelodelfuego/vim-swoop'   " It allows you to find and replace occurrences in many buffers being aware of the context.
-Plug 'mhinz/vim-grepper'    " ...helps you win at greg
+Plug 'tpope/vim-surround'     " Adds the surround motion bound to s
+Plug 'tpope/vim-commentary'   " Adds comment action with 'gc'
+" Plug 'pelodelfuego/vim-swoop' " It allows you to find and replace occurrences in many buffers being aware of the context.
+Plug 'mhinz/vim-grepper', { 'on': ['Grepper', '<plug>(GrepperOperator)'] }      " ...helps you win at grep
 Plug 'junegunn/vim-easy-align' "
 let g:easy_align_ignore_comment = 0 " align comments
 vnoremap <silent> <Enter> :EasyAlign<cr>
+Plug 'dense-analysis/ale' " {{{ ALE and it's Options 
+nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+nmap <silent> <C-j> <Plug>(ale_next_wrap)
+let g:ale_statusline_format = ['⨉ %d', '⚠ %d', '⬥ ok']
+let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+let g:ale_open_list = 0
+let g:ale_set_quickfix = 1
+let b:ale_linters = ['vint', 'prettier', 'yamllint', 'pyflakes', 'flake8', 'pylint']
+let g:ale_fixers = ['prettier', 'shfmt' ]
+let g:ale_python_flake8_args="--ignore=E501" " }}}
 " }}}
 " {{{ Git Plugins
 Plug 'tpope/vim-fugitive'          " Git plugin with commands 'G<command>'
@@ -47,7 +57,7 @@ Plug 'airblade/vim-gitgutter'      " Show git diff in number column {{{
 let g:gitgutter_enabled = 1
 let g:gitgutter_hightlight_lines = 1 " }}}
 Plug 'tpope/vim-rhubarb'           " Github extension for fugitive.vim
-Plug 'jreybert/vimagit'            " Modal git editing with <leader>g
+" Plug 'jreybert/vimagit'            " Modal git editing with <leader>g
 Plug 'Xuyuanp/nerdtree-git-plugin' " A plugin of NERDTree showing git status flags.
 
 Plug 'mustache/vim-mustache-handlebars'
@@ -66,10 +76,9 @@ Plug 'altercation/vim-colors-solarized' " Ethan's best
 Plug 'lifepillar/vim-solarized8'
 Plug 'majutsushi/tagbar'                " Open tag navigation split with :Tagbar
 Plug 'ryanoasis/vim-devicons'
-Plug 'itchyny/lightline.vim'            " New statusline tool, replaced airline
-" Do not need to show -- Insert --, as lightline handles it already
-set noshowmode
 " {{{ Statusline (lightline)
+Plug 'itchyny/lightline.vim'            " New statusline tool, replaced airline
+set noshowmode                          " Do not need to show -- Insert --, as lightline handles it already
 Plug 'maximbaz/lightline-ale'
 " let g:lightline.colorscheme = 'solarized'
 let g:lightline = { 'colorscheme': 'solarized'}
@@ -77,7 +86,7 @@ let g:lightline.active =  {
       \   'left': [ [ 'mode', 'paste' ],
       \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ],
       \   'right': [['lineinfo'], ['percent'],
-      \             ['readonly', 'linter_checking', 'linter_warnings', 'linter_errors', 'linter_ok']]
+      \             ['readonly', 'linter_checking', 'linter_warnings', 'linter_errors', 'linter_ok'], ['filetype']]
       \ }
 let g:lightline.component_function = { 'gitbranch': 'fugitive#head' }
 let g:lightline.component_expand = {
@@ -113,6 +122,13 @@ let g:terraform_fold_sections=1
                             " }}}
 Plug 'isene/hyperlist.vim'
 Plug 'towolf/vim-helm'
+" A Better Asciidoc Tool and it's dependencies {{{
+Plug 'dahu/vim-asciidoc'
+Plug 'dahu/asif'
+Plug 'dahu/vimple'
+Plug 'vim-scripts/SyntaxRange'
+Plug 'raimondi/vimregstyle'
+"}}}
 " }}}
 " }}}
 " {{{ On-demand loading
@@ -121,9 +137,9 @@ Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
 if has('mac')
     Plug 'junegunn/vim-xmark'
 endif
-" }}}
 call plug#end()
 " }}}
+" }}} Plugin Managment
 " Autogroups {{{
 " {{{ Reload VIM
 if has ('autocmd') " Remain compatible with earlier versions
@@ -179,6 +195,10 @@ autocmd BufRead,BufNewFile *.txt,*.asciidoc,README,TODO,CHANGELOG,NOTES,ABOUT
     \ formatlistpat=^\\s*\\d\\+\\.\\s\\+\\\\|^\\s*<\\d\\+>\\s\\+\\\\|^\\s*[a-zA-Z.]\\.\\s\\+\\\\|^\\s*[ivxIVX]\\+\\.\\s\\+
     \ comments=s1:/*,ex:*/,://,b:#,:%,:XCOMM,fb:-,fb:*,fb:+,fb:.,fb:>
 " }}}
+" Copy/Paste {{{
+" Don't copy the contents of an overwritten selection.
+" vnoremap p "_dP
+" }}}
 " UI Config {{{
 " syntax enable
 colorscheme solarized
@@ -195,6 +215,7 @@ set diffopt=filler,vertical,hiddenoff
 set directory-=.          " don't store swapfiles in the current directory
 set encoding=utf-8
 set expandtab             " expand tabs to spaces
+set gdefault              " Global Repalcement by default https://bluz71.github.io/2019/03/11/find-replace-helpers-for-vim.html
 set hidden
 set ignorecase            " case-insensitive search
 set incsearch             " search as you type
@@ -206,15 +227,25 @@ set relativenumber number " show line number on current line relative number els
 set ruler                 " show where you are
 set scrolloff=3           " show context above/below cursorline
 set shiftwidth=2          " normal mode indentation commands use 2 spaces
-set showbreak=↳           " Wrapped line symbol
+" set showbreak=↳           " Wrapped line symbol
 set showcmd
 set smartcase             " case-sensitive search if any caps
 set softtabstop=2         " insert mode tab and backspace use 2 spaces
 set tabstop=8             " actual tabs occupy 8 characters
 set updatetime=250        " Update sign column
+" set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc
+" set wildmenu              " show a navigable menu for tab completion
+" set wildmode=longest,list,full
 
-" These disabled in favor of fzf
-set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc
+" Settings for FZF
+let $FZF_DEFAULT_COMMAND = "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune 'dist/**' -prune -o -type f -print -o l -print 2> /dev/null"
+" The Silver Searcher
+if executable('ag')
+  let $FZF_DEFAULT_COMMAND = 'ag --hidden --ignore .git -g ""'
+  set grepprg=ag\ --nogroup\ --nocolor
+endif
+set wildmode=list:longest,list:full
+set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc,*.pyc,__pycache__
 " set wildmenu              " show a navigable menu for tab completion
 " set wildmode=longest,list,full
 " Copy/Paste {{{
@@ -280,19 +311,20 @@ endif
 " }}}
 " Keyboard Shortcuts {{{
 " esc in insert mode
-inoremap kj <esc>
-let mapleader = ';'
+inoremap kj <esc>         " Escape from Insert 
 noremap <C-h> <C-w>h
 noremap <C-j> <C-w>j
 noremap <C-k> <C-w>k
 noremap <C-l> <C-w>l
+let mapleader = ';'
 nnoremap <leader>a :Ag<space>
 nnoremap <silent> <leader>bc :BCommits<CR>
 nnoremap <silent> <leader>c  :Commits<CR>
 nnoremap <leader>d :NERDTreeToggle<CR>
 nnoremap <leader>g :GitGutterToggle<CR>
 " nnoremap <leader>f :NERDTreeFind<CR>
-noremap <leader>l :EasyAlign
+noremap <leader>l :Lines<CR>
+" noremap <leader>| :EasyAlign
 nnoremap <leader>s% : source %<CR>
 nnoremap <leader>] :TagbarToggle<CR>
 nmap <Leader>t :BTags<CR>

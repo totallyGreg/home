@@ -1,24 +1,21 @@
-" redoing .vimrc to be simpler
-
-set nocompatible
-
+" vim:foldmethod=marker:foldlevel=0
+"
 "{{{ Neovim Specific configs
 if has('nvim')
   set inccommand=nosplit
 endif
 "}}}
 " {{{ Plugin Managment
-" Configure Vim-Plug
+" {{{ Bootstrap Plug
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
-
+"}}}
 call plug#begin('~/.vim/bundle')
 " call plug#begin('~/.local/share/nvim/plugged')
-
-" Base Plugins
+" {{{ Base Plugins
 Plug 'tpope/vim-sensible'   " Sensible vim defaults
 Plug 'tpope/vim-unimpaired' " Pairs of handy bracket mappings
 Plug 'tpope/vim-repeat'     " Add repeat support with '.' for lots of plugins
@@ -30,23 +27,58 @@ set viewoptions=cursor,slash,unix
 let g:skipview_files = ['*\.vim']
 Plug 'yggdroot/indentLine'
 Plug 'janko-m/vim-test'
+" }}}
+" {{{ Code Completion 
+" Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
+" }}}
+" {{{ Editing
+Plug 'tpope/vim-surround'     " Adds the surround motion bound to s
+Plug 'tpope/vim-commentary'   " Adds comment action with 'gc'
+" Plug 'pelodelfuego/vim-swoop' " It allows you to find and replace occurrences in many buffers being aware of the context.
+Plug 'mhinz/vim-grepper', { 'on': ['Grepper', '<plug>(GrepperOperator)'] }      " ...helps you win at grep
+Plug 'junegunn/vim-easy-align' "
+let g:easy_align_ignore_comment = 0 " align comments
+vnoremap <silent> <Enter> :EasyAlign<cr>
+Plug 'dense-analysis/ale' " {{{ ALE and it's Options 
+nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+nmap <silent> <C-j> <Plug>(ale_next_wrap)
+let g:ale_statusline_format = ['⨉ %d', '⚠ %d', '⬥ ok']
+let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+let g:ale_open_list = 0
+let g:ale_set_quickfix = 1
+let b:ale_linters = ['vint', 'prettier', 'yamllint', 'pyflakes', 'flake8', 'pylint']
+let g:ale_fixers = ['prettier', 'shfmt' ]
+let g:ale_python_flake8_args="--ignore=E501" " }}}
+" }}}
+" {{{ Git Plugins
+Plug 'tpope/vim-fugitive'          " Git plugin with commands 'G<command>'
+Plug 'airblade/vim-gitgutter'      " Show git diff in number column {{{
+let g:gitgutter_enabled = 1
+let g:gitgutter_hightlight_lines = 1 " }}}
+Plug 'tpope/vim-rhubarb'           " Github extension for fugitive.vim
+" Plug 'jreybert/vimagit'            " Modal git editing with <leader>g
+Plug 'Xuyuanp/nerdtree-git-plugin' " A plugin of NERDTree showing git status flags.
 
-" Tmux Tools
+Plug 'mustache/vim-mustache-handlebars'
+let g:mustache_abbreviations = 1
+Plug 'nvie/vim-flake8'
+" }}}
+" {{{ Tmux Tools
 Plug 'tmux-plugins/vim-tmux'
+Plug 'edkolev/tmuxline.vim'
 " Plug 'christoomey/vim-tmux-navigator'
 " Plug 'urbainvaes/vim-tmux-pilot'
 Plug 'benmills/vimux'                   " vim plugin to interact with tmux
-
-" Visual{{{
+" }}}
+" {{{ Visual
 Plug 'altercation/vim-colors-solarized' " Ethan's best
 Plug 'lifepillar/vim-solarized8'
 Plug 'majutsushi/tagbar'                " Open tag navigation split with :Tagbar
 Plug 'ryanoasis/vim-devicons'
+" {{{ Statusline (lightline)
 Plug 'itchyny/lightline.vim'            " New statusline tool, replaced airline
-" Do not need to show -- Insert --, as lightline handles it already
-set noshowmode
+set noshowmode                          " Do not need to show -- Insert --, as lightline handles it already
 Plug 'maximbaz/lightline-ale'
-
 " let g:lightline.colorscheme = 'solarized'
 let g:lightline = { 'colorscheme': 'solarized'}
 let g:lightline.active =  {
@@ -73,8 +105,8 @@ let g:lightline#ale#indicator_checking = "\uf110"
 let g:lightline#ale#indicator_warnings = "⚠ "
 let g:lightline#ale#indicator_errors = " "
 let g:lightline#ale#indicator_ok = ""
-"}}}
-" Syntax{{{
+" }}}
+" {{{ Syntax
 Plug 'sheerun/vim-polyglot' " Polyglot autoloads many language packs replacing: {{{
                             " Plug 'pearofducks/ansible-vim'
                             " Plug 'fatih/vim-go'
@@ -89,73 +121,33 @@ let g:terraform_fold_sections=1
                             " }}}
 Plug 'isene/hyperlist.vim'
 Plug 'towolf/vim-helm'
-"}}}
-" Asciidoc{{{
+" A Better Asciidoc Tool and it's dependencies {{{
 Plug 'dahu/vim-asciidoc'
 Plug 'dahu/asif'
 Plug 'dahu/vimple'
 Plug 'vim-scripts/SyntaxRange'
 Plug 'raimondi/vimregstyle'
 "}}}
-" Editing{{{
-Plug 'tpope/vim-surround' " Adds the surround motion bound to s
-Plug 'tpope/vim-commentary' " Adds comment action with 'gc'
-Plug 'mhinz/vim-grepper'      " ...helps you win at grep
-
-Plug 'junegunn/vim-easy-align' "
-let g:easy_align_ignore_comment = 0 " align comments
-vnoremap <silent> <Enter> :EasyAlign<cr>
-"}}}
-" Git{{{
-Plug 'tpope/vim-fugitive'          " Git plugin with commands 'G<command>'
-Plug 'airblade/vim-gitgutter'      " Show git diff in number column {{{
-let g:gitgutter_enabled = 1
-let g:gitgutter_hightlight_lines = 1 " }}}
-Plug 'tpope/vim-rhubarb'           " Github extension for fugitive.vim
-Plug 'jreybert/vimagit'            " Modal git editing with <leader>g
-Plug 'Xuyuanp/nerdtree-git-plugin' " A plugin of NERDTree showing git status flags.}}}
-
-Plug 'mustache/vim-mustache-handlebars'
-let g:mustache_abbreviations = 1
-Plug 'nvie/vim-flake8'
-Plug 'w0rp/ale' " {{{
-nmap <silent> <C-k> <Plug>(ale_previous_wrap)
-nmap <silent> <C-j> <Plug>(ale_next_wrap)
-let g:ale_statusline_format = ['⨉ %d', '⚠ %d', '⬥ ok']
-let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
-let g:ale_open_list = 0
-let g:ale_set_quickfix = 1
-" let b:ale_linters = ['prettier', 'yamllint', 'pyflakes', 'flake8', 'pylint']
-let g:ale_fixers = ['prettier', 'shfmt' ]
-let g:ale_python_flake8_args="--ignore=E501" " }}}
-" Plug 'ivanov/vim-ipython'
-" Plug 'valloric/youcompleteme'
-" Plug 'davidhalter/jedi-vim' "awesome Python autocompletion with VIM
-Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
-
-" On-demand loading
+" }}}
+" }}}
+" {{{ On-demand loading
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
-Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
-" Plug 'benekastah/neomake', Cond(has('nvim'), { 'on': 'Neomake' })
-" Load on nothing
-Plug 'SirVer/ultisnips', { 'on': [] }
-" Plug 'Valloric/YouCompleteMe', { 'on': [] }
-Plug 'honza/vim-snippets', { 'on': [] }
 
-" augroup load_us_ycm
-"  autocmd!
-"    autocmd InsertEnter * call plug#load('ultisnips', 'YouCompleteMe')
-"                         \| autocmd! load_us_ycm
-"     let g:UltiSnipsExpandTrigger = '<tab>'
-"     let g:UltiSnipsJumpForwardTrigger = '<tab>'
-"     let g:UltiSnipsJumpBackwardTrigger = '<s-tab>'
-"                         augroup END
 if has('mac')
     Plug 'junegunn/vim-xmark'
 endif
 call plug#end()
 " }}}
+" }}} Plugin Managment
 " Autogroups {{{
+" {{{ Reload VIM
+if has ('autocmd') " Remain compatible with earlier versions
+ augroup vimrc     " Source vim configuration upon save
+    autocmd! BufWritePost $MYVIMRC source % | echom "Reloaded " . $MYVIMRC | redraw
+    autocmd! BufWritePost $MYGVIMRC if has('gui_running') | so % | echom "Reloaded " . $MYGVIMRC | endif | redraw
+  augroup END
+endif " has autocmd
+" }}}
 autocmd VimResized * :wincmd =          " automatically rebalance windows on vim resize
 
 " augroup myvimrc
@@ -204,18 +196,22 @@ autocmd BufRead,BufNewFile *.txt,*.asciidoc,README,TODO,CHANGELOG,NOTES,ABOUT
 " }}}
 " Copy/Paste {{{
 " Don't copy the contents of an overwritten selection.
-vnoremap p "_dP
+" vnoremap p "_dP
 " }}}
 " UI Config {{{
 " syntax enable
+colorscheme solarized
 set autoindent
 set autoread              " reload files when changed on disk, i.e. via `git checkout`
 set backspace=2           " Fix broken backspace in some setups
 set backupcopy=yes        " see :help crontab
+set breakindent           " set indent on wrapped lines
+set breakindentopt=shift:2
 set clipboard=unnamed     " yank and paste with the system clipboard
-set cmdheight=2           " Better display for messages
-set directory-=.          " don't store swapfiles in the current directory
+set cmdheight=1           " Better display for messages (when using COC)
+set cursorline            " don't highlight current line
 set diffopt=filler,vertical,hiddenoff
+set directory-=.          " don't store swapfiles in the current directory
 set encoding=utf-8
 set expandtab             " expand tabs to spaces
 set gdefault              " Global Repalcement by default https://bluz71.github.io/2019/03/11/find-replace-helpers-for-vim.html
@@ -227,19 +223,66 @@ set list                  " show trailing whitespace
 set listchars=tab:▸\ ,trail:▫
 set modelines=1
 set relativenumber number " show line number on current line relative number elsewhere
-set cursorline            " don't highlight current line
 set ruler                 " show where you are
 set scrolloff=3           " show context above/below cursorline
 set shiftwidth=2          " normal mode indentation commands use 2 spaces
+" set showbreak=↳           " Wrapped line symbol
 set showcmd
 set smartcase             " case-sensitive search if any caps
 set softtabstop=2         " insert mode tab and backspace use 2 spaces
 set tabstop=8             " actual tabs occupy 8 characters
 set updatetime=250        " Update sign column
-set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc
-set wildmenu              " show a navigable menu for tab completion
-set wildmode=longest,list,full
+" set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc
+" set wildmenu              " show a navigable menu for tab completion
+" set wildmode=longest,list,full
 
+" Settings for FZF
+let $FZF_DEFAULT_COMMAND = "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune 'dist/**' -prune -o -type f -print -o l -print 2> /dev/null"
+" The Silver Searcher
+if executable('ag')
+  let $FZF_DEFAULT_COMMAND = 'ag --hidden --ignore .git -g ""'
+  set grepprg=ag\ --nogroup\ --nocolor
+endif
+set wildmode=list:longest,list:full
+set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc,*.pyc,__pycache__
+" set wildmenu              " show a navigable menu for tab completion
+" set wildmode=longest,list,full
+" Copy/Paste {{{
+" Don't copy the contents of an overwritten selection.
+vnoremap p "_dP
+" }}}
+" Folding {{{
+set foldenable
+set foldlevelstart=10     "open most folds by default
+set foldnestmax=10        " 10 nested fold max
+set foldmethod=marker     " fold based on indent unless overridden
+" }}}
+" Searching {{{
+
+" highlight search
+set incsearch           " search as characters are typed
+set hlsearch            " highlight matches
+nmap <leader>hl :let @/ = ""<CR>
+nnoremap <esc> :noh<return><esc> " escape turns off highlight
+" needed so that vim still understands escape sequences
+nnoremap <esc>^[ <esc>^[
+
+" plugin settings
+let g:NERDSpaceDelims=1
+
+" Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
+if executable('ag')
+  " Use Ag over Grep
+  set grepprg=ag\ --nogroup\ --nocolor
+endif
+
+
+" }}}
+" {{{ TMUX Config
+let progname = substitute($VIM, '.*[/\\]', '', '')
+set title titlestring=%{progname}\ %f\ +%l\ #%{tabpagenr()}.%{winnr()}
+if &term =~ '^screen' && !has('nvim') | exe "set t_ts=\e]2; t_fs=\7" | endif
+"}}}
 "}}}
 " GUI Specific  Settings {{{
 if (&t_Co == 256 || has('gui_running'))
@@ -267,40 +310,38 @@ endif
 " }}}
 " Keyboard Shortcuts {{{
 " esc in insert mode
-inoremap kj <esc>
-let mapleader = ';'
+inoremap kj <esc>         " Escape from Insert 
 noremap <C-h> <C-w>h
 noremap <C-j> <C-w>j
 noremap <C-k> <C-w>k
 noremap <C-l> <C-w>l
+let mapleader = ';'
 nnoremap <leader>a :Ag<space>
+nnoremap <silent> <leader>bc :BCommits<CR>
+nnoremap <silent> <leader>c  :Commits<CR>
 nnoremap <leader>d :NERDTreeToggle<CR>
 nnoremap <leader>g :GitGutterToggle<CR>
 " nnoremap <leader>f :NERDTreeFind<CR>
-noremap <leader>l :EasyAlign
+noremap <leader>l :Lines<CR>
+" noremap <leader>| :EasyAlign
 nnoremap <leader>s% : source %<CR>
 nnoremap <leader>] :TagbarToggle<CR>
 nmap <Leader>t :BTags<CR>
 nmap <Leader>T :Tags<CR>
-nmap <leader>= <Plug>(ale_fix)
+" nmap <leader>= <Plug>(ale_fix)
 nnoremap <leader><space> :call whitespace#strip_trailing()<CR>
 noremap <silent> <leader>V :source ~/.vimrc<CR>:filetype detect<CR>:exe ":echo 'vimrc reloaded'"<CR>
 nnoremap  <silent>   <tab>  :if &modifiable && !&readonly && &modified <CR> :write<CR> :endif<CR>:bnext<CR>
 nnoremap  <silent> <s-tab>  :if &modifiable && !&readonly && &modified <CR> :write<CR> :endif<CR>:bprevious<CR>
 
-"" Find and Replace {{{
-"nnoremap <silent> \c :let @/='\<'.expand('<cword>').'\>'<CR>cgn
-"xnoremap <silent> \c "sy:let @/=@s<CR>cgn
-"nnoremap <Enter> gnzz
-"xmap <Enter> .<Esc>gnzz
-"xnoremap ! <Esc>ngnzz
-"autocmd! BufReadPost quickfix nnoremap <buffer> <CR> <CR>
-"autocmd! CmdwinEnter *        nnoremap <buffer> <CR> <CR>
-nnoremap \s :let @s='\<'.expand('<cword>').'\>'<CR>:%s/<C-r>s//<Left>
-xnoremap \s "sy:%s/<C-r>s//<Left>
+" Substitute word under cursor and dot repeat
+nnoremap <silent> \c :let @/='\<'.expand('<cword>').'\>'<CR>cgn
+xnoremap <silent> \c "sy:let @/=@s<CR>cgn
+" Grepper
+nnoremap ! :GrepperAg --ignore tags --ignore tags.temp 
 nnoremap \S
   \ :let @s='\<'.expand('<cword>').'\>'<CR>
-  \ :Ag -cword -noprompt<CR>
+  \ :Grepper -cword -noprompt<CR>
   \ :cfdo %s/<C-r>s// \| update
   \<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>
 xmap \S
@@ -308,8 +349,11 @@ xmap \S
   \ gvgr
   \ :cfdo %s/<C-r>s// \| update
   \<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>
-""}}}
-" fzf {{{
+
+" Folding controls
+noremap <space> za        " open/close folds
+
+" {{{ FZF bindings
 " nmap <silent> <C-P> :Files<CR>
 nmap <silent> <leader>f :GFiles<CR>
 nmap <silent> <leader>F :Files<CR>
@@ -318,9 +362,9 @@ nmap <silent> <leader>h :History<CR>
 nmap <silent> <leader>b :Buffers<CR>
 nmap <silent> <leader>m :Map<CR>
 " nmap <silent> <leader>w :Windows<CR>
-" nmap <silent> <leader>: :Commands<CR>
-" }}}
-" COC Mappings{{{
+nmap <silent> <leader>: :Commands<CR>
+" }}} FZF bindings
+" {{{ COC Mappings
 " Use tab for trigger completion with characters ahead and navigate.
 " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
 inoremap <silent><expr> <TAB>
@@ -335,93 +379,30 @@ function! s:check_back_space() abort
 endfunction
 
 " Use <c-space> to trigger completion.
-inoremap <silent><expr> <c-space> coc#refresh()
+" inoremap <silent><expr> <c-space> coc#refresh()
 
 " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
 " Coc only does snippet and additional edit on confirm.
 inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
 " Use `[c` and `]c` to navigate diagnostics
-nmap <silent> [c <Plug>(coc-diagnostic-prev)
-nmap <silent> ]c <Plug>(coc-diagnostic-next)
+" nmap <silent> [c <Plug>(coc-diagnostic-prev)
+" nmap <silent> ]c <Plug>(coc-diagnostic-next)
 
 " Remap keys for gotos
 nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
+
+" }}} COC Mappings
 "}}}
-"}}}
-" Searching {{{
-
-" highlight search
-set incsearch           " search as characters are typed
-set hlsearch            " highlight matches
-nmap <leader>hl :let @/ = ""<CR>
-nnoremap <esc> :noh<return><esc> " escape turns off highlight
-" needed so that vim still understands escape sequences
-nnoremap <esc>^[ <esc>^[
-
-" plugin settings
-let g:NERDSpaceDelims=1
-
-" Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
-if executable('ag')
-  " Use Ag over Grep
-  set grepprg=ag\ --nogroup\ --nocolor
-endif
-
-
-" }}}
-" Folding {{{
-set foldenable
-set foldlevelstart=10     "open most folds by default
-set foldnestmax=10        " 10 nested fold max
-set foldmethod=indent     " fold based on indent unless overridden
-" Folding controls
-noremap <space> za        " open/close folds
-" }}}
-" Movement {{{
-nnoremap gV `[v`]         " highlight last inserted text
-" Remap return and backspace to go to next Hunk
-nnoremap <silent> <cr> :GitGutterNextHunk<cr>
-nnoremap <silent> <backspace> :GitGutterPrevHunk<cr>
-" }}}
-" Tmux {{{
-" Intelligently navigate tmux panes and Vim splits using the same keys.
-" See https://sunaku.github.io/tmux-select-pane.html for documentation.
-let progname = substitute($VIM, '.*[/\\]', '', '')
-set title titlestring=%{progname}\ %f\ +%l\ #%{tabpagenr()}.%{winnr()}
-if &term =~ '^screen' && !has('nvim') | exe "set t_ts=\e]2; t_fs=\7" | endif
-
-" allows cursor change in tmux mode
-" if exists('$TMUX')
-"     let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
-"     let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
-" else
-"     let &t_SI = "\<Esc>]50;CursorShape=1\x7"
-"     let &t_EI = "\<Esc>]50;CursorShape=0\x7"
-" endif
-" vim-tmux-pilot settings
-" Uncomment to enable navigation of vim tabs
-" let g:pilot_mode='wintab'
-
-" Uncomment to enable creation of vim splits automatically
-" 'ignore' ('create', 'reflect') Boundary condition
-let g:pilot_boundary='reflect'
-"
-" defaults to 'tsplit' ('vtab') Precedence between vtabs and tsplits
-" let g:pilot_precedence='vtab'
-
-" }}}
 " Custom Functions {{{
-
 " function! Cond(cond, ...)
 "   let opts = get(a:000, 0, {})
 "   return a:cond ? opts : extend(opts, { 'on': [], 'for': [] })
 " endfunction
-
-" Open current file in Marked {{{
+" {{{ Open current file in Marked
 function! MarkedPreview()
   :w
   exec ':silent !open -a "Marked.app" ' . shellescape('%:p')
@@ -429,7 +410,7 @@ function! MarkedPreview()
 endfunction
 nnoremap <leader>e :call MarkedPreview()<CR>
 " }}}
-
+" {{{ Show Mappings - May not be needed with fzf maps 
 function! s:ShowMaps()
   let old_reg = getreg("a")          " save the current content of register a
   let old_reg_type = getregtype("a") " save the type of the register as well
@@ -449,24 +430,6 @@ endfunction
 com! ShowMaps call s:ShowMaps()      " Enable :ShowMaps to call the function
 
 nnoremap \m :ShowMaps<CR>            " Map keys to call the function
-
-" Disambiguate ,a & ,t from the Align plugin, making them fast again.
-"
-" This section is here to prevent AlignMaps from adding a bunch of mappings
-" that interfere with the very-common ,a and ,t mappings. This will get run
-" at every startup to remove the AlignMaps for the *next* vim startup.
-"
-" If you do want the AlignMaps mappings, remove this section, remove
-" ~/.vim/bundle/Align, and re-run rake in maximum-awesome.
-" function! s:RemoveConflictingAlignMaps()
-"   if exists("g:loaded_AlignMapsPlugin")
-"     AlignMapsClean
-"   endif
-" endfunction
-" command! -nargs=0 RemoveConflictingAlignMaps call s:RemoveConflictingAlignMaps()
-" silent! autocmd VimEnter * RemoveConflictingAlignMaps
-
 " }}}
-"
-" source ~/.vimrc-coc
-" vim:foldmethod=marker:foldlevel=0
+" }}}
+" The End
