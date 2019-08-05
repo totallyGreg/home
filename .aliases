@@ -1,5 +1,6 @@
 ## Beginning of Aliases
-if [ ! ${machine} == "Mac" ]; then alias ls='ls --color=auto' ; fi
+# if [ ! ${machine} == "Mac" ]; then alias ls='ls --color=auto' ; fi
+if [ ! ${CLICOLOR} == "1" ]; then alias ls='ls --color=auto' ; fi
 alias l='ls -lhF'
 alias ll='ls -lhF'
 alias l1='ls -1'
