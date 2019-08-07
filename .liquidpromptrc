@@ -38,7 +38,7 @@ LP_PATH_LENGTH=20
 # The number of directories (including '/') to keep at the beginning of a
 # shortened path.
 # Recommended value is 2
-LP_PATH_KEEP=2
+LP_PATH_KEEP=1
 
 # Determine if the hostname should always be displayed, even if not connecting
 # through network.
