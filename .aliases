@@ -79,14 +79,17 @@ alias dotupgrade='dotadm submodule update --remote --merge'
 alias random-mac="openssl rand -hex 6 | sed 's/\(..\)/\1:/g; s/.$//' | xargs sudo ifconfig en0 ether"
 
 # Setting sensitive values via security
-# alias set_pivenet_token="export PIVNET_TOKEN=$(security find-generic-password -l 'Pivotal Refresh Token' -w Altoros.keychain)"
-### alias completion functions do not work as they seem to depend on bash 4.1
+alias pivnet_token='PIVNET_TOKEN=$(ACCOUNT="j.greg.williams@altoros.com" keychain-environment-variable "Pivotal Refresh Token")'
+#
+# ### alias completion functions do not work as they seem to depend on bash 4.1
 # https://brbsix.github.io/2015/11/23/perform-tab-completion-for-aliases-in-bash/
 # Now sourcing this https://superuser.com/questions/436314/how-can-i-get-bash-to-perform-tab-completion-for-my-aliases
 if [ "${BASH_VERSINFO:-0}" -ge 4 ]; then
-  echo "bash supports associative arrays"
   source ~/._alias_completion
+else
+  echo "bash does not support associative arrays"
 fi
+
 #
 ### Aliases that require a network kept afterwards to it doesn't stall the ._alias_completion funciton
 alias morbotron="curl -s https://morbotron.com/api/random | jq --raw-output '.Subtitles[] .Content'"

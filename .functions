@@ -10,7 +10,7 @@
 
 # Use: keychain-environment-variable SECRET_ENV_VAR
 function keychain-environment-variable () {
-    security find-generic-password -w -a ${USER} -D "environment variable" -s "${1}"
+    security find-generic-password -w -a ${ACCOUNT:-$USER} -D "environment variable" -s "${WHERE:-$1}"
 }
 
 # Use: set-keychain-environment-variable SECRET_ENV_VAR
