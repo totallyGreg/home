@@ -7,8 +7,8 @@ export EDITOR=vim
 export XML_CATALOG_FILES=/usr/local/etc/xml/catalog
 export HOMEBREW_NO_GITHUB_API=1
 HISTSIZE=500000
-HISTFILESIZE=100000
-HISTCONTROL="erasedups:ignoreboth"
+HISTFILESIZE=1000000
+HISTCONTROL="ignorespace"
 HISTIGNORE="&:[ ]*:exit:ls:[bf]g:history:clear:"
 # Use standard ISO 8601 timestamp
 # %F equivalent to %Y-%m-%d
@@ -77,9 +77,11 @@ shopt -s cdspell 2> /dev/null
 CDPATH=".:~:~/Library:~/Projects:~/Repositories:~/Clouds:$GOPATH/src/github.com:$GOPATH/src"
 
 # FZF may make most of this obsolete
-export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git --ignore node_modules --ignore ~/Library --ignore ~/Music/Audio Music Apps/ --ignore Library -g ""'
+# export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git --ignore node_modules --ignore ~/Library --ignore ~/Music/Audio Music Apps/ --ignore Library -g ""'
+export FZF_DEFAULT_COMMAND='ag -l --ignore ~/Music --nocolor -g ""'
+export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range :500 {}'"
+# export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range :500 {}'"
 export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -100'"
 
 ## Old Prompt Prompt Shit
