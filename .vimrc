@@ -85,7 +85,7 @@ let g:lightline.active =  {
       \   'left': [ [ 'mode', 'paste' ],
       \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ],
       \   'right': [['lineinfo'], ['percent'],
-      \             ['readonly', 'linter_checking', 'linter_warnings', 'linter_errors', 'linter_ok']]
+      \             ['readonly', 'linter_checking', 'linter_warnings', 'linter_errors', 'linter_ok'], ['filetype']]
       \ }
 let g:lightline.component_function = { 'gitbranch': 'fugitive#head' }
 let g:lightline.component_expand = {
