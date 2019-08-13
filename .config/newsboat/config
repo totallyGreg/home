@@ -1,7 +1,10 @@
-# -- login ---------------------------------------------------------------------
-# urls-source "inoreader"
-# inoreader-login "totallyGreg@gmail.com"
-# inoreader-password "groovin"
+# -- Inoreader login ---------------------------------------------------------------------
+urls-source "inoreader"
+inoreader-login "totallyGreg@gmail.com"
+inoreader-passwordeval "security find-internet-password -a 'totallyGreg' -s 'www.inoreader.com' -w"
+# inoreader-flag-share "a"
+inoreader-flag-star "*"
+inoreader-show-special-feeds yes
 
 # -- feeds ---------------------------------------------------------------------
 
@@ -17,14 +20,23 @@ prepopulate-query-feeds yes
 
 show-read-feeds no
 feed-sort-order unreadarticlecount-asc
-
-color info default default reverse
-color listnormal_unread yellow default
-color listfocus blue default reverse bold
-color listfocus_unread blue default reverse bold
-
 text-width 0
 
+# highlights
+highlight article "^(Title):.*$" blue default
+highlight article "https?://[^ ]+" red default
+highlight article "\\[image\\ [0-9]+\\]" green default
+
+# color info blue default reverse
+
+# # solarized
+# color background         default   default
+# color listnormal         default   default
+color listnormal_unread yellow default
+color listfocus          black     blue reverse bold
+color listfocus_unread   black     blue reverse bold
+color info               black   blue reverse
+# color article            default   default
 
 # -- navigation ----------------------------------------------------------------
 
@@ -32,14 +44,28 @@ goto-next-feed no
 
 browser "open -g -a 'Safari' %u"
 
-bind-key j down feedlist
-bind-key k up feedlist
-bind-key j next articlelist
-bind-key k prev articlelist
+# unbind keys
+unbind-key j
+unbind-key k
+unbind-key J
+unbind-key K
+
+# # bind keys - vim style
+bind-key j down
+bind-key k up
+bind-key h quit
+bind-key J next-unread
+bind-key K prev-unread
 bind-key J next-feed articlelist
 bind-key K prev-feed articlelist
-bind-key j down article
-bind-key k up article
+# bind-key s :source ~/.config/newsboat/config
+# bind-key   toggle-show-read-feeds
+#
+#
+# bind-key j down feedlist
+# bind-key k up feedlist
+# bind-key j down article
+# bind-key k up article
 
 
 # -- bookmarks -----------------------------------------------------------------
