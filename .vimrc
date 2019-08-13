@@ -28,48 +28,8 @@ let g:skipview_files = ['*\.vim']
 Plug 'yggdroot/indentLine'
 Plug 'janko-m/vim-test'
 " }}}
-" {{{ Code Completion 
+" {{{ Code Complextion
 " Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
-" }}}
-" {{{ Editing
-Plug 'tpope/vim-surround'     " Adds the surround motion bound to s
-Plug 'tpope/vim-commentary'   " Adds comment action with 'gc'
-" Plug 'pelodelfuego/vim-swoop' " It allows you to find and replace occurrences in many buffers being aware of the context.
-Plug 'mhinz/vim-grepper', { 'on': ['Grepper', '<plug>(GrepperOperator)'] }      " ...helps you win at grep
-Plug 'junegunn/vim-easy-align' "
-let g:easy_align_ignore_comment = 0 " align comments
-vnoremap <silent> <Enter> :EasyAlign<cr>
-Plug 'dense-analysis/ale' " {{{ ALE and it's Options 
-nmap <silent> <C-k> <Plug>(ale_previous_wrap)
-nmap <silent> <C-j> <Plug>(ale_next_wrap)
-let g:ale_statusline_format = ['⨉ %d', '⚠ %d', '⬥ ok']
-let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
-let g:ale_open_list = 0
-let g:ale_set_quickfix = 1
-let b:ale_linters = ['vint', 'prettier', 'yamllint', 'pyflakes', 'flake8', 'pylint']
-let g:ale_fixers = ['prettier', 'shfmt' ]
-let g:ale_python_flake8_args="--ignore=E501" " }}}
-" }}}
-" {{{ Git Plugins
-Plug 'tpope/vim-fugitive'          " Git plugin with commands 'G<command>'
-Plug 'airblade/vim-gitgutter'      " Show git diff in number column {{{
-let g:gitgutter_enabled = 1
-let g:gitgutter_hightlight_lines = 1 " }}}
-Plug 'tpope/vim-rhubarb'           " Github extension for fugitive.vim
-" Plug 'jreybert/vimagit'            " Modal git editing with <leader>g
-Plug 'Xuyuanp/nerdtree-git-plugin' " A plugin of NERDTree showing git status flags.
-
-Plug 'mustache/vim-mustache-handlebars'
-let g:mustache_abbreviations = 1
-Plug 'nvie/vim-flake8'
-" }}}
-" {{{ Tmux Tools
-Plug 'tmux-plugins/vim-tmux'
-Plug 'edkolev/tmuxline.vim'
-" Plug 'christoomey/vim-tmux-navigator'
-" Plug 'urbainvaes/vim-tmux-pilot'
-Plug 'benmills/vimux'                   " vim plugin to interact with tmux
-" }}}
 " {{{ Visual
 Plug 'altercation/vim-colors-solarized' " Ethan's best
 Plug 'lifepillar/vim-solarized8'
@@ -121,6 +81,7 @@ let g:terraform_fold_sections=1
                             " }}}
 Plug 'isene/hyperlist.vim'
 Plug 'towolf/vim-helm'
+Plug 'pedrohdz/vim-yaml-folds'
 " A Better Asciidoc Tool and it's dependencies {{{
 Plug 'dahu/vim-asciidoc'
 Plug 'dahu/asif'
@@ -129,6 +90,46 @@ Plug 'vim-scripts/SyntaxRange'
 Plug 'raimondi/vimregstyle'
 "}}}
 " }}}
+" }}}
+" }}}
+" {{{ Editing
+Plug 'tpope/vim-surround'     " Adds the surround motion bound to s
+Plug 'tpope/vim-commentary'   " Adds comment action with 'gc'
+" Plug 'pelodelfuego/vim-swoop' " It allows you to find and replace occurrences in many buffers being aware of the context.
+Plug 'mhinz/vim-grepper', { 'on': ['Grepper', '<plug>(GrepperOperator)'] }      " ...helps you win at grep
+Plug 'junegunn/vim-easy-align' "
+let g:easy_align_ignore_comment = 0 " align comments
+vnoremap <silent> <Enter> :EasyAlign<cr>
+Plug 'dense-analysis/ale' " {{{ ALE and it's Options
+nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+nmap <silent> <C-j> <Plug>(ale_next_wrap)
+let g:ale_statusline_format = ['⨉ %d', '⚠ %d', '⬥ ok']
+let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+let g:ale_open_list = 0
+let g:ale_set_quickfix = 1
+let b:ale_linters = ['vint', 'prettier', 'yamllint', 'pyflakes', 'flake8', 'pylint']
+let g:ale_fixers = ['prettier', 'shfmt' ]
+let g:ale_python_flake8_args="--ignore=E501" " }}}
+" }}}
+" {{{ Git Plugins
+Plug 'tpope/vim-fugitive'          " Git plugin with commands 'G<command>'
+Plug 'airblade/vim-gitgutter'      " Show git diff in number column {{{
+let g:gitgutter_enabled = 1
+let g:gitgutter_hightlight_lines = 1 " }}}
+Plug 'tpope/vim-rhubarb'           " Github extension for fugitive.vim
+" Plug 'jreybert/vimagit'            " Modal git editing with <leader>g
+Plug 'Xuyuanp/nerdtree-git-plugin' " A plugin of NERDTree showing git status flags.
+
+Plug 'mustache/vim-mustache-handlebars'
+let g:mustache_abbreviations = 1
+Plug 'nvie/vim-flake8'
+" }}}
+" {{{ Tmux Tools
+Plug 'tmux-plugins/vim-tmux'
+Plug 'edkolev/tmuxline.vim'
+" Plug 'christoomey/vim-tmux-navigator'
+" Plug 'urbainvaes/vim-tmux-pilot'
+Plug 'benmills/vimux'                   " vim plugin to interact with tmux
 " }}}
 " {{{ On-demand loading
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
@@ -310,7 +311,7 @@ endif
 " }}}
 " Keyboard Shortcuts {{{
 " esc in insert mode
-inoremap kj <esc>         " Escape from Insert 
+inoremap kj <esc>         " Escape from Insert
 noremap <C-h> <C-w>h
 noremap <C-j> <C-w>j
 noremap <C-k> <C-w>k
@@ -338,7 +339,7 @@ nnoremap  <silent> <s-tab>  :if &modifiable && !&readonly && &modified <CR> :wri
 nnoremap <silent> \c :let @/='\<'.expand('<cword>').'\>'<CR>cgn
 xnoremap <silent> \c "sy:let @/=@s<CR>cgn
 " Grepper
-nnoremap ! :GrepperAg --ignore tags --ignore tags.temp 
+nnoremap ! :GrepperAg --ignore tags --ignore tags.temp
 nnoremap \S
   \ :let @s='\<'.expand('<cword>').'\>'<CR>
   \ :Grepper -cword -noprompt<CR>
@@ -410,7 +411,7 @@ function! MarkedPreview()
 endfunction
 nnoremap <leader>e :call MarkedPreview()<CR>
 " }}}
-" {{{ Show Mappings - May not be needed with fzf maps 
+" {{{ Show Mappings - May not be needed with fzf maps
 function! s:ShowMaps()
   let old_reg = getreg("a")          " save the current content of register a
   let old_reg_type = getregtype("a") " save the type of the register as well
