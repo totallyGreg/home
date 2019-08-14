@@ -30,7 +30,7 @@ Plug 'yggdroot/indentLine'
 Plug 'janko-m/vim-test'
 " }}}
 " {{{ Code Complextion
-" Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
+Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
 " {{{ Visual
 Plug 'altercation/vim-colors-solarized' " Ethan's best
 Plug 'lifepillar/vim-solarized8'
