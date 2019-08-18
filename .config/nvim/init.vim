@@ -44,11 +44,15 @@ Plug 'maximbaz/lightline-ale'
 let g:lightline = { 'colorscheme': 'solarized'}
 let g:lightline.active =  {
       \   'left': [ [ 'mode', 'paste' ],
-      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ],
+      \             [ 'gitbranch', 'cocstatus', 'currentfunction', 'readonly', 'filename', 'modified' ] ],
       \   'right': [['lineinfo'], ['percent'],
       \             ['readonly', 'linter_checking', 'linter_warnings', 'linter_errors', 'linter_ok'], ['filetype']]
       \ }
-let g:lightline.component_function = { 'gitbranch': 'fugitive#head' }
+let g:lightline.component_function = {
+      \   'gitbranch': 'fugitive#head',
+      \   'cocstatus': 'coc#status',
+      \   'currentfunction': 'CocCurrentFunction'
+      \ }
 let g:lightline.component_expand = {
       \   'linter_checking': 'lightline#ale#checking',
       \   'linter_warnings': 'lightline#ale#warnings',
@@ -107,7 +111,7 @@ nmap <silent> <C-j> <Plug>(ale_next_wrap)
 let g:ale_statusline_format = ['⨉ %d', '⚠ %d', '⬥ ok']
 let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
 let g:ale_open_list = 0
-let g:ale_set_quickfix = 1
+let g:ale_set_quickfix = 0
 let b:ale_linters = ['vint', 'prettier', 'yamllint', 'pyflakes', 'flake8', 'pylint']
 let g:ale_fixers = ['prettier', 'shfmt' ]
 let g:ale_python_flake8_args="--ignore=E501" " }}}
@@ -404,6 +408,9 @@ nmap <silent> gr <Plug>(coc-references)
 "   let opts = get(a:000, 0, {})
 "   return a:cond ? opts : extend(opts, { 'on': [], 'for': [] })
 " endfunction
+function! CocCurrentFunction()"{{{
+  return get(b:, 'coc_current_function', '')
+endfunction"}}}
 " {{{ Open current file in Marked
 function! MarkedPreview()
   :w

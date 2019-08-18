@@ -13,6 +13,7 @@
   ll = log --decorate --oneline --graph --numstat
   ls = log --decorate --oneline --graph
   pretty = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+  recent = !git for-each-ref --sort=-committerdate --format='%(refname:short)' refs/heads/ | head -n 100
   remotes = remote -v
   review = "log master..origin/master"
   size = "count-objects -vH"
@@ -26,6 +27,7 @@
   branch = auto
   diff = auto
   status = auto
+  interactive = auto
   ui = auto
 [color "branch"]
   current = yellow reverse
@@ -48,9 +50,6 @@
   smudge = git-lfs smudge -- %f
 [status]
   submoduleSummary = true
-[difftool "sourcetree"]
-  cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-  path =
 [commit]
   ; template = \"$HOME\"/.stCommitMsg
 [push]
@@ -60,3 +59,7 @@
   autocrlf = input
 [github]
   user = totallyGreg@gmail.com
+[diff]
+	tool = vimdiff
+[merge]
+	tool = vimdiff
