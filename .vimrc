@@ -30,46 +30,12 @@ Plug 'janko-m/vim-test'
 " }}}
 " {{{ Code Complextion
 Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
+" }}}
 " {{{ Visual
 Plug 'altercation/vim-colors-solarized' " Ethan's best
 Plug 'lifepillar/vim-solarized8'
 Plug 'majutsushi/tagbar'                " Open tag navigation split with :Tagbar
 Plug 'ryanoasis/vim-devicons'
-" {{{ Statusline (lightline)
-Plug 'itchyny/lightline.vim'            " New statusline tool, replaced airline
-set noshowmode                          " Do not need to show -- Insert --, as lightline handles it already
-Plug 'maximbaz/lightline-ale'
-" let g:lightline.colorscheme = 'solarized'
-let g:lightline = { 'colorscheme': 'solarized'}
-let g:lightline.active =  {
-      \   'left': [ [ 'mode', 'paste' ],
-      \             [ 'gitbranch', 'cocstatus', 'currentfunction', 'readonly', 'filename', 'modified' ] ],
-      \   'right': [['lineinfo'], ['percent'],
-      \             ['readonly', 'linter_checking', 'linter_warnings', 'linter_errors', 'linter_ok'], ['filetype']]
-      \ }
-let g:lightline.component_function = {
-      \   'gitbranch': 'fugitive#head',
-      \   'cocstatus': 'coc#status',
-      \   'currentfunction': 'CocCurrentFunction'
-      \ }
-let g:lightline.component_expand = {
-      \   'linter_checking': 'lightline#ale#checking',
-      \   'linter_warnings': 'lightline#ale#warnings',
-      \   'linter_errors': 'lightline#ale#errors',
-      \   'linter_ok': 'lightline#ale#ok',
-      \ }
-let g:lightline.component_type = {
-      \   'readonly': 'error',
-      \   'linter_checking': 'left',
-      \   'linter_warnings': 'warning',
-      \   'linter_errors': 'error',
-      \   'linter_ok': 'left',
-      \ }
-let g:lightline#ale#indicator_checking = "\uf110"
-let g:lightline#ale#indicator_warnings = "⚠ "
-let g:lightline#ale#indicator_errors = " "
-let g:lightline#ale#indicator_ok = ""
-" }}}
 " {{{ Syntax
 Plug 'sheerun/vim-polyglot' " Polyglot autoloads many language packs replacing: {{{
                             " Plug 'pearofducks/ansible-vim'
@@ -95,6 +61,79 @@ Plug 'raimondi/vimregstyle'
 "}}}
 " }}}
 " }}}
+" {{{ Statusline (lightline)
+Plug 'itchyny/lightline.vim'            " New statusline tool, replaced airline
+Plug 'sainnhe/artify.vim'               " change the display of characters without changing font
+Plug 'itchyny/vim-gitbranch'            " This plugin provides a function which returns the name of the git branch.
+Plug 'macthecadillac/lightline-gitdiff' " show a concise summary of changes since the last commit using git diff.
+Plug 'albertomontesg/lightline-asyncrun'" Async jobs indicator for the lightline vim plugin
+Plug 'rmolin88/pomodoro.vim'            " im plugin for the Pomodoro time management technique
+Plug 'maximbaz/lightline-ale'           " ALE indicator for the lightline vim plugin
+
+set noshowmode                          " Do not need to show -- Insert --, as lightline handles it already
+" let g:lightline.colorscheme = 'solarized'
+let g:lightline = { 'colorscheme': 'solarized'}
+let g:lightline.active =  {
+      \   'left': [ [ 'artify_mode', 'paste' ],
+      \             [ 'gitbranch', 'cocstatus', 'currentfunction', 'readonly', 'filename', 'modified', 'devicons_filetype'] ],
+      \   'right': [ ['lineinfo'], ['percent'],
+      \             ['readonly', 'linter_checking', 'linter_warnings', 'linter_errors', 'linter_ok'], ['filetype']]
+      \ }
+let g:lightline.inactive = {
+      \   'left': [ [ 'filename' , 'modified', 'fileformat', 'devicons_filetype' ]],
+      \   'right': [ [ 'artify_lineinfo' ] ]
+      \ }
+let g:lightline.tabline = {
+      \ 'left': [ [ 'vim_logo', 'tabs' ] ],
+      \ 'right': [ [ 'artify_gitbranch' ],
+      \ [ 'gitstatus' ] ]
+      \ }
+let g:lightline.tab = {
+      \ 'active': [ 'artify_activetabnum', 'artify_filename', 'modified' ],
+      \ 'inactive': [ 'artify_inactivetabnum', 'filename', 'modified' ] }
+let g:lightline.tab_component = {
+      \ }
+let g:lightline.tab_component_function = {
+      \ 'artify_activetabnum': 'Artify_active_tab_num',
+      \ 'artify_inactivetabnum': 'Artify_inactive_tab_num',
+      \ 'artify_filename': 'Artify_lightline_tab_filename',
+      \ 'filename': 'lightline#tab#filename',
+      \ 'modified': 'lightline#tab#modified',
+      \ 'readonly': 'lightline#tab#readonly',
+      \ 'tabnum': 'lightline#tab#tabnum'
+      \ }
+let g:lightline.component_function = {
+      \   'gitbranch': 'fugitive#head',
+      \   'devicons_filetype': 'Devicons_Filetype',
+      \   'devicons_fileformat': 'Devicons_Fileformat',
+      \   'cocstatus': 'coc#status',
+      \   'currentfunction': 'CocCurrentFunction'
+      \ }
+let g:lightline.component_expand = {
+      \   'linter_checking': 'lightline#ale#checking',
+      \   'linter_warnings': 'lightline#ale#warnings',
+      \   'linter_errors': 'lightline#ale#errors',
+      \   'linter_ok': 'lightline#ale#ok',
+      \   'asyncrun_status': 'lightline#asyncrun#status'
+      \ }
+let g:lightline.component_type = {
+      \   'readonly': 'error',
+      \   'linter_checking': 'left',
+      \   'linter_warnings': 'warning',
+      \   'linter_errors': 'error',
+      \   'linter_ok': 'left',
+      \ }
+let g:lightline.component_visible_condition = {
+      \   'gitstatus': 'lightline_gitdiff#get_status() !=# ""'
+      \ }
+let g:lightline.component_function_visible_condition = {
+      \   'coc_status': 'g:vimMode ==# "complete"',
+      \   'coc_current_function': 'g:vimMode ==# "complete"'
+      \ }
+let g:lightline#ale#indicator_checking = "\uf110"
+let g:lightline#ale#indicator_warnings = "⚠ "
+let g:lightline#ale#indicator_errors = " "
+let g:lightline#ale#indicator_ok = ""
 " }}}
 " {{{ Editing
 Plug 'tpope/vim-surround'     " Adds the surround motion bound to s
@@ -407,11 +446,53 @@ nmap <silent> gr <Plug>(coc-references)
 "   let opts = get(a:000, 0, {})
 "   return a:cond ? opts : extend(opts, { 'on': [], 'for': [] })
 " endfunction
+function! Solar_swap()"{{{ credit to https://superuser.com/users/302463/8bittree
+    if &background ==? 'dark'
+        set background=light
+        execute "silent !tmux source-file " . shellescape(expand('~/.tmux/plugins/tmux-colors-solarized/tmuxcolors-light.conf'))
+    else
+        set background=dark
+        execute "silent !tmux source-file " . shellescape(expand('~/.tmux/plugins/tmux-colors-solarized/tmuxcolors-dark.conf'))
+    endif
+    " silent !osascript -e 'tell app "System Events" to keystroke "s" using {shift down, option down, control down}'
+endfunction"}}}
+function! SetBackgroundMode(...)"{{{
+    let s:new_bg = "light"
+    if $TERM_PROGRAM ==? "Apple_Terminal"
+        " let s:mode = systemlist("defaults read -g AppleInterfaceStyle")[0]
+        let s:mode = system("osascript -e 'tell app \"Terminal\" to get (name of default settings)'")
+        " echo s:mode
+        if s:mode =~? "Dark"
+        " if s:mode ==? "Totally Dark"
+            let s:new_bg = "dark"
+        else
+            let s:new_bg = "light"
+        endif
+    else
+        " This is for Linux where I use an environment variable for this:
+        if $VIM_BACKGROUND ==? "dark"
+            let s:new_bg = "dark"
+        else
+            let s:new_bg = "light"
+        endif
+    endif
+    if &background !=? s:new_bg
+        let &background = s:new_bg
+    endif
+endfunction
+call SetBackgroundMode()
+" call timer_start(3000, "SetBackgroundMode", {"repeat": -1})
+"}}}
+function! SwitchLightlineColorScheme(color)"{{{
+    let g:lightline.colorscheme = a:color
+    call lightline#init()
+    call lightline#colorscheme()
+    call lightline#update()
+endfunction"}}}
 function! CocCurrentFunction()"{{{
   return get(b:, 'coc_current_function', '')
 endfunction"}}}
-" {{{ Open current file in Marked
-function! MarkedPreview()
+function! MarkedPreview() " {{{ Open current file in Marked
   :w
   exec ':silent !open -a "Marked.app" ' . shellescape('%:p')
   redraw!
