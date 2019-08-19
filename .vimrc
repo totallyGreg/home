@@ -5,6 +5,16 @@ if has('nvim')
   set inccommand=nosplit
 endif
 "}}}
+
+if executable('tmux') && filereadable(expand('~/.bashrc')) && $TMUX !=# ''
+    let g:vimIsInTmux = 1
+    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+    " set termguicolors
+else
+    let g:vimIsInTmux = 0
+endif
+
 " {{{ Plugin Managment
 " {{{ Bootstrap Plug
 if empty(glob('~/.vim/autoload/plug.vim'))
@@ -169,7 +179,25 @@ Plug 'nvie/vim-flake8'
 " }}}
 " {{{ Tmux Tools
 Plug 'tmux-plugins/vim-tmux'
-Plug 'edkolev/tmuxline.vim'
+Plug 'edkolev/tmuxline.vim'"{{{
+if g:vimIsInTmux == 1
+    let g:tmuxline_preset = {
+                \'a'    : '#S',
+                \'b'    : '%R %a',
+                \'c'    : [ '#{sysstat_mem} #[fg=blue]\ufa51#{upload_speed}' ],
+                \'win'  : [ '#I', '#W' ],
+                \'cwin' : [ '#I', '#W', '#F' ],
+                \'x'    : [ "#[fg=blue]#{download_speed} \uf6d9 #{sysstat_cpu}" ],
+                \'y'    : [ '#(bash /home/sainnhe/repo/scripts/func/tmux_pomodoro.sh) \ue0bd #(bash /home/sainnhe/repo/scripts/func/tmux_lock.sh)' ],
+                \'z'    : '#H #{prefix_highlight}'
+                \}
+    let g:tmuxline_separators = {
+                \ 'left' : "\ue0bc",
+                \ 'left_alt': "\ue0bd",
+                \ 'right' : "\ue0ba",
+                \ 'right_alt' : "\ue0bd",
+                \ 'space' : ' '}
+endif"}}}
 " Plug 'christoomey/vim-tmux-navigator'
 " Plug 'urbainvaes/vim-tmux-pilot'
 Plug 'benmills/vimux'                   " vim plugin to interact with tmux
