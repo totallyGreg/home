@@ -42,8 +42,9 @@ Plug 'janko-m/vim-test'
 Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
 " }}}
 " {{{ Visual
-Plug 'altercation/vim-colors-solarized' " Ethan's best
-Plug 'lifepillar/vim-solarized8'
+Plug 'altercation/vim-colors-solarized', {'do': ':so $HOME/.vim/bundle/vim-colors-solarized/autoload/togglebg.vim' } " Ethan's best
+" call togglebg#map("<F5>")
+" Plug 'lifepillar/vim-solarized8'      " Turned off for testing
 Plug 'majutsushi/tagbar'                " Open tag navigation split with :Tagbar
 Plug 'ryanoasis/vim-devicons'
 " {{{ Syntax
@@ -79,9 +80,79 @@ Plug 'macthecadillac/lightline-gitdiff' " show a concise summary of changes sinc
 Plug 'albertomontesg/lightline-asyncrun'" Async jobs indicator for the lightline vim plugin
 Plug 'rmolin88/pomodoro.vim'            " im plugin for the Pomodoro time management technique
 Plug 'maximbaz/lightline-ale'           " ALE indicator for the lightline vim plugin
+"}}}
+" {{{ Editing
+Plug 'tpope/vim-surround'     " Adds the surround motion bound to s
+Plug 'tpope/vim-commentary'   " Adds comment action with 'gc'
+" Plug 'pelodelfuego/vim-swoop' " It allows you to find and replace occurrences in many buffers being aware of the context.
+Plug 'mhinz/vim-grepper', { 'on': ['Grepper', '<plug>(GrepperOperator)'] }      " ...helps you win at grep
+Plug 'junegunn/vim-easy-align' "
+let g:easy_align_ignore_comment = 0 " align comments
+vnoremap <silent> <Enter> :EasyAlign<cr>
+Plug 'dense-analysis/ale' " {{{ ALE and it's Options
+nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+nmap <silent> <C-j> <Plug>(ale_next_wrap)
+let g:ale_statusline_format = ['⨉ %d', '⚠ %d', '⬥ ok']
+let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+let g:ale_open_list = 0
+let g:ale_set_quickfix = 0
+let b:ale_linters = ['vint', 'prettier', 'yamllint', 'pyflakes', 'flake8', 'pylint']
+let g:ale_fixers = ['prettier', 'shfmt' ]
+let g:ale_python_flake8_args="--ignore=E501" " }}}
+" }}}
+" {{{ Git Plugins
+Plug 'tpope/vim-fugitive'          " Git plugin with commands 'G<command>'
+Plug 'airblade/vim-gitgutter'      " Show git diff in number column {{{
+let g:gitgutter_enabled = 1
+let g:gitgutter_hightlight_lines = 1 " }}}
+Plug 'tpope/vim-rhubarb'           " Github extension for fugitive.vim
+" Plug 'jreybert/vimagit'            " Modal git editing with <leader>g
+Plug 'Xuyuanp/nerdtree-git-plugin' " A plugin of NERDTree showing git status flags.
 
+Plug 'mustache/vim-mustache-handlebars'
+let g:mustache_abbreviations = 1
+Plug 'nvie/vim-flake8'
+" }}}
+" {{{ Tmux Tools
+Plug 'tmux-plugins/vim-tmux'
+Plug 'edkolev/tmuxline.vim'"{{{ Simple tmux statusline generator
+" if g:vimIsInTmux == 1
+"     let g:tmuxline_preset = {
+"                 \'a'    : '#S',
+"                 \'b'    : '%R %a',
+"                 \'c'    : [ '#{sysstat_mem} #[fg=blue]\ufa51#{upload_speed}' ],
+"                 \'win'  : [ '#I', '#W' ],
+"                 \'cwin' : [ '#I', '#W', '#F' ],
+"                 \'x'    : [ "#[fg=blue]#{download_speed} \uf6d9 #{sysstat_cpu}" ],
+"                 \'y'    : [ '#(bash /home/sainnhe/repo/scripts/func/tmux_pomodoro.sh) \ue0bd #(bash /home/sainnhe/repo/scripts/func/tmux_lock.sh)' ],
+"                 \'z'    : '#H #{prefix_highlight}'
+"                 \}
+    " let g:tmuxline_separators = {
+    "             \ 'left' : "\ue0bc",
+    "             \ 'left_alt': "\ue0bd",
+    "             \ 'right' : "\ue0ba",
+    "             \ 'right_alt' : "\ue0bd",
+    "             \ 'space' : ' '}
+" endif"}}}
+" Plug 'christoomey/vim-tmux-navigator'
+" Plug 'urbainvaes/vim-tmux-pilot'
+Plug 'benmills/vimux'                   " vim plugin to interact with tmux
+" }}}
+" {{{ On-demand loading
+Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+
+if has('mac')
+    Plug 'junegunn/vim-xmark'
+endif
+call plug#end()
+" }}}
+" }}} Plugin Managment
+" {{{ Lightline Configuration
 set noshowmode                          " Do not need to show -- Insert --, as lightline handles it already
-" let g:lightline.colorscheme = 'solarized'
+let g:lightline#ale#indicator_checking = "\uf110"
+let g:lightline#ale#indicator_warnings = "⚠ "
+let g:lightline#ale#indicator_errors = " "
+let g:lightline#ale#indicator_ok = ""
 let g:lightline = { 'colorscheme': 'solarized'}
 let g:lightline.active =  {
       \   'left': [ [ 'artify_mode', 'paste' ],
@@ -139,78 +210,7 @@ let g:lightline.component_visible_condition = {
 let g:lightline.component_function_visible_condition = {
       \   'coc_status': 'g:vimMode ==# "complete"',
       \   'coc_current_function': 'g:vimMode ==# "complete"'
-      \ }
-let g:lightline#ale#indicator_checking = "\uf110"
-let g:lightline#ale#indicator_warnings = "⚠ "
-let g:lightline#ale#indicator_errors = " "
-let g:lightline#ale#indicator_ok = ""
-" }}}
-" {{{ Editing
-Plug 'tpope/vim-surround'     " Adds the surround motion bound to s
-Plug 'tpope/vim-commentary'   " Adds comment action with 'gc'
-" Plug 'pelodelfuego/vim-swoop' " It allows you to find and replace occurrences in many buffers being aware of the context.
-Plug 'mhinz/vim-grepper', { 'on': ['Grepper', '<plug>(GrepperOperator)'] }      " ...helps you win at grep
-Plug 'junegunn/vim-easy-align' "
-let g:easy_align_ignore_comment = 0 " align comments
-vnoremap <silent> <Enter> :EasyAlign<cr>
-Plug 'dense-analysis/ale' " {{{ ALE and it's Options
-nmap <silent> <C-k> <Plug>(ale_previous_wrap)
-nmap <silent> <C-j> <Plug>(ale_next_wrap)
-let g:ale_statusline_format = ['⨉ %d', '⚠ %d', '⬥ ok']
-let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
-let g:ale_open_list = 0
-let g:ale_set_quickfix = 0
-let b:ale_linters = ['vint', 'prettier', 'yamllint', 'pyflakes', 'flake8', 'pylint']
-let g:ale_fixers = ['prettier', 'shfmt' ]
-let g:ale_python_flake8_args="--ignore=E501" " }}}
-" }}}
-" {{{ Git Plugins
-Plug 'tpope/vim-fugitive'          " Git plugin with commands 'G<command>'
-Plug 'airblade/vim-gitgutter'      " Show git diff in number column {{{
-let g:gitgutter_enabled = 1
-let g:gitgutter_hightlight_lines = 1 " }}}
-Plug 'tpope/vim-rhubarb'           " Github extension for fugitive.vim
-" Plug 'jreybert/vimagit'            " Modal git editing with <leader>g
-Plug 'Xuyuanp/nerdtree-git-plugin' " A plugin of NERDTree showing git status flags.
-
-Plug 'mustache/vim-mustache-handlebars'
-let g:mustache_abbreviations = 1
-Plug 'nvie/vim-flake8'
-" }}}
-" {{{ Tmux Tools
-Plug 'tmux-plugins/vim-tmux'
-Plug 'edkolev/tmuxline.vim'"{{{
-if g:vimIsInTmux == 1
-    let g:tmuxline_preset = {
-                \'a'    : '#S',
-                \'b'    : '%R %a',
-                \'c'    : [ '#{sysstat_mem} #[fg=blue]\ufa51#{upload_speed}' ],
-                \'win'  : [ '#I', '#W' ],
-                \'cwin' : [ '#I', '#W', '#F' ],
-                \'x'    : [ "#[fg=blue]#{download_speed} \uf6d9 #{sysstat_cpu}" ],
-                \'y'    : [ '#(bash /home/sainnhe/repo/scripts/func/tmux_pomodoro.sh) \ue0bd #(bash /home/sainnhe/repo/scripts/func/tmux_lock.sh)' ],
-                \'z'    : '#H #{prefix_highlight}'
-                \}
-    let g:tmuxline_separators = {
-                \ 'left' : "\ue0bc",
-                \ 'left_alt': "\ue0bd",
-                \ 'right' : "\ue0ba",
-                \ 'right_alt' : "\ue0bd",
-                \ 'space' : ' '}
-endif"}}}
-" Plug 'christoomey/vim-tmux-navigator'
-" Plug 'urbainvaes/vim-tmux-pilot'
-Plug 'benmills/vimux'                   " vim plugin to interact with tmux
-" }}}
-" {{{ On-demand loading
-Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
-
-if has('mac')
-    Plug 'junegunn/vim-xmark'
-endif
-call plug#end()
-" }}}
-" }}} Plugin Managment
+      \ } " }}}
 " Autogroups {{{
 " {{{ Reload VIM
 if has ('autocmd') " Remain compatible with earlier versions
@@ -255,7 +255,7 @@ autocmd FileType make set tabstop=8 noexpandtab shiftwidth=8 softtabstop=0
 autocmd FileType gitconfig setlocal ts=2 sts=2 sw=2 expandtab
 autocmd Filetype javascript setlocal ts=2 sts=2 sw=2 noexpandtab
 autocmd BufRead,BufNewFile Vagrantfile setfiletype ruby
-" auto-delete buffers after browing through objects
+" auto-delete buffers after browsing through objects
 autocmd BufReadPost fugitive://* set bufhidden=delete
 autocmd BufRead,BufNewFile *.ics set filetype=icalendar
 autocmd FileType mail,text,html,asciidoc setlocal spell spelllang=en
@@ -360,7 +360,13 @@ if &term =~ '^screen' && !has('nvim') | exe "set t_ts=\e]2; t_fs=\7" | endif
 if (&t_Co == 256 || has('gui_running'))
   if ($TERM_PROGRAM == ('iTerm.app'||'Apple_Terminal'))
     " set termguicolors
-    set background=dark
+    let s:tab_settings = system("osascript -e 'tell app \"Terminal\" to get name of (current settings of selected tab of front window)'")
+    if s:tab_settings =~? "Dark"
+    " if s:mode ==? "Totally Dark"
+      set background=dark
+    else
+      set background=light
+    endif
     colorscheme solarized
   else
     colorscheme desert
@@ -488,7 +494,9 @@ function! SetBackgroundMode(...)"{{{
     let s:new_bg = "light"
     if $TERM_PROGRAM ==? "Apple_Terminal"
         " let s:mode = systemlist("defaults read -g AppleInterfaceStyle")[0]
-        let s:mode = system("osascript -e 'tell app \"Terminal\" to get (name of default settings)'")
+        " let s:mode = system("osascript -e 'tell app \"Terminal\" to get (name of default settings)'")
+        let s:mode = system("osascript -e 'tell app \"Terminal\" to get name of (current settings of selected tab of front window)'")
+        " /usr/libexec/PlistBuddy -c "print 'Default Window Settings'" ~/Library/Preferences/com.apple.Terminal.plist
         " echo s:mode
         if s:mode =~? "Dark"
         " if s:mode ==? "Totally Dark"
