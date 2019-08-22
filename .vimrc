@@ -20,7 +20,7 @@ endif
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+  autocmd VimEnter * PlugInstall --sync | nested source $MYVIMRC
 endif
 "}}}
 call plug#begin('~/.vim/bundle')
@@ -149,10 +149,31 @@ call plug#end()
 " }}} Plugin Managment
 " {{{ Lightline Configuration
 set noshowmode                          " Do not need to show -- Insert --, as lightline handles it already
+" augroup lightlineCustom
+"   autocmd
+"   autocmd BufWritePost * call lightline_gitdiff#query_git() | call lightline#update()
+" augroup END
+function! Artify_gitbranch() abort"{{{
+    if gitbranch#name() !=# ''
+        return Artify(gitbranch#name(), 'monospace')." \ue725"
+    else
+        return "\ue61b"
+    endif
+endfunction"}}}
+function! Devicons_Filetype() "{{{
+  return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype . ' ' .  WebDevIconsGetFileTypeSymbol() : 'no ft') : ''
+endfunction "}}}
+function! Devicons_Fileformat()"{{{
+  return winwidth(0) > 70 ? (&fileformat . ' ' . WebDevIconsGetFileFormatSymbol()) : '' 
+endfunction"}}}
 let g:lightline#ale#indicator_checking = "\uf110"
 let g:lightline#ale#indicator_warnings = "⚠ "
 let g:lightline#ale#indicator_errors = " "
 let g:lightline#ale#indicator_ok = ""
+let g:lightline_gitdiff#indicator_added = '+'
+let g:lightline_gitdiff#indicator_deleted = '-'
+let g:lightline_gitdiff#indicator_modified = '!'
+let g:lightline_gitdiff#min_winwidth = '70'
 let g:lightline = { 'colorscheme': 'solarized'}
 let g:lightline.active =  {
       \   'left': [ [ 'artify_mode', 'paste' ],
@@ -215,7 +236,7 @@ let g:lightline.component_function_visible_condition = {
 " {{{ Reload VIM
 if has ('autocmd') " Remain compatible with earlier versions
  augroup vimrc     " Source vim configuration upon save
-    autocmd! BufWritePost $MYVIMRC source % | echom "Reloaded " . $MYVIMRC | redraw
+    autocmd! BufWritePost $MYVIMRC nested source % | echom "Reloaded " . $MYVIMRC | redraw
     autocmd! BufWritePost $MYGVIMRC if has('gui_running') | so % | echom "Reloaded " . $MYGVIMRC | endif | redraw
   augroup END
 endif " has autocmd
