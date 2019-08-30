@@ -408,11 +408,53 @@ nmap <silent> gr <Plug>(coc-references)
 "   let opts = get(a:000, 0, {})
 "   return a:cond ? opts : extend(opts, { 'on': [], 'for': [] })
 " endfunction
+function! Solar_swap()"{{{ credit to https://superuser.com/users/302463/8bittree
+    if &background ==? 'dark'
+        set background=light
+        execute "silent !tmux source-file " . shellescape(expand('~/.tmux/plugins/tmux-colors-solarized/tmuxcolors-light.conf'))
+    else
+        set background=dark
+        execute "silent !tmux source-file " . shellescape(expand('~/.tmux/plugins/tmux-colors-solarized/tmuxcolors-dark.conf'))
+    endif
+    " silent !osascript -e 'tell app "System Events" to keystroke "s" using {shift down, option down, control down}'
+endfunction"}}}
+function! SetBackgroundMode(...)"{{{
+    let s:new_bg = "light"
+    if $TERM_PROGRAM ==? "Apple_Terminal"
+        " let s:mode = systemlist("defaults read -g AppleInterfaceStyle")[0]
+        let s:mode = system("osascript -e 'tell app \"Terminal\" to get (name of default settings)'")
+        " echo s:mode
+        if s:mode =~? "Dark"
+        " if s:mode ==? "Totally Dark"
+            let s:new_bg = "dark"
+        else
+            let s:new_bg = "light"
+        endif
+    else
+        " This is for Linux where I use an environment variable for this:
+        if $VIM_BACKGROUND ==? "dark"
+            let s:new_bg = "dark"
+        else
+            let s:new_bg = "light"
+        endif
+    endif
+    if &background !=? s:new_bg
+        let &background = s:new_bg
+    endif
+endfunction
+call SetBackgroundMode()
+" call timer_start(3000, "SetBackgroundMode", {"repeat": -1})
+"}}}
+function! SwitchLightlineColorScheme(color)"{{{
+    let g:lightline.colorscheme = a:color
+    call lightline#init()
+    call lightline#colorscheme()
+    call lightline#update()
+endfunction"}}}
 function! CocCurrentFunction()"{{{
   return get(b:, 'coc_current_function', '')
 endfunction"}}}
-" {{{ Open current file in Marked
-function! MarkedPreview()
+function! MarkedPreview() " {{{ Open current file in Marked
   :w
   exec ':silent !open -a "Marked.app" ' . shellescape('%:p')
   redraw!
