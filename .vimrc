@@ -264,7 +264,7 @@ let g:lightline.separator = { 'left': '', 'right': '' }
 let g:lightline.subseparator = { 'left': '', 'right': '' }
 let g:lightline.active =  {
       \   'left': [ [ 'artify_mode' , 'paste' ],
-      \             [ 'gitbranch', 'cocstatus', 'currentfunction', 'readonly', 'filename', 'modified'] ],
+      \             [ 'gitbranch', 'cocstatus', 'currentfunction', 'readonly', 'devicons_filetype', 'filename', 'modified'] ],
       \   'right': [ ['artify_lineinfo'],
       \             ['readonly', 'linter_checking', 'linter_warnings', 'linter_errors', 'linter_ok'], ]
       \ }
