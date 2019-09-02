@@ -345,13 +345,6 @@ function ERROR()
 # GIT heart FZF
 # -------------
 
-bind '"\er": redraw-current-line'
-bind '"\C-g\C-f": "$(gf)\e\C-e\er"'
-bind '"\C-g\C-b": "$(gb)\e\C-e\er"'
-bind '"\C-g\C-t": "$(gt)\e\C-e\er"'
-bind '"\C-g\C-h": "$(gh)\e\C-e\er"'
-bind '"\C-g\C-r": "$(gr)\e\C-e\er"'
-
 is_in_git_repo() {
   git rev-parse HEAD > /dev/null 2>&1
 }
@@ -400,3 +393,13 @@ gr() {
     --preview 'git log --oneline --graph --date=short --pretty="format:%C(auto)%cd %h%d %s" {1} | head -200' |
   cut -d$'\t' -f1
 }
+
+# fzf git functions keybindings
+
+bind '"\er": redraw-current-line'
+bind '"\C-g\C-f": "$(gf)\e\C-e\er"'
+bind '"\C-g\C-b": "$(gb)\e\C-e\er"'
+bind '"\C-g\C-t": "$(gt)\e\C-e\er"'
+bind '"\C-g\C-h": "$(gh)\e\C-e\er"'
+bind '"\C-g\C-r": "$(gr)\e\C-e\er"'
+
