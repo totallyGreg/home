@@ -22,9 +22,13 @@ show-read-feeds no
 feed-sort-order unreadarticlecount-asc
 text-width 0
 
+articlelist-format  "%4i %f %D   %?T?|%-17T|  ?%t"
+articlelist-title-format "%N %V - Articles in feed %T (%u unread, %t total) "
+
 # highlights
-highlight article "^(Title):.*$" blue default
-highlight article "https?://[^ ]+" red default
+# highlight articlelist 
+highlight article "^(Title):.*$" yellow default
+highlight article "https?://[^ ]+" blue default
 highlight article "\\[image\\ [0-9]+\\]" green default
 
 # color info blue default reverse
