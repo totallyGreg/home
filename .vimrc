@@ -80,6 +80,9 @@ Plug 'macthecadillac/lightline-gitdiff' " show a concise summary of changes sinc
 Plug 'albertomontesg/lightline-asyncrun'" Async jobs indicator for the lightline vim plugin
 Plug 'rmolin88/pomodoro.vim'            " im plugin for the Pomodoro time management technique
 Plug 'maximbaz/lightline-ale'           " ALE indicator for the lightline vim plugin
+Plug 'edkolev/promptline.vim'           " Generate a fast shell prompt with powerline symbols and airline colors
+let g:promptline_preset = 'clear'
+let g:promptline_theme = 'lightline'
 "}}}
 " {{{ Editing
 Plug 'tpope/vim-surround'     " Adds the surround motion bound to s
@@ -117,10 +120,15 @@ Plug 'nvie/vim-flake8'
 Plug 'tmux-plugins/vim-tmux'
 "{{{ Simple tmux statusline generator
 Plug 'edkolev/tmuxline.vim', { 'on': ['Tmuxline', 'TmuxlineSimple', 'TmuxlineSnapshot'] }
-autocmd! User tmuxline.vim
-    \ let g:tmuxline_theme = 'lightline'
-    \ let g:tmuxline_preset = 'croshair'
-    \ }
+" autocmd! User tmuxline.vim
+"     \ let g:tmuxline_theme = 'lightline' |
+"     \ let g:tmughtxline_preset = 'crosshair'
+"     \ }
+" augroup tmuxline
+"   autocmd!
+"   autocmd VimEnter, colorscheme * silent! Tmuxline lightline
+"   autocmd VimLeave * !tmux source-file ~/.tmux.conf
+" augroup END
 " if g:vimIsInTmux == 1
 "     let g:tmuxline_preset = {
 "                 \'a'    : '#S',
@@ -141,7 +149,7 @@ autocmd! User tmuxline.vim
 " endif "}}}
 " Plug 'christoomey/vim-tmux-navigator'
 " Plug 'urbainvaes/vim-tmux-pilot'
-Plug 'benmills/vimux'                   " vim plugin to interact with tmux
+" Plug 'benmills/vimux'                   " vim plugin to interact with tmux
 " }}}
 " {{{ On-demand loading
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
@@ -182,6 +190,7 @@ function! s:lightline_update() "{{{
       call lightline#colorscheme()
       call lightline#update()
       command Tmuxline lightline
+      command TmuxlineSnapshot! ~/.tmux/snapshot
     endif
   catch
   endtry

@@ -58,7 +58,9 @@ shopt -s checkwinsize
 # So multiple logins are all sharing history
 shopt -s histappend
 #PROMPT_COMMAND='history -a'
-export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r"
+# export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r"
+export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
+
 
 # Save multi-line commands as one command
 shopt -s cmdhist
@@ -101,7 +103,9 @@ fi
 
 
 # Bash Hook for direnv
-if [ -x `which direnv` ]; then
+if ! hash direnv 2>/dev/null; then
+  echo ""
+else
   eval "$(direnv hook bash)"
 fi
 
@@ -131,9 +135,8 @@ if ! shopt -oq posix && [ "${BASH_VERSINFO:-0}" -ge 4 ]; then
 
 fi
 
-## Liquid Prompt if shell is interactive
-[[ $- = *i* ]] && source ~/bin/liquidprompt/liquidprompt
-
+## Source Prompt
+[ -f ~/.promptline.sh ] && source ~/.promptline.sh
 ## Source Functions
 [ -f ~/.functions ] && source ~/.functions
 ## Source Aliases
