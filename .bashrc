@@ -8,7 +8,7 @@ export XML_CATALOG_FILES=/usr/local/etc/xml/catalog
 export HOMEBREW_NO_GITHUB_API=1
 HISTSIZE=500000
 HISTFILESIZE=1000000
-HISTCONTROL="ignorespace"
+HISTCONTROL="ignorespace:ignoredups:erasedups"
 HISTIGNORE="&:[ ]*:exit:ls:[bf]g:history:clear:"
 # Use standard ISO 8601 timestamp
 # %F equivalent to %Y-%m-%d
@@ -55,15 +55,12 @@ shopt -s cdable_vars
 shopt -s checkwinsize
 
 # This makes writing to history happen after each prompt
-# So multiple logins are all sharing history
-shopt -s histappend
-#PROMPT_COMMAND='history -a'
-# export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r"
-export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
-
-
 # Save multi-line commands as one command
 shopt -s cmdhist
+# So multiple logins are all sharing history
+shopt -s histappend
+# https://unix.stackexchange.com/questions/18212/bash-history-ignoredups-and-erasedups-setting-conflict-with-common-history
+PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -n; history -w; history -c; history -r"
 
 ## BETTER DIRECTORY NAVIGATION ##
 # Prepend cd to directory names automatically
