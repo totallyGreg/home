@@ -101,7 +101,9 @@ fi
 
 
 # Bash Hook for direnv
-eval "$(direnv hook bash)"
+if [ -x `which direnv` ]; then
+  eval "$(direnv hook bash)"
+fi
 
 ## Test for color is actually a test for linux over mac
 if [ -f /usr/bin/dircolors ]; then
@@ -138,4 +140,6 @@ fi
 [ -f ~/.aliases ] && source ~/.aliases
 ## Source Terraform variables
 # include ~/.oci/env-vars
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+if [ -x `which fzf` ]; then
+  [ -f ~/.fzf.bash  ] && source ~/.fzf.bash
+fi

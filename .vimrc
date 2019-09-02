@@ -5,12 +5,22 @@ if has('nvim')
   set inccommand=nosplit
 endif
 "}}}
+
+if executable('tmux') && filereadable(expand('~/.bashrc')) && $TMUX !=# ''
+    let g:vimIsInTmux = 1
+    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+    " set termguicolors
+else
+    let g:vimIsInTmux = 0
+endif
+
 " {{{ Plugin Managment
 " {{{ Bootstrap Plug
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+  autocmd VimEnter * PlugInstall --sync | nested source $MYVIMRC
 endif
 "}}}
 call plug#begin('~/.vim/bundle')
@@ -30,46 +40,13 @@ Plug 'janko-m/vim-test'
 " }}}
 " {{{ Code Complextion
 Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
+" }}}
 " {{{ Visual
-Plug 'altercation/vim-colors-solarized' " Ethan's best
-Plug 'lifepillar/vim-solarized8'
+Plug 'altercation/vim-colors-solarized', {'do': ':so $HOME/.vim/bundle/vim-colors-solarized/autoload/togglebg.vim' } " Ethan's best
+" call togglebg#map("<F5>")
+" Plug 'lifepillar/vim-solarized8'      " Turned off for testing
 Plug 'majutsushi/tagbar'                " Open tag navigation split with :Tagbar
 Plug 'ryanoasis/vim-devicons'
-" {{{ Statusline (lightline)
-Plug 'itchyny/lightline.vim'            " New statusline tool, replaced airline
-set noshowmode                          " Do not need to show -- Insert --, as lightline handles it already
-Plug 'maximbaz/lightline-ale'
-" let g:lightline.colorscheme = 'solarized'
-let g:lightline = { 'colorscheme': 'solarized'}
-let g:lightline.active =  {
-      \   'left': [ [ 'mode', 'paste' ],
-      \             [ 'gitbranch', 'cocstatus', 'currentfunction', 'readonly', 'filename', 'modified' ] ],
-      \   'right': [['lineinfo'], ['percent'],
-      \             ['readonly', 'linter_checking', 'linter_warnings', 'linter_errors', 'linter_ok'], ['filetype']]
-      \ }
-let g:lightline.component_function = {
-      \   'gitbranch': 'fugitive#head',
-      \   'cocstatus': 'coc#status',
-      \   'currentfunction': 'CocCurrentFunction'
-      \ }
-let g:lightline.component_expand = {
-      \   'linter_checking': 'lightline#ale#checking',
-      \   'linter_warnings': 'lightline#ale#warnings',
-      \   'linter_errors': 'lightline#ale#errors',
-      \   'linter_ok': 'lightline#ale#ok',
-      \ }
-let g:lightline.component_type = {
-      \   'readonly': 'error',
-      \   'linter_checking': 'left',
-      \   'linter_warnings': 'warning',
-      \   'linter_errors': 'error',
-      \   'linter_ok': 'left',
-      \ }
-let g:lightline#ale#indicator_checking = "\uf110"
-let g:lightline#ale#indicator_warnings = "⚠ "
-let g:lightline#ale#indicator_errors = " "
-let g:lightline#ale#indicator_ok = ""
-" }}}
 " {{{ Syntax
 Plug 'sheerun/vim-polyglot' " Polyglot autoloads many language packs replacing: {{{
                             " Plug 'pearofducks/ansible-vim'
@@ -95,7 +72,15 @@ Plug 'raimondi/vimregstyle'
 "}}}
 " }}}
 " }}}
-" }}}
+" {{{ Statusline (lightline)
+Plug 'itchyny/lightline.vim'            " New statusline tool, replaced airline
+Plug 'sainnhe/artify.vim'               " change the display of characters without changing font
+Plug 'itchyny/vim-gitbranch'            " This plugin provides a function which returns the name of the git branch.
+Plug 'macthecadillac/lightline-gitdiff' " show a concise summary of changes since the last commit using git diff.
+Plug 'albertomontesg/lightline-asyncrun'" Async jobs indicator for the lightline vim plugin
+Plug 'rmolin88/pomodoro.vim'            " im plugin for the Pomodoro time management technique
+Plug 'maximbaz/lightline-ale'           " ALE indicator for the lightline vim plugin
+"}}}
 " {{{ Editing
 Plug 'tpope/vim-surround'     " Adds the surround motion bound to s
 Plug 'tpope/vim-commentary'   " Adds comment action with 'gc'
@@ -130,7 +115,30 @@ Plug 'nvie/vim-flake8'
 " }}}
 " {{{ Tmux Tools
 Plug 'tmux-plugins/vim-tmux'
-Plug 'edkolev/tmuxline.vim'
+"{{{ Simple tmux statusline generator
+Plug 'edkolev/tmuxline.vim', { 'on': ['Tmuxline', 'TmuxlineSimple', 'TmuxlineSnapshot'] }
+autocmd! User tmuxline.vim
+    \ let g:tmuxline_theme = 'lightline'
+    \ let g:tmuxline_preset = 'croshair'
+    \ }
+" if g:vimIsInTmux == 1
+"     let g:tmuxline_preset = {
+"                 \'a'    : '#S',
+"                 \'b'    : '%R %a',
+"                 \'c'    : [ '#{sysstat_mem} #[fg=blue]\ufa51#{upload_speed}' ],
+"                 \'win'  : [ '#I', '#W' ],
+"                 \'cwin' : [ '#I', '#W', '#F' ],
+"                 \'x'    : [ "#[fg=blue]#{download_speed} \uf6d9 #{sysstat_cpu}" ],
+"                 \'y'    : [ '#(bash /home/sainnhe/repo/scripts/func/tmux_pomodoro.sh) \ue0bd #(bash /home/sainnhe/repo/scripts/func/tmux_lock.sh)' ],
+"                 \'z'    : '#H #{prefix_highlight}'
+"                 \}
+    " let g:tmuxline_separators = {
+    "             \ 'left' : "\ue0bc",
+    "             \ 'left_alt': "\ue0bd",
+    "             \ 'right' : "\ue0ba",
+    "             \ 'right_alt' : "\ue0bd",
+    "             \ 'space' : ' '}
+" endif "}}}
 " Plug 'christoomey/vim-tmux-navigator'
 " Plug 'urbainvaes/vim-tmux-pilot'
 Plug 'benmills/vimux'                   " vim plugin to interact with tmux
@@ -144,11 +152,214 @@ endif
 call plug#end()
 " }}}
 " }}} Plugin Managment
+" {{{ Lightline Configuration
+set laststatus=2
+set noshowmode                          " Do not need to show -- Insert --, as lightline handles it already
+" augroup lightlineCustom
+"   autocmd
+"   autocmd BufWritePost * call lightline_gitdiff#query_git() | call lightline#update()
+" augroup END
+augroup LightlineColorscheme "{{{
+  autocmd!
+  autocmd ColorScheme * call s:lightline_update()
+augroup END "}}}
+" autocmd VimEnter * call SetupLightlineColors()
+" function SetupLightlineColors() abort "{{{
+"   let l:pallete = lightline#palette()
+"   let l:pallete.normal.left[1][3] = 'NONE'
+"   call lightline#colorscheme()
+" endfunction "}}}
+function! s:lightline_update() "{{{
+  if !exists('g:loaded_lightline')
+    return
+  endif
+  try
+    if g:colors_name =~# 'wombat\|solarized\|landscape\|jellybeans\|seoul256\|Tomorrow'
+      let g:lightline.colorscheme =
+            \ substitute(substitute(g:colors_name, '-', '_', 'g'), '256.*', '', '')
+      call lightline#init()
+      runtime autoload/lightline/colorscheme/solarized.vim
+      call lightline#colorscheme()
+      call lightline#update()
+      command Tmuxline lightline
+    endif
+  catch
+  endtry
+endfunction "}}}
+function! s:set_lightline_colorscheme(name) abort "{{{
+  let g:lightline.colorscheme = a:name
+  call lightline#init()
+  call lightline#colorscheme()
+  call lightline#update()
+endfunction "}}}
+function! s:lightline_colorschemes(...) abort "{{{
+  return join(map(
+        \ globpath(&rtp,"autoload/lightline/colorscheme/*.vim",1,1),
+        \ "fnamemodify(v:val,':t:r')"),
+        \ "\n")
+endfunction "}}}
+" This WORKS!!
+function! ToggleSolarizedTheme() "{{{ change background and update lightline color scheme
+  let &background = ( &background == "dark"? "light" : "dark" )
+  if exists("g:lightline")
+    runtime autoload/lightline/colorscheme/solarized.vim
+    call lightline#colorscheme()
+  endif
+endfunction "}}}
+map <F5> : call ToggleSolarizedTheme()<CR>
+command! -nargs=1 -complete=custom,s:lightline_colorschemes LightlineColorscheme
+      \ call s:set_lightline_colorscheme(<q-args>)
+function! TmuxBindLock() abort"{{{
+  if filereadable('/tmp/.tmux-bind.lck')
+    return "\uf13e"
+  else
+    return "\uf023"
+  endif
+endfunction"}}}
+function! Artify_lightline_mode() abort"{{{
+    return Artify(lightline#mode(), 'monospace')
+endfunction"}}}
+function! Artify_gitbranch() abort"{{{
+    if gitbranch#name() !=# ''
+        return Artify(gitbranch#name(), 'monospace')." \ue725"
+    else
+        return "\ue61b"
+    endif
+endfunction"}}}
+function! Artify_line_percent() abort"{{{
+  return Artify(string((100*line('.'))/line('$')), 'bold')
+endfunction"}}}
+function! Artify_line_num() abort"{{{
+  return Artify(string(line('.')), 'bold')
+endfunction"}}}
+function! Artify_col_num() abort"{{{
+  return Artify(string(getcurpos()[2]), 'bold')
+endfunction"}}}
+function! Devicons_Filetype() "{{{
+  return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype . ' ' .  WebDevIconsGetFileTypeSymbol() : 'no ft') : ''
+endfunction "}}}
+function! Devicons_Fileformat()"{{{
+  return winwidth(0) > 70 ? (&fileformat . ' ' . WebDevIconsGetFileFormatSymbol()) : ''
+endfunction"}}}
+function! LightlineReadonly()"{{{
+  return &readonly ? '' : ''
+endfunction"}}}
+function! LightlineFugitive() "{{{
+  if exists('*fugitive#head')
+    let branch = fugitive#head()
+    return branch !=# '' ? ''.branch : ''
+  endif
+  return ''
+endfunction "}}}
+let g:lightline#ale#indicator_checking = "\uf110"
+let g:lightline#ale#indicator_warnings = "⚠ "
+let g:lightline#ale#indicator_errors = " "
+let g:lightline#ale#indicator_ok = ""
+let g:lightline_gitdiff#indicator_added = '+'
+let g:lightline_gitdiff#indicator_deleted = '-'
+let g:lightline_gitdiff#indicator_modified = '!'
+let g:lightline_gitdiff#min_winwidth = '70'
+let g:lightline = { 'colorscheme': 'solarized'}
+let g:lightline.separator = { 'left': '', 'right': '' }
+let g:lightline.subseparator = { 'left': '', 'right': '' }
+let g:lightline.active =  {
+      \   'left': [ [ 'artify_mode' , 'paste' ],
+      \             [ 'gitbranch', 'cocstatus', 'currentfunction', 'readonly', 'devicons_filetype', 'filename', 'modified'] ],
+      \   'right': [ ['artify_lineinfo'],
+      \             ['readonly', 'linter_checking', 'linter_warnings', 'linter_errors', 'linter_ok'], ]
+      \ }
+let g:lightline.inactive = {
+      \   'left': [ [ 'filename' , 'modified', 'fileformat', 'devicons_filetype' ] ],
+      \   'right': [ [ 'artify_lineinfo' ] ]
+      \ }
+let g:lightline.tabline = {
+      \ 'left': [ [ 'vim_logo', 'tabs' ] ],
+      \ 'right': [ [ 'artify_gitbranch' ],
+      \ [ 'gitstatus' ] ]
+      \ }
+let g:lightline.tab = {
+      \ 'active': [ 'artify_activetabnum', 'artify_filename', 'modified' ],
+      \ 'inactive': [ 'artify_inactivetabnum', 'filename', 'modified' ] }
+let g:lightline.tab_component = {
+      \ }
+let g:lightline.tab_component_function = {
+      \ 'artify_activetabnum': 'Artify_active_tab_num',
+      \ 'artify_inactivetabnum': 'Artify_inactive_tab_num',
+      \ 'artify_filename': 'Artify_lightline_tab_filename',
+      \ 'filename': 'lightline#tab#filename',
+      \ 'modified': 'lightline#tab#modified',
+      \ 'readonly': 'lightline#tab#readonly',
+      \ 'tabnum': 'lightline#tab#tabnum'
+      \ }
+      " \ 'artify_lineinfo': "%2{Artify_line_percent()}\uf295 %3{Artify_line_num()}:%-2{Artify_col_num()}",
+let g:lightline.component = {
+      \ 'artify_gitbranch' : '%{Artify_gitbranch()}',
+      \ 'artify_mode': '%{Artify_lightline_mode()}',
+      \ 'artify_lineinfo': "%2{Artify_line_percent()}\uf295 %3{Artify_line_num()}:%-2{Artify_col_num()}",
+      \ 'gitstatus' : '%{lightline_gitdiff#get_status()}',
+      \ 'bufinfo': '%{bufname("%")}:%{bufnr("%")}',
+      \ 'obsession': '%{ObsessionStatusEnhance()}',
+      \ 'tmuxlock': '%{TmuxBindLock()}',
+      \ 'vim_logo': "\ue7c5",
+      \ 'pomodoro': '%{PomodoroStatus()}',
+      \ 'mode': '%{lightline#mode()}',
+      \ 'absolutepath': '%F',
+      \ 'relativepath': '%f',
+      \ 'filename': '%t',
+      \ 'filesize': "%{HumanSize(line2byte('$') + len(getline('$')))}",
+      \ 'fileencoding': '%{&fenc!=#""?&fenc:&enc}',
+      \ 'fileformat': '%{&fenc!=#""?&fenc:&enc}[%{&ff}]',
+      \ 'filetype': '%{&ft!=#""?&ft:"no ft"}',
+      \ 'modified': '%M',
+      \ 'bufnum': '%n',
+      \ 'paste': '%{&paste?"PASTE":""}',
+      \ 'readonly': '%R',
+      \ 'charvalue': '%b',
+      \ 'charvaluehex': '%B',
+      \ 'percent': '%2p%%',
+      \ 'percentwin': '%P',
+      \ 'spell': '%{&spell?&spelllang:""}',
+      \ 'lineinfo': '%2p%% %3l:%-2v',
+      \ 'line': '%l',
+      \ 'column': '%c',
+      \ 'close': '%999X X ',
+      \ 'winnr': '%{winnr()}'
+      \ }
+let g:lightline.component_function = {
+      \   'gitbranch': 'fugitive#head',
+      \   'devicons_filetype': 'Devicons_Filetype',
+      \   'devicons_fileformat': 'Devicons_Fileformat',
+      \   'cocstatus': 'coc#status',
+      \   'currentfunction': 'CocCurrentFunction',
+      \   'readonly': 'LightlineREadonly',
+      \   'fugitive': 'LightlineFugitive'
+      \ }
+let g:lightline.component_expand = {
+      \   'linter_checking': 'lightline#ale#checking',
+      \   'linter_warnings': 'lightline#ale#warnings',
+      \   'linter_errors': 'lightline#ale#errors',
+      \   'linter_ok': 'lightline#ale#ok',
+      \   'asyncrun_status': 'lightline#asyncrun#status'
+      \ }
+let g:lightline.component_type = {
+      \   'readonly': 'error',
+      \   'linter_checking': 'left',
+      \   'linter_warnings': 'warning',
+      \   'linter_errors': 'error',
+      \   'linter_ok': 'left',
+      \ }
+" let g:lightline.component_visible_condition = {
+"       \   'gitstatus': 'lightline_gitdiff#get_status() !=# ""'
+"       \ }
+let g:lightline.component_function_visible_condition = {
+      \   'coc_status': 'g:vimMode ==# "complete"',
+      \   'coc_current_function': 'g:vimMode ==# "complete"'
+      \ } " }}}
 " Autogroups {{{
 " {{{ Reload VIM
 if has ('autocmd') " Remain compatible with earlier versions
  augroup vimrc     " Source vim configuration upon save
-    autocmd! BufWritePost $MYVIMRC source % | echom "Reloaded " . $MYVIMRC | redraw
+    autocmd! BufWritePost $MYVIMRC nested source % | echom "Reloaded " . $MYVIMRC | redraw
     autocmd! BufWritePost $MYGVIMRC if has('gui_running') | so % | echom "Reloaded " . $MYGVIMRC | endif | redraw
   augroup END
 endif " has autocmd
@@ -188,7 +399,7 @@ autocmd FileType make set tabstop=8 noexpandtab shiftwidth=8 softtabstop=0
 autocmd FileType gitconfig setlocal ts=2 sts=2 sw=2 expandtab
 autocmd Filetype javascript setlocal ts=2 sts=2 sw=2 noexpandtab
 autocmd BufRead,BufNewFile Vagrantfile setfiletype ruby
-" auto-delete buffers after browing through objects
+" auto-delete buffers after browsing through objects
 autocmd BufReadPost fugitive://* set bufhidden=delete
 autocmd BufRead,BufNewFile *.ics set filetype=icalendar
 autocmd FileType mail,text,html,asciidoc setlocal spell spelllang=en
@@ -293,7 +504,13 @@ if &term =~ '^screen' && !has('nvim') | exe "set t_ts=\e]2; t_fs=\7" | endif
 if (&t_Co == 256 || has('gui_running'))
   if ($TERM_PROGRAM == ('iTerm.app'||'Apple_Terminal'))
     " set termguicolors
-    set background=dark
+    let s:tab_settings = system("osascript -e 'tell app \"Terminal\" to get name of (current settings of selected tab of front window)'")
+    if s:tab_settings =~? "Dark"
+    " if s:mode ==? "Totally Dark"
+      set background=dark
+    else
+      set background=light
+    endif
     colorscheme solarized
   else
     colorscheme desert
@@ -407,11 +624,56 @@ nmap <silent> gr <Plug>(coc-references)
 "   let opts = get(a:000, 0, {})
 "   return a:cond ? opts : extend(opts, { 'on': [], 'for': [] })
 " endfunction
+function! Solar_swap() "{{{ credit to https://superuser.com/users/302463/8bittree
+    if &background ==? 'dark'
+       set background=light
+       execute "silent !tmux source-file " . shellescape(expand('~/.tmux/plugins/tmux-colors-solarized/tmuxcolors-light.conf'))
+       silent !osascript -e 'tell application "System Events" to tell appearance preferences to set dark mode to False'
+    else
+       set background=dark
+       execute "silent !tmux source-file " . shellescape(expand('~/.tmux/plugins/tmux-colors-solarized/tmuxcolors-dark.conf'))
+       silent !osascript -e 'tell application "System Events" to tell appearance preferences to set dark mode to False'
+    endif
+endfunction "}}}
+"function! SetBackgroundMode(...) "{{{
+"    let s:new_bg = "light"
+"    if $TERM_PROGRAM ==? "Apple_Terminal"
+"        " let s:mode = systemlist("defaults read -g AppleInterfaceStyle")[0]
+"        " let s:mode = system("osascript -e 'tell app \"Terminal\" to get (name of default settings)'")
+"        let s:mode = system("osascript -e 'tell app \"Terminal\" to get name of (current settings of selected tab of front window)'")
+"        " /usr/libexec/PlistBuddy -c "print 'Default Window Settings'" ~/Library/Preferences/com.apple.Terminal.plist
+"        " echo s:mode
+"        if s:mode =~? "Dark"
+"        " if s:mode ==? "Totally Dark"
+"            let s:new_bg = "dark"
+"        else
+"            let s:new_bg = "light"
+"        endif
+"    else
+"        " This is for Linux where I use an environment variable for this:
+"        if $VIM_BACKGROUND ==? "dark"
+"            let s:new_bg = "dark"
+"        else
+"            let s:new_bg = "light"
+"        endif
+"    endif
+"    if &background !=? s:new_bg
+"        let &background = s:new_bg
+"    endif
+"endfunction
+"call SetBackgroundMode()
+"" call timer_start(3000, "SetBackgroundMode", {"repeat": -1})
+""}}}
+" function! SwitchLightlineColorScheme(color) "{{{
+"     let g:lightline.colorscheme = a:color
+"     call lightline#init()
+"     call lightline#colorscheme()
+"     call lightline#update()
+" endfunction "}}}
 function! CocCurrentFunction()"{{{
   return get(b:, 'coc_current_function', '')
 endfunction"}}}
-" {{{ Open current file in Marked
-function! MarkedPreview()
+function! MarkedPreview() " {{{ Open current file in Marked
   :w
   exec ':silent !open -a "Marked.app" ' . shellescape('%:p')
   redraw!

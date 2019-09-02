@@ -25,6 +25,34 @@ function set-keychain-environment-variable () {
     security add-generic-password -U -a ${USER} -D "environment variable" -s "${1}" -w "${secret}"
 }
 
+# Start SSH Agent
+#----------------------------
+# Add this to bashrc in cygwin environments
+
+# if [ -f "${SSH_ENV}" ]; then
+#   run_ssh_env;
+#   ps -ef | grep ${SSH_AGENT_PID} | grep ssh-agent$ > /dev/null || {
+#     start_ssh_agent;
+#   }
+# else
+#   start_ssh_agent;
+# fi`
+# SSH_ENV="$HOME/.ssh/environment"
+
+function run_ssh_env {
+  . "${SSH_ENV}" > /dev/null
+}
+
+function start_ssh_agent {
+  echo "Initializing new SSH agent..."
+  ssh-agent | sed 's/^echo/#echo/' > "${SSH_ENV}"
+  echo "succeeded"
+  chmod 600 "${SSH_ENV}"
+  run_ssh_env;
+  ssh-add ~/.ssh/id_rsa;
+}
+
+
 # FZF keybindings FTW!
 source $(brew --prefix)/opt/fzf/shell/key-bindings.bash
 

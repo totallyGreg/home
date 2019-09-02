@@ -1,0 +1,15 @@
+name: CI
+
+on: 
+  branches:
+    - master
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: Checkout home directory
+      run: curl https://gist.githubusercontent.com/totallyGreg/4c9a430e6965280a60fcec628e1d03d5/raw | bash
