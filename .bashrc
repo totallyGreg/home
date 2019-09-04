@@ -142,6 +142,4 @@ fi
 [ -f ~/.aliases ] && source ~/.aliases
 ## Source Terraform variables
 # include ~/.oci/env-vars
-if [ -x `which fzf` ]; then
-  [ -f ~/.fzf.bash  ] && source ~/.fzf.bash
-fi
+[ -f ~/.fzf.bash  ] && source ~/.fzf.bash
