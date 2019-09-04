@@ -547,6 +547,14 @@ let g:promptline_preset = {
         \'c' : [ promptline#slices#cwd({ 'dir_limit': 2}) ],
         \'y' : [ promptline#slices#vcs_branch() ],
         \'warn' : [ promptline#slices#last_exit_code() ]}
+
+" let g:promptline_symbols = {
+"     \ 'left'       : '',
+"     \ 'left_alt'   : '>',
+"     \ 'dir_sep'    : ' / ',
+"     \ 'truncation' : '...',
+"     \ 'vcs_branch' : '',
+"     \ 'space'      : ' '}
 "}}}
 " Keyboard Shortcuts {{{
 " esc in insert mode
