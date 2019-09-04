@@ -81,8 +81,6 @@ Plug 'albertomontesg/lightline-asyncrun'" Async jobs indicator for the lightline
 Plug 'rmolin88/pomodoro.vim'            " im plugin for the Pomodoro time management technique
 Plug 'maximbaz/lightline-ale'           " ALE indicator for the lightline vim plugin
 Plug 'edkolev/promptline.vim'           " Generate a fast shell prompt with powerline symbols and airline colors
-let g:promptline_preset = 'clear'
-let g:promptline_theme = 'lightline'
 "}}}
 " {{{ Editing
 Plug 'tpope/vim-surround'     " Adds the surround motion bound to s
@@ -539,6 +537,17 @@ if exists('$TMUX')  " Support resizing in tmux
 endif
 
 " }}}
+" Generators{{{
+let g:promptline_theme = 'lightline'
+" sections (a, b, c, x, y, z, warn) are optional
+" let g:promptline_preset = 'clear'
+let g:promptline_preset = {
+        \'a' : [ promptline#slices#host() ],
+        \'b' : [ promptline#slices#user() ],
+        \'c' : [ promptline#slices#cwd({ 'dir_limit': 2}) ],
+        \'y' : [ promptline#slices#vcs_branch() ],
+        \'warn' : [ promptline#slices#last_exit_code() ]}
+"}}}
 " Keyboard Shortcuts {{{
 " esc in insert mode
 inoremap kj <esc>         " Escape from Insert
