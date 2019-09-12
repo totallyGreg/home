@@ -6,14 +6,6 @@ export FCEDIT=vim
 export EDITOR=vim
 export XML_CATALOG_FILES=/usr/local/etc/xml/catalog
 export HOMEBREW_NO_GITHUB_API=1
-HISTSIZE=500000
-HISTFILESIZE=1000000
-HISTCONTROL=ignoreboth
-HISTIGNORE="&:[ ]*:exit:ls:[bf]g:history:clear:"
-# Use standard ISO 8601 timestamp
-# %F equivalent to %Y-%m-%d
-# %T equivalent to %H:%M:%S (24-hours format)
-HISTTIMEFORMAT='%F %T '
 export CLICOLOR=1
 # Directories Blue, Symlinks cyan
 export LSCOLORS=exGxhxDxfxhxhxhxhxcxcx
@@ -54,15 +46,34 @@ shopt -s cdable_vars
 # Update window size after every command
 shopt -s checkwinsize
 
+## HISTORY
+HISTSIZE=500000
+HISTFILESIZE=1000000
+HISTCONTROL=ignoreboth
+HISTIGNORE="&:[ ]*:exit:ls:[bf]g:history:clear:"
+HISTTIMEFORMAT='%F %T ' #  Use standard ISO 8601 timestamp %F equivalent to %Y-%m-%d %T equivalent to %H:%M:%S (24-hours format)
 # This makes writing to history happen after each prompt
-# Save multi-line commands as one command
-shopt -s cmdhist
-# So multiple logins are all sharing history
-shopt -s histappend
+shopt -s cmdhist      # Save multi-line commands as one command
+shopt -s histappend   # So multiple logins are all sharing history
 # https://unix.stackexchange.com/questions/18212/bash-history-ignoredups-and-erasedups-setting-conflict-with-common-history
 # PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -n; history -w; history -c; history -r"
 # PROMPT_COMMAND="history -n; history -w; history -c; history -r; $PROMPT_COMMAND"
-PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
+PROMPT_COMMAND="history -a; history -n; history -r; $PROMPT_COMMAND"
+
+## Old Prompt Prompt Shit
+#Known good prompt :)
+#export PS1="\[\033]0;\u@\h:\w\007\][\[\e[1m\]\h\[\e[0m\]]Aye, Cap'n? "
+
+# set a fancy prompt (non-color, unless we know we "want" color)
+case "$TERM" in
+    xterm-color|*-256color) color_prompt=yes;;
+esac
+
+if [ "$color_prompt" = yes ]; then
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+else
+    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+fi
 
 ## BETTER DIRECTORY NAVIGATION ##
 # Prepend cd to directory names automatically
@@ -85,20 +96,6 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 # export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range :500 {}'"
 export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -100'"
 
-## Old Prompt Prompt Shit
-#Known good prompt :)
-#export PS1="\[\033]0;\u@\h:\w\007\][\[\e[1m\]\h\[\e[0m\]]Aye, Cap'n? "
-
-# set a fancy prompt (non-color, unless we know we "want" color)
-case "$TERM" in
-    xterm-color|*-256color) color_prompt=yes;;
-esac
-
-if [ "$color_prompt" = yes ]; then
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-else
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
-fi
 
 
 # Bash Hook for direnv
