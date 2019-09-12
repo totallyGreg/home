@@ -353,6 +353,11 @@ fzf-down() {
   fzf --height 50% "$@" --border
 }
 
+gcd() {
+  is_in_git_repo || return
+  git rev-parse --show-toplevel
+}
+
 gf() {
   is_in_git_repo || return
   git -c color.status=always status --short |
