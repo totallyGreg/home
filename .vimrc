@@ -74,8 +74,6 @@ Plug 'raimondi/vimregstyle'
 " }}}
 " {{{ Statusline (lightline)
 Plug 'itchyny/lightline.vim'            " New statusline tool, replaced airline
-Plug 'sainnhe/artify.vim'               " change the display of characters without changing font
-Plug 'itchyny/vim-gitbranch'            " This plugin provides a function which returns the name of the git branch.
 Plug 'macthecadillac/lightline-gitdiff' " show a concise summary of changes since the last commit using git diff.
 Plug 'albertomontesg/lightline-asyncrun'" Async jobs indicator for the lightline vim plugin
 Plug 'rmolin88/pomodoro.vim'            " im plugin for the Pomodoro time management technique
@@ -127,24 +125,24 @@ Plug 'edkolev/tmuxline.vim', { 'on': ['Tmuxline', 'TmuxlineSimple', 'TmuxlineSna
 "   autocmd VimEnter, colorscheme * silent! Tmuxline lightline
 "   autocmd VimLeave * !tmux source-file ~/.tmux.conf
 " augroup END
-" if g:vimIsInTmux == 1
-"     let g:tmuxline_preset = {
-"                 \'a'    : '#S',
-"                 \'b'    : '%R %a',
-"                 \'c'    : [ '#{sysstat_mem} #[fg=blue]\ufa51#{upload_speed}' ],
-"                 \'win'  : [ '#I', '#W' ],
-"                 \'cwin' : [ '#I', '#W', '#F' ],
-"                 \'x'    : [ "#[fg=blue]#{download_speed} \uf6d9 #{sysstat_cpu}" ],
-"                 \'y'    : [ '#(bash /home/sainnhe/repo/scripts/func/tmux_pomodoro.sh) \ue0bd #(bash /home/sainnhe/repo/scripts/func/tmux_lock.sh)' ],
-"                 \'z'    : '#H #{prefix_highlight}'
-"                 \}
-    " let g:tmuxline_separators = {
-    "             \ 'left' : "\ue0bc",
-    "             \ 'left_alt': "\ue0bd",
-    "             \ 'right' : "\ue0ba",
-    "             \ 'right_alt' : "\ue0bd",
-    "             \ 'space' : ' '}
-" endif "}}}
+if g:vimIsInTmux == 1
+    let g:tmuxline_preset = {
+                \'a'    : '#S',
+                \'b'    : '%R %a',
+                \'c'    : [ '#{sysstat_mem} \ufa51#{upload_speed}' ],
+                \'win'  : [ '#I', '#W' ],
+                \'cwin' : [ '#I', '#W', '#F' ],
+                \'x'    : [ "#{download_speed} \uf6d9#{sysstat_cpu}" ],
+                \'y'    : [ '' ],
+                \'z'    : '#H #{prefix_highlight}'
+                \}
+    let g:tmuxline_separators = {
+                \ 'left' : "\ue0bc",
+                \ 'left_alt': "\ue0bd",
+                \ 'right' : "\ue0ba",
+                \ 'right_alt' : "\ue0bd",
+                \ 'space' : ' '}
+endif "}}}
 " Plug 'christoomey/vim-tmux-navigator'
 " Plug 'urbainvaes/vim-tmux-pilot'
 " Plug 'benmills/vimux'                   " vim plugin to interact with tmux
@@ -223,27 +221,9 @@ function! TmuxBindLock() abort"{{{
     return "\uf023"
   endif
 endfunction"}}}
-function! Artify_lightline_mode() abort"{{{
-    return Artify(lightline#mode(), 'monospace')
-endfunction"}}}
-function! Artify_gitbranch() abort"{{{
-    if gitbranch#name() !=# ''
-        return Artify(gitbranch#name(), 'monospace')." \ue725"
-    else
-        return "\ue61b"
-    endif
-endfunction"}}}
-function! Artify_line_percent() abort"{{{
-  return Artify(string((100*line('.'))/line('$')), 'bold')
-endfunction"}}}
-function! Artify_line_num() abort"{{{
-  return Artify(string(line('.')), 'bold')
-endfunction"}}}
-function! Artify_col_num() abort"{{{
-  return Artify(string(getcurpos()[2]), 'bold')
-endfunction"}}}
 function! Devicons_Filetype() "{{{
-  return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype . ' ' .  WebDevIconsGetFileTypeSymbol() : 'no ft') : ''
+  let filetype = winwidth(0) > 70 ? (strlen(&filetype) ? &filetype . ' ' .  WebDevIconsGetFileTypeSymbol() : 'no ft') : ''
+  return filetype
 endfunction "}}}
 function! Devicons_Fileformat()"{{{
   return winwidth(0) > 70 ? (&fileformat . ' ' . WebDevIconsGetFileFormatSymbol()) : ''
@@ -254,7 +234,8 @@ endfunction"}}}
 function! LightlineFugitive() "{{{
   if exists('*fugitive#head')
     let branch = fugitive#head()
-    return branch !=# '' ? ''.branch : ''
+    let modified = &modified ? ' +' : ''
+    return branch !=# '' ? ''.branch.modified : ''
   endif
   return ''
 endfunction "}}}
@@ -267,78 +248,54 @@ let g:lightline_gitdiff#indicator_deleted = '-'
 let g:lightline_gitdiff#indicator_modified = '!'
 let g:lightline_gitdiff#min_winwidth = '70'
 let g:lightline = { 'colorscheme': 'solarized'}
-let g:lightline.separator = { 'left': '', 'right': '' }
-let g:lightline.subseparator = { 'left': '', 'right': '' }
+" let g:lightline.separator = { 'left': '', 'right': '' }
+" let g:lightline.subseparator = { 'left': '', 'right': '' }
 let g:lightline.active =  {
-      \   'left': [ [ 'artify_mode' , 'paste' ],
-      \             [ 'gitbranch', 'cocstatus', 'currentfunction', 'readonly', 'devicons_filetype', 'filename', 'modified'] ],
-      \   'right': [ ['artify_lineinfo'],
-      \             ['readonly', 'linter_checking', 'linter_warnings', 'linter_errors', 'linter_ok'], ]
+      \   'left': [ [ 'mode' , 'paste', 'readonly', ],
+      \             [ 'fugitive', 'cocstatus', 'currentfunction', 'filename' ] ],
+      \   'right': [ [ 'devicons_filetype', 'lineinfo'],
+      \             ['linter_checking', 'linter_warnings', 'linter_errors', 'linter_ok']]
       \ }
 let g:lightline.inactive = {
-      \   'left': [ [ 'filename' , 'modified', 'fileformat', 'devicons_filetype' ] ],
-      \   'right': [ [ 'artify_lineinfo' ] ]
+      \   'left': [ [ 'fugitive', 'filename', 'modified', ] ],
+      \   'right': [ [ 'devicons_filetype', 'lineinfo' ] ]
       \ }
-let g:lightline.tabline = {
-      \ 'left': [ [ 'vim_logo', 'tabs' ] ],
-      \ 'right': [ [ 'artify_gitbranch' ],
-      \ [ 'gitstatus' ] ]
-      \ }
-let g:lightline.tab = {
-      \ 'active': [ 'artify_activetabnum', 'artify_filename', 'modified' ],
-      \ 'inactive': [ 'artify_inactivetabnum', 'filename', 'modified' ] }
-let g:lightline.tab_component = {
-      \ }
-let g:lightline.tab_component_function = {
-      \ 'artify_activetabnum': 'Artify_active_tab_num',
-      \ 'artify_inactivetabnum': 'Artify_inactive_tab_num',
-      \ 'artify_filename': 'Artify_lightline_tab_filename',
-      \ 'filename': 'lightline#tab#filename',
-      \ 'modified': 'lightline#tab#modified',
-      \ 'readonly': 'lightline#tab#readonly',
-      \ 'tabnum': 'lightline#tab#tabnum'
-      \ }
-      " \ 'artify_lineinfo': "%2{Artify_line_percent()}\uf295 %3{Artify_line_num()}:%-2{Artify_col_num()}",
 let g:lightline.component = {
-      \ 'artify_gitbranch' : '%{Artify_gitbranch()}',
-      \ 'artify_mode': '%{Artify_lightline_mode()}',
-      \ 'artify_lineinfo': "%2{Artify_line_percent()}\uf295 %3{Artify_line_num()}:%-2{Artify_col_num()}",
-      \ 'gitstatus' : '%{lightline_gitdiff#get_status()}',
-      \ 'bufinfo': '%{bufname("%")}:%{bufnr("%")}',
-      \ 'obsession': '%{ObsessionStatusEnhance()}',
-      \ 'tmuxlock': '%{TmuxBindLock()}',
-      \ 'vim_logo': "\ue7c5",
-      \ 'pomodoro': '%{PomodoroStatus()}',
-      \ 'mode': '%{lightline#mode()}',
       \ 'absolutepath': '%F',
-      \ 'relativepath': '%f',
-      \ 'filename': '%t',
-      \ 'filesize': "%{HumanSize(line2byte('$') + len(getline('$')))}",
-      \ 'fileencoding': '%{&fenc!=#""?&fenc:&enc}',
-      \ 'fileformat': '%{&fenc!=#""?&fenc:&enc}[%{&ff}]',
-      \ 'filetype': '%{&ft!=#""?&ft:"no ft"}',
-      \ 'modified': '%M',
+      \ 'bufinfo': '%{bufname("%")}:%{bufnr("%")}',
       \ 'bufnum': '%n',
-      \ 'paste': '%{&paste?"PASTE":""}',
-      \ 'readonly': '%R',
       \ 'charvalue': '%b',
       \ 'charvaluehex': '%B',
+      \ 'close': '%999X X ',
+      \ 'column': '%c',
+      \ 'fileencoding': '%{&fenc!=#""?&fenc:&enc}',
+      \ 'fileformat': '%{&fenc!=#""?&fenc:&enc}[%{&ff}]',
+      \ 'filename': '%t',
+      \ 'filesize': "%{HumanSize(line2byte('$') + len(getline('$')))}",
+      \ 'filetype': '%{&ft!=#""?&ft:"no ft"}',
+      \ 'gitstatus' : '%{lightline_gitdiff#get_status()}',
+      \ 'line': '%l',
+      \ 'lineinfo': '%3l:%-2v%2p%%',
+      \ 'mode': '%{lightline#mode()}',
+      \ 'modified': '%M',
+      \ 'obsession': '%{ObsessionStatusEnhance()}',
+      \ 'paste': '%{&paste?"PASTE":""}',
       \ 'percent': '%2p%%',
       \ 'percentwin': '%P',
+      \ 'pomodoro': '%{PomodoroStatus()}',
+      \ 'readonly': '%R',
+      \ 'relativepath': '%f',
       \ 'spell': '%{&spell?&spelllang:""}',
-      \ 'lineinfo': '%2p%% %3l:%-2v',
-      \ 'line': '%l',
-      \ 'column': '%c',
-      \ 'close': '%999X X ',
+      \ 'tmuxlock': '%{TmuxBindLock()}',
+      \ 'vim_logo': "\ue7c5",
       \ 'winnr': '%{winnr()}'
       \ }
 let g:lightline.component_function = {
-      \   'gitbranch': 'fugitive#head',
       \   'devicons_filetype': 'Devicons_Filetype',
       \   'devicons_fileformat': 'Devicons_Fileformat',
       \   'cocstatus': 'coc#status',
       \   'currentfunction': 'CocCurrentFunction',
-      \   'readonly': 'LightlineREadonly',
+      \   'readonly': 'LightlineReadonly',
       \   'fugitive': 'LightlineFugitive'
       \ }
 let g:lightline.component_expand = {
