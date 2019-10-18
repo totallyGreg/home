@@ -43,8 +43,6 @@ Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
 " }}}
 " {{{ Visual
 Plug 'altercation/vim-colors-solarized', {'do': ':so $HOME/.vim/bundle/vim-colors-solarized/autoload/togglebg.vim' } " Ethan's best
-" call togglebg#map("<F5>")
-" Plug 'lifepillar/vim-solarized8'      " Turned off for testing
 Plug 'majutsushi/tagbar'                " Open tag navigation split with :Tagbar
 Plug 'ryanoasis/vim-devicons'
 " {{{ Syntax
@@ -78,7 +76,6 @@ Plug 'macthecadillac/lightline-gitdiff' " show a concise summary of changes sinc
 Plug 'albertomontesg/lightline-asyncrun'" Async jobs indicator for the lightline vim plugin
 Plug 'rmolin88/pomodoro.vim'            " im plugin for the Pomodoro time management technique
 Plug 'maximbaz/lightline-ale'           " ALE indicator for the lightline vim plugin
-Plug 'edkolev/promptline.vim'           " Generate a fast shell prompt with powerline symbols and airline colors
 "}}}
 " {{{ Editing
 Plug 'tpope/vim-surround'     " Adds the surround motion bound to s
@@ -114,35 +111,7 @@ Plug 'nvie/vim-flake8'
 " }}}
 " {{{ Tmux Tools
 Plug 'tmux-plugins/vim-tmux'
-"{{{ Simple tmux statusline generator
 Plug 'edkolev/tmuxline.vim', { 'on': ['Tmuxline', 'TmuxlineSimple', 'TmuxlineSnapshot'] }
-" autocmd! User tmuxline.vim
-"     \ let g:tmuxline_theme = 'lightline' |
-"     \ let g:tmughtxline_preset = 'crosshair'
-"     \ }
-" augroup tmuxline
-"   autocmd!
-"   autocmd VimEnter, colorscheme * silent! Tmuxline lightline
-"   autocmd VimLeave * !tmux source-file ~/.tmux.conf
-" augroup END
-if g:vimIsInTmux == 1
-    let g:tmuxline_preset = {
-                \'a'    : '#S',
-                \'b'    : '%R %a',
-                \'c'    : [ '#{sysstat_mem} \ufa51#{upload_speed}' ],
-                \'win'  : [ '#I', '#W' ],
-                \'cwin' : [ '#I', '#W', '#F' ],
-                \'x'    : [ "#{download_speed} \uf6d9#{sysstat_cpu}" ],
-                \'y'    : [ '' ],
-                \'z'    : '#H #{prefix_highlight}'
-                \}
-    let g:tmuxline_separators = {
-                \ 'left' : "\ue0bc",
-                \ 'left_alt': "\ue0bd",
-                \ 'right' : "\ue0ba",
-                \ 'right_alt' : "\ue0bd",
-                \ 'space' : ' '}
-endif "}}}
 " Plug 'christoomey/vim-tmux-navigator'
 " Plug 'urbainvaes/vim-tmux-pilot'
 " Plug 'benmills/vimux'                   " vim plugin to interact with tmux
@@ -495,23 +464,34 @@ endif
 
 " }}}
 " Generators{{{
-let g:promptline_theme = 'lightline'
-" sections (a, b, c, x, y, z, warn) are optional
-" let g:promptline_preset = 'clear'
-let g:promptline_preset = {
-        \'a' : [ promptline#slices#host() ],
-        \'b' : [ promptline#slices#user() ],
-        \'c' : [ promptline#slices#cwd({ 'dir_limit': 2}) ],
-        \'y' : [ promptline#slices#vcs_branch() ],
-        \'warn' : [ promptline#slices#last_exit_code() ]}
-
-" let g:promptline_symbols = {
-"     \ 'left'       : '',
-"     \ 'left_alt'   : '>',
-"     \ 'dir_sep'    : ' / ',
-"     \ 'truncation' : '...',
-"     \ 'vcs_branch' : '',
-"     \ 'space'      : ' '}
+"{{{ tmux statusline generator
+" autocmd! User tmuxline.vim
+"     \ let g:tmuxline_theme = 'lightline' |
+"     \ let g:tmughtxline_preset = 'crosshair'
+"     \ }
+" augroup tmuxline
+"   autocmd!
+"   autocmd VimEnter, colorscheme * silent! Tmuxline lightline
+"   autocmd VimLeave * !tmux source-file ~/.tmux.conf
+" augroup END
+if g:vimIsInTmux == 1
+    let g:tmuxline_preset = {
+                \'a'    : '#S',
+                \'b'    : '%R %a',
+                \'c'    : [ '#{sysstat_mem} \ufa51#{upload_speed}' ],
+                \'win'  : [ '#I', '#W' ],
+                \'cwin' : [ '#I', '#W', '#F' ],
+                \'x'    : [ "#{download_speed} \uf6d9#{sysstat_cpu}" ],
+                \'y'    : [ '' ],
+                \'z'    : '#H #{prefix_highlight}'
+                \}
+    let g:tmuxline_separators = {
+                \ 'left' : "\ue0bc",
+                \ 'left_alt': "\ue0bd",
+                \ 'right' : "\ue0ba",
+                \ 'right_alt' : "\ue0bd",
+                \ 'space' : ' '}
+endif "}}}
 "}}}
 " Keyboard Shortcuts {{{
 " esc in insert mode

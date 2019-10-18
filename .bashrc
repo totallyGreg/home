@@ -90,7 +90,7 @@ CDPATH=".:~:~/Library:~/Projects:~/Repositories:~/Clouds:$GOPATH/src/github.com:
 
 # FZF may make most of this obsolete
 # export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git --ignore node_modules --ignore ~/Library --ignore ~/Music/Audio Music Apps/ --ignore Library -g ""'
-export FZF_DEFAULT_COMMAND='ag -l --ignore ~/Music --nocolor -g ""'
+export FZF_DEFAULT_COMMAND='ag -l --ignore *.tagset --ignore *.photoslibrary -g ""'
 export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 # export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range :500 {}'"
@@ -131,8 +131,6 @@ if ! shopt -oq posix && [ "${BASH_VERSINFO:-0}" -ge 4 ]; then
 
 fi
 
-## Source Prompt
-[ -f ~/.promptline.sh ] && source ~/.promptline.sh
 ## Source Functions
 [ -f ~/.functions ] && source ~/.functions
 ## Source Aliases
@@ -140,3 +138,5 @@ fi
 ## Source Terraform variables
 # include ~/.oci/env-vars
 [ -f ~/.fzf.bash  ] && source ~/.fzf.bash
+# Starship prompt if it exists
+[ $(which starship) ] && eval "$(starship init bash)"
