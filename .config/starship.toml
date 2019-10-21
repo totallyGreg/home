@@ -1,10 +1,3 @@
-# Replace the "❯" symbol in the prompt with "➜"
-# https://starship.rs/config/#directory
-[character]      # The name of the module we are configuring is "character"
-# symbol = "➜"     # The "symbol" segment is being set to "➜"
-error_symbol = "✗"
-vicmd_symbol = "❮"
-use_symbol_for_status = true
 [battery]
 # full_symbol = "🔋"
 # charging_symbol = "⚡️"
@@ -12,6 +5,16 @@ use_symbol_for_status = true
 [[battery.display]]
 threshold = 10
 style = "bold red"
+# Replace the "❯" symbol in the prompt with "➜"
+# https://starship.rs/config/#directory
+[character]      # The name of the module we are configuring is "character"
+# symbol = "➜"     # The "symbol" segment is being set to "➜"
+error_symbol = "✗"
+vicmd_symbol = "❮"
+use_symbol_for_status = true
+[cmd_duration]
+min_time = 5
+prefix = "lagged "
 [directory]
 truncation_length = 3
 truncate_to_repo = true
