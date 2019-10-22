@@ -31,16 +31,16 @@ truncation_symbol = ""
 progress_divider = " of "
 cherry_pick = "🍒 PICKING"
 [git_status]
-conflicted = "🏳"
-ahead = "🏎💨"
-behind = "😰"
-diverged = "😵"
-untracked = "🤷‍"
+# conflicted = "🏳"
+# ahead = "🏎💨"
+# behind = "😰"
+# diverged = "😵"
+# untracked = "🤷‍"
 stashed = "📦"
-modified = "📝"
-staged = "➕"
-renamed = "👅"
-deleted = "🗑"
+# modified = "📝"
+# staged = "➕"
+# renamed = "👅"
+# deleted = "🗑"
 [hostname]
 ssh_only = true
 prefix = "⟪"
@@ -48,13 +48,20 @@ suffix = "⟫"
 trim_at = ".companyname.com"
 disabled = false
 [kubernetes]
-symbol = "⛵ "
-style = "dim green"
-disabled = true
+# symbol = "⛵ "
+# style = "dim green"
+disabled = false
+[memory_usage]
+show_percentage = true
+show_swap = true
+threshold = 75
+disabled = false
 [python]
 # symbol = "👾 "
 pyenv_version_name = true
 pyenv_prefix = "foo "
 [username]
+style_root = "bold red"
+style_user = "yellow"
 disabled = false
-show_always = false
+# show_always = true
