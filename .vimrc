@@ -1,4 +1,4 @@
-" vim:foldmethod=marker:foldlevel=0
+" vm:foldmethod=marker:foldlevel=0
 "
 "{{{ Neovim Specific configs
 if has('nvim')
@@ -30,8 +30,7 @@ Plug 'tpope/vim-sensible'   " Sensible vim defaults
 Plug 'tpope/vim-unimpaired' " Pairs of handy bracket mappings
 Plug 'tpope/vim-repeat'     " Add repeat support with '.' for lots of plugins
 Plug 'gabesoft/vim-ags'     " A Vim plugin for the silver searcher that focuses on clear display of the search results
-Plug '/usr/local/opt/fzf'
-Plug 'junegunn/fzf.vim'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' } | Plug 'junegunn/fzf.vim'
 Plug 'vim-scripts/restore_view.vim'
 set viewoptions=cursor,slash,unix
 let g:skipview_files = ['*\.vim']
@@ -136,12 +135,6 @@ augroup LightlineColorscheme "{{{
   autocmd!
   autocmd ColorScheme * call s:lightline_update()
 augroup END "}}}
-" autocmd VimEnter * call SetupLightlineColors()
-" function SetupLightlineColors() abort "{{{
-"   let l:pallete = lightline#palette()
-"   let l:pallete.normal.left[1][3] = 'NONE'
-"   call lightline#colorscheme()
-" endfunction "}}}
 function! s:lightline_update() "{{{
   if !exists('g:loaded_lightline')
     return
@@ -160,29 +153,15 @@ function! s:lightline_update() "{{{
   catch
   endtry
 endfunction "}}}
-function! s:set_lightline_colorscheme(name) abort "{{{
-  let g:lightline.colorscheme = a:name
-  call lightline#init()
-  call lightline#colorscheme()
-  call lightline#update()
-endfunction "}}}
-function! s:lightline_colorschemes(...) abort "{{{
-  return join(map(
-        \ globpath(&rtp,"autoload/lightline/colorscheme/*.vim",1,1),
-        \ "fnamemodify(v:val,':t:r')"),
-        \ "\n")
-endfunction "}}}
-" This WORKS!!
 function! ToggleSolarizedTheme() "{{{ change background and update lightline color scheme
   let &background = ( &background == "dark"? "light" : "dark" )
   if exists("g:lightline")
     runtime autoload/lightline/colorscheme/solarized.vim
     call lightline#colorscheme()
+    " call tmuxline#apply(lightline)
   endif
-endfunction "}}}
-map <F5> : call ToggleSolarizedTheme()<CR>
-command! -nargs=1 -complete=custom,s:lightline_colorschemes LightlineColorscheme
-      \ call s:set_lightline_colorscheme(<q-args>)
+endfunction
+map <F5> : call ToggleSolarizedTheme()<CR> "}}}
 function! TmuxBindLock() abort"{{{
   if filereadable('/tmp/.tmux-bind.lck')
     return "\uf13e"
@@ -343,10 +322,6 @@ autocmd BufRead,BufNewFile *.txt,*.asciidoc,README,TODO,CHANGELOG,NOTES,ABOUT
     \ formatlistpat=^\\s*\\d\\+\\.\\s\\+\\\\|^\\s*<\\d\\+>\\s\\+\\\\|^\\s*[a-zA-Z.]\\.\\s\\+\\\\|^\\s*[ivxIVX]\\+\\.\\s\\+
     \ comments=s1:/*,ex:*/,://,b:#,:%,:XCOMM,fb:-,fb:*,fb:+,fb:.,fb:>
 " }}}
-" Copy/Paste {{{
-" Don't copy the contents of an overwritten selection.
-" vnoremap p "_dP
-" }}}
 " UI Config {{{
 " syntax enable
 colorscheme solarized
@@ -378,12 +353,13 @@ set shiftwidth=2          " normal mode indentation commands use 2 spaces
 " set showbreak=↳           " Wrapped line symbol
 set showcmd
 set smartcase             " case-sensitive search if any caps
+set smartindent           "
 set softtabstop=2         " insert mode tab and backspace use 2 spaces
 set tabstop=8             " actual tabs occupy 8 characters
 set updatetime=250        " Update sign column
-" set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc
+set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc,*.pyc,__pycache__
 " set wildmenu              " show a navigable menu for tab completion
-" set wildmode=longest,list,full
+set wildmode=list:longest,list:full
 
 " Settings for FZF
 let $FZF_DEFAULT_COMMAND = "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune 'dist/**' -prune -o -type f -print -o l -print 2> /dev/null"
@@ -392,10 +368,6 @@ if executable('ag')
   let $FZF_DEFAULT_COMMAND = 'ag --hidden --ignore .git -g ""'
   set grepprg=ag\ --nogroup\ --nocolor
 endif
-set wildmode=list:longest,list:full
-set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc,*.pyc,__pycache__
-" set wildmenu              " show a navigable menu for tab completion
-" set wildmode=longest,list,full
 " Copy/Paste {{{
 " Don't copy the contents of an overwritten selection.
 vnoremap p "_dP
@@ -415,9 +387,6 @@ nmap <leader>hl :let @/ = ""<CR>
 nnoremap <esc> :noh<return><esc> " escape turns off highlight
 " needed so that vim still understands escape sequences
 nnoremap <esc>^[ <esc>^[
-
-" plugin settings
-let g:NERDSpaceDelims=1
 
 " Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
 if executable('ag')
@@ -465,33 +434,33 @@ endif
 " }}}
 " Generators{{{
 "{{{ tmux statusline generator
-" autocmd! User tmuxline.vim
-"     \ let g:tmuxline_theme = 'lightline' |
-"     \ let g:tmughtxline_preset = 'crosshair'
-"     \ }
+autocmd! User tmuxline.vim
+    \ let g:tmuxline_theme = 'lightline' "|
+    " \ let g:tmughtxline_preset = 'crosshair'
+    \ }
 " augroup tmuxline
 "   autocmd!
 "   autocmd VimEnter, colorscheme * silent! Tmuxline lightline
 "   autocmd VimLeave * !tmux source-file ~/.tmux.conf
 " augroup END
-if g:vimIsInTmux == 1
-    let g:tmuxline_preset = {
-                \'a'    : '#S',
-                \'b'    : '%R %a',
-                \'c'    : [ '#{sysstat_mem} \ufa51#{upload_speed}' ],
-                \'win'  : [ '#I', '#W' ],
-                \'cwin' : [ '#I', '#W', '#F' ],
-                \'x'    : [ "#{download_speed} \uf6d9#{sysstat_cpu}" ],
-                \'y'    : [ '' ],
-                \'z'    : '#H #{prefix_highlight}'
-                \}
-    let g:tmuxline_separators = {
-                \ 'left' : "\ue0bc",
-                \ 'left_alt': "\ue0bd",
-                \ 'right' : "\ue0ba",
-                \ 'right_alt' : "\ue0bd",
-                \ 'space' : ' '}
-endif "}}}
+" if g:vimIsInTmux == 1
+"     let g:tmuxline_preset = {
+"                 \'a'    : '#S',
+"                 \'b'    : '%R %a',
+"                 \'c'    : [ '#{sysstat_mem} \ufa51#{upload_speed}' ],
+"                 \'win'  : [ '#I', '#W' ],
+"                 \'cwin' : [ '#I', '#W', '#F' ],
+"                 \'x'    : [ "#{download_speed} \uf6d9#{sysstat_cpu}" ],
+"                 \'y'    : [ '' ],
+"                 \'z'    : '#H #{prefix_highlight}'
+"                 \}
+"     let g:tmuxline_separators = {
+"                 \ 'left' : "\ue0bc",
+"                 \ 'left_alt': "\ue0bd",
+"                 \ 'right' : "\ue0ba",
+"                 \ 'right_alt' : "\ue0bd",
+"                 \ 'space' : ' '}
+" endif "}}}
 "}}}
 " Keyboard Shortcuts {{{
 " esc in insert mode
@@ -627,12 +596,6 @@ endfunction "}}}
 "call SetBackgroundMode()
 "" call timer_start(3000, "SetBackgroundMode", {"repeat": -1})
 ""}}}
-" function! SwitchLightlineColorScheme(color) "{{{
-"     let g:lightline.colorscheme = a:color
-"     call lightline#init()
-"     call lightline#colorscheme()
-"     call lightline#update()
-" endfunction "}}}
 function! CocCurrentFunction()"{{{
   return get(b:, 'coc_current_function', '')
 endfunction"}}}
