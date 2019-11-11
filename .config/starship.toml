@@ -45,7 +45,7 @@ stashed = "📦"
 ssh_only = true
 prefix = "⟪"
 suffix = "⟫"
-trim_at = ".companyname.com"
+trim_at = ".home.falcone.us"
 disabled = false
 [kubernetes]
 # symbol = "⛵ "
