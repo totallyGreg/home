@@ -50,8 +50,10 @@ export PATH=/usr/bin:/bin
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 [ -d $HOME/.rvm/bin ] && export PATH="$PATH":$HOME/.rvm/bin
 
-# iCloud
+# iCloud Obscured Locations
 [ -d "${HOME}/Library/Mobile Documents/com~apple~CloudDocs" ] && export iCloud="${HOME}/Clouds/iCloud"
+export Books=${HOME}/Library/Containers/com.apple.BKAgentService/Data/Documents/iBooks/Books
+export Podcasts="${HOME}/Library/Group Containers/243LU875E5.groups.com.apple.podcasts"
 
 # Linuxbrew
 test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
