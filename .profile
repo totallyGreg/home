@@ -1,25 +1,28 @@
-export LC_CTYPE=en_US.UTF-8
-# all manual locations
-if [ ! -f /usr/bin/manpath ] ; then
-echo "manpath exported"; export MANPATH=/usr/man
-[ -d ${HOME}/man ] && export MANPATH=${MANPATH}:${HOME}/man
-[ -d /svaha/courier/man ] && export MANPATH=${MANPATH}:/svaha/courier/man
-[ -d /svaha/webalizer/man ] && export MANPATH=${MANPATH}:/svaha/webalizer/man
-[ -d /svaha/apache2/man ] && export MANPATH=${MANPATH}:/svaha/apache2/man
-[ -d /var/qmail/man ] && export MANPATH=${MANPATH}:/var/qmail/man
-[ -d /usr/local/ssl/man ] && export MANPATH=${MANPATH}:/usr/local/ssl/man
-[ -d /usr/local/man ] && export MANPATH=${MANPATH}:/usr/local/man
-[ -d /opt/sfw/man ] && export MANPATH=${MANPATH}:/opt/sfw/man
-[ -d /opt/local/man ] && export PATH=${MANPATH}:/opt/local/man
-[ -d /usr/sfw/man ] && export MANPATH=${MANPATH}:/usr/sfw/man
-[ -d /opt/gnome/man ] && export MANPATH=${MANPATH}:/opt/gnome/man
-[ -d /usr/dt/man ] && export MANPATH=${MANPATH}:/usr/dt/man
-[ -d /usr/openwin/man ] && export MANPATH=${MANPATH}:/usr/openwin/man
-[ -d /usr/skunk/man ] && export MANPATH=${MANPATH}:/usr/skunk/man
-[ -d /usr/share/man ] && export MANPATH=${MANPATH}:/usr/share/man
-[ -d /usr/man ] && export MANPATH=${MANPATH}:/usr/man
-export MANPATH=./man:${MANPATH}
+# Setup for most environments a lot of old solaris craft in here
+unameOut="$(uname -s)"
+case "${unameOut}" in
+    Linux*)     machine=Linux;;
+    Darwin*)    machine=Mac
+      export HOMEBREW_CASK_OPTS="--appdir=~/Applications"
+      ;;
+    CYGWIN*)    machine=Cygwin;;
+    MINGW*)     machine=MinGw;;
+    FreeBSD*)   machine=FreeBSD;;
+    *)          machine="UNKNOWN:${unameOut}"
+esac
+echo "Running on ${machine}"
+
+# Auto Tmux startup/resume
+if command -v tmux &> /dev/null && [ -z "$TMUX" ]; then
+    tmux attach -t default || tmux new -s default
+  # New auto tmux which might work better for ssh sessions
+  # Test for ssh session first then use this
+  # tmux attach -t default || exec tmux new-session -s default && exit;
 fi
+
+
+# Poorly setup machines will often forget this
+export LC_CTYPE=en_US.UTF-8
 
 # set up basic path
 export PATH=/usr/bin:/bin
@@ -66,6 +69,8 @@ export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3
 export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
 [ -f /usr/local/bin/virtualenvwrapper.shi ] && source /usr/local/bin/virtualenvwrapper.sh
 
+# Kubernetes
+export KUBECONFIG=$KUBECONFIG:$HOME/.kube/config
 # Setup Go environment
 export GOPATH="${HOME}/.go"
 # export GOROOT="$(brew --prefix golang)/libexec"

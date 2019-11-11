@@ -1,21 +1,3 @@
-unameOut="$(uname -s)"
-case "${unameOut}" in
-    Linux*)     machine=Linux;;
-    Darwin*)    machine=Mac
-      export HOMEBREW_CASK_OPTS="--appdir=~/Applications"
-      ;;
-    CYGWIN*)    machine=Cygwin;;
-    MINGW*)     machine=MinGw;;
-    FreeBSD*)   machine=FreeBSD;;
-    *)          machine="UNKNOWN:${unameOut}"
-esac
-echo "Running on ${machine}"
-
-# Auto Tmux startup/resume
-if command -v tmux &> /dev/null && [ -z "$TMUX" ]; then
-    tmux attach -t default || tmux new -s default
-fi
-
 # From bash-completion@2
 [[ -f /usr/local/share/bash-completion/bash_completion ]] && source "/usr/local/share/bash-completion/bash_completion"
 if type brew &>/dev/null; then
