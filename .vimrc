@@ -1,4 +1,4 @@
-" vm:foldmethod=marker:foldlevel=0
+" vim:foldmethod=marker:foldlevel=0
 "
 "{{{ Neovim Specific configs
 if has('nvim')
@@ -109,6 +109,12 @@ let g:mustache_abbreviations = 1
 Plug 'nvie/vim-flake8'
 " }}}
 " {{{ Tmux Tools
+" Intelligently navigate tmux panes and Vim splits using the same keys.
+" " See https://sunaku.github.io/tmux-select-pane.html for documentation.
+let progname = substitute($VIM, '.*[/\\]', '', '')
+set title titlestring=%{progname}\ %f\ +%l\ #%{tabpagenr()}.%{winnr()}
+if &term =~ '^screen' && !has('nvim') | exe "set t_ts=\e]2; t_fs=\7" | endif
+
 Plug 'tmux-plugins/vim-tmux'
 Plug 'edkolev/tmuxline.vim', { 'on': ['Tmuxline', 'TmuxlineSimple', 'TmuxlineSnapshot'] }
 " Plug 'christoomey/vim-tmux-navigator'
@@ -464,7 +470,7 @@ autocmd! User tmuxline.vim
 "}}}
 " Keyboard Shortcuts {{{
 " esc in insert mode
-inoremap kj <esc>         " Escape from Insert
+inoremap jk <esc>         " Escape from Insert
 noremap <C-h> <C-w>h
 noremap <C-j> <C-w>j
 noremap <C-k> <C-w>k
