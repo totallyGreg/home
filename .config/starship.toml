@@ -48,13 +48,14 @@ suffix = "⟫"
 trim_at = ".home.falcone.us"
 disabled = false
 [kubernetes]
-# symbol = "⛵ "
-# style = "dim green"
-disabled = false
+symbol = "⛵ "
+style = "blue"
+disabled = true
 [memory_usage]
 show_percentage = true
 show_swap = true
 threshold = 75
+separator= "/"
 disabled = false
 [python]
 # symbol = "👾 "
