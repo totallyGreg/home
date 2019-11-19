@@ -98,12 +98,6 @@ export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -100'"
 
 
 
-# Bash Hook for direnv
-if ! hash direnv 2>/dev/null; then
-  echo ""
-else
-  eval "$(direnv hook bash)"
-fi
 
 ## Test for color is actually a test for linux over mac
 if [ -f /usr/bin/dircolors ]; then
@@ -140,3 +134,8 @@ fi
 [ -f ~/.fzf.bash  ] && source ~/.fzf.bash
 # Starship prompt if it exists
 [ $(which starship) ] && eval "$(starship init bash)"
+
+# Bash Hook for direnv
+if hash direnv 2>/dev/null; then
+  eval "$(direnv hook bash)"
+fi
