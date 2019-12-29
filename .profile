@@ -76,7 +76,7 @@ export KUBECONFIG=$KUBECONFIG:$HOME/.kube/config
 # Setup Go environment
 export GOPATH="${HOME}/.go"
 # export GOROOT="$(brew --prefix golang)/libexec"
-export GOROOT="/usr/local/go"
+# export GOROOT="/usr/local/go"
 export PATH="$PATH:${GOPATH}/bin:${GOROOT}/bin"
 
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
