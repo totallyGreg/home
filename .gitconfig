@@ -2,7 +2,7 @@
   email = totallyGreg@gmail.com
   name = J. Greg Williams
 [alias]
-  branches = branch -av
+  branches = branch -avv
   ci = commit
   co = checkout
   dump = cat-file -p
