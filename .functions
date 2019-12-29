@@ -25,7 +25,7 @@ function set-keychain-environment-variable () {
     security add-generic-password -U -a ${USER} -D "environment variable" -s "${1}" -w "${secret}"
 }
 
-# Start SSH Agent
+# Start SSH Agent{{{
 #----------------------------
 # Add this to bashrc in cygwin environments
 
@@ -39,17 +39,19 @@ function set-keychain-environment-variable () {
 # fi`
 # SSH_ENV="$HOME/.ssh/environment"
 
-function run_ssh_env {
-  . "${SSH_ENV}" > /dev/null
-}
-
 function start_ssh_agent {
-  echo "Initializing new SSH agent..."
-  ssh-agent | sed 's/^echo/#echo/' > "${SSH_ENV}"
-  echo "succeeded"
-  chmod 600 "${SSH_ENV}"
-  run_ssh_env;
-  ssh-add ~/.ssh/id_rsa;
+  ssh-add -l &>/dev/null
+  if [ "$?" == 2 ]; then
+    test -r ~/.ssh-agent && \
+      eval "$(<~/.ssh-agent)" >/dev/null
+
+    ssh-add -l &>/dev/null
+    if [ "$?" == 2 ]; then
+      (umask 066; ssh-agent > ~/.ssh-agent)
+      eval "$(<~/.ssh-agent)" >/dev/null
+      ssh-add
+    fi
+  fi
 }
 
 sshfun() {
@@ -58,14 +60,15 @@ sshfun() {
   PARAM="${@:3}"
   ssh ${HOST} "$(declare -f ${COMMAND}); ${COMMAND} ${PARAM}"
 }
+#}}}
 
 setenv()
 {
-  export $1="$2"
+  export "$1='$2'"
 }
 unsetenv()
 {
-  unset $1
+  unset "$1"
 }
 
 ## Include file only if it exists
@@ -123,6 +126,21 @@ genpasswd() {
   local l=$1
     [ "$l" == "" ] && l=20
     tr -dc A-Za-z0-9_ < /dev/urandom | head -c ${l} | xargs
+}
+
+# Open Tmux pane for commands like watch
+# e.g. tmw watch uptime
+tmw() {
+  tmux split-window -dh "${*}"
+  # tmux split-window -dh "$(eval echo \$"$1")"
+}
+
+# Print list of 256 xterm colors
+colours() {
+  ( for i in {0..255}; do
+    color="\x1b[38;5;${i}mcolour${i}\x1b[0m"
+    printf "$color\n"
+  done ) | column -t -c 2
 }
 
 settitle()
@@ -342,6 +360,79 @@ function ERROR()
  timeAndDate=`date`
  echo "[$timeAndDate] [ERROR]  $msg" >> $SCRIPT_LOG
 }
+
+# Home Brew Functions using FZF
+# https://github.com/junegunn/fzf/wiki/examples
+
+# Install (one or multiple) selected application(s)
+# using "brew search" as source input
+# mnemonic [B]rew [I]nstall [P]lugin
+bip() {
+  local inst=$(brew search | fzf -m)
+
+  if [[ $inst ]]; then
+    for prog in $(echo $inst); do brew install $prog; done;
+  fi
+}
+
+# Update (one or multiple) selected application(s)
+# mnemonic [B]rew [U]pdate [P]lugin
+bup() {
+  local upd=$(brew leaves | fzf -m)
+
+  if [[ $upd ]]; then
+    for prog in $(echo $upd); do brew upgrade $prog; done;
+  fi
+}
+
+# Delete (one or multiple) selected application(s)
+# mnemonic [B]rew [C]lean [P]lugin (e.g. uninstall)
+bcp() {
+  local uninst=$(brew leaves | fzf -m)
+
+  if [[ $uninst ]]; then
+    for prog in $(echo $uninst); do brew uninstall $prog; done;
+  fi
+}
+
+# Freom https://stackoverflow.com/questions/957928/is-there-a-way-to-get-the-git-root-directory-in-one-command
+# Print the name of the git working tree's root directory
+function git_root() {
+  local root first_commit
+  # git displays its own error if not in a repository
+  root=$(git rev-parse --show-toplevel) || return
+  if [[ -n $root ]]; then
+    echo $root
+    return
+  elif [[ $(git rev-parse --is-inside-git-dir) = true ]]; then
+    # We're inside the .git directory
+    # Store the commit id of the first commit to compare later
+    # It's possible that $GIT_DIR points somewhere not inside the repo
+    first_commit=$(git rev-list --parents HEAD | tail -1) ||
+      echo "$0: Can't get initial commit" 2>&1 && false && return
+    root=$(git rev-parse --git-dir)/.. &&
+      # subshell so we don't change the user's working directory
+    ( cd "$root" &&
+      if [[ $(git rev-list --parents HEAD | tail -1) = $first_commit ]]; then
+        pwd
+      else
+        echo "$FUNCNAME: git directory is not inside its repository" 2>&1
+        false
+      fi
+    )
+  else
+    echo "$FUNCNAME: Can't determine repository root" 2>&1
+    false
+  fi
+}
+
+# Change working directory to git repository root
+function cd_git_root() {
+  local root
+  root=$(git_root) || return 1  # git_root will print any errors
+  cd "$root"
+}
+
 # GIT heart FZF
 # -------------
 
@@ -353,11 +444,13 @@ fzf-down() {
   fzf --height 50% "$@" --border
 }
 
+# cd to directory in current repo
 gcd() {
   is_in_git_repo || return
   git rev-parse --show-toplevel
 }
 
+# git files
 gf() {
   is_in_git_repo || return
   git -c color.status=always status --short |
@@ -366,6 +459,7 @@ gf() {
   cut -c4- | sed 's/.* -> //'
 }
 
+# git branches 
 gb() {
   is_in_git_repo || return
   git branch -a --color=always | grep -v '/HEAD\s' | sort |
@@ -375,6 +469,7 @@ gb() {
   sed 's#^remotes/##'
 }
 
+# git tags
 gt() {
   is_in_git_repo || return
   git tag --sort -version:refname |
@@ -382,6 +477,7 @@ gt() {
     --preview 'git show --color=always {} | head -'$LINES
 }
 
+# git history with preview
 gh() {
   is_in_git_repo || return
   git log --date=short --format="%C(green)%C(bold)%cd %C(auto)%h%d %s (%an)" --graph --color=always |
@@ -391,6 +487,7 @@ gh() {
   grep -o "[a-f0-9]\{7,\}"
 }
 
+# git remotes
 gr() {
   is_in_git_repo || return
   git remote -v | awk '{print $1 "\t" $2}' | uniq |
@@ -400,11 +497,9 @@ gr() {
 }
 
 # fzf git functions keybindings
-
 bind '"\er": redraw-current-line'
-bind '"\C-g\C-f": "$(gf)\e\C-e\er"'
-bind '"\C-g\C-b": "$(gb)\e\C-e\er"'
-bind '"\C-g\C-t": "$(gt)\e\C-e\er"'
-bind '"\C-g\C-h": "$(gh)\e\C-e\er"'
-bind '"\C-g\C-r": "$(gr)\e\C-e\er"'
-
+bind '"\C-g\C-f": "$(gf)\e\C-e\er"' # Git Files
+bind '"\C-g\C-b": "$(gb)\e\C-e\er"' # Git Branches
+bind '"\C-g\C-t": "$(gt)\e\C-e\er"' # Git Tags
+bind '"\C-g\C-h": "$(gh)\e\C-e\er"' # Git history
+bind '"\C-g\C-r": "$(gr)\e\C-e\er"' # Git Remotes
