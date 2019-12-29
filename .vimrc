@@ -23,8 +23,7 @@ if empty(glob('~/.vim/autoload/plug.vim'))
   autocmd VimEnter * PlugInstall --sync | nested source $MYVIMRC
 endif
 "}}}
-call plug#begin('~/.vim/bundle')
-" call plug#begin('~/.local/share/nvim/plugged')
+call plug#begin('~/.local/share/nvim/plugged')
 " {{{ Base Plugins
 Plug 'tpope/vim-sensible'   " Sensible vim defaults
 Plug 'tpope/vim-unimpaired' " Pairs of handy bracket mappings
@@ -34,7 +33,7 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' } | Plug 'junegu
 Plug 'vim-scripts/restore_view.vim'
 set viewoptions=cursor,slash,unix
 let g:skipview_files = ['*\.vim']
-Plug 'yggdroot/indentLine'
+Plug 'yggdroot/indentLine'  " A vim plugin to display the indention levels with thin vertical lines
 Plug 'janko-m/vim-test'
 " }}}
 " {{{ Code Complextion
@@ -85,13 +84,14 @@ Plug 'junegunn/vim-easy-align' "
 let g:easy_align_ignore_comment = 0 " align comments
 vnoremap <silent> <Enter> :EasyAlign<cr>
 Plug 'dense-analysis/ale' " {{{ ALE and it's Options
-nmap <silent> <C-k> <Plug>(ale_previous_wrap)
-nmap <silent> <C-j> <Plug>(ale_next_wrap)
+" nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+" nmap <silent> <C-j> <Plug>(ale_next_wrap)
 let g:ale_statusline_format = ['⨉ %d', '⚠ %d', '⬥ ok']
 let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
 let g:ale_open_list = 0
+" let g:ale_list_vertical = 1
 let g:ale_set_quickfix = 0
-let b:ale_linters = ['vint', 'prettier', 'yamllint', 'pyflakes', 'flake8', 'pylint']
+let b:ale_linters = ['shellcheck', 'vint', 'prettier', 'yamllint', 'pyflakes', 'flake8', 'pylint']
 let g:ale_fixers = ['prettier', 'shfmt' ]
 let g:ale_python_flake8_args="--ignore=E501" " }}}
 " }}}
@@ -132,7 +132,7 @@ call plug#end()
 " }}} Plugin Managment
 " {{{ Lightline Configuration
 set laststatus=2
-set noshowmode                          " Do not need to show -- Insert --, as lightline handles it already
+set noshowmode    " Do not need to show -- Insert --, as lightline handles it already
 " augroup lightlineCustom
 "   autocmd
 "   autocmd BufWritePost * call lightline_gitdiff#query_git() | call lightline#update()
@@ -204,6 +204,8 @@ let g:lightline_gitdiff#min_winwidth = '70'
 let g:lightline = { 'colorscheme': 'solarized'}
 " let g:lightline.separator = { 'left': '', 'right': '' }
 " let g:lightline.subseparator = { 'left': '', 'right': '' }
+" let g:lightline.separator = { 'left': '⮀', 'right': '⮂' },
+" let g:lightline.subseparator = { 'left': '⮁', 'right': '⮃' }
 let g:lightline.active =  {
       \   'left': [ [ 'mode' , 'paste', 'readonly', ],
       \             [ 'fugitive', 'cocstatus', 'currentfunction', 'filename' ] ],
@@ -229,7 +231,7 @@ let g:lightline.component = {
       \ 'filetype': '%{&ft!=#""?&ft:"no ft"}',
       \ 'gitstatus' : '%{lightline_gitdiff#get_status()}',
       \ 'line': '%l',
-      \ 'lineinfo': '%3l:%-2v%2p%%',
+      \ 'lineinfo': '%3l:%-2v%3p%%%<',
       \ 'mode': '%{lightline#mode()}',
       \ 'modified': '%M',
       \ 'obsession': '%{ObsessionStatusEnhance()}',
@@ -266,9 +268,9 @@ let g:lightline.component_type = {
       \   'linter_errors': 'error',
       \   'linter_ok': 'left',
       \ }
-" let g:lightline.component_visible_condition = {
-"       \   'gitstatus': 'lightline_gitdiff#get_status() !=# ""'
-"       \ }
+let g:lightline.component_visible_condition = {
+      \   'gitstatus': 'lightline_gitdiff#get_status() !=# ""'
+      \ }
 let g:lightline.component_function_visible_condition = {
       \   'coc_status': 'g:vimMode ==# "complete"',
       \   'coc_current_function': 'g:vimMode ==# "complete"'
@@ -283,11 +285,6 @@ if has ('autocmd') " Remain compatible with earlier versions
 endif " has autocmd
 " }}}
 autocmd VimResized * :wincmd =          " automatically rebalance windows on vim resize
-
-" augroup myvimrc
-"     au!
-"     au BufWritePost .vimrc,_vimrc,vimrc,init.vim,.gvimrc,_gvimrc,gvimrc so $MYVIMRC | if has('gui_running') | so $MYGVIMRC | endif
-" augroup END
 
 " Override for yaml hosts format instead of INI
 " augroup ansible_vim_fthosts
@@ -344,7 +341,7 @@ set diffopt=filler,vertical,hiddenoff
 set directory-=.          " don't store swapfiles in the current directory
 set encoding=utf-8
 set expandtab             " expand tabs to spaces
-set gdefault              " Global Repalcement by default https://bluz71.github.io/2019/03/11/find-replace-helpers-for-vim.html
+set gdefault              " Global Replacement by default https://bluz71.github.io/2019/03/11/find-replace-helpers-for-vim.html
 set hidden
 set ignorecase            " case-insensitive search
 set incsearch             " search as you type
@@ -440,41 +437,71 @@ endif
 " }}}
 " Generators{{{
 "{{{ tmux statusline generator
-autocmd! User tmuxline.vim
-    \ let g:tmuxline_theme = 'lightline' "|
-    " \ let g:tmughtxline_preset = 'crosshair'
-    \ }
-" augroup tmuxline
-"   autocmd!
-"   autocmd VimEnter, colorscheme * silent! Tmuxline lightline
-"   autocmd VimLeave * !tmux source-file ~/.tmux.conf
-" augroup END
-" if g:vimIsInTmux == 1
+" autocmd! User tmuxline.vim
+"     \ let g:tmuxline_theme = 'lightline'
+"     \ let g:tmuxline_preset = 'minimal'
+"     \ let g:tmuxline_powerline_separators = 0
+"     \ }
+augroup tmuxline
+  autocmd!
+  autocmd VimEnter, colorscheme * silent! Tmuxline lightline gregsblend
+  autocmd VimLeave * !tmux source-file ~/.tmux.conf
+augroup END
+if g:vimIsInTmux == 1
+" let g:tmuxline_theme = {
+"     \   'a'    : [ 8, 4 ],
+"     \   'b'    : [ 253, 239 ],
+"     \   'c'    : [ 244, 236 ],
+"     \   'x'    : [ 244, 236 ],
+"     \   'y'    : [ 253, 239 ],
+"     \   'z'    : [ 236, 103 ],
+"     \   'win'  : [ 14, 8 ],
+"     \   'cwin' : [ 0, 11 ],
+"     \   'bg'   : [ 244, 236 ],
+"     \ }
+" values represent: [ FG, BG, ATTR ]
+" "   FG ang BG are color codes
+" "   ATTR (optional) is a comma-delimited string of one or more of bold, dim,
+" underscore, etc. For details refer to the STYLE section in the tmux man page
+"
+let g:tmuxline_preset = {
+    \'a'       : '#S',
+    \'win'     : ['#I','#W'],
+    \'cwin'    : ['#I#F','#[fg=${sync_ind_colour}]#W' ],
+    \'y'       : ['#{prefix_highlight}','%Y-%m-%d', '%H:%M'],
+    \'z'       : '#h',
+    \'options' : {'status-justify' : 'left'}}
+
 "     let g:tmuxline_preset = {
-"                 \'a'    : '#S',
-"                 \'b'    : '%R %a',
-"                 \'c'    : [ '#{sysstat_mem} \ufa51#{upload_speed}' ],
-"                 \'win'  : [ '#I', '#W' ],
-"                 \'cwin' : [ '#I', '#W', '#F' ],
-"                 \'x'    : [ "#{download_speed} \uf6d9#{sysstat_cpu}" ],
+"                 \'a'    : ["#[fg=colour8,bg=colour4]#S #[fg=colour4,bg=colour0,nobold,nounderscore,noitalics]"],
+"                 \'win'  : [ "#[fg=colour14,bg=colour0]#I #[fg=colour14,bg=colour0] #W "],
+"                 \'cwin' : [ "#[fg=colour0,bg=colour11,nobold,nounderscore,noitalics] #[fg=colour8,bg=colour11] #I #[fg=colour8,bg=colour11]#W #[fg=colour11,bg=colour0,nobold,nounderscore,noitalics]" ],
+"                 \'x'    : [ "" ],
 "                 \'y'    : [ '' ],
-"                 \'z'    : '#H #{prefix_highlight}'
+"                 \'z'    : "#[fg=colour11,bg=colour0,nobold,nounderscore,noitalics] #[fg=colour8,bg=colour11] %Y-%m-%d  %H:%M #[fg=colour14,bg=colour11,nobold,nounderscore,noitalics]#[fg=colour8,bg=colour14] #h ",
+"                 \'options' : {'status-justify' : 'left'}
 "                 \}
-"     let g:tmuxline_separators = {
-"                 \ 'left' : "\ue0bc",
-"                 \ 'left_alt': "\ue0bd",
-"                 \ 'right' : "\ue0ba",
-"                 \ 'right_alt' : "\ue0bd",
-"                 \ 'space' : ' '}
-" endif "}}}
+                " \'b'    : '%R %a',
+                " \'c'    : [ '#{sysstat_mem} \ufa51#{upload_speed}' ],
+                " \'x'    : [ "#{download_speed} \uf6d9#{sysstat_cpu}" ],
+    " let g:tmuxline_separators = {
+    "             \ 'left' : "\ue0bc",
+    "             \ 'left_alt': "\ue0bd",
+    "             \ 'right' : "\ue0ba",
+    "             \ 'right_alt' : "\ue0bd",
+    "             \ 'space' : ' '}
+endif
+"}}}
 "}}}
 " Keyboard Shortcuts {{{
 " esc in insert mode
 inoremap jk <esc>         " Escape from Insert
+inoremap <D-N> <esc>      " Escape from Insert using Command-. on mac
 noremap <C-h> <C-w>h
 noremap <C-j> <C-w>j
 noremap <C-k> <C-w>k
 noremap <C-l> <C-w>l
+
 let mapleader = ';'
 nnoremap <leader>a :Ag<space>
 nnoremap <silent> <leader>bc :BCommits<CR>
