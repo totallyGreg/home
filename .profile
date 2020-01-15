@@ -73,6 +73,8 @@ export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
 
 # Kubernetes
 export KUBECONFIG=$KUBECONFIG:$HOME/.kube/config
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+
 # Setup Go environment
 export GOPATH="${HOME}/.go"
 # export GOROOT="$(brew --prefix golang)/libexec"
