@@ -10,7 +10,7 @@
 
 # Use: keychain-environment-variable SECRET_ENV_VAR
 function keychain-environment-variable () {
-    security find-generic-password -w -a ${ACCOUNT:-$USER} -D "environment variable" -s "${WHERE:-$1}"
+    security find-generic-password -w -a "${ACCOUNT:-$USER}" -D "environment variable" -s "${WHERE:-$1}"
 }
 
 # Use: set-keychain-environment-variable SECRET_ENV_VAR
@@ -22,7 +22,7 @@ function set-keychain-environment-variable () {
     read -p "Enter Value for ${1}: " secret
 
     ( [ -n "$1" ] && [ -n "$secret" ] ) || return 1
-    security add-generic-password -U -a ${USER} -D "environment variable" -s "${1}" -w "${secret}"
+    security add-generic-password -U -a "${USER}" -D "environment variable" -s "${1}" -w "${secret}"
 }
 
 # Start SSH Agent{{{
