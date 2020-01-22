@@ -49,6 +49,7 @@ Plug 'sheerun/vim-polyglot' " Polyglot autoloads many language packs replacing: 
                             " Plug 'fatih/vim-go'
                             " Plug 'glench/vim-jinja2-syntax'
                             " Plug 'hashivim/vim-terraform'
+                            " Plug 'towolf/vim-helm'
 let g:polyglot_disabled = ['asciidoc'] " disabled since asciidoc is out of date
 let g:ansible_attribute_highlight = "ab"
 let g:ansible_extra_keywords_highlight = 1
@@ -57,14 +58,8 @@ let g:ansible_name_highlight = 'd'
 let g:terraform_fold_sections=1
                             " }}}
 Plug 'isene/hyperlist.vim'
-Plug 'towolf/vim-helm'
 Plug 'pedrohdz/vim-yaml-folds'
-" A Better Asciidoc Tool and it's dependencies {{{
-Plug 'dahu/vim-asciidoc'
-Plug 'dahu/asif'
-Plug 'dahu/vimple'
-Plug 'vim-scripts/SyntaxRange'
-Plug 'raimondi/vimregstyle'
+Plug 'habamax/vim-asciidoctor'
 "}}}
 " }}}
 " }}}
