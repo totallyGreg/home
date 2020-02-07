@@ -73,7 +73,7 @@ alias readlog='less -raw-control-chars'
 
 ##### Dotfile management through git work-tree
 alias dotadm='git --git-dir=$HOME/.home/ --work-tree=$HOME $@'
-alias dadm='git --git-dir=$HOME/.home/ --work-tree=$HOME $@'
+alias dadm='dotadm'
 alias dotupgrade='dotadm submodule update --remote --merge'
 
 # Generate random mac address for wireless
@@ -101,3 +101,5 @@ alias git_home='curl https://gist.githubusercontent.com/totallyGreg/4c9a430e6965
 alias install_home_brew='/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
 
 eval "$(thefuck --alias)"
+alias restart_dns='ssh portcullis sudo /etc/init.d/dnsmasq force-reload'
+alias kaply='kubectl apply -f '
