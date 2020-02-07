@@ -1,21 +1,27 @@
 tap "beeftornado/rmtree"
 tap "cloudfoundry/tap"
+tap "homebrew-ffmpeg/ffmpeg"
 tap "homebrew/bundle"
 tap "homebrew/cask"
 tap "homebrew/cask-fonts"
 tap "homebrew/core"
 tap "martido/brew-graph"
 tap "mczachurski/wallpapper"
-tap "sandreas/tap"
+tap "pivotal-cf/om", "https://github.com/pivotal-cf/om"
+tap "sandreas/tap", pin: true
 tap "starkandwayne/cf"
+tap "stevenacoffman/keyfob"
 tap "universal-ctags/universal-ctags"
+tap "warrensbox/tap"
 tap "watsonbox/cmu-sphinx"
-# Interpreted, interactive, object-oriented programming language
-brew "python"
+# Cryptography and SSL/TLS Toolkit
+brew "openssl@1.1"
 # Automate deployment, configuration, and upgrading
 brew "ansible"
 # Checks ansible playbooks for practices and behaviour
 brew "ansible-lint"
+# Strip or convert ANSI codes into HTML, (La)Tex, RTF, or BBCode
+brew "ansifilter"
 # Text processor and publishing toolchain for AsciiDoc
 brew "asciidoctor"
 # Official Amazon AWS command-line interface
@@ -28,28 +34,46 @@ brew "bash"
 brew "bash-completion@2"
 # Clone of cat(1) with syntax highlighting and Git integration
 brew "bat"
+# Interpreted, interactive, object-oriented programming language
+brew "python"
 # Tool to obtain certs from Let's Encrypt and autoenable HTTPS
 brew "certbot"
+# Core component of the AcoustID project (Audio fingerprinting)
+brew "chromaprint"
 # Cross-platform make
 brew "cmake"
 # Tool for service discovery, monitoring and configuration
 brew "consul"
+# Configurable talking characters in ASCII art
+brew "cowsay"
 # Get a file from an HTTP, HTTPS or FTP server
 brew "curl"
-# Play, record, convert, and stream audio and video
-brew "ffmpeg"
+# Tools to manipulate dates with a focus on financial data
+brew "dateutils"
+# Load/unload environment variables based on $PWD
+brew "direnv"
+# Banner-like program prints strings as ASCII art
+brew "figlet"
 # Lint your Python code for style and logical errors
 brew "flake8"
-# Command-line fuzzy finder written in Go
-brew "fzf"
+# Infamous electronic fortune-cookie generator
+brew "fortune"
 # Extensions to follow Vincent Driessen's branching model
 brew "git-flow"
+# Platform built on V8 to build network applications
+brew "node"
 # Emoji guide for your commit messages
 brew "gitmoji"
+# Open source programming language to build simple/reliable/efficient software
+brew "go"
+# Simplified Go project management, dependency management, and vendoring
+brew "glide"
 # Graph visualization software from AT&T and Bell Labs
 brew "graphviz"
 # GitHub Markdown previewer
 brew "grip"
+# The Kubernetes package manager
+brew "helm"
 # Convert source code to formatted text with syntax highlighting
 brew "highlight"
 # Lightweight and flexible command-line JSON processor
@@ -57,41 +81,53 @@ brew "jq"
 # Swiss-army knife of markup format conversion
 brew "pandoc"
 # Interactive environments for writing and running code
-brew "jupyter"
+brew "jupyterlab"
 # Tool to move from `docker-compose` to Kubernetes
 brew "kompose"
 # Kubernetes command-line interface
 brew "kubernetes-cli"
-# The Kubernetes package manager
-brew "kubernetes-helm"
 # Library to render SVG files using Cairo
 brew "librsvg"
+# Powerful, clean, object-oriented scripting language
+brew "ruby"
 # Unified display of technical and tag data for audio/video
 brew "media-info"
 # 'traceroute' and 'ping' in a single tool
 brew "mtr"
 # Ambitious Vim-fork focused on extensibility and agility
 brew "neovim"
+# RSS/Atom feed reader for text terminals
+brew "newsboat"
 # Port scanning utility for large networks
 brew "nmap"
-# Cryptography and SSL/TLS Toolkit
-brew "openssl@1.1"
+# Kubernetes introspection tool for developers
+brew "octant"
+# Code formatter for JavaScript, CSS, JSON, GraphQL, Markdown, YAML
+brew "prettier"
 # Reattach process (e.g., tmux) to background
 brew "reattach-to-user-namespace"
-# Powerful, clean, object-oriented scripting language
-brew "ruby"
+# Rancher Kubernetes Engine, a Kubernetes installer that works everywhere
+brew "rke"
+# Static analysis and lint tool, for (ba)sh scripts
+brew "shellcheck"
+# Autoformat shell script source code
+brew "shfmt"
 # SOund eXchange: universal sound sample translator
 brew "sox"
 # Command-line interface for https://speedtest.net bandwidth tests
 brew "speedtest-cli"
 # 
 brew "sshpass"
+# The cross-shell prompt for astronauts
+brew "starship"
 # Generate scripting interfaces to C/C++ code
 brew "swig"
 # Tool to build, change, and version infrastructure
 brew "terraform"
 # Code-search similar to ack
 brew "the_silver_searcher"
+# Programatically correct mistyped console commands
+brew "thefuck"
 # Terminal multiplexer
 brew "tmux"
 # Display directories as trees (with optional color/HTML output)
@@ -104,10 +140,16 @@ brew "vagrant-completion"
 brew "vim"
 # Executes a program periodically, showing output fullscreen
 brew "watch"
+# Enhances tmux's to provide multiuser terminal multiplexing
+brew "wemux"
 # Internet file retriever
 brew "wget"
 # Linter for YAML files
 brew "yamllint"
+# Process YAML documents from the CLI
+brew "yq"
+# The next-generation plugin manager for zsh
+brew "zplug"
 # New BOSH CLI (beta)
 brew "cloudfoundry/tap/bosh-cli"
 brew "cloudfoundry/tap/cf-cli"
@@ -115,13 +157,21 @@ brew "cloudfoundry/tap/cf-cli"
 brew "cloudfoundry/tap/credhub-cli"
 brew "martido/brew-graph/brew-graph"
 brew "mczachurski/wallpapper/wallpapper"
-brew "starkandwayne/cf/om"
+# 
+brew "pivotal-cf/om/om"
+# m4b-tool is a command line utility to merge, split and chapterize audiobook files such as mp3, ogg, flac, m4a or m4b
+brew "sandreas/tap/m4b-tool"
 brew "starkandwayne/cf/uaa-cli"
+# keyfob - a two-factor authentication agent suitable for AWS and Github
+brew "stevenacoffman/keyfob/keyfob"
 # Maintained ctags implementation
 brew "universal-ctags/universal-ctags/universal-ctags", args: ["HEAD"]
+# The tfswitch command lets you switch between terraform versions.
+brew "warrensbox/tap/tfswitch"
 brew "watsonbox/cmu-sphinx/cmu-sphinxbase", args: ["HEAD"]
 brew "watsonbox/cmu-sphinx/cmu-pocketsphinx", args: ["HEAD"]
 brew "watsonbox/cmu-sphinx/cmu-sphinxtrain", args: ["HEAD"]
+cask "amethyst"
 cask "asciidocfx"
 cask "atom"
 cask "aws-vault"
@@ -129,6 +179,8 @@ cask "basictex"
 cask "docker"
 cask "dropbox"
 cask "font-hack-nerd-font"
+cask "font-hack-nerd-font-mono"
+cask "google-cloud-sdk"
 cask "handbrake", { appdir: "~/Applications/Ops/Engineering/Transmutation/" }
 cask "hetimazipql"
 cask "insomnia"
@@ -142,7 +194,7 @@ cask "qlmarkdown"
 cask "qlprettypatch"
 cask "qlstephen"
 cask "quicklook-json"
-cask "quicksilver" { appdir: "~//Users/totally/Applications/Ops/Administration" }
+cask "quicksilver", args: { appdir: "~/Applications/Ops/Administration" }
 cask "qutebrowser"
 cask "skitch"
 cask "slack", args: { appdir: "~/Applications/Comm/Instant" }
