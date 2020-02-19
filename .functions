@@ -130,7 +130,7 @@ genpasswd() {
 
 # Open Tmux pane for commands like watch
 # e.g. tmw watch uptime
-tmw() {
+tw() {
   tmux split-window -dh "${*}"
   # tmux split-window -dh "$(eval echo \$"$1")"
 }
