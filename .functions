@@ -459,7 +459,7 @@ gf() {
   cut -c4- | sed 's/.* -> //'
 }
 
-# git branches 
+# git branches
 gb() {
   is_in_git_repo || return
   git branch -a --color=always | grep -v '/HEAD\s' | sort |
@@ -503,3 +503,16 @@ bind '"\C-g\C-b": "$(gb)\e\C-e\er"' # Git Branches
 bind '"\C-g\C-t": "$(gt)\e\C-e\er"' # Git Tags
 bind '"\C-g\C-h": "$(gh)\e\C-e\er"' # Git history
 bind '"\C-g\C-r": "$(gr)\e\C-e\er"' # Git Remotes
+
+# Azure functions to keep costs down
+aks_start() {
+  : Usage: aks_start [resource_group]
+  : "This will start the VM's associated with a Resource Group "
+  az vm start --ids $(az vm list -g "$1" --query "[].id" -o tsv)
+}
+
+aks_down(){
+  : Usage: aks_down [resource_group]
+  : "This will deallocate the VM's associated with a Resource Group"
+  az vm deallocate --ids $(az vm list -g "$1" --query "[].id" -o tsv)
+}
