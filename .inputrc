@@ -1,5 +1,5 @@
 set editing-mode vi
-set keymap vi
+set keymap vi-insert
 set meta-flag on
 set input-meta on
 set output-meta on
