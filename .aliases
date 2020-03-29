@@ -103,3 +103,4 @@ alias install_home_brew='/usr/bin/ruby -e "$(curl -fsSL https://raw.githubuserco
 eval "$(thefuck --alias)"
 alias restart_dns='ssh portcullis sudo /etc/init.d/dnsmasq force-reload'
 alias kaply='kubectl apply -f '
+alias m4b-tool='docker run -it --rm -u $(id -u):$(id -g) -v "$(pwd)":/mnt m4b-tool'
