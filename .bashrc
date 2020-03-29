@@ -86,7 +86,7 @@ shopt -s cdspell 2> /dev/null
 # This defines where cd looks for targets
 # Add the directories you want to have fast access to, separated by colon
 # Ex: CDPATH=".:~:~/projects" will look for targets in the current working directory, in home and in the ~/projects folder
-CDPATH=".:~:~/Library:~/Projects:~/Repositories:~/Clouds:$GOPATH/src/github.com:$GOPATH/src"
+CDPATH=".:~:~/Repositories:~/Clouds/Google/My Drive:$GOPATH/src/github.com:$GOPATH/src"
 
 # FZF may make most of this obsolete
 # export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git --ignore node_modules --ignore ~/Library --ignore ~/Music/Audio Music Apps/ --ignore Library -g ""'
