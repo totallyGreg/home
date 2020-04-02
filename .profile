@@ -24,6 +24,15 @@ fi
 # Poorly setup machines will often forget this
 export LC_CTYPE=en_US.UTF-8
 
+pathappend() {
+  for ARG in "$@"
+  do
+    if [ -d "$ARG" ] && [[ ":$PATH:" != *":$ARG:"* ]]; then
+        PATH="${PATH:+"$PATH:"}$ARG"
+    fi
+  done
+}
+
 # set up basic path
 export PATH=/usr/bin:/bin
 [ -d /sbin ] && export PATH=/sbin:${PATH}
@@ -74,6 +83,8 @@ export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
 # Kubernetes
 export KUBECONFIG=$KUBECONFIG:$HOME/.kube/config
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+# Need for the tmux-exec plugin to kubectl
+export GNU_GETOPT_PREFIX="$(brew --prefix gnu-getopt)"
 
 # Setup Go environment
 export GOPATH="${HOME}/.go"
