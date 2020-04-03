@@ -2,9 +2,7 @@
 unameOut="$(uname -s)"
 case "${unameOut}" in
     Linux*)     machine=Linux;;
-    Darwin*)    machine=Mac
-      export HOMEBREW_CASK_OPTS="--appdir=~/Applications"
-      ;;
+    Darwin*)    machine=Mac;;
     CYGWIN*)    machine=Cygwin;;
     MINGW*)     machine=MinGw;;
     FreeBSD*)   machine=FreeBSD;;
@@ -19,7 +17,6 @@ if command -v tmux &> /dev/null && [ -z "$TMUX" ]; then
   # Test for ssh session first then use this
   # tmux attach -t default || exec tmux new-session -s default && exit;
 fi
-
 
 # Poorly setup machines will often forget this
 export LC_CTYPE=en_US.UTF-8
@@ -64,13 +61,17 @@ export PATH=/usr/bin:/bin
 export Books=${HOME}/Library/Containers/com.apple.BKAgentService/Data/Documents/iBooks/Books
 export Podcasts="${HOME}/Library/Group Containers/243LU875E5.groups.com.apple.podcasts"
 
-# Linuxbrew
-test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
-test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
-
 # XDG Base Directory Specification https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
 export XDG_CONFIG_HOME=$HOME/.config
 export XDG_DATA_HOME=$HOME/.local/share
+
+# Homebrew
+export HOMEBREW_BUNDLE_FILE=${XDG_CONFIG_HOME}/Brewfile
+export HOMEBREW_CASK_OPTS="--appdir=~/Applications"
+
+# Linuxbrew
+test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
+test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
 
 # virtualenv
 export WORKON_HOME=$HOME/.virtualenvs
