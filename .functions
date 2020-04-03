@@ -573,7 +573,7 @@ function faz() {
     fzf --header-lines=2 --nth='1,2' \
         --height="50%" \
         --min-height=17 \
-        --preview='az account show -o json -s {-1}' \
+        --preview='az account show -o json -s {-1}| jq -C' \
       | rev | cut -d' ' -f1 | rev
   )"
   az account show
