@@ -36,8 +36,9 @@ let g:skipview_files = ['*\.vim']
 Plug 'yggdroot/indentLine'  " A vim plugin to display the indention levels with thin vertical lines
 Plug 'janko-m/vim-test'
 " }}}
-" {{{ Code Complextion
+" {{{ Code Completion
 Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
+Plug 'prettier/vim-prettier', { 'do': 'npm install' }
 " }}}
 " {{{ Visual
 Plug 'altercation/vim-colors-solarized', {'do': ':so $HOME/.vim/bundle/vim-colors-solarized/autoload/togglebg.vim' } " Ethan's best
@@ -58,6 +59,7 @@ let g:ansible_name_highlight = 'd'
 let g:terraform_fold_sections=1
                             " }}}
 Plug 'isene/hyperlist.vim'
+Plug 'towolf/vim-helm'
 Plug 'pedrohdz/vim-yaml-folds'
 Plug 'habamax/vim-asciidoctor'
 "}}}
@@ -71,6 +73,9 @@ Plug 'rmolin88/pomodoro.vim'            " im plugin for the Pomodoro time manage
 Plug 'maximbaz/lightline-ale'           " ALE indicator for the lightline vim plugin
 "}}}
 " {{{ Editing
+Plug 'editorconfig/editorconfig-vim' "Allows project wide consistent coding styles
+let g:EditorConfig_exclude_patterns = ['fugitive://.*', 'scp://.*']
+
 Plug 'tpope/vim-surround'     " Adds the surround motion bound to s
 Plug 'tpope/vim-commentary'   " Adds comment action with 'gc'
 " Plug 'pelodelfuego/vim-swoop' " It allows you to find and replace occurrences in many buffers being aware of the context.
@@ -86,7 +91,7 @@ let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
 let g:ale_open_list = 0
 " let g:ale_list_vertical = 1
 let g:ale_set_quickfix = 0
-let b:ale_linters = ['shellcheck', 'vint', 'prettier', 'yamllint', 'pyflakes', 'flake8', 'pylint']
+let b:ale_linters = ['tflint', 'shellcheck', 'vint', 'prettier', 'yamllint', 'pyflakes', 'flake8', 'pylint']
 let g:ale_fixers = ['prettier', 'shfmt' ]
 let g:ale_python_flake8_args="--ignore=E501" " }}}
 " }}}
@@ -269,7 +274,8 @@ let g:lightline.component_visible_condition = {
 let g:lightline.component_function_visible_condition = {
       \   'coc_status': 'g:vimMode ==# "complete"',
       \   'coc_current_function': 'g:vimMode ==# "complete"'
-      \ } " }}}
+      \ }
+" }}} Lightline Config
 " Autogroups {{{
 " {{{ Reload VIM
 if has ('autocmd') " Remain compatible with earlier versions
@@ -359,13 +365,6 @@ set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc,*.pyc,__pycache__
 " set wildmenu              " show a navigable menu for tab completion
 set wildmode=list:longest,list:full
 
-" Settings for FZF
-let $FZF_DEFAULT_COMMAND = "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune 'dist/**' -prune -o -type f -print -o l -print 2> /dev/null"
-" The Silver Searcher
-if executable('ag')
-  let $FZF_DEFAULT_COMMAND = 'ag --hidden --ignore .git -g ""'
-  set grepprg=ag\ --nogroup\ --nocolor
-endif
 " Copy/Paste {{{
 " Don't copy the contents of an overwritten selection.
 vnoremap p "_dP
@@ -392,7 +391,25 @@ if executable('ag')
   set grepprg=ag\ --nogroup\ --nocolor
 endif
 
+" Settings for FZF
+" need to fix the window color
+" let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.6 } }
+let g:fzf_colors =
+\ { 'fg':      ['fg', 'Normal'],
+  \ 'bg':      ['bg', 'Normal'],
+  \ 'hl':      ['fg', 'Comment'],
+  \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+  \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+  \ 'hl+':     ['fg', 'Statement'],
+  \ 'info':    ['fg', 'PreProc'],
+  \ 'border':  ['fg', 'Ignore'],
+  \ 'prompt':  ['fg', 'Conditional'],
+  \ 'pointer': ['fg', 'Exception'],
+  \ 'marker':  ['fg', 'Keyword'],
+  \ 'spinner': ['fg', 'Label'],
+  \ 'header':  ['fg', 'Comment'] }
 
+let $FZF_DEFAULT_COMMAND = "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune 'dist/**' -prune -o -type f -print -o l -print 2> /dev/null"
 " }}}
 " {{{ TMUX Config
 let progname = substitute($VIM, '.*[/\\]', '', '')
