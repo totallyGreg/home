@@ -73,6 +73,9 @@ export HOMEBREW_CASK_OPTS="--appdir=~/Applications"
 test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
 test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
 
+# Enable the fuck if it exists
+command -v thefuck >/dev/null 2>&1 && eval "$(thefuck --alias)"
+
 # virtualenv
 export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/Projects
