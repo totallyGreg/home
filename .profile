@@ -88,7 +88,9 @@ export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
 export KUBECONFIG=$KUBECONFIG:$HOME/.kube/config
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 # Need for the tmux-exec plugin to kubectl
-export GNU_GETOPT_PREFIX="$(brew --prefix gnu-getopt)"
+if command -v brew >/dev/null 2>&1 ; then
+  export GNU_GETOPT_PREFIX="$(brew --prefix gnu-getopt)"
+fi
 
 # Setup Go environment
 export GOPATH="${HOME}/.go"
