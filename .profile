@@ -53,6 +53,7 @@ export PATH=/usr/bin:/bin
 [ -d /snap/bin ] && export PATH=/snap/bin:${PATH}
 [ -d ${HOME}/bin ] && export PATH=${HOME}/bin:${PATH}
 [ -d $HOME/.linuxbrew/bin ] && export PATH=$HOME/.linuxbrew/bin:"$PATH"
+[ -d $HOME/.porter ] && export PATH=$HOME/.porter:"$PATH"
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 [ -d $HOME/.rvm/bin ] && export PATH="$PATH":$HOME/.rvm/bin
 
