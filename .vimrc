@@ -64,7 +64,6 @@ Plug 'pedrohdz/vim-yaml-folds'
 Plug 'habamax/vim-asciidoctor'
 "}}}
 " }}}
-" }}}
 " {{{ Statusline (lightline)
 Plug 'itchyny/lightline.vim'            " New statusline tool, replaced airline
 Plug 'macthecadillac/lightline-gitdiff' " show a concise summary of changes since the last commit using git diff.
@@ -108,6 +107,7 @@ Plug 'mustache/vim-mustache-handlebars'
 let g:mustache_abbreviations = 1
 Plug 'nvie/vim-flake8'
 " }}}
+Plug 'rottencandy/vimkubectl'
 " {{{ Tmux Tools
 " Intelligently navigate tmux panes and Vim splits using the same keys.
 " " See https://sunaku.github.io/tmux-select-pane.html for documentation.
@@ -185,31 +185,46 @@ endfunction"}}}
 function! LightlineReadonly()"{{{
   return &readonly ? '' : ''
 endfunction"}}}
-function! LightlineFugitive() "{{{
-  if exists('*fugitive#head')
-    let branch = fugitive#head()
-    let modified = &modified ? ' +' : ''
-    return branch !=# '' ? ''.branch.modified : ''
+function! LightlineFugitive() abort "{{{
+  if &filetype ==# 'help'
+    return ''
   endif
+  if has_key(b:, 'lightline_fugitive') && reltimestr(reltime(b:lightline_fugitive_)) =~# '^\s*0\.[0-5]'
+    return b:lightline_fugitive
+  endif
+  try
+    if exists('*fugitive#head')
+      let head = fugitive#head()
+    else
+      return ''
+    endif
+    let b:lightline_fugitive = head
+    let b:lightline_fugitive_ = reltime()
+    return b:lightline_fugitive
+  catch
+  endtry
   return ''
 endfunction "}}}
-let g:lightline#ale#indicator_checking = "\uf110"
-let g:lightline#ale#indicator_warnings = "⚠ "
-let g:lightline#ale#indicator_errors = " "
-let g:lightline#ale#indicator_ok = ""
-let g:lightline_gitdiff#indicator_added = '+'
-let g:lightline_gitdiff#indicator_deleted = '-'
+let g:lightline#bufferline#enable_devicons = 1
+let g:lightline#ale#indicator_checking     = "\uf110"
+let g:lightline#ale#indicator_warnings     = "⚠ "
+let g:lightline#ale#indicator_errors       = " "
+let g:lightline#ale#indicator_ok           = ""
+
+let g:lightline_gitdiff#indicator_added    = '+'
+let g:lightline_gitdiff#indicator_deleted  = '-'
 let g:lightline_gitdiff#indicator_modified = '!'
-let g:lightline_gitdiff#min_winwidth = '70'
+let g:lightline_gitdiff#min_winwidth       = '70'
 let g:lightline = { 'colorscheme': 'solarized'}
 " let g:lightline.separator = { 'left': '', 'right': '' }
 " let g:lightline.subseparator = { 'left': '', 'right': '' }
 " let g:lightline.separator = { 'left': '⮀', 'right': '⮂' },
 " let g:lightline.subseparator = { 'left': '⮁', 'right': '⮃' }
 let g:lightline.active =  {
-      \   'left': [ [ 'mode' , 'paste', 'readonly', ],
-      \             [ 'fugitive', 'cocstatus', 'currentfunction', 'filename' ] ],
-      \   'right': [ [ 'devicons_filetype', 'lineinfo'],
+      \   'left': [ [ 'mode' , 'paste', ],
+      \             [ 'fugitive', 'cocstatus', 'currentfunction', 'readonly', 'filename' ] ],
+      \   'right': [['lineinfo'],
+      \             [ 'devicons_filetype', 'devicons_fileformat'],
       \             ['linter_checking', 'linter_warnings', 'linter_errors', 'linter_ok']]
       \ }
 let g:lightline.inactive = {
@@ -231,7 +246,8 @@ let g:lightline.component = {
       \ 'filetype': '%{&ft!=#""?&ft:"no ft"}',
       \ 'gitstatus' : '%{lightline_gitdiff#get_status()}',
       \ 'line': '%l',
-      \ 'lineinfo': '%3l:%-2v%3p%%%<',
+      \ 'lineinfo': '%2p%%%3l:%-2v',
+      \ 'lineinfo2': '%3l:%-2v%3p%%%<',
       \ 'mode': '%{lightline#mode()}',
       \ 'modified': '%M',
       \ 'obsession': '%{ObsessionStatusEnhance()}',
@@ -247,29 +263,30 @@ let g:lightline.component = {
       \ 'winnr': '%{winnr()}'
       \ }
 let g:lightline.component_function = {
-      \   'devicons_filetype': 'Devicons_Filetype',
+      \   'devicons_filetype':   'Devicons_Filetype',
       \   'devicons_fileformat': 'Devicons_Fileformat',
-      \   'cocstatus': 'coc#status',
-      \   'currentfunction': 'CocCurrentFunction',
-      \   'readonly': 'LightlineReadonly',
-      \   'fugitive': 'LightlineFugitive'
+      \   'cocstatus':           'coc#status',
+      \   'currentfunction':     'CocCurrentFunction',
+      \   'readonly':            'LightlineReadonly',
+      \   'fugitive':            'LightlineFugitive',
       \ }
 let g:lightline.component_expand = {
       \   'linter_checking': 'lightline#ale#checking',
       \   'linter_warnings': 'lightline#ale#warnings',
-      \   'linter_errors': 'lightline#ale#errors',
-      \   'linter_ok': 'lightline#ale#ok',
+      \   'linter_errors':   'lightline#ale#errors',
+      \   'linter_ok':       'lightline#ale#ok',
       \   'asyncrun_status': 'lightline#asyncrun#status'
       \ }
 let g:lightline.component_type = {
-      \   'readonly': 'error',
+      \   'readonly':        'error',
       \   'linter_checking': 'left',
       \   'linter_warnings': 'warning',
-      \   'linter_errors': 'error',
-      \   'linter_ok': 'left',
+      \   'linter_errors':   'error',
+      \   'linter_ok':       'left',
       \ }
 let g:lightline.component_visible_condition = {
-      \   'gitstatus': 'lightline_gitdiff#get_status() !=# ""'
+      \   'readonly': '(&filetype!="help"&& &readonly)',
+      \   'modified': '(&filetype!="help"&&(&modified||!&modifiable))',
       \ }
 let g:lightline.component_function_visible_condition = {
       \   'coc_status': 'g:vimMode ==# "complete"',
@@ -651,26 +668,34 @@ function! MarkedPreview() " {{{ Open current file in Marked
 endfunction
 nnoremap <leader>e :call MarkedPreview()<CR>
 " }}}
-" {{{ Show Mappings - May not be needed with fzf maps
-function! s:ShowMaps()
-  let old_reg = getreg("a")          " save the current content of register a
-  let old_reg_type = getregtype("a") " save the type of the register as well
-try
-  redir @a                           " redirect output to register a
-  " Get the list of all key mappings silently, satisfy "Press ENTER to continue"
-  silent map | call feedkeys("\<CR>")
-  redir END                          " end output redirection
-  vnew                               " new buffer in vertical window
-  put a                              " put content of register
-  " Sort on 4th character column which is the key(s)
-  %!sort -k1.4,1.4
-finally                              " Execute even if exception is raised
-  call setreg("a", old_reg, old_reg_type) " restore register a
-endtry
-endfunction
-com! ShowMaps call s:ShowMaps()      " Enable :ShowMaps to call the function
+function! Fzf_dev() "{{{
+  function! s:files()
+    let files = split(system($FZF_DEFAULT_COMMAND), '\n')
+    return s:prepend_icon(files)
+  endfunction
 
-nnoremap \m :ShowMaps<CR>            " Map keys to call the function
-" }}}
+  function! s:prepend_icon(candidates)
+    let result = []
+    for candidate in a:candidates
+      let filename = fnamemodify(candidate, ':p:t')
+      let icon = WebDevIconsGetFileTypeSymbol(filename, isdirectory(filename))
+      call add(result, printf("%s %s", icon, candidate))
+    endfor
+
+    return result
+  endfunction
+
+  function! s:edit_file(item)
+    let parts = split(a:item, ' ')
+    let file_path = get(parts, 1, '')
+    execute 'silent e' file_path
+  endfunction
+
+  call fzf#run({
+        \ 'source': <sid>files(),
+        \ 'sink':   function('s:edit_file'),
+        \ 'options': '-m -x +s',
+        \ 'down':    '40%' })
+endfunction "}}}
 " }}}
 " The End
