@@ -29,19 +29,26 @@ alias docker-ips='docker ps | tail -n +2 | while read -a a; do name=${a[$((${#a[
 alias dkps="docker ps --format '{{.ID}} - {{.Names}} - {{.Status}} - {{.Image}}'"
 
 # Git
-alias g='git'
+alias g='git '
+alias gfa='git fetch --all '
+alias gpf='git pull --ff-only '
 
 # Kubernetes
-alias k='kubectl'
-alias kg='kubectl get'
-alias kl='kubectl logs'
-alias kx='kubectl exec -i -t'
-alias ksvc='kubectl get services --all-namespaces'
-alias kpod='kubectl get pods --all-namespaces'
-alias kedp='kubectl get endpoints --all-namespaces'
 alias busybox='kubectl run -it --rm --restart=Never busybox --image=busybox sh'
+alias k='kubectl '
+alias kctx='kubectx '
+alias kedp='kubectl get endpoints --all-namespaces '
+alias kg='kubectl get '
+alias kl='kubectl logs '
+alias kpod='kubectl get pods --all-namespaces'
+alias ksvc='kubectl get services --all-namespaces'
+alias kvu="kubectl view-utilization "
+alias kx='kubectl exec -i -t'
 
 ## Tmux stuff
+alias t="tmux "
+alias ta="t a -t"
+alias tls="t ls"
 alias takeover="tmux detach -a"
 
 ## Vagrant Stuff
@@ -67,6 +74,7 @@ alias flushcache='sudo killall -HUP mDNSResponder;say DNS cache has been flushed
 alias weakssh='ssh -o StrictHostKeyChecking=no '
 alias chrome='open -a "Google Chrome" '
 alias test_portal='open http://captive.apple.com/hotspot-detect.html'
+alias local_rsync='rsync -av -e rcp --delete --progress '
 
 # Read Log files with embeded control characters (e.g. screenlog.0)
 alias readlog='less -raw-control-chars'
