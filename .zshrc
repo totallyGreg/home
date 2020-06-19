@@ -1,41 +1,75 @@
-alias mv='nocorrect mv'       # no spelling correction on mv
-alias cp='nocorrect cp'       # no spelling correction on cp
-alias mkdir='nocorrect mkdir' # no spelling correction on mkdir
+#!/usr/bin/env zsh
+emulate zsh
 
-alias ls="ls --color=auto"
-alias l="ls -la --color=auto"
-alias l.='ls -d .[a-zA-Z]* --color=auto'
-alias ll="ls -l --color=auto"
-alias lsd="find . -maxdepth 1 -type d|columnize"
-alias d="find . -maxdepth 1 -type d|columnize"
+#{{{ profiling tools # copied shamelessly from https://gitlab.com/yramagicman/stow-dotfiles/-/blob/master/config/zsh/zshrc
+PROFILE_STARTUP=false
+if [[ "$PROFILE_STARTUP" == true ]]; then
+  zmodload zsh/zprof
+  # http://zsh.sourceforge.net/Doc/Release/Prompt-Expansion.html
+  PS4=$'%D{%M%S%.} %N:%i> '
+  exec 3>&2 2>$HOME/startlog.$$
+  setopt xtrace prompt_subst
+fi
+#}}}
 
-export ZPLUG_HOME=/usr/local/opt/zplug
-source $ZPLUG_HOME/init.zsh
+bindkey -v
+# Make Vi mode transitions faster (KEYTIMEOUT is in hundredths of a second)
+export KEYTIMEOUT=1
 
-# history settings
-HISTFILE=~/.zshhistory
-HISTSIZE=3000
-SAVEHIST=3000
+# History settings
+# HISTFILE=~/.zsh_history   # set by /etc/zshrc
+HISTSIZE=100000
+SAVEHIST=100000
+export HISTIGNORE="ls:cd:cd -:pwd:exit:date:* --help"
+
+setopt SHARE_HISTORY          # share history between different instances of the shell
+setopt HIST_EXPIRE_DUPS_FIRST # expire duplicates first
+setopt HIST_IGNORE_SPACE      # Remove command lines from history list when first character is a space
+setopt HIST_REDUCE_BLANKS     # removes blank lines from history
+setopt HIST_VERIFY            # show the substituted command in the prompt
+
+# Changing directories
+setopt AUTO_CD
+setopt AUTO_PUSHD
+cdpath=($HOME/Repositories)
 
 # Other misc settings
 LISTMAX=0
 
-# ls settings
-# export LS_COLORS='no=00:fi=00:di=01;33:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.deb=01;31:*.rpm=01;31:*.jpg=01;35:*.png=01;35:*.gif=01;35:*.bmp=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.png=01;35:*.mpg=01;35:*.avi=01;35:*.fli=01;35:*.gl=01;35:*.dl=01;35:';
+export FZF_DEFAULT_COMMAND='ag -l --ignore Library --ignore Music --ignore *.tagset --ignore *.photoslibrary -g ""'
+export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+# export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range :500 {}'"
+export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -100'"
+
+# Yes, these are a pain to customize. Fortunately, Geoff Greer made an online
+# tool that makes it easy to customize your color scheme and keep them in sync
+# # across Linux and OS X/*BSD at http://geoff.greer.fm/lscolors/
+export LS_COLORS='no=00:fi=00:di=01;33:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.deb=01;31:*.rpm=01;31:*.jpg=01;35:*.png=01;35:*.gif=01;35:*.bmp=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.png=01;35:*.mpg=01;35:*.avi=01;35:*.fli=01;35:*.gl=01;35:*.dl=01;35:';
 
 # eval  `dircolors -b`
 export ZLS_COLORS=$LS_COLORS
 
+# Begin Completions
+if type brew &>/dev/null; then
+    FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
+    FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
+fi
+
+# The following lines were added by compinstall
 
 # Expansion options
-zstyle ':completion:*' completer _complete _prefix
+zstyle ':completion:*' completer _complete _ignored _approximate
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]} r:|[._-]=** r:|=**'
 zstyle ':completion::prefix-1:*' completer _complete
 zstyle ':completion:incremental:*' completer _complete _correct
 zstyle ':completion:predict:*' completer _complete
+zstyle :compinstall filename '/Users/totally/.zshrc'
 
 # Completion caching
 zstyle ':completion::complete:*' use-cache 1
-zstyle ':completion::complete:*' cache-path ~/.zsh/cache/$HOST
+zstyle ':completion::complete:*' cache-path $ZSH_CACHE_DIR
 
 # Expand partial paths
 zstyle ':completion:*' expand 'yes'
@@ -66,18 +100,57 @@ zstyle ':completion:*:warnings' format '%B%U---- no match for: %d%u%b'
 zstyle ':completion:*:options' description 'yes'
 zstyle ':completion:*:options' auto-description '%d'
 
-# }}}
-# {{{ Simulate my old dabbrev-expand 3.0.5 patch
-
 zstyle ':completion:*:history-words' stop verbose
 zstyle ':completion:*:history-words' remove-all-dups yes
 zstyle ':completion:*:history-words' list false
 
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 
+autoload -Uz compinit
+compinit
+# End of lines added by compinstall
+
+# Hoping to steal bash completions for free
+autoload -U +X bashcompinit &&  bashcompinit
+if type brew &>/dev/null; then
+  HOMEBREW_PREFIX="$(brew --prefix)"
+  # for COMPLETION in "${HOMEBREW_PREFIX}/etc/bash_completion.d/"*; do
+  completion_list=("${HOMEBREW_PREFIX}/etc/bash_completion.d/az"
+    "${HOMEBREW_PREFIX}/etc/bash_completion.d/az")
+  for COMPLETION in $completion_list; do
+    [[ -r "$COMPLETION" ]] && source "$COMPLETION"
+  done
+fi
+
+# ZPLUG Stuff - slows things down not sure I want it.
+export ZPLUG_HOME=/usr/local/opt/zplug
+export ZPLUG_CACHE_DIR=$ZSH_CACHE_DIR
+# export ZPLUG_BIN=~/bin
+source $ZPLUG_HOME/init.zsh
+
+# NOTE: fzf-tab needs to be sourced after compinit, but before plugins which will wrap widgets like zsh-autosuggestions or fast-syntax-highlighting.
+# defer:2 equals after compinit
+# zplug "Aloxaf/fzf-tab", defer:2, depth:2
+# zplug "RobertAudi/tsm", depth:2 # worth exploring
+zplug "reegnz/jq-zsh-plugin", depth:2
+# zplug "zdharma/fast-syntax-highlighting", defer:2, depth:2
+# zplug 'wfxr/forgit', depth:2
+# zplug 'ytet5uy4/fzf-widgets', depth:2
+# https://github.com/zdharma/zflai # possibly useful logging tool
+# https://github.com/unixorn/tumult.plugin.zsh # and other macos tools
+
+# # Install plugins if there are plugins that have not been installed
+if ! zplug check --verbose; then
+  printf "Install? [y/N]: "
+  if read -q; then
+    echo; zplug install
+  fi
+fi
+
+# # Then, source plugins and add commands to $PATH
+zplug load # --verbose
 
 precmd () {
-
     local TERMWIDTH
     (( TERMWIDTH = ${COLUMNS} - 1 ))
 
@@ -89,93 +162,90 @@ precmd () {
     local pwdsize=${#${(%):-%~}}
 
     if [[ "$promptsize + $pwdsize" -gt $TERMWIDTH ]]; then
-	    ((PR_PWDLEN=$TERMWIDTH - $promptsize))
+      ((PR_PWDLEN=$TERMWIDTH - $promptsize))
     else
-	PR_FILLBAR="\${(l.(($TERMWIDTH - ($promptsize + $pwdsize)))..${PR_HBAR}.)}"
-    fi
-
-}
-
-
-setopt extended_glob
-preexec () {
-    if [[ "$TERM" == "screen" ]]; then
-	local CMD=${1[(wr)^(*=*|sudo|-*)]}
-	echo -n "\ek$CMD\e\\"
+      PR_FILLBAR="\${(l.(($TERMWIDTH - ($promptsize + $pwdsize)))..${PR_HBAR}.)}"
     fi
 }
 
+## Source Functions
+[ -f ~/.functions ] && source ~/.functions
 
-setprompt () {
-    setopt prompt_subst
-    autoload colors zsh/terminfo
-    if [[ "$terminfo[colors]" -ge 8 ]]; then
-	colors
-    fi
-    for color in RED GREEN YELLOW BLUE MAGENTA CYAN WHITE; do
-	eval PR_$color='%{$terminfo[bold]$fg[${(L)color}]%}'
-	eval PR_LIGHT_$color='%{$fg[${(L)color}]%}'
-	(( count = $count + 1 ))
-    done
-    PR_NO_COLOUR="%{$terminfo[sgr0]%}"
-    typeset -A altchar
-    set -A altchar ${(s..)terminfo[acsc]}
-    PR_SET_CHARSET="%{$terminfo[enacs]%}"
-    PR_SHIFT_IN="%{$terminfo[smacs]%}"
-    PR_SHIFT_OUT="%{$terminfo[rmacs]%}"
-    PR_HBAR=${altchar[q]:--}
-    PR_ULCORNER=${altchar[l]:--}
-    PR_LLCORNER=${altchar[m]:--}
-    PR_LRCORNER=${altchar[j]:--}
-    PR_URCORNER=${altchar[k]:--}
-    case $TERM in
-	xterm*)
-	    PR_TITLEBAR=$'%{\e]0;%(!.-=*[ROOT]*=- | .)%n@%m:%~ | ${COLUMNS}x${LINES} | %y\a%}'
-	    ;;
-	screen)
-	    PR_TITLEBAR=$'%{\e_screen \005 (\005t) | %(!.-=[ROOT]=- | .)%n@%m:%~ | ${COLUMNS}x${LINES} | %y\e\\%}'
-	    ;;
-	*)
-	    PR_TITLEBAR=''
-	    ;;
-    esac
-    if [[ "$TERM" == "screen" ]]; then
-	PR_STITLE=$'%{\ekzsh\e\\%}'
-    else
-	PR_STITLE=''
-    fi
-    if which ibam > /dev/null; then
-	PR_APM='$PR_RED${${PR_APM_RESULT[(f)1]}[(w)-2]}%%(${${PR_APM_RESULT[(f)3]}[(w)-1]})$PR_LIGHT_BLUE:'
-    elif which apm > /dev/null; then
-	PR_APM='$PR_RED${PR_APM_RESULT[(w)5,(w)6]/\% /%%}$PR_LIGHT_BLUE:'
-    else
-	PR_APM=''
-    fi
-PROMPT='$PR_SET_CHARSET$PR_STITLE${(e)PR_TITLEBAR}\
-$PR_CYAN$PR_SHIFT_IN$PR_ULCORNER$PR_BLUE$PR_HBAR$PR_SHIFT_OUT(\
-$PR_GREEN%(!.%SROOT%s.%n)$PR_GREEN@%m:%l\
-$PR_BLUE)$PR_SHIFT_IN$PR_HBAR$PR_CYAN$PR_HBAR${(e)PR_FILLBAR}$PR_BLUE$PR_HBAR$PR_SHIFT_OUT(\
-$PR_MAGENTA%$PR_PWDLEN<...<%~%<<\
-$PR_BLUE)$PR_SHIFT_IN$PR_HBAR$PR_CYAN$PR_URCORNER$PR_SHIFT_OUT\
-$PR_CYAN$PR_SHIFT_IN$PR_LLCORNER$PR_BLUE$PR_HBAR$PR_SHIFT_OUT(\
-%(?..$PR_LIGHT_RED%?$PR_BLUE:)\
-${(e)PR_APM}$PR_YELLOW%D{%H:%M}\
-$PR_LIGHT_BLUE:%(!.$PR_RED.$PR_WHITE)%#$PR_BLUE)$PR_SHIFT_IN$PR_HBAR$PR_SHIFT_OUT\
-$PR_CYAN$PR_SHIFT_IN$PR_HBAR$PR_SHIFT_OUT\
-$PR_NO_COLOUR '
-    RPROMPT=' $PR_CYAN$PR_SHIFT_IN$PR_HBAR$PR_BLUE$PR_HBAR$PR_SHIFT_OUT\
-($PR_YELLOW%D{%a,%b%d}$PR_BLUE)$PR_SHIFT_IN$PR_HBAR$PR_CYAN$PR_LRCORNER$PR_SHIFT_OUT$PR_NO_COLOUR'
-    PS2='$PR_CYAN$PR_SHIFT_IN$PR_HBAR$PR_SHIFT_OUT\
-$PR_BLUE$PR_SHIFT_IN$PR_HBAR$PR_SHIFT_OUT(\
-$PR_LIGHT_GREEN%_$PR_BLUE)$PR_SHIFT_IN$PR_HBAR$PR_SHIFT_OUT\
-$PR_CYAN$PR_SHIFT_IN$PR_HBAR$PR_SHIFT_OUT$PR_NO_COLOUR '
-}
+# fzf git functions keybindings
+# -bind '"\er": redraw-current-line'
+# -bind '"\C-g\C-f": "$(gf)\e\C-e\er"' # Git Files
+bindkey -s '^g^b' '$(gb)' # Git Branches
+# -bind '"\C-g\C-t": "$(gt)\e\C-e\er"' # Git Tags
+# -bind '"\C-g\C-h": "$(gh)\e\C-e\er"' # Git history
+# -bind '"\C-g\C-r": "$(gr)\e\C-e\er"' # Git Remotes
+
+# Zsh Specific Aliases
+alias mv='nocorrect mv'       # no spelling correction on mv
+alias cp='nocorrect cp'       # no spelling correction on cp
+alias mkdir='nocorrect mkdir' # no spelling correction on mkdir
+alias dirs='dirs -v'
+alias ls='ls -G '
+[ -f ~/.aliases ] && source ~/.aliases
+
+# # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+# export PATH="$PATH:$HOME/.rvm/bin"
+
+# Enable the fuck if it exists
+hash thefuck > /dev/null 2>&1 && eval "$(thefuck --alias)"
+
+# iCloud Obscured Locations
+[ -d "${HOME}/Library/Mobile Documents/com~apple~CloudDocs" ] && export iCloud="${HOME}/Clouds/iCloud"
+export Books=${HOME}/Library/Containers/com.apple.BKAgentService/Data/Documents/iBooks/Books
+export Podcasts="${HOME}/Library/Group Containers/243LU875E5.groups.com.apple.podcasts"
+
+
+# Homebrew
+if (hash brew > /dev/null 2>&1 ) ; then
+  export HOMEBREW_BUNDLE_FILE=${XDG_CONFIG_HOME}/Brewfile
+  export HOMEBREW_CASK_OPTS="--appdir=~/Applications"
+  # Need for the tmux-exec plugin to kubectl
+  export GNU_GETOPT_PREFIX="$(brew --prefix gnu-getopt)"
+fi
+
+# Linuxbrew
+# test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
+# test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+
+
+# # virtualenv
+# export WORKON_HOME=$HOME/.virtualenvs
+# export PROJECT_HOME=$HOME/Projects
+# export PYTHONPATH=/usr/local//bin/python3
+# export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3
+# export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
+# [ -f /usr/local/bin/virtualenvwrapper.shi ] && source /usr/local/bin/virtualenvwrapper.sh
+
+# Kubernetes
+export KUBECONFIG=$KUBECONFIG:$HOME/.kube/config
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+export HELM_EXPERIMENTAL_OCI=1
+
+# Setup Go environment
+export GOPATH="${HOME}/.go"
+# export GOROOT="$(brew --prefix golang)/libexec"
+# export GOROOT="/usr/local/go"
+export PATH="$PATH:${GOPATH}/bin:${GOROOT}/bin"
+
+
+# Load FZF
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# setup direnv
+eval "$(direnv hook zsh)"
 
 # setprompt
 #
 eval "$(starship init zsh)"
 
-# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
-export PATH="$PATH:$HOME/.rvm/bin"
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+#{{{ end profiling script
+if [[ "$PROFILE_STARTUP" == true ]]; then
+    unsetopt xtrace
+    exec 2>&3 3>&-
+    zprof > ~/zshprofile$(date +'%s')
+fi
+#}}}
