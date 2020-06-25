@@ -12,7 +12,12 @@ if [[ "$PROFILE_STARTUP" == true ]]; then
 fi
 #}}}
 
+# Gotsta have vi bindings
 bindkey -v
+
+# remove list-expand binding since i can't figure out what it does and it interferes with Git heart fzf
+bindkey -r '^G'
+
 # Make Vi mode transitions faster (KEYTIMEOUT is in hundredths of a second)
 export KEYTIMEOUT=1
 
@@ -23,7 +28,7 @@ SAVEHIST=100000
 export HISTIGNORE="ls:cd:cd -:pwd:exit:date:* --help"
 
 setopt SHARE_HISTORY          # share history between different instances of the shell
-setopt HIST_EXPIRE_DUPS_FIRST # expire duplicates first
+#setopt HIST_EXPIRE_DUPS_FIRST # expire duplicates first
 setopt HIST_IGNORE_SPACE      # Remove command lines from history list when first character is a space
 setopt HIST_REDUCE_BLANKS     # removes blank lines from history
 setopt HIST_VERIFY            # show the substituted command in the prompt
@@ -138,6 +143,7 @@ zplug "reegnz/jq-zsh-plugin", depth:2
 # zplug 'ytet5uy4/fzf-widgets', depth:2
 # https://github.com/zdharma/zflai # possibly useful logging tool
 # https://github.com/unixorn/tumult.plugin.zsh # and other macos tools
+zplug "plugins/docker",   from:oh-my-zsh
 
 # # Install plugins if there are plugins that have not been installed
 if ! zplug check --verbose; then
@@ -187,8 +193,6 @@ alias dirs='dirs -v'
 alias ls='ls -G '
 [ -f ~/.aliases ] && source ~/.aliases
 
-# # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
-# export PATH="$PATH:$HOME/.rvm/bin"
 
 # Enable the fuck if it exists
 hash thefuck > /dev/null 2>&1 && eval "$(thefuck --alias)"
@@ -205,6 +209,7 @@ if (hash brew > /dev/null 2>&1 ) ; then
   export HOMEBREW_CASK_OPTS="--appdir=~/Applications"
   # Need for the tmux-exec plugin to kubectl
   export GNU_GETOPT_PREFIX="$(brew --prefix gnu-getopt)"
+  export PATH="/usr/local/sbin:$PATH"
 fi
 
 # Linuxbrew
@@ -231,6 +236,23 @@ export GOPATH="${HOME}/.go"
 # export GOROOT="/usr/local/go"
 export PATH="$PATH:${GOPATH}/bin:${GOROOT}/bin"
 
+# Ruby override for asciidoctor and others
+export PATH="/usr/local/opt/ruby/bin:$PATH"
+# For compilers to find ruby you may need to set:
+export LDFLAGS="-L/usr/local/opt/ruby/lib"
+export CPPFLAGS="-I/usr/local/opt/ruby/include"
+# For pkg-config to find ruby you may need to set:
+export PKG_CONFIG_PATH="/usr/local/opt/ruby/lib/pkgconfig"
+
+# # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"
+
+# GPG Agent
+if type gpg &>/dev/null; then
+  export GPG_TTY=$(tty)
+  export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+  gpgconf --launch gpg-agent
+fi
 
 # Load FZF
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
