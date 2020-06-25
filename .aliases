@@ -1,6 +1,6 @@
 ## Beginning of Aliases
 # if [ ! ${machine} == "Mac" ]; then alias ls='ls --color=auto' ; fi
-if [ ! ${CLICOLOR} == "1" ]; then alias ls='ls --color=auto' ; fi
+# if [ ! ${CLICOLOR} == "1" ]; then alias ls='ls --color=auto' ; fi
 alias l='ls -lhF'
 alias ll='ls -lhF'
 alias l1='ls -1'
@@ -9,6 +9,7 @@ alias lt='ls -alhFtr'
 alias grep='grep --color=auto'
 alias cd..='cd ..'
 alias ic='cd ~/Library/Mobile\ Documents/com~apple~CloudDocs'
+alias watch='watch ' # this allows alias expansion
 # alias fuck='sudo $(history -p \!\!)'
 # if [ -e (which bat) ]; alias cat='bat --theme TwoDark'
 
@@ -44,6 +45,7 @@ alias kpod='kubectl get pods --all-namespaces'
 alias ksvc='kubectl get services --all-namespaces'
 alias kvu="kubectl view-utilization "
 alias kx='kubectl exec -i -t'
+alias qapla='kubectl apply -f '
 
 ## Tmux stuff
 alias t="tmux "
@@ -96,7 +98,8 @@ alias get_pivnet_token='PIVNET_TOKEN=$(ACCOUNT="j.greg.williams@altoros.com" key
 if [ "${BASH_VERSINFO:-0}" -ge 4 ]; then
   source ~/._alias_completion
 else
-  echo "bash does not support associative arrays"
+  true
+  # echo "bash does not support associative arrays"
 fi
 
 #
@@ -109,5 +112,4 @@ alias git_home='curl https://gist.githubusercontent.com/totallyGreg/4c9a430e6965
 alias install_home_brew='/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
 
 alias restart_dns='ssh portcullis sudo /etc/init.d/dnsmasq force-reload'
-alias kaply='kubectl apply -f '
 alias m4b-tool='docker run -it --rm -u $(id -u):$(id -g) -v "$(pwd)":/mnt m4b-tool'
