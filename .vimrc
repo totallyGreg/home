@@ -35,6 +35,7 @@ set viewoptions=cursor,slash,unix
 let g:skipview_files = ['*\.vim']
 Plug 'yggdroot/indentLine'  " A vim plugin to display the indention levels with thin vertical lines
 Plug 'janko-m/vim-test'
+Plug 'sunaku/tmux-navigate'
 " }}}
 " {{{ Code Completion
 Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
@@ -474,11 +475,6 @@ let g:fzf_colors =
 
 let $FZF_DEFAULT_COMMAND = "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune 'dist/**' -prune -o -type f -print -o l -print 2> /dev/null"
 " }}}
-" {{{ TMUX Config
-let progname = substitute($VIM, '.*[/\\]', '', '')
-set title titlestring=%{progname}\ %f\ +%l\ #%{tabpagenr()}.%{winnr()}
-if &term =~ '^screen' && !has('nvim') | exe "set t_ts=\e]2; t_fs=\7" | endif
-"}}}
 "}}}
 " GUI Specific  Settings {{{
 if (&t_Co == 256 || has('gui_running'))
