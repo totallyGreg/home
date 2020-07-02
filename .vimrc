@@ -38,7 +38,10 @@ Plug 'janko-m/vim-test'
 " }}}
 " {{{ Code Completion
 Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
-Plug 'prettier/vim-prettier', { 'do': 'npm install' }
+" Coc extensions are currently installed by CocInstall
+" I am considering replacing coc-list with a better fuzzy matcher
+" https://github.com/neoclide/coc.nvim/issues/1732
+" Possibly incorporating vim-clap
 " }}}
 " {{{ Visual
 Plug 'altercation/vim-colors-solarized', {'do': ':so $HOME/.vim/bundle/vim-colors-solarized/autoload/togglebg.vim' } " Ethan's best
@@ -51,7 +54,7 @@ Plug 'sheerun/vim-polyglot' " Polyglot autoloads many language packs replacing: 
                             " Plug 'glench/vim-jinja2-syntax'
                             " Plug 'hashivim/vim-terraform'
                             " Plug 'towolf/vim-helm'
-let g:polyglot_disabled = ['asciidoc'] " disabled since asciidoc is out of date
+let g:polyglot_disabled = ['asciidoc','markdown'] " disabled since asciidoc is out of date
 let g:ansible_attribute_highlight = "ab"
 let g:ansible_extra_keywords_highlight = 1
 let g:ansible_name_highlight = 'd'
@@ -62,6 +65,9 @@ Plug 'isene/hyperlist.vim'
 Plug 'towolf/vim-helm'
 Plug 'pedrohdz/vim-yaml-folds'
 Plug 'habamax/vim-asciidoctor'
+Plug 'vim-pandoc/vim-pandoc'
+Plug 'vim-pandoc/vim-pandoc-syntax'
+Plug 'reedes/vim-pencil'
 "}}}
 " }}}
 " {{{ Statusline (lightline)
@@ -79,9 +85,17 @@ Plug 'tpope/vim-surround'     " Adds the surround motion bound to s
 Plug 'tpope/vim-commentary'   " Adds comment action with 'gc'
 " Plug 'pelodelfuego/vim-swoop' " It allows you to find and replace occurrences in many buffers being aware of the context.
 Plug 'mhinz/vim-grepper', { 'on': ['Grepper', '<plug>(GrepperOperator)'] }      " ...helps you win at grep
-Plug 'junegunn/vim-easy-align' "
+Plug 'junegunn/vim-easy-align'
 let g:easy_align_ignore_comment = 0 " align comments
+" My attempt to create an a)rg alignment for --arguments
+let g:easy_align_delimiters = {
+      \ 'a': { 'pattern': "\-\-*", 'left_margin': 1, 'right_margin': 0 } }
+" Start interactive EasyAlign in visual mode (e.g. vipga)
+xmap ga <Plug>(EasyAlign)
+" Start interactive EasyAlign for a motion/text object (e.g. gaip)
+nmap ga <Plug>(EasyAlign)
 vnoremap <silent> <Enter> :EasyAlign<cr>
+
 Plug 'dense-analysis/ale' " {{{ ALE and it's Options
 " nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 " nmap <silent> <C-j> <Plug>(ale_next_wrap)
@@ -90,15 +104,17 @@ let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
 let g:ale_open_list = 0
 " let g:ale_list_vertical = 1
 let g:ale_set_quickfix = 0
-let b:ale_linters = ['tflint', 'shellcheck', 'vint', 'prettier', 'yamllint', 'pyflakes', 'flake8', 'pylint']
+let b:ale_linters = ['proselint', 'tflint', 'shellcheck', 'vint', 'prettier', 'yamllint', 'pyflakes', 'flake8', 'pylint']
 let g:ale_fixers = ['prettier', 'shfmt' ]
 let g:ale_python_flake8_args="--ignore=E501" " }}}
 " }}}
 " {{{ Git Plugins
 Plug 'tpope/vim-fugitive'          " Git plugin with commands 'G<command>'
-Plug 'airblade/vim-gitgutter'      " Show git diff in number column {{{
+Plug 'airblade/vim-gitgutter'      " Show git diff in number column
 let g:gitgutter_enabled = 1
-let g:gitgutter_hightlight_lines = 1 " }}}
+let g:gitgutter_hightlight_lines = 0
+let g:gitgutter_set_sign_backgrounds = 0
+
 Plug 'tpope/vim-rhubarb'           " Github extension for fugitive.vim
 " Plug 'jreybert/vimagit'            " Modal git editing with <leader>g
 Plug 'Xuyuanp/nerdtree-git-plugin' " A plugin of NERDTree showing git status flags.
@@ -205,6 +221,11 @@ function! LightlineFugitive() abort "{{{
   endtry
   return ''
 endfunction "}}}
+function! LightlineGitBlame() abort"{{{
+  let blame = get(b:, 'coc_git_blame', '')
+  " return blame
+  return winwidth(0) > 120 ? blame : ''
+endfunction"}}}
 let g:lightline#bufferline#enable_devicons = 1
 let g:lightline#ale#indicator_checking     = "\uf110"
 let g:lightline#ale#indicator_warnings     = "⚠ "
@@ -222,10 +243,13 @@ let g:lightline = { 'colorscheme': 'solarized'}
 " let g:lightline.subseparator = { 'left': '⮁', 'right': '⮃' }
 let g:lightline.active =  {
       \   'left': [ [ 'mode' , 'paste', ],
-      \             [ 'fugitive', 'cocstatus', 'currentfunction', 'readonly', 'filename' ] ],
+      \             [ 'fugitive', 'git', 'diagnostic', 'cocstatus',
+      \             'currentfunction', 'readonly', 'filename' ] ],
       \   'right': [['lineinfo'],
       \             [ 'devicons_filetype', 'devicons_fileformat'],
-      \             ['linter_checking', 'linter_warnings', 'linter_errors', 'linter_ok']]
+      \             ['linter_checking', 'linter_warnings', 'linter_errors',
+      \             'linter_ok'],
+      \             ['blame'], ]
       \ }
 let g:lightline.inactive = {
       \   'left': [ [ 'fugitive', 'filename', 'modified', ] ],
@@ -263,12 +287,13 @@ let g:lightline.component = {
       \ 'winnr': '%{winnr()}'
       \ }
 let g:lightline.component_function = {
-      \   'devicons_filetype':   'Devicons_Filetype',
-      \   'devicons_fileformat': 'Devicons_Fileformat',
-      \   'cocstatus':           'coc#status',
-      \   'currentfunction':     'CocCurrentFunction',
-      \   'readonly':            'LightlineReadonly',
-      \   'fugitive':            'LightlineFugitive',
+      \ 'devicons_filetype':    'Devicons_Filetype',
+      \ 'devicons_fileformat':  'Devicons_Fileformat',
+      \ 'cocstatus':            'coc#status',
+      \ 'currentfunction':      'CocCurrentFunction',
+      \ 'readonly':             'LightlineReadonly',
+      \ 'fugitive':             'LightlineFugitive',
+      \ 'blame':                'LightlineGitBlame',
       \ }
 let g:lightline.component_expand = {
       \   'linter_checking': 'lightline#ale#checking',
@@ -294,13 +319,12 @@ let g:lightline.component_function_visible_condition = {
       \ }
 " }}} Lightline Config
 " Autogroups {{{
-" {{{ Reload VIM
 if has ('autocmd') " Remain compatible with earlier versions
+" {{{ Reload VIM
  augroup vimrc     " Source vim configuration upon save
     autocmd! BufWritePost $MYVIMRC nested source % | echom "Reloaded " . $MYVIMRC | redraw
     autocmd! BufWritePost $MYGVIMRC if has('gui_running') | so % | echom "Reloaded " . $MYGVIMRC | endif | redraw
   augroup END
-endif " has autocmd
 " }}}
 autocmd VimResized * :wincmd =          " automatically rebalance windows on vim resize
 
@@ -314,6 +338,24 @@ autocmd VimResized * :wincmd =          " automatically rebalance windows on vim
 augroup CloseLoclistWindowGroup
   autocmd!
   autocmd QuitPre * if empty(&buftype) | lclose | endif
+augroup END
+
+" from https://github.com/settermjd/vim-for-technical-writers/blob/master/.vimrc
+" vim-pencil configuration
+" For further options see https://github.com/reedes/vim-pencil
+" let g:pencil#wrapModeDefault = 'soft'   " default is 'hard'
+augroup pencil
+  autocmd!
+  "
+  " Apply for Markdown and reStructuredText
+  autocmd FileType markdown,mkd,md,rst,asciidoc call pencil#init({'wrap': 'soft'})
+  " autocmd FileType markdown,mkd,md call SetMarkdownOptions()
+  " autocmd FileType rst call SetRestructuredTextOptions()
+  autocmd FileType c,h call SetCOptions()
+  autocmd FileType go       call SetGoOptions()
+  autocmd FileType Makefile call SetMakefileOptions()
+  autocmd FileType text            call pencil#init({'wrap': 'soft'})
+
 augroup END
 
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
@@ -335,49 +377,53 @@ autocmd BufRead,BufNewFile Vagrantfile setfiletype ruby
 " auto-delete buffers after browsing through objects
 autocmd BufReadPost fugitive://* set bufhidden=delete
 autocmd BufRead,BufNewFile *.ics set filetype=icalendar
-autocmd FileType mail,text,html,asciidoc setlocal spell spelllang=en
+
+" Set Spelling for various filetypes
+autocmd FileType gitcommit,mail,text,html,asciidoc setlocal spell spelllang=en
 " inoremap <C-l> <c-g>u<Esc>[s1z=`]a<c-g>u
 autocmd BufRead,BufNewFile *.txt,*.asciidoc,README,TODO,CHANGELOG,NOTES,ABOUT
     \ setlocal autoindent expandtab tabstop=8 softtabstop=2 shiftwidth=2 filetype=asciidoc
     \ textwidth=70 wrap formatoptions=tcqn
     \ formatlistpat=^\\s*\\d\\+\\.\\s\\+\\\\|^\\s*<\\d\\+>\\s\\+\\\\|^\\s*[a-zA-Z.]\\.\\s\\+\\\\|^\\s*[ivxIVX]\\+\\.\\s\\+
     \ comments=s1:/*,ex:*/,://,b:#,:%,:XCOMM,fb:-,fb:*,fb:+,fb:.,fb:>
-" }}}
+
+endif " has autocmd }}}
 " UI Config {{{
 " syntax enable
 colorscheme solarized
 set autoindent
-set autoread              " reload files when changed on disk, i.e. via `git checkout`
-set backspace=2           " Fix broken backspace in some setups
-set backupcopy=yes        " see :help crontab
-set breakindent           " set indent on wrapped lines
+set autoread                      " reload files when changed on disk, i.e. via `git checkout`
+set backspace=2                   " Fix broken backspace in some setups
+set backupcopy=yes                " see :help crontab
+set breakindent                   " set indent on wrapped lines
 set breakindentopt=shift:2
-set clipboard=unnamed     " yank and paste with the system clipboard
-set cmdheight=1           " Better display for messages (when using COC)
-set cursorline            " don't highlight current line
+set clipboard=unnamed,unnamedplus " yank and paste with the system clipboard
+set cmdheight=1                   " Better display for messages (when using COC)
+set cursorline                    " don't highlight current line
 set diffopt=filler,vertical,hiddenoff
-set directory-=.          " don't store swapfiles in the current directory
+set directory-=.                  " don't store swapfiles in the current directory
 set encoding=utf-8
-set expandtab             " expand tabs to spaces
-set gdefault              " Global Replacement by default https://bluz71.github.io/2019/03/11/find-replace-helpers-for-vim.html
+set expandtab                     " expand tabs to spaces
+set gdefault                      " Global Replacement by default https://bluz71.github.io/2019/03/11/find-replace-helpers-for-vim.html
 set hidden
-set ignorecase            " case-insensitive search
-set incsearch             " search as you type
-set laststatus=2          " always show statusline
-set list                  " show trailing whitespace
-set listchars=tab:▸\ ,trail:▫
+set ignorecase                    " case-insensitive search
+set incsearch                     " search as you type
+set laststatus=2                  " always show statusline
+set list                          " show trailing whitespace
+set listchars=tab:▸\ ,trail:▫     " define the characters used for displaying invisible
 set modelines=1
-set relativenumber number " show line number on current line relative number elsewhere
-set ruler                 " show where you are
-set scrolloff=3           " show context above/below cursorline
-set shiftwidth=2          " normal mode indentation commands use 2 spaces
-" set showbreak=↳           " Wrapped line symbol
+set relativenumber number         " show line number on current line relative number elsewhere
+set ruler                         " show where you are
+set scrolloff=3                   " show context above/below cursorline
+set shiftwidth=2                  " normal mode indentation commands use 2 spaces
+" set showbreak=↳                 " Wrapped line symbol
 set showcmd
-set smartcase             " case-sensitive search if any caps
-set smartindent           "
-set softtabstop=2         " insert mode tab and backspace use 2 spaces
-set tabstop=8             " actual tabs occupy 8 characters
-set updatetime=250        " Update sign column
+set signcolumn=yes                " Consistent column for Coc
+set smartcase                     " case-sensitive search if any caps
+set smartindent
+set softtabstop=2                 " insert mode tab and backspace use 2 spaces
+set tabstop=8                     " actual tabs occupy 8 characters
+set updatetime=250                " Update sign column
 set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc,*.pyc,__pycache__
 " set wildmenu              " show a navigable menu for tab completion
 set wildmode=list:longest,list:full
@@ -409,7 +455,7 @@ if executable('ag')
 endif
 
 " Settings for FZF
-" need to fix the window color
+" need to fix the window color in order to use floating window
 " let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.6 } }
 let g:fzf_colors =
 \ { 'fg':      ['fg', 'Normal'],
@@ -524,31 +570,49 @@ endif
 "}}}
 " Keyboard Shortcuts {{{
 " esc in insert mode
-inoremap jk <esc>         " Escape from Insert
+" inoremap jk <esc>         " Escape from Insert
 inoremap <D-N> <esc>      " Escape from Insert using Command-. on mac
+" Consistent moving between windows, dovetails tmux.
 noremap <C-h> <C-w>h
 noremap <C-j> <C-w>j
 noremap <C-k> <C-w>k
 noremap <C-l> <C-w>l
 
+" Use alt + hjkl to resize windows
+" Only works in nvim currently
+nnoremap <M-j>    :resize -2<CR>
+nnoremap <M-k>    :resize +2<CR>
+nnoremap <M-h>    :vertical resize -2<CR>
+nnoremap <M-l>    :vertical resize +2<CR>
+
 let mapleader = ';'
-nnoremap <leader>a :Ag<space>
+" {{{ FZF bindings
+" nmap <silent> <C-P> :Files<CR>
+nmap <silent> <leader>b :Buffers<CR>
 nnoremap <silent> <leader>bc :BCommits<CR>
 nnoremap <silent> <leader>c  :Commits<CR>
+nmap <silent> <leader>f :GFiles<CR>
+nmap <silent> <leader>F :Files<CR>
+" nmap <silent> <leader>t :Trees<CR>
+nmap <silent> <leader>h :History<CR>
+noremap <leader>l :Lines<CR>
+nmap <silent> <leader>m :Map<CR>
+nmap <Leader>t :BTags<CR>
+nmap <Leader>T :Tags<CR>
+" nmap <silent> <leader>w :Windows<CR>
+nmap <silent> <leader>: :Commands<CR>
+" }}} FZF bindings
+
+nnoremap <leader>a :Ag<space>
 nnoremap <leader>d :NERDTreeToggle<CR>
 nnoremap <leader>g :GitGutterToggle<CR>
 " nnoremap <leader>f :NERDTreeFind<CR>
-noremap <leader>l :Lines<CR>
-" noremap <leader>| :EasyAlign
+" noremap <leader>| :IndentLinesToggle
 nnoremap <leader>s% : source %<CR>
 nnoremap <leader>] :TagbarToggle<CR>
-nmap <Leader>t :BTags<CR>
-nmap <Leader>T :Tags<CR>
 " nmap <leader>= <Plug>(ale_fix)
 nnoremap <leader><space> :call whitespace#strip_trailing()<CR>
 noremap <silent> <leader>V :source ~/.vimrc<CR>:filetype detect<CR>:exe ":echo 'vimrc reloaded'"<CR>
-nnoremap  <silent>   <tab>  :if &modifiable && !&readonly && &modified <CR> :write<CR> :endif<CR>:bnext<CR>
-nnoremap  <silent> <s-tab>  :if &modifiable && !&readonly && &modified <CR> :write<CR> :endif<CR>:bprevious<CR>
 
 " Substitute word under cursor and dot repeat
 nnoremap <silent> \c :let @/='\<'.expand('<cword>').'\>'<CR>cgn
@@ -567,19 +631,8 @@ xmap \S
   \<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>
 
 " Folding controls
-noremap <space> za        " open/close folds
+" noremap <space> za        " open/close folds
 
-" {{{ FZF bindings
-" nmap <silent> <C-P> :Files<CR>
-nmap <silent> <leader>f :GFiles<CR>
-nmap <silent> <leader>F :Files<CR>
-" nmap <silent> <leader>t :Trees<CR>
-nmap <silent> <leader>h :History<CR>
-nmap <silent> <leader>b :Buffers<CR>
-nmap <silent> <leader>m :Map<CR>
-" nmap <silent> <leader>w :Windows<CR>
-nmap <silent> <leader>: :Commands<CR>
-" }}} FZF bindings
 " {{{ COC Mappings
 " Use tab for trigger completion with characters ahead and navigate.
 " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
@@ -600,16 +653,74 @@ endfunction
 " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
 " Coc only does snippet and additional edit on confirm.
 inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+" To make <cr> select the first completion item and confirm the completion when no item has been selected:
+inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() : "\<C-g>u\<CR>"
+" To make coc.nvim format your code on <cr>, use keymap:
+inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() : "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
-" Use `[c` and `]c` to navigate diagnostics
-" nmap <silent> [c <Plug>(coc-diagnostic-prev)
-" nmap <silent> ]c <Plug>(coc-diagnostic-next)
+
+" Use `[g` and `]g` to navigate diagnostics
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
 
 " Remap keys for gotos
 nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
+
+" Coc autocmds
+" Close the preview window when completion is done.
+autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
+
+" Coc Commands
+command! -nargs=0 Prettier :CocCommand prettier.formatFile
+" Use `:Format` to format current buffer
+command! -nargs=0 Format :call CocAction('format')
+" Use `:Fold` to fold current buffer
+command! -nargs=? Fold :call     CocAction('fold', <f-args>)
+
+vmap <leader>=  <Plug>(coc-format-selected)
+nmap <leader>=  <Plug>(coc-format-selected)
+
+" From https://scalameta.org/metals/docs/editors/vim.html
+" Use K to either doHover or show documentation in preview window
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
+
+" Highlight symbol under cursor on CursorHold
+" autocmd CursorHold * silent call CocActionAsync('highlight')
+
+" Remap for rename current word
+nmap <leader>rn <Plug>(coc-rename)
+
+" Remap for format selected region
+xmap <leader>f  <Plug>(coc-format-selected)
+nmap <leader>f  <Plug>(coc-format-selected)
+
+" Show all diagnostics
+nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
+" Manage extensions
+nnoremap <silent> <space>e  :<C-u>CocList extensions<cr>
+" Show commands
+nnoremap <silent> <space>c  :<C-u>CocList commands<cr>
+" Find symbol of current document
+nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
+" Search workspace symbols
+nnoremap <silent> <space>s  :<C-u>CocList -I symbols<cr>
+" Do default action for next item.
+nnoremap <silent> <space>j  :<C-u>CocNext<CR>
+" Do default action for previous item.
+nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
+" Resume latest coc list
+nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 
 " }}} COC Mappings
 "}}}
@@ -697,5 +808,24 @@ function! Fzf_dev() "{{{
         \ 'options': '-m -x +s',
         \ 'down':    '40%' })
 endfunction "}}}
+" Function to create buffer local mappings and add default compiler {{{
+fun! AsciidoctorMappings()
+    nnoremap <buffer> <leader>oo :AsciidoctorOpenRAW<CR>
+    nnoremap <buffer> <leader>op :AsciidoctorOpenPDF<CR>
+    nnoremap <buffer> <leader>oh :AsciidoctorOpenHTML<CR>
+    nnoremap <buffer> <leader>ox :AsciidoctorOpenDOCX<CR>
+    nnoremap <buffer> <leader>ch :Asciidoctor2HTML<CR>
+    nnoremap <buffer> <leader>cp :Asciidoctor2PDF<CR>
+    nnoremap <buffer> <leader>cx :Asciidoctor2DOCX<CR>
+    nnoremap <buffer> <leader>p :AsciidoctorPasteImage<CR>
+    " :make will build pdfs
+    compiler asciidoctor2pdf
+endfun
+
+" Call AsciidoctorMappings for all `*.adoc` and `*.asciidoc` files
+augroup asciidoctor
+    au!
+    au BufEnter *.adoc,*.asciidoc call AsciidoctorMappings()
+augroup END "}}}
 " }}}
 " The End
