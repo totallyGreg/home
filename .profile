@@ -10,14 +10,6 @@ case "${unameOut}" in
 esac
 echo "Running on ${machine}"
 
-# Auto Tmux startup/resume
-if command -v tmux &> /dev/null && [ -z "$TMUX" ]; then
-    tmux attach -t default || tmux new -s default
-  # New auto tmux which might work better for ssh sessions
-  # Test for ssh session first then use this
-  # tmux attach -t default || exec tmux new-session -s default && exit;
-fi
-
 # Poorly setup machines will often forget this
 export LC_CTYPE=en_US.UTF-8
 
