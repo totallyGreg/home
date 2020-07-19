@@ -1,5 +1,9 @@
 set editing-mode vi
 set keymap vi-insert
+set show-mode-in-prompt on
+set vi-ins-mode-string "\1\e[5 q\2"
+set vi-cmd-mode-string "\1\e[2 q\2"
+
 set meta-flag on
 set input-meta on
 set output-meta on
