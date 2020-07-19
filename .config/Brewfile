@@ -1,14 +1,17 @@
 tap "beeftornado/rmtree"
 tap "cloudfoundry/tap"
+tap "derailed/k9s"
 tap "homebrew-ffmpeg/ffmpeg"
 tap "homebrew/bundle"
 tap "homebrew/cask"
 tap "homebrew/cask-fonts"
 tap "homebrew/core"
+tap "k14s/tap"
 tap "martido/brew-graph"
 tap "mczachurski/wallpapper"
 tap "pivotal-cf/om", "https://github.com/pivotal-cf/om"
 tap "sandreas/tap", pin: true
+tap "sl1pm4t/k2tf", "https://github.com/sl1pm4t/k2tf.git"
 tap "stevenacoffman/keyfob"
 tap "universal-ctags/universal-ctags"
 tap "warrensbox/tap"
@@ -23,10 +26,14 @@ brew "ansible-lint"
 brew "ansifilter"
 # Text processor and publishing toolchain for AsciiDoc
 brew "asciidoctor"
+# Record and share terminal sessions
+brew "asciinema"
 # Tool for generating GNU Standards-compliant Makefiles
 brew "automake"
 # Official Amazon AWS command-line interface
 brew "awscli"
+# Azure Storage data transfer utility
+brew "azcopy"
 # Microsoft Azure CLI 2.0
 brew "azure-cli"
 # Bourne-Again SHell, a UNIX command interpreter
@@ -37,14 +44,10 @@ brew "bash-completion@2"
 brew "bat"
 # Remove large files or passwords from Git history like git-filter-branch
 brew "bfg"
-# Interpreted, interactive, object-oriented programming language
-brew "python"
 # Core application library for C
 brew "glib"
 # Tool to obtain certs from Let's Encrypt and autoenable HTTPS
 brew "certbot"
-# Core component of the AcoustID project (Audio fingerprinting)
-brew "chromaprint"
 # Cross-platform make
 brew "cmake"
 # Tool for service discovery, monitoring and configuration
@@ -77,6 +80,10 @@ brew "go"
 brew "glide"
 # Command-line option parsing utility
 brew "gnu-getopt"
+# GNU Pretty Good Privacy (PGP) package
+brew "gnupg"
+# Interpreted, interactive, object-oriented programming language
+brew "python"
 # Graph visualization software from AT&T and Bell Labs
 brew "graphviz"
 # GitHub Markdown previewer
@@ -85,6 +92,8 @@ brew "grip"
 brew "helm"
 # Convert source code to formatted text with syntax highlighting
 brew "highlight"
+# Improved top (interactive process viewer)
+brew "htop"
 # Utility for IPMI control with kernel driver or LAN interface
 brew "ipmitool"
 # Interactive computing in Python
@@ -101,6 +110,8 @@ brew "kompose"
 brew "kubernetes-cli"
 # Tool that can switch between kubectl contexts easily and create aliases
 brew "kubectx"
+# Consume Services in k8s using the OSB API
+brew "kubernetes-service-catalog-client"
 # Library to render SVG files using Cairo
 brew "librsvg"
 # Powerful, clean, object-oriented scripting language
@@ -109,6 +120,10 @@ brew "ruby"
 brew "libstfl"
 # Rainbows and unicorns in your console!
 brew "lolcat"
+# Mac App Store command-line interface
+brew "mas"
+# Java-based project management
+brew "maven"
 # Unified display of technical and tag data for audio/video
 brew "media-info"
 # 'traceroute' and 'ping' in a single tool
@@ -125,10 +140,16 @@ brew "octant"
 brew "php"
 # Code formatter for JavaScript, CSS, JSON, GraphQL, Markdown, YAML
 brew "prettier"
+# Linter for prose
+brew "proselint"
+# The Rancher CLI is a unified tool to manage your Rancher server
+brew "rancher-cli"
 # Reattach process (e.g., tmux) to background
 brew "reattach-to-user-namespace"
 # Rancher Kubernetes Engine, a Kubernetes installer that works everywhere
 brew "rke"
+# Safe, concurrent, practical language
+brew "rust"
 # Static analysis and lint tool, for (ba)sh scripts
 brew "shellcheck"
 # Autoformat shell script source code
@@ -141,16 +162,20 @@ brew "speedtest-cli"
 brew "sshpass"
 # The cross-shell prompt for astronauts
 brew "starship"
+# Tail multiple Kubernetes pods & their containers
+brew "stern"
 # Generate scripting interfaces to C/C++ code
 brew "swig"
 # Tool to build, change, and version infrastructure
-brew "terraform", link: false
+brew "terraform"
 # Linter for Terraform files
 brew "tflint"
 # Code-search similar to ack
 brew "the_silver_searcher"
 # Programatically correct mistyped console commands
 brew "thefuck"
+# Simplified and community-driven man pages
+brew "tldr"
 # Terminal multiplexer
 brew "tmux"
 # Display directories as trees (with optional color/HTML output)
@@ -163,29 +188,52 @@ brew "vagrant-completion"
 brew "vim"
 # Executes a program periodically, showing output fullscreen
 brew "watch"
-# Enhances tmux's to provide multiuser terminal multiplexing
-brew "wemux"
 # Internet file retriever
 brew "wget"
 # Linter for YAML files
 brew "yamllint"
+# Download YouTube videos from the command-line
+brew "youtube-dl"
 # Process YAML documents from the CLI
 brew "yq"
 # The next-generation plugin manager for zsh
 brew "zplug"
-# New BOSH CLI (beta)
+# Additional completion definitions for zsh
+brew "zsh-completions"
+# Fish shell like syntax highlighting for zsh
+brew "zsh-syntax-highlighting"
+# BOSH CLI
 brew "cloudfoundry/tap/bosh-cli"
+# The official command line client for Cloud Foundry
 brew "cloudfoundry/tap/cf-cli"
 # CredHub CLI
 brew "cloudfoundry/tap/credhub-cli"
 # CLI for UAA written in golang
 brew "cloudfoundry/tap/uaa-cli"
+# Kubernetes CLI To Manage Your Clusters In Style!
+brew "derailed/k9s/k9s"
+# Play, record, convert, and stream audio and video
+brew "homebrew-ffmpeg/ffmpeg/ffmpeg", args: ["with-fdk-aac"]
+# Imgpkg
+brew "k14s/tap/imgpkg"
+# Kapp
+brew "k14s/tap/kapp"
+# kbld helps working with container images used in Kubernetes configuration files
+brew "k14s/tap/kbld"
+# Kubernetes Workstation Tools
+brew "k14s/tap/kwt"
+# Declaratively state what should be in a directory
+brew "k14s/tap/vendir"
+# YAML Templating Tool
+brew "k14s/tap/ytt"
 brew "martido/brew-graph/brew-graph"
 brew "mczachurski/wallpapper/wallpapper"
 # 
 brew "pivotal-cf/om/om"
 # m4b-tool is a command line utility to merge, split and chapterize audiobook files such as mp3, ogg, flac, m4a or m4b
 brew "sandreas/tap/m4b-tool"
+# Kubernetes YAML to Terraform HCL converter
+brew "sl1pm4t/k2tf/k2tf"
 # keyfob - a two-factor authentication agent suitable for AWS and Github
 brew "stevenacoffman/keyfob/keyfob"
 # Maintained ctags implementation
@@ -199,24 +247,30 @@ cask "atom"
 cask "aws-vault"
 cask "basictex"
 cask "betterzip"
+cask "cocoarestclient"
 cask "docker"
 cask "dropbox"
+cask "expressvpn"
 cask "font-hack-nerd-font"
 cask "font-hack-nerd-font-mono"
 cask "google-cloud-sdk"
+cask "gpg-suite"
 cask "handbrake"
 cask "hetimazipql"
 cask "insomnia"
 cask "iterm2"
 cask "krisp"
+cask "lyricsx"
 cask "makemkv"
 cask "metaz"
 cask "mkvtools"
 cask "oni"
+cask "powershell"
 cask "qlcolorcode"
 cask "qlmarkdown"
 cask "qlprettypatch"
 cask "qlstephen"
+cask "qlvideo"
 cask "quicklook-json"
 cask "quicksilver"
 cask "qutebrowser"
@@ -230,3 +284,72 @@ cask "virtualbox-extension-pack"
 cask "wireshark"
 cask "xld"
 cask "yed"
+mas "123D Design", id: 566042322
+mas "123D Design", id: 566042322
+mas "Airmail", id: 918858936
+mas "Airmail", id: 918858936
+mas "Audiobook Builder", id: 1437681957
+mas "Audiobook Builder", id: 1437681957
+mas "AutoCAD WS", id: 454730552
+mas "AutoCAD WS", id: 454730552
+mas "Banktivity", id: 1394863440
+mas "Banktivity", id: 1394863440
+mas "Brilliance", id: 998457288
+mas "Brilliance", id: 998457288
+mas "Cappuccino", id: 492594411
+mas "Cappuccino", id: 492594411
+mas "Cellar", id: 1071756314
+mas "Cellar", id: 1071756314
+mas "Colors for Hue", id: 581915465
+mas "Colors for Hue", id: 581915465
+mas "com.delve.chroma", id: 756399907
+mas "com.delve.chroma", id: 756399907
+mas "Controllers Lite", id: 673660806
+mas "Controllers Lite", id: 673660806
+mas "Decked Builder", id: 406479348
+mas "Decked Builder", id: 406479348
+mas "Deliveries", id: 924726344
+mas "Deliveries", id: 924726344
+mas "Disk Speed Test", id: 425264550
+mas "Disk Speed Test", id: 425264550
+mas "eDrawings", id: 1209754386
+mas "eDrawings", id: 1209754386
+mas "Growl", id: 467939042
+mas "Growl", id: 467939042
+mas "HueParty", id: 792963035
+mas "HueParty", id: 792963035
+mas "Jira", id: 1475897096
+mas "Loopman", id: 1207828889
+mas "Loopman", id: 1207828889
+mas "Lyrical", id: 924743736
+mas "Lyrical", id: 924743736
+mas "Magnet", id: 441258766
+mas "Magnet", id: 441258766
+mas "Microsoft Remote Desktop", id: 1295203466
+mas "MindNode", id: 1289197285
+mas "MindupPro", id: 921449793
+mas "MindupPro", id: 921449793
+mas "Mini Calendar", id: 1088779979
+mas "NetUse Traffic Monitor", id: 440301281
+mas "NetUse Traffic Monitor", id: 440301281
+mas "Paprika Recipe Manager", id: 451907568
+mas "Paprika Recipe Manager 3", id: 1303222628
+mas "Pearl", id: 1152715357
+mas "Pearl", id: 1152715357
+mas "PiPifier", id: 1160374471
+mas "PiPifier", id: 1160374471
+mas "PiPifier", id: 1160374471
+mas "RBdigital", id: 491365225
+mas "RBdigital", id: 491365225
+mas "Remind Me Later", id: 408236729
+mas "Remind Me Later", id: 408236729
+mas "Smart JSON Editor", id: 1268962404
+mas "Smart JSON Editor", id: 1268962404
+mas "Tempest", id: 488576138
+mas "Tempest", id: 488576138
+mas "TweetDeck", id: 485812721
+mas "TweetDeck", id: 485812721
+mas "Twitter", id: 1482454543
+mas "Tyme 2", id: 1063996724
+mas "Tyme 2", id: 1063996724
+mas "Xcode", id: 497799835
