@@ -5,14 +5,13 @@ emulate zsh
 PROFILE_STARTUP=false
 if [[ "$PROFILE_STARTUP" == true ]]; then
   zmodload zsh/zprof
-  # http://zsh.sourceforge.net/Doc/Release/Prompt-Expansion.html
-  PS4=$'%D{%M%S%.} %N:%i> '
   exec 3>&2 2>$HOME/startlog.$$
   setopt xtrace prompt_subst
 fi
 #}}}
 
 # Gotsta have vi bindings
+EDITOR=vim
 bindkey -v
 
 # remove list-expand binding since i can't figure out what it does and it interferes with Git heart fzf
@@ -23,15 +22,18 @@ export KEYTIMEOUT=1
 
 # History settings
 # HISTFILE=~/.zsh_history   # set by /etc/zshrc
-HISTSIZE=100000
-SAVEHIST=100000
-export HISTIGNORE="ls:cd:cd -:pwd:exit:date:* --help"
+HISTSIZE=99999
+HISTFILESIZE=999999
+SAVEHIST=$HISTSIZE
+HISTORY_IGNORE='(history|ls|l|cd|cd ..|cd -|pwd|exit|date|* --help)'
 
 setopt SHARE_HISTORY          # share history between different instances of the shell
 #setopt HIST_EXPIRE_DUPS_FIRST # expire duplicates first
 setopt HIST_IGNORE_SPACE      # Remove command lines from history list when first character is a space
 setopt HIST_REDUCE_BLANKS     # removes blank lines from history
 setopt HIST_VERIFY            # show the substituted command in the prompt
+setopt HIST_FIND_NO_DUPS      # Duplicates are written but ignored on find
+setopt INTERACTIVE_COMMENTS   # allow #style comments to be added on commandline
 
 # Changing directories
 setopt AUTO_CD
@@ -42,10 +44,21 @@ cdpath=($HOME/Repositories)
 LISTMAX=0
 
 export FZF_DEFAULT_COMMAND='ag -l --ignore Library --ignore Music --ignore *.tagset --ignore *.photoslibrary -g ""'
+# export FZF_DEFAULT_COMMAND='ag -l --ignore Library --ignore Music --ignore *.tagset --ignore *.photoslibrary -g ""'
 export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 # export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range :500 {}'"
-export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -100'"
+FZF_TAB_COMMAND=(
+    fzf
+    --ansi   # Enable ANSI color support, necessary for showing groups
+    --expect='$continuous_trigger' # For continuous completion
+    '--color=hl:$(( $#headers == 0 ? 108 : 255 ))'
+    --nth=2,3 --delimiter='\x00'  # Don't search prefix
+    --layout=reverse --height='${FZF_TMUX_HEIGHT:=75%}'
+    --tiebreak=begin -m --bind=tab:down,btab:up,change:top,ctrl-space:toggle --cycle
+    '--query=$query'   # $query will be expanded to query string at runtime.
+    '--header-lines=$#headers' # $#headers will be expanded to lines of headers at runtime
+)
 
 # Yes, these are a pain to customize. Fortunately, Geoff Greer made an online
 # tool that makes it easy to customize your color scheme and keep them in sync
@@ -61,15 +74,17 @@ if type brew &>/dev/null; then
     FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
 fi
 
+zstyle ':fzf-tab:*' command $FZF_TAB_COMMAND
+
 # The following lines were added by compinstall
 
 # Expansion options
 zstyle ':completion:*' completer _complete _ignored _approximate
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]} r:|[._-]=** r:|=**'
-zstyle ':completion::prefix-1:*' completer _complete
-zstyle ':completion:incremental:*' completer _complete _correct
-zstyle ':completion:predict:*' completer _complete
+# zstyle ':completion::prefix-1:*' completer _complete
+# zstyle ':completion:incremental:*' completer _complete _correct
+# zstyle ':completion:predict:*' completer _complete
 zstyle :compinstall filename '/Users/totally/.zshrc'
 
 # Completion caching
@@ -78,7 +93,7 @@ zstyle ':completion::complete:*' cache-path $ZSH_CACHE_DIR
 
 # Expand partial paths
 zstyle ':completion:*' expand 'yes'
-zstyle ':completion:*' squeeze-slashes 'yes'
+# zstyle ':completion:*' squeeze-slashes 'yes'
 
 # Include non-hidden directories in globbed file completions
 # for certain commands
@@ -111,21 +126,28 @@ zstyle ':completion:*:history-words' list false
 
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 
+# Shows highlighted completion menu
+# from https://www.reddit.com/r/zsh/comments/efi857/use_fzf_as_zshs_completion_selection_menu/
+zstyle ':completion:*:*:*:default' menu yes select search
+
+# fzf-tab-completion hint
+zstyle ':completion:*' fzf-search-display true
+
 autoload -Uz compinit
 compinit
 # End of lines added by compinstall
 
-# Hoping to steal bash completions for free
-autoload -U +X bashcompinit &&  bashcompinit
-if type brew &>/dev/null; then
-  HOMEBREW_PREFIX="$(brew --prefix)"
-  # for COMPLETION in "${HOMEBREW_PREFIX}/etc/bash_completion.d/"*; do
-  completion_list=("${HOMEBREW_PREFIX}/etc/bash_completion.d/az"
-    "${HOMEBREW_PREFIX}/etc/bash_completion.d/az")
-  for COMPLETION in $completion_list; do
-    [[ -r "$COMPLETION" ]] && source "$COMPLETION"
-  done
-fi
+# # Hoping to steal bash completions for free
+# autoload -U +X bashcompinit &&  bashcompinit
+# if type brew &>/dev/null; then
+#   HOMEBREW_PREFIX="$(brew --prefix)"
+#   # for COMPLETION in "${HOMEBREW_PREFIX}/etc/bash_completion.d/"*; do
+#   completion_list=("${HOMEBREW_PREFIX}/etc/bash_completion.d/az"
+#     "${HOMEBREW_PREFIX}/etc/bash_completion.d/az")
+#   for COMPLETION in $completion_list; do
+#     [[ -r "$COMPLETION" ]] && source "$COMPLETION"
+#   done
+# fi
 
 # ZPLUG Stuff - slows things down not sure I want it.
 export ZPLUG_HOME=/usr/local/opt/zplug
@@ -135,7 +157,7 @@ source $ZPLUG_HOME/init.zsh
 
 # NOTE: fzf-tab needs to be sourced after compinit, but before plugins which will wrap widgets like zsh-autosuggestions or fast-syntax-highlighting.
 # defer:2 equals after compinit
-# zplug "Aloxaf/fzf-tab", defer:2, depth:2
+zplug "Aloxaf/fzf-tab", defer:2, depth:2
 # zplug "RobertAudi/tsm", depth:2 # worth exploring
 zplug "reegnz/jq-zsh-plugin", depth:2
 # zplug "zdharma/fast-syntax-highlighting", defer:2, depth:2
@@ -144,6 +166,7 @@ zplug "reegnz/jq-zsh-plugin", depth:2
 # https://github.com/zdharma/zflai # possibly useful logging tool
 # https://github.com/unixorn/tumult.plugin.zsh # and other macos tools
 zplug "plugins/docker",   from:oh-my-zsh
+# zplug "chitoku-k/fzf-zsh-completions"
 
 # # Install plugins if there are plugins that have not been installed
 if ! zplug check --verbose; then
@@ -180,7 +203,7 @@ precmd () {
 # fzf git functions keybindings
 # -bind '"\er": redraw-current-line'
 # -bind '"\C-g\C-f": "$(gf)\e\C-e\er"' # Git Files
-bindkey -s '^g^b' '$(gb)' # Git Branches
+# bindkey -s '^g^b' '$(gb)' # Git Branches
 # -bind '"\C-g\C-t": "$(gt)\e\C-e\er"' # Git Tags
 # -bind '"\C-g\C-h": "$(gh)\e\C-e\er"' # Git history
 # -bind '"\C-g\C-r": "$(gr)\e\C-e\er"' # Git Remotes
@@ -217,13 +240,11 @@ fi
 # test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
 
 
-# # virtualenv
-# export WORKON_HOME=$HOME/.virtualenvs
-# export PROJECT_HOME=$HOME/Projects
-# export PYTHONPATH=/usr/local//bin/python3
-# export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3
-# export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
-# [ -f /usr/local/bin/virtualenvwrapper.shi ] && source /usr/local/bin/virtualenvwrapper.sh
+# Python globally managed by pyenv
+# https://opensource.com/article/19/5/python-3-default-mac#what-to-do
+if command -v pyenv 1>/dev/null 2>&1; then
+  eval "$(pyenv init -)"
+fi
 
 # Kubernetes
 export KUBECONFIG=$KUBECONFIG:$HOME/.kube/config
