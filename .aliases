@@ -34,10 +34,15 @@ alias g='git '
 alias gfa='git fetch --all '
 alias gpf='git pull --ff-only '
 
+# GPG
+alias gpg_clear_cache='echo "CLEAR_PASSPHRASE --mode=normal $keygrip " | gpg-connect-agent'
+
 # Kubernetes
 alias busybox='kubectl run -it --rm --restart=Never busybox --image=busybox sh'
+alias netshoot='open https://github.com/nicolaka/netshoot ; kubectl run -it --rm --restart=Never netshoot --image=nicolaka/netshoot -- /bin/bash'
 alias k='kubectl '
 alias kctx='kubectx '
+alias kns='kubens '
 alias kedp='kubectl get endpoints --all-namespaces '
 alias kg='kubectl get '
 alias kl='kubectl logs '
@@ -69,14 +74,15 @@ alias ttop='top -ocpu -R -F -s 2 -n30'
 alias mtop='top -o rsize'
 alias quick='open /Applications/Ops/Administration/Quicksilver.app'
 alias futurama='fortune ~/Clouds/iCloud/Bookshelf/Quotes/futurama'
-alias fc='dscacheutil -flushcache'
 alias serialscreen='screen -L /dev/cu.usbserial -f 9600,cs8,-parenb,-cstopb,-hupcl'
 alias odiff='opendiff'
-alias flushcache='sudo killall -HUP mDNSResponder;say DNS cache has been flushed'
+alias flushDNS='sudo killall -HUP mDNSResponder;say DNS cache has been flushed'
+alias debugDNS='sudo killall -USR1 mDNSResponder; sudo syslog -C mDNSResponder -d'
 alias weakssh='ssh -o StrictHostKeyChecking=no '
 alias chrome='open -a "Google Chrome" '
 alias test_portal='open http://captive.apple.com/hotspot-detect.html'
 alias local_rsync='rsync -av -e rcp --delete --progress '
+alias books='~/Library/Containers/com.apple.BKAgentService/Data/Documents/iBooks/Books'
 
 # Read Log files with embeded control characters (e.g. screenlog.0)
 alias readlog='less -raw-control-chars'
