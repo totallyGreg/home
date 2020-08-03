@@ -43,6 +43,12 @@ Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
 " I am considering replacing coc-list with a better fuzzy matcher
 " https://github.com/neoclide/coc.nvim/issues/1732
 " Possibly incorporating vim-clap
+let g:coc_global_extensions = [
+      \'coc-git',
+      \'coc-json',
+      \'coc-python',
+      \'coc-yaml'
+      \]
 " }}}
 " {{{ Visual
 Plug 'altercation/vim-colors-solarized', {'do': ':so $HOME/.vim/bundle/vim-colors-solarized/autoload/togglebg.vim' } " Ethan's best
@@ -401,7 +407,8 @@ set backspace=2                   " Fix broken backspace in some setups
 set backupcopy=yes                " see :help crontab
 set breakindent                   " set indent on wrapped lines
 set breakindentopt=shift:2
-set clipboard=unnamed,unnamedplus " yank and paste with the system clipboard
+" set clipboard=unnamed,unnamedplus " yank and paste with the system clipboard
+set clipboard=unnamed             " yank and paste with the system clipboard
 set cmdheight=1                   " Better display for messages (when using COC)
 set cursorline                    " don't highlight current line
 set diffopt=filler,vertical,hiddenoff
