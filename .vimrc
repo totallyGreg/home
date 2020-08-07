@@ -303,7 +303,7 @@ let g:lightline.component_function = {
       \ 'currentfunction':      'CocCurrentFunction',
       \ 'readonly':             'LightlineReadonly',
       \ 'fugitive':             'LightlineFugitive',
-      \ 'blame':                'LightlineGitBlame',
+      \ 'blame':                'LightlineGitBlame'
       \ }
 let g:lightline.component_expand = {
       \   'linter_checking': 'lightline#ale#checking',
@@ -334,6 +334,7 @@ if has ('autocmd') " Remain compatible with earlier versions
  augroup vimrc     " Source vim configuration upon save
     autocmd! BufWritePost $MYVIMRC nested source % | echom "Reloaded " . $MYVIMRC | redraw
     autocmd! BufWritePost $MYGVIMRC if has('gui_running') | so % | echom "Reloaded " . $MYGVIMRC | endif | redraw
+    autocmd User CocGitStatusChange lightline_update()
   augroup END
 endif " has autocmd
 " }}}
@@ -744,6 +745,19 @@ nnoremap <silent><nowait> <space>j  :<C-u>CocNext<CR>
 nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list
 nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
+
+" Coc-git mappings
+" nmap [g <Plug><coc-git-prevchunk)
+" nmap ]g <Plug><coc-git-nextchunk)
+" show chunk diff at current position
+nmap gs <Plug><coc-git-chunkinfo)
+" show commit contains current position
+" nmap gc <Plug>(coc-git-commit)
+" create text object for git chunks
+omap ig <Plug>(coc-git-chunk-inner)
+xmap ig <Plug>coc-git-chunk-inner)
+omap ag <Plug>(coc-git-chunk-outer)
+xmap ag <Plug>(coc-git-chunk-outer)
 
 " }}} COC Mappings
 "}}}
