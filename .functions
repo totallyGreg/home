@@ -605,7 +605,7 @@ aks_down() {
 function faz() {
   query='[].{name: name, subscriptionId: id}'
   az account set --subscription \
-  "$(az account list --refresh -o table \
+  "$(az account list -o table \
     --query '[].{name: name, subscriptionId: id}' | \
     fzf-down --header-lines=2 --nth='1,2' \
         --height="50%" \
@@ -613,6 +613,13 @@ function faz() {
         --preview='az account show -o json -s {-1}| jq -C' \
       | rev | cut -d' ' -f1 | rev
   )" &&  az account show
+}
+
+# Convert a "GIF" from a tweet (which is actually an mp4) into an actual GIF animation.
+gifitter() {
+  twiturl=$1
+  youtube-dl -o - "${twiturl}" | ffmpeg -i - -r 15 -vf scale=512:-1 -f gif ohwow.gif
+
 }
 
 # jq-repl() {

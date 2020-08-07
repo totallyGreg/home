@@ -60,8 +60,15 @@ if type brew &>/dev/null; then
     FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
     FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
 fi
-# fpath="~/.config/zsh/completions $fpath"
+# My completions
+fpath=($ZDOTDIR/completions $fpath)
 
+# Autoload all shell functions from all directories in $fpath (following
+# symlinks) that have the executable bit on (the executable bit is not
+# necessary, but gives you an easy way to stop the autoloading of a
+# particular shell function). $fpath should not be empty for this to work.
+# for func in $^fpath/*(N-.x:t); autoload $func
+# still trying to get _stern completions to load.... 
 
 zstyle ':fzf-tab:*' command $FZF_TAB_COMMAND
 
