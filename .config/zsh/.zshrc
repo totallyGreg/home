@@ -43,22 +43,6 @@ cdpath=($HOME/Repositories)
 # Other misc settings
 LISTMAX=0
 
-export FZF_DEFAULT_COMMAND='ag -l --ignore Library --ignore Music --ignore *.tagset --ignore *.photoslibrary -g ""'
-# export FZF_DEFAULT_COMMAND='ag -l --ignore Library --ignore Music --ignore *.tagset --ignore *.photoslibrary -g ""'
-export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
-export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-# export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range :500 {}'"
-FZF_TAB_COMMAND=(
-    fzf
-    --ansi   # Enable ANSI color support, necessary for showing groups
-    --expect='$continuous_trigger' # For continuous completion
-    '--color=hl:$(( $#headers == 0 ? 108 : 255 ))'
-    --nth=2,3 --delimiter='\x00'  # Don't search prefix
-    --layout=reverse --height='${FZF_TMUX_HEIGHT:=75%}'
-    --tiebreak=begin -m --bind=tab:down,btab:up,change:top,ctrl-space:toggle --cycle
-    '--query=$query'   # $query will be expanded to query string at runtime.
-    '--header-lines=$#headers' # $#headers will be expanded to lines of headers at runtime
-)
 
 # Yes, these are a pain to customize. Fortunately, Geoff Greer made an online
 # tool that makes it easy to customize your color scheme and keep them in sync
@@ -68,11 +52,16 @@ export LS_COLORS='no=00:fi=00:di=01;33:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40
 # eval  `dircolors -b`
 export ZLS_COLORS=$LS_COLORS
 
+# Load zsh-syntax-highlighting
+source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
 # Begin Completions
 if type brew &>/dev/null; then
     FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
     FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
 fi
+# fpath="~/.config/zsh/completions $fpath"
+
 
 zstyle ':fzf-tab:*' command $FZF_TAB_COMMAND
 
@@ -134,7 +123,12 @@ zstyle ':completion:*:*:*:default' menu yes select search
 zstyle ':completion:*' fzf-search-display true
 
 autoload -Uz compinit
-compinit
+typeset -i updated_at=$(date +'%j' -r ~/.zcompdump 2>/dev/null || stat -f '%Sm' -t '%j' ~/.zcompdump 2>/dev/null)
+if [ $(date +'%j') != $updated_at ]; then
+  compinit -i
+else
+  compinit -C -i
+fi
 # End of lines added by compinstall
 
 # # Hoping to steal bash completions for free
@@ -148,37 +142,7 @@ compinit
 #     [[ -r "$COMPLETION" ]] && source "$COMPLETION"
 #   done
 # fi
-
-# ZPLUG Stuff - slows things down not sure I want it.
-export ZPLUG_HOME=/usr/local/opt/zplug
-export ZPLUG_CACHE_DIR=$ZSH_CACHE_DIR
-# export ZPLUG_BIN=~/bin
-source $ZPLUG_HOME/init.zsh
-
-# NOTE: fzf-tab needs to be sourced after compinit, but before plugins which will wrap widgets like zsh-autosuggestions or fast-syntax-highlighting.
-# defer:2 equals after compinit
-zplug "Aloxaf/fzf-tab", defer:2, depth:2
-# zplug "RobertAudi/tsm", depth:2 # worth exploring
-zplug "reegnz/jq-zsh-plugin", depth:2
-# zplug "zdharma/fast-syntax-highlighting", defer:2, depth:2
-# zplug 'wfxr/forgit', depth:2
-# zplug 'ytet5uy4/fzf-widgets', depth:2
-# https://github.com/zdharma/zflai # possibly useful logging tool
-# https://github.com/unixorn/tumult.plugin.zsh # and other macos tools
-zplug "plugins/docker",   from:oh-my-zsh
-# zplug "chitoku-k/fzf-zsh-completions"
-
-# # Install plugins if there are plugins that have not been installed
-if ! zplug check --verbose; then
-  printf "Install? [y/N]: "
-  if read -q; then
-    echo; zplug install
-  fi
-fi
-
-# # Then, source plugins and add commands to $PATH
-zplug load # --verbose
-
+#
 precmd () {
     local TERMWIDTH
     (( TERMWIDTH = ${COLUMNS} - 1 ))
@@ -200,22 +164,15 @@ precmd () {
 ## Source Functions
 [ -f ~/.functions ] && source ~/.functions
 
-# fzf git functions keybindings
-# -bind '"\er": redraw-current-line'
-# -bind '"\C-g\C-f": "$(gf)\e\C-e\er"' # Git Files
-# bindkey -s '^g^b' '$(gb)' # Git Branches
-# -bind '"\C-g\C-t": "$(gt)\e\C-e\er"' # Git Tags
-# -bind '"\C-g\C-h": "$(gh)\e\C-e\er"' # Git history
-# -bind '"\C-g\C-r": "$(gr)\e\C-e\er"' # Git Remotes
-
 # Zsh Specific Aliases
 alias mv='nocorrect mv'       # no spelling correction on mv
 alias cp='nocorrect cp'       # no spelling correction on cp
 alias mkdir='nocorrect mkdir' # no spelling correction on mkdir
 alias dirs='dirs -v'
 alias ls='ls -G '
-[ -f ~/.aliases ] && source ~/.aliases
+alias -s {yml,yaml}=vim       # quick editing of yaml files in vim
 
+[ -f ~/.aliases ] && source ~/.aliases
 
 # Enable the fuck if it exists
 hash thefuck > /dev/null 2>&1 && eval "$(thefuck --alias)"
@@ -255,18 +212,7 @@ export HELM_EXPERIMENTAL_OCI=1
 export GOPATH="${HOME}/.go"
 # export GOROOT="$(brew --prefix golang)/libexec"
 # export GOROOT="/usr/local/go"
-export PATH="$PATH:${GOPATH}/bin:${GOROOT}/bin"
-
-# Ruby override for asciidoctor and others
-export PATH="/usr/local/opt/ruby/bin:$PATH"
-# For compilers to find ruby you may need to set:
-export LDFLAGS="-L/usr/local/opt/ruby/lib"
-export CPPFLAGS="-I/usr/local/opt/ruby/include"
-# For pkg-config to find ruby you may need to set:
-export PKG_CONFIG_PATH="/usr/local/opt/ruby/lib/pkgconfig"
-
-# # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
-export PATH="$PATH:$HOME/.rvm/bin"
+path+=${GOPATH}/bin
 
 # GPG Agent
 if type gpg &>/dev/null; then
@@ -275,7 +221,27 @@ if type gpg &>/dev/null; then
   gpgconf --launch gpg-agent
 fi
 
+# Unique the paths
+typeset -U path fpath
+export PATH FPATH
+
 # Load FZF
+export FZF_DEFAULT_COMMAND='ag -l --ignore Library --ignore Music --ignore *.tagset --ignore *.photoslibrary -g ""'
+# export FZF_DEFAULT_COMMAND='ag -l --ignore Library --ignore Music --ignore *.tagset --ignore *.photoslibrary -g ""'
+export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+# export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range :500 {}'"
+FZF_TAB_COMMAND=(
+    fzf
+    --ansi   # Enable ANSI color support, necessary for showing groups
+    --expect='$continuous_trigger' # For continuous completion
+    '--color=hl:$(( $#headers == 0 ? 108 : 255 ))'
+    --nth=2,3 --delimiter='\x00'  # Don't search prefix
+    --layout=reverse --height='${FZF_TMUX_HEIGHT:=75%}'
+    --tiebreak=begin -m --bind=tab:down,btab:up,change:top,ctrl-space:toggle --cycle
+    '--query=$query'   # $query will be expanded to query string at runtime.
+    '--header-lines=$#headers' # $#headers will be expanded to lines of headers at runtime
+)
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # setup direnv
