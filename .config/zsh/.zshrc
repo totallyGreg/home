@@ -38,7 +38,7 @@ setopt INTERACTIVE_COMMENTS   # allow #style comments to be added on commandline
 # Changing directories
 setopt AUTO_CD
 setopt AUTO_PUSHD
-cdpath=($HOME/Repositories)
+cdpath=($HOME/Repositories $HOME/Downloads)
 
 # Other misc settings
 LISTMAX=0
@@ -53,6 +53,7 @@ export LS_COLORS='no=00:fi=00:di=01;33:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40
 export ZLS_COLORS=$LS_COLORS
 
 # Load zsh-syntax-highlighting
+# Installed with brew
 source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Begin Completions
@@ -211,7 +212,8 @@ if command -v pyenv 1>/dev/null 2>&1; then
 fi
 
 # Kubernetes
-export KUBECONFIG=$KUBECONFIG:$HOME/.kube/config
+KUBECONFIG=$HOME/.kube/config
+# kubeconfig+=$HOME/.kube/config.d/*
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 export HELM_EXPERIMENTAL_OCI=1
 
@@ -229,8 +231,8 @@ if type gpg &>/dev/null; then
 fi
 
 # Unique the paths
-typeset -U path fpath
-export PATH FPATH
+typeset -U path fpath kubeconfig cdpath
+export PATH FPATH KUBECONFIG
 
 # Load FZF
 export FZF_DEFAULT_COMMAND='ag -l --ignore Library --ignore Music --ignore *.tagset --ignore *.photoslibrary -g ""'
