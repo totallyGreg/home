@@ -1,70 +1,80 @@
-[battery]
-# full_symbol = "🔋"
-# charging_symbol = "⚡️"
-# discharging_symbol = "💀"
-[[battery.display]]
+[battery.display]
 threshold = 10
-style = "bold red"
-# Replace the "❯" symbol in the prompt with "➜"
-# https://starship.rs/config/#directory
-[character]      # The name of the module we are configuring is "character"
-# symbol = "➜"     # The "symbol" segment is being set to "➜"
-error_symbol = "✗"
-vicmd_symbol = "❮"
+style = 'bold red'
+
+[character]
+# symbol = '❯'
+error_symbol = '✗'
+vicmd_symbol = '❮'
 use_symbol_for_status = true
+style_success = 'green'
+style_failure = 'red'
+
 [cmd_duration]
 min_time = 5000
-prefix = "lag "
-style = "bold red"
+prefix = 'lag '
+style = 'red'
+
 [directory]
 truncation_length = 3
 truncate_to_repo = true
-style = "bold cyan"
+style = 'bold cyan'
 disabled = false
+
 [env_var]
-# variable = "SHELL"
-# default = "unknown shell"
+
 [git_branch]
-# symbol = "🌱 "
-symbol = ""
+symbol = ''
 truncation_length = 10
-# truncation_symbol = ""
+disabled = false
+
+[git_commit]
+disabled = false
+
 [git_state]
-progress_divider = " of "
-cherry_pick = "🍒 PICKING"
+progress_divider = ' of '
+cherry_pick = '🍒 PICKING'
+merge = 'MERGING '
+disabled = false
+
 [git_status]
-# conflicted = "🏳"
-# ahead = "🏎💨"
-# behind = "😰"
-# diverged = "😵"
-# untracked = "🤷‍"
-stashed = "📦"
-# modified = "📝"
-# staged = "➕"
-# renamed = "👅"
-# deleted = "🗑"
+stashed = '🧺'
+disabled = false
+
 [hostname]
 ssh_only = true
-prefix = "⟪"
-suffix = "⟫"
-trim_at = ".home.falcone.us"
+prefix = '⟪'
+suffix = '⟫'
+trim_at = '.falcone.us'
 disabled = false
-[kubernetes]
-symbol = "⛵ "
-style = "blue"
+
+[java]
 disabled = true
+
+[kubernetes]
+# symbol = ' '
+# style = 'blue'
+disabled = false
+
+[kubernetes.context_aliases]
+gb-aks-snd-admin = 'sbx'
+minix = 'minix'
+
 [memory_usage]
 show_percentage = true
 show_swap = true
 threshold = 90
-separator= "/"
-disabled = false
+separator = '/'
+disabled = true
+
 [python]
-# symbol = "👾 "
 pyenv_version_name = true
-pyenv_prefix = "foo "
+pyenv_prefix = 'foo '
+
+[terraform]
+disabled = true
+
 [username]
-style_root = "bold red"
-style_user = "yellow"
+style_root = 'bold red'
+style_user = 'yellow'
 disabled = false
-# show_always = true
