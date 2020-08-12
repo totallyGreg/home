@@ -223,6 +223,9 @@ export GOPATH="${HOME}/.go"
 # export GOROOT="/usr/local/go"
 path+=${GOPATH}/bin
 
+# My stuff
+PATH=${HOME}/bin:$PATH
+
 # GPG Agent
 if type gpg &>/dev/null; then
   export GPG_TTY=$(tty)
