@@ -1,0 +1,19 @@
+k9s:
+  body:
+    bgColor: default
+    fgColor: default
+    logoColor: default
+  info:
+    # fgColor: default
+    # sectionColor: default
+  frame:
+    crumbs:
+    menu:
+    status:
+      newColor: yellow # darkblack seems to default and broken
+  views:
+    table:
+      bgColor: default
+      cursorColor: default
+      markColor: red
+
