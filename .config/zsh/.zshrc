@@ -216,6 +216,7 @@ KUBECONFIG=$HOME/.kube/config
 # kubeconfig+=$HOME/.kube/config.d/*
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 export HELM_EXPERIMENTAL_OCI=1
+export K9SCONFIG=$XDG_CONFIG_HOME/k9s
 
 # Setup Go environment
 export GOPATH="${HOME}/.go"
