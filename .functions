@@ -21,10 +21,10 @@ function set-keychain-environment-variable () {
     [ -n "$1" ] || echo "Missing environment variable name"
 
     # Note: if using bash, use `-p` to indicate a prompt string, rather than the leading `?`
-    read -rp "Enter Value for ${1}: " secret
+    read -r "Enter Value for ${1}: " secret
 
     ( [ -n "$1" ] && [ -n "$secret" ] ) || return 1
-    security add-generic-password -U -a "${USER}" -D "environment variable" -s "${1}" -w "${secret}" -T ""
+    security add-generic-password -U -a "${ACCOUNT:-$USER}" -D "environment variable" -s "${1}" -w "${secret}" -T ""
 }
 
 # Start SSH Agent{{{
@@ -587,18 +587,50 @@ gt() {
     --preview 'git show --color=always {} | head -'$LINES
 }
 
+# fstash - easier way to deal with stashes
+# type fstash to get a list of your stashes
+# enter shows you the contents of the stash
+# ctrl-d shows a diff of the stash against your current HEAD
+# ctrl-b checks the stash out as a branch, for easier merging
+fstash() {
+  local out q k sha
+  while out=$(
+    git stash list --pretty="%C(yellow)%h %>(14)%Cgreen%cr %C(blue)%gs" |
+    fzf --ansi --no-sort --query="$q" --print-query \
+        --expect=ctrl-d,ctrl-b);
+  do
+    mapfile -t out <<< "$out"
+    q="${out[0]}"
+    k="${out[1]}"
+    sha="${out[-1]}"
+    sha="${sha%% *}"
+    [[ -z "$sha" ]] && continue
+    if [[ "$k" == 'ctrl-d' ]]; then
+      git diff $sha
+    elif [[ "$k" == 'ctrl-b' ]]; then
+      git stash branch "stash-$sha" $sha
+      break;
+    else
+      git stash show -p $sha
+    fi
+  done
+}
 
 # Azure functions to keep costs down
-aks_start() {
-  : Usage: aks_start [resource_group]
-  : "This will start the VM's associated with a Resource Group "
-  az vm start --ids $(az vm list -g "$1" --query "[].id" -o tsv)
+aks_up() {
+  # : Usage: aks_up [resource_group]
+  # : "This will start the VM's associated with a Resource Group "
+  nodeResourceGroup=$(az aks list --query '[].nodeResourceGroup' -o table  | fzf-down --header-lines=2)
+  az vm start --ids \
+    "$(az vm list -g "$nodeResourceGroup" --query '[].id' -o tsv)"
+  # az vm start --ids $(az vm list -g "$nodeResourceGroup" --query '[].id' -o tsv)
 }
 
 aks_down() {
-  : Usage: aks_down [resource_group]
-  : "This will deallocate the VM's associated with a Resource Group"
-  az vm deallocate --ids $(az vm list -g "$1" --query "[].id" -o tsv)
+  # : Usage: aks_down [resource_group]
+  # : "This will deallocate the VM's associated with a Resource Group"
+  nodeResourceGroup=$(az aks list --query '[].nodeResourceGroup' -o table  | fzf-down --header-lines=2)
+  az vm deallocate --ids $(az vm list -g "${nodeResourceGroup}" --query "[].id" -o tsv)
 }
 
 # Fuzzy Azure account switch
@@ -639,3 +671,17 @@ gifitter() {
 #                --query="." \
 #                --bind "alt-up:preview-page-up, alt-down:preview-page-down"
 # }
+
+function duration() {
+  ffmpeg -i $1 2>&1 | grep Duration | cut -d ' ' -f 4 | sed s/,//
+}
+
+function t2secs() {
+  local time=${1}
+  echo $time | awk -F: '{ print ($1 * 3600) + ($2 * 60) + int($3) }'
+}
+
+vs(){
+  #List all vagrant boxes available in the system including its status, and try to access the selected one via ssh
+  cd $(cat ~/.vagrant.d/data/machine-index/index | jq '.machines[] | {name, vagrantfile_path, state}' | jq '.name + "," + .state  + "," + .vagrantfile_path'| sed 's/^"\(.*\)"$/\1/'| column -s, -t | sort -rk 2 | fzf | awk '{print $3}'); vagrant ssh
+}
