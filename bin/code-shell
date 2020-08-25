@@ -1,3 +1,4 @@
 #!/bin/sh
 SESSION="vscode`pwd | md5`"
+SESSION=${SESSION:0:12}
 tmux attach-session -d -t $SESSION || tmux new-session -s $SESSION
