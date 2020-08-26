@@ -52,6 +52,9 @@ let g:coc_global_extensions = [
 " }}}
 " {{{ Visual
 Plug 'altercation/vim-colors-solarized', {'do': ':so $HOME/.vim/bundle/vim-colors-solarized/autoload/togglebg.vim' } " Ethan's best
+let g:solarized_termtrans=1          " This gives me a dark background, but breaks light/dark toggle
+let g:solarized_visibility="normal"  " Special characters such as trailing whitespace, tabs, newlines, when displayed using :set list
+
 Plug 'majutsushi/tagbar'                " Open tag navigation split with :Tagbar
 Plug 'ryanoasis/vim-devicons'
 " {{{ Syntax
