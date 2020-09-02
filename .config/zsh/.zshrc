@@ -69,7 +69,7 @@ fpath=($ZDOTDIR/completions $fpath)
 # necessary, but gives you an easy way to stop the autoloading of a
 # particular shell function). $fpath should not be empty for this to work.
 # for func in $^fpath/*(N-.x:t); autoload $func
-# still trying to get _stern completions to load.... 
+# still trying to get _stern completions to load....
 
 zstyle ':fzf-tab:*' command $FZF_TAB_COMMAND
 
@@ -140,17 +140,17 @@ fi
 # End of lines added by compinstall
 
 # # Hoping to steal bash completions for free
-# autoload -U +X bashcompinit &&  bashcompinit
-# if type brew &>/dev/null; then
-#   HOMEBREW_PREFIX="$(brew --prefix)"
-#   # for COMPLETION in "${HOMEBREW_PREFIX}/etc/bash_completion.d/"*; do
-#   completion_list=("${HOMEBREW_PREFIX}/etc/bash_completion.d/az"
-#     "${HOMEBREW_PREFIX}/etc/bash_completion.d/az")
-#   for COMPLETION in $completion_list; do
-#     [[ -r "$COMPLETION" ]] && source "$COMPLETION"
-#   done
-# fi
-#
+autoload -U +X bashcompinit &&  bashcompinit
+if type brew &>/dev/null; then
+  HOMEBREW_PREFIX="$(brew --prefix)"
+  # for COMPLETION in "${HOMEBREW_PREFIX}/etc/bash_completion.d/"*; do
+  completion_list=("${HOMEBREW_PREFIX}/etc/bash_completion.d/az"
+    "${HOMEBREW_PREFIX}/etc/bash_completion.d/az")
+  for COMPLETION in $completion_list; do
+    [[ -r "$COMPLETION" ]] && source "$COMPLETION"
+  done
+fi
+
 precmd () {
     local TERMWIDTH
     (( TERMWIDTH = ${COLUMNS} - 1 ))
@@ -239,23 +239,33 @@ typeset -U path fpath kubeconfig cdpath
 export PATH FPATH KUBECONFIG
 
 # Load FZF
+[ -f "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.zsh ] && source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.zsh
+
 export FZF_DEFAULT_COMMAND='ag -l --ignore Library --ignore Music --ignore *.tagset --ignore *.photoslibrary -g ""'
-# export FZF_DEFAULT_COMMAND='ag -l --ignore Library --ignore Music --ignore *.tagset --ignore *.photoslibrary -g ""'
-export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
+export FZF_DEFAULT_OPTS='
+  --height 40%
+  --layout=reverse
+  --border
+  --color=bg:-1,fg:-1
+  --color=bg+:#eee8d5,spinner:#719e07,hl:#586e75
+  --color=fg+:#93a1a1
+'
+# FZF Colors make no damn sense! bg+ is what I'm trying to set to base02
+  # --color=fg:-1,header:#586e75,info:#cb4b16,pointer:#719e07
+  # --color=marker:#719e07,fg+:#839496,prompt:#719e07,hl+:#719e07
+
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 # export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range :500 {}'"
 FZF_TAB_COMMAND=(
     fzf
     --ansi   # Enable ANSI color support, necessary for showing groups
     --expect='$continuous_trigger' # For continuous completion
-    '--color=hl:$(( $#headers == 0 ? 108 : 255 ))'
     --nth=2,3 --delimiter='\x00'  # Don't search prefix
     --layout=reverse --height='${FZF_TMUX_HEIGHT:=75%}'
     --tiebreak=begin -m --bind=tab:down,btab:up,change:top,ctrl-space:toggle --cycle
     '--query=$query'   # $query will be expanded to query string at runtime.
     '--header-lines=$#headers' # $#headers will be expanded to lines of headers at runtime
 )
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # setup direnv
 eval "$(direnv hook zsh)"
@@ -271,3 +281,4 @@ if [[ "$PROFILE_STARTUP" == true ]]; then
     zprof > ~/zshprofile$(date +'%s')
 fi
 #}}}
+
