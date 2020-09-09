@@ -7,12 +7,12 @@ endif
 "}}}
 
 if executable('tmux') && filereadable(expand('~/.bashrc')) && $TMUX !=# ''
-    let g:vimIsInTmux = 1
-    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-    " set termguicolors
+  let g:vimIsInTmux = 1
+  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+  " set termguicolors
 else
-    let g:vimIsInTmux = 0
+  let g:vimIsInTmux = 0
 endif
 
 " {{{ Plugin Managment
@@ -29,7 +29,8 @@ Plug 'tpope/vim-sensible'   " Sensible vim defaults
 Plug 'tpope/vim-unimpaired' " Pairs of handy bracket mappings
 Plug 'tpope/vim-repeat'     " Add repeat support with '.' for lots of plugins
 Plug 'gabesoft/vim-ags'     " A Vim plugin for the silver searcher that focuses on clear display of the search results
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' } | Plug 'junegunn/fzf.vim'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
 Plug 'vim-scripts/restore_view.vim'
 set viewoptions=cursor,slash,unix
 let g:skipview_files = ['*\.vim']
@@ -58,16 +59,26 @@ let g:solarized_visibility="normal"  " Special characters such as trailing white
 Plug 'majutsushi/tagbar'                " Open tag navigation split with :Tagbar
 Plug 'ryanoasis/vim-devicons'
 " {{{ Syntax
-let g:polyglot_disabled = ['asciidoc','markdown','ansible','terraform','helm','yaml'] " disabled since asciidoc is out of date
 Plug 'sheerun/vim-polyglot' " Polyglot autoloads many language packs replacing: {{{
+let g:polyglot_disabled = ['asciidoc','ansible','terraform','helm','yaml'] " disabled since asciidoc is out of date
 let g:ansible_attribute_highlight = "ab"
 let g:ansible_extra_keywords_highlight = 1
 let g:ansible_name_highlight = 'd'
 " let g:ansible_unindent_after_newline = 1
 let g:terraform_fold_sections=1
-                            " }}}
+" plasticboy/vim-markdown{{{
+autocmd FileType markdown let b:sleuth_automatic=0
+autocmd FileType markdown set conceallevel=2
+autocmd FileType markdown normal zR
+
+let g:vim_markdown_frontmatter=1
+let g:vim_markdown_strikethrough=1
+"}}}
+
+
+" }}}
 Plug 'fatih/vim-go'
-Plug 'glench/vim-jinja2-syntax'
+" Plug 'glench/vim-jinja2-syntax'
 Plug 'habamax/vim-asciidoctor'
 Plug 'hashivim/vim-terraform'
 Plug 'isene/hyperlist.vim'
@@ -76,9 +87,9 @@ Plug 'pedrohdz/vim-yaml-folds'
 Plug 'reedes/vim-pencil'
 Plug 'stephpy/vim-yaml'
 Plug 'towolf/vim-helm'
-Plug 'towolf/vim-helm'
-Plug 'vim-pandoc/vim-pandoc'
-Plug 'vim-pandoc/vim-pandoc-syntax'
+" Plug 'vim-pandoc/vim-pandoc'
+" Plug 'vim-pandoc/vim-pandoc-syntax'
+" Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install' }
 "}}}
 " }}}
 " {{{ Statusline (lightline)
@@ -107,6 +118,13 @@ xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
 vnoremap <silent> <Enter> :EasyAlign<cr>
 
+" Maybe this will work with obsidian?
+Plug 'https://github.com/alok/notational-fzf-vim'
+  let g:nv_search_paths = ['~/Documents/Notes', './docs', './doc', 'docs.md' , './notes.md']
+  " String. Must be in the form 'ctrl-KEY' or 'alt-KEY'
+  let g:nv_create_note_key = 'alt-z'
+  nnoremap <silent> <C-p> :NV<CR> " Notational Velocity Trigger
+
 Plug 'dense-analysis/ale' " {{{ ALE and it's Options
 " nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 " nmap <silent> <C-j> <Plug>(ale_next_wrap)
@@ -134,7 +152,6 @@ Plug 'mustache/vim-mustache-handlebars'
 let g:mustache_abbreviations = 1
 Plug 'nvie/vim-flake8'
 " }}}
-Plug 'rottencandy/vimkubectl'
 " {{{ Tmux Tools
 " Intelligently navigate tmux panes and Vim splits using the same keys.
 " " See https://sunaku.github.io/tmux-select-pane.html for documentation.
@@ -377,9 +394,9 @@ autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 " fdoc is yaml
 autocmd BufRead,BufNewFile *.fdoc set filetype=yaml
 " md is markdown
-autocmd BufRead,BufNewFile *.md set filetype=markdown
-autocmd BufRead,BufNewFile *.md set spell
-" au BufRead,BufNewFile *.{md,markdown,mdown,mkd,mkdn} call s:MarkedPreview()
+" autocmd BufRead,BufNewFile *.md set filetype=markdown
+" autocmd BufRead,BufNewFile *.md set spell
+" " au BufRead,BufNewFile *.{md,markdown,mdown,mkd,mkdn} call s:MarkedPreview()
 
 " autocmd BufWritePre *.php,*.py,*.js,*.txt,*.hs,*.java,*.md
 "                 \:call <SID>StripTrailingWhitespaces()
@@ -475,8 +492,26 @@ if executable('ag')
 endif
 
 " Settings for FZF
-" need to fix the window color in order to use floating window
-" let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.6 } }
+" An action can be a reference to a function that processes selected lines
+function! s:build_quickfix_list(lines)
+  call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
+  copen
+  cc
+endfunction
+
+let g:fzf_action = {
+  \ 'ctrl-q': function('s:build_quickfix_list'),
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit' }
+
+" You can set up fzf window using a Vim command (Neovim or latest Vim 8
+" required)
+
+let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.7 } }
+
+" Customize fzf colors to match your color scheme
+" - fzf#wrap translates this to a set of `--color` options
 let g:fzf_colors =
 \ { 'fg':      ['fg', 'Normal'],
   \ 'bg':      ['bg', 'Normal'],
@@ -486,13 +521,12 @@ let g:fzf_colors =
   \ 'hl+':     ['fg', 'Statement'],
   \ 'info':    ['fg', 'PreProc'],
   \ 'border':  ['fg', 'Ignore'],
-  \ 'prompt':  ['fg', 'Conditional'],
+  \ 'prompt':  ['fg', 'Conditional', 'Comment'],
   \ 'pointer': ['fg', 'Exception'],
   \ 'marker':  ['fg', 'Keyword'],
   \ 'spinner': ['fg', 'Label'],
   \ 'header':  ['fg', 'Comment'] }
 
-let $FZF_DEFAULT_COMMAND = "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune 'dist/**' -prune -o -type f -print -o l -print 2> /dev/null"
 " }}}
 "}}}
 " GUI Specific  Settings {{{
@@ -615,7 +649,7 @@ nmap <silent> <leader>m :Map<CR>
 nmap <Leader>t :BTags<CR>
 nmap <Leader>T :Tags<CR>
 " nmap <silent> <leader>w :Windows<CR>
-nmap <silent> <leader>: :Commands<CR>
+nmap <silent> <leader>; :Commands<CR>
 " }}} FZF bindings
 
 nnoremap <leader>a :Ag<space>
