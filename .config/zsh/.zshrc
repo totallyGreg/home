@@ -88,8 +88,18 @@ zstyle :compinstall filename '/Users/totally/.zshrc'
 zstyle ':completion::complete:*' use-cache 1
 zstyle ':completion::complete:*' cache-path $ZSH_CACHE_DIR
 
+# Fuzzy matching of completions for when you mistype them:
+zstyle ':completion:*' completer _complete _match _approximate
+zstyle ':completion:*:match:*' original only
+zstyle ':completion:*:approximate:*' max-errors 1 numeric
+
+# Ignore completion functions for commands you don’t have:
+zstyle ':completion:*:functions' ignored-patterns '_*'
+
 # Expand partial paths
-zstyle ':completion:*' expand 'yes'
+# zstyle ':completion:*' expand 'yes'
+# If you end up using a directory as argument, this will remove the trailing slash (usefull in ln)
+zstyle ':completion:*' squeeze-slashes true
 # zstyle ':completion:*' squeeze-slashes 'yes'
 
 # Include non-hidden directories in globbed file completions
@@ -121,6 +131,7 @@ zstyle ':completion:*:history-words' stop verbose
 zstyle ':completion:*:history-words' remove-all-dups yes
 zstyle ':completion:*:history-words' list false
 
+# Use colors in completion
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 
 # Shows highlighted completion menu
@@ -241,15 +252,23 @@ export PATH FPATH KUBECONFIG
 # Load FZF
 [ -f "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.zsh ] && source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.zsh
 
-export FZF_DEFAULT_COMMAND='ag -l --ignore Library --ignore Music --ignore *.tagset --ignore *.photoslibrary -g ""'
+export FZF_DEFAULT_COMMAND='ag -l --ignore Library --ignore Music --ignore .git -g ""'
+# export FZF_DEFAULT_COMMAND='ag -l --ignore Library --ignore Music --ignore *.tagset --ignore *.photoslibrary -g ""'
 export FZF_DEFAULT_OPTS='
   --height 40%
   --layout=reverse
-  --border
-  --color=bg:-1,fg:-1
-  --color=bg+:#eee8d5,spinner:#719e07,hl:#586e75
-  --color=fg+:#93a1a1
-'
+  --border '
+
+  # --color=bg:-1,fg:-1
+  # --color=bg+:#eee8d5,spinner:#719e07,hl:#586e75
+  # --color=fg+:#93a1a1
+
+export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'
+  --color=fg:-1,bg:-1,hl:#6c71c4
+  --color=fg+:#93a1a1,bg+:#073642,hl+:#268bd2
+  --color=info:#859900,prompt:#b58900,pointer:#6c71c4
+  --color=marker:#dc322f,spinner:#af5fff,header:#93a1a1'
+
 # FZF Colors make no damn sense! bg+ is what I'm trying to set to base02
   # --color=fg:-1,header:#586e75,info:#cb4b16,pointer:#719e07
   # --color=marker:#719e07,fg+:#839496,prompt:#719e07,hl+:#719e07
@@ -266,6 +285,9 @@ FZF_TAB_COMMAND=(
     '--query=$query'   # $query will be expanded to query string at runtime.
     '--header-lines=$#headers' # $#headers will be expanded to lines of headers at runtime
 )
+
+# ZLE custom widgets
+source $ZDOTDIR/zle.zsh
 
 # setup direnv
 eval "$(direnv hook zsh)"
