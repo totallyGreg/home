@@ -4,18 +4,18 @@ style = 'bold red'
 
 [character]
 # symbol = '❯'
-error_symbol = '✗'
-vicmd_symbol = '❮'
-use_symbol_for_status = true
-style_success = 'green'
-style_failure = 'red'
+# error_symbol = '✗'
+success_symbol = "[❯](green)"
+error_symbol = "[❯](bold red)"
+vicmd_symbol = "[❮](green)"
 
 [cmd_duration]
 min_time = 5000
-prefix = 'lag '
-style = 'red'
+format = "lag [$duration]($style) "
+style = 'yellow'
 
 [directory]
+format = "[$path]($style)[$read_only]($read_only_style) "
 truncation_length = 3
 truncate_to_repo = true
 style = 'bold cyan'
@@ -43,8 +43,9 @@ disabled = false
 
 [hostname]
 ssh_only = true
-prefix = '⟪'
-suffix = '⟫'
+format = "⟪[$hostname]($style)⟫ in "
+# prefix = '⟪'
+# suffix = '⟫'
 trim_at = '.falcone.us'
 disabled = false
 
@@ -53,7 +54,7 @@ disabled = true
 
 [kubernetes]
 # symbol = ' '
-# style = 'blue'
+style = 'blue'
 disabled = false
 
 [kubernetes.context_aliases]
