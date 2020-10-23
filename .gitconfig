@@ -53,7 +53,7 @@
 [commit]
   ; template = \"$HOME\"/.stCommitMsg
 [push]
-  default = simple
+	default = current
 [core]
   excludesfile = /Users/totally/.gitignore_global
   autocrlf = input
