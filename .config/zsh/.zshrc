@@ -11,7 +11,7 @@ fi
 #}}}
 
 # Gotsta have vi bindings
-EDITOR=vim
+export EDITOR=vim
 bindkey -v
 
 # remove list-expand binding since i can't figure out what it does and it interferes with Git heart fzf
@@ -151,16 +151,16 @@ fi
 # End of lines added by compinstall
 
 # # Hoping to steal bash completions for free
-autoload -U +X bashcompinit &&  bashcompinit
-if type brew &>/dev/null; then
-  HOMEBREW_PREFIX="$(brew --prefix)"
-  # for COMPLETION in "${HOMEBREW_PREFIX}/etc/bash_completion.d/"*; do
-  completion_list=("${HOMEBREW_PREFIX}/etc/bash_completion.d/az"
-    "${HOMEBREW_PREFIX}/etc/bash_completion.d/az")
-  for COMPLETION in $completion_list; do
-    [[ -r "$COMPLETION" ]] && source "$COMPLETION"
-  done
-fi
+# autoload -U +X bashcompinit &&  bashcompinit
+# if type brew &>/dev/null; then
+#   HOMEBREW_PREFIX="$(brew --prefix)"
+#   # for COMPLETION in "${HOMEBREW_PREFIX}/etc/bash_completion.d/"*; do
+#   completion_list=("${HOMEBREW_PREFIX}/etc/bash_completion.d/az"
+#     "${HOMEBREW_PREFIX}/etc/bash_completion.d/az")
+#   for COMPLETION in $completion_list; do
+#     [[ -r "$COMPLETION" ]] && source "$COMPLETION"
+#   done
+# fi
 
 precmd () {
     local TERMWIDTH
@@ -231,9 +231,11 @@ export K9SCONFIG=$XDG_CONFIG_HOME/k9s
 
 # Setup Go environment
 export GOPATH="${HOME}/.go"
-# export GOROOT="$(brew --prefix golang)/libexec"
+# export GOPATH="$(brew --prefix golang)"
+export GOROOT="$(brew --prefix golang)/libexec"
 # export GOROOT="/usr/local/go"
-path+=${GOPATH}/bin
+export PATH=$PATH:$GOPATH/bin
+# path+=${GOPATH}/bin
 
 # My stuff
 PATH=${HOME}/bin:$PATH
@@ -251,40 +253,6 @@ export PATH FPATH KUBECONFIG
 
 # Load FZF
 [ -f "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.zsh ] && source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.zsh
-
-export FZF_DEFAULT_COMMAND='ag -l --ignore Library --ignore Music --ignore .git -g ""'
-# export FZF_DEFAULT_COMMAND='ag -l --ignore Library --ignore Music --ignore *.tagset --ignore *.photoslibrary -g ""'
-export FZF_DEFAULT_OPTS='
-  --height 40%
-  --layout=reverse
-  --border '
-
-  # --color=bg:-1,fg:-1
-  # --color=bg+:#eee8d5,spinner:#719e07,hl:#586e75
-  # --color=fg+:#93a1a1
-
-export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'
-  --color=fg:-1,bg:-1,hl:#6c71c4
-  --color=fg+:#93a1a1,bg+:#073642,hl+:#268bd2
-  --color=info:#859900,prompt:#b58900,pointer:#6c71c4
-  --color=marker:#dc322f,spinner:#af5fff,header:#93a1a1'
-
-# FZF Colors make no damn sense! bg+ is what I'm trying to set to base02
-  # --color=fg:-1,header:#586e75,info:#cb4b16,pointer:#719e07
-  # --color=marker:#719e07,fg+:#839496,prompt:#719e07,hl+:#719e07
-
-export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-# export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range :500 {}'"
-FZF_TAB_COMMAND=(
-    fzf
-    --ansi   # Enable ANSI color support, necessary for showing groups
-    --expect='$continuous_trigger' # For continuous completion
-    --nth=2,3 --delimiter='\x00'  # Don't search prefix
-    --layout=reverse --height='${FZF_TMUX_HEIGHT:=75%}'
-    --tiebreak=begin -m --bind=tab:down,btab:up,change:top,ctrl-space:toggle --cycle
-    '--query=$query'   # $query will be expanded to query string at runtime.
-    '--header-lines=$#headers' # $#headers will be expanded to lines of headers at runtime
-)
 
 # ZLE custom widgets
 source $ZDOTDIR/zle.zsh

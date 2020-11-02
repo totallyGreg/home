@@ -16,3 +16,5 @@ source "$XDG_CONFIG_HOME/fzf/GITheartFZF.sh"
 source "/usr/local/opt/fzf/shell/key-bindings.zsh"
 source "$XDG_CONFIG_HOME/fzf/key-bindings.zsh"
 
+# Customizations
+source "$XDG_CONFIG_HOME/fzf/env"
