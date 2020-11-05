@@ -14,7 +14,7 @@ if executable('tmux') && filereadable(expand('~/.bashrc')) && $TMUX !=# ''
 else
   let g:vimIsInTmux = 0
 endif
-
+set nocompatible
 " {{{ Plugin Managment
 " {{{ Bootstrap Plug
 if empty(glob('~/.vim/autoload/plug.vim'))
@@ -39,7 +39,7 @@ Plug 'janko-m/vim-test'
 Plug 'sunaku/tmux-navigate'
 " }}}
 " {{{ Code Completion
-Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " Coc extensions are currently installed by CocInstall
 " I am considering replacing coc-list with a better fuzzy matcher
 " https://github.com/neoclide/coc.nvim/issues/1732
