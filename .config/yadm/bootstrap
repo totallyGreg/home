@@ -83,9 +83,15 @@ function setup_terminal {
   default_window=$(defaults read com.apple.terminal "Default Window Settings")
   if [ "$default_window" != 'Totally Dark' ]; then
     # This may help programatically https://apple.stackexchange.com/questions/344401/how-to-programatically-set-terminal-theme-profile
+    themes=("${HOME}/.config/Totally Dark.terminal" "${HOME}/.config/Totally Light.terminal")
     echo "Install Terminal Profiles"
-    open "${HOME}/.config/Totally Dark.terminal"
-    open "${HOME}/.config/Totally Light.terminal"
+    for theme in $themes; do
+      theme_xml=$(<"${theme}")
+      name=$(basename "$theme" .terminal)
+      plutil -replace "Window Settings.$name" -xml "$theme_xml" ~/Library/Preferences/com.apple.Terminal.plist
+    done
+    # open "${HOME}/.config/Totally Dark.terminal"
+    # open "${HOME}/.config/Totally Light.terminal"
     defaults write com.apple.terminal "Default Window Settings" "Totally Dark"
     defaults write com.apple.terminal "Startup Window Settings" "Totally Dark"
   fi
