@@ -38,7 +38,7 @@ function setup_macos {
   # Finder                                                                      #
   ###############################################################################
   # Show the ~/Library folder
-  chflags nohidden ~/Library && xattr -d com.apple.FinderInfo ~/Library
+  chflags nohidden ~/Library # && xattr -d com.apple.FinderInfo ~/Library
 
   ###############################################################################
   # Dock, Dashboard, and hot corners                                            #
@@ -58,8 +58,8 @@ function setup_macos {
 
 function setup_terminal {
   echo "Install Terminal Profiles"
-  open "~/.config/Totally Dark.terminal"
-  open "~/.config/Totally Light.terminal"
+  open "${HOME}/.config/Totally Dark.terminal"
+  open "${HOME}/.config/Totally Light.terminal"
   defaults write com.apple.terminal "Default Window Settings" "Totally Dark"
   echo "Setup Solarized Colors: Terminal.app, Apple Color Palette, dircolors"
 }
@@ -73,4 +73,5 @@ function setup_python {
   pyenv global $python_version
 }
 setup_macos
+setup_terminal
 
