@@ -119,7 +119,7 @@ nmap ga <Plug>(EasyAlign)
 vnoremap <silent> <Enter> :EasyAlign<cr>
 
 " Maybe this will work with obsidian?
-Plug 'https://github.com/alok/notational-fzf-vim'
+" Plug 'https://github.com/alok/notational-fzf-vim'
   let g:nv_search_paths = ['~/Documents/Notes', './docs', './doc', 'docs.md' , './notes.md']
   " String. Must be in the form 'ctrl-KEY' or 'alt-KEY'
   let g:nv_create_note_key = 'alt-z'

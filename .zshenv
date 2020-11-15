@@ -14,7 +14,21 @@ export LC_CTYPE=en_US.UTF-8
 export XDG_CONFIG_HOME=$HOME/.config
 export XDG_DATA_HOME=$HOME/.local/share
 export XDG_CACHE_HOME=$HOME/Library/Caches
-export ZSH_CACHE_DIR=${XDG_CACHE_HOME}/zsh
-export ZDOTDIR=$XDG_CONFIG_HOME/zsh
+export XDG_RUNTIME_HOME=$HOME/.tmp
+
+# zsh
+: ${ZDOTDIR:=$XDG_CONFIG_HOME/zsh}
+: ${LOCAL_ZDOTDIR:=$HOME/.local/zsh}
+: ${ZSH_CACHE_DIR:=$XDG_CACHE_HOME/zsh}
+ZDOTDIRS=({$ZDOTDIR,$LOCAL_ZDOTDIR}(-/N))
+declare -x 'ZDOTDIR'
+declare -xm 'ZSH_*'
+
+[[ -d $ZDOTDIR ]] || echo Error: ZDOTDIR=${(q)ZDOTDIR} does not exist. >&2
+
+# Go
+: ${GOPATH:=$HOME/.go}
+# export $GOPATH
+
 
 # [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
