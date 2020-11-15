@@ -80,11 +80,24 @@ function setup_macos {
 }
 
 function setup_terminal {
-  echo "Install Terminal Profiles"
-  open "${HOME}/.config/Totally Dark.terminal"
-  open "${HOME}/.config/Totally Light.terminal"
-  defaults write com.apple.terminal "Default Window Settings" "Totally Dark"
+  default_window=$(defaults read com.apple.terminal "Default Window Settings")
+  if [ "$default_window" != 'Totally Dark' ]; then
+    echo "Install Terminal Profiles"
+    open "${HOME}/.config/Totally Dark.terminal"
+    open "${HOME}/.config/Totally Light.terminal"
+    defaults write com.apple.terminal "Default Window Settings" "Totally Dark"
+  fi
   echo "Setup Solarized Colors: Terminal.app, Apple Color Palette, dircolors"
+}
+
+function install_brewfile() {
+    echo "do you want to install the Brewfile now?"
+    select yn in Yes No; do
+        case $yn in
+            Yes ) echo "Installing Brewfile"; echo; break;;
+            No ) echo "Skipping Brewfile installation"; break;;
+        esac
+    done
 }
 
 function setup_python {
