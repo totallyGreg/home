@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 function setup_macos {
   # Useful inspiration
@@ -80,22 +80,25 @@ function setup_macos {
 }
 
 function setup_terminal {
+  # Change default to something else in order to get it to rerun/test install
   default_window=$(defaults read com.apple.terminal "Default Window Settings")
   if [ "$default_window" != 'Totally Dark' ]; then
     # This may help programatically https://apple.stackexchange.com/questions/344401/how-to-programatically-set-terminal-theme-profile
     themes=("${HOME}/.config/Totally Dark.terminal" "${HOME}/.config/Totally Light.terminal")
-    echo "Install Terminal Profiles"
+    echo "Installing Terminal Profiles"
     for theme in $themes; do
+      echo "Installing $theme"
       theme_xml=$(<"${theme}")
       name=$(basename "$theme" .terminal)
+      echo "Installing $name"
       plutil -replace "Window Settings.$name" -xml "$theme_xml" ~/Library/Preferences/com.apple.Terminal.plist
     done
-    # open "${HOME}/.config/Totally Dark.terminal"
-    # open "${HOME}/.config/Totally Light.terminal"
     defaults write com.apple.terminal "Default Window Settings" "Totally Dark"
     defaults write com.apple.terminal "Startup Window Settings" "Totally Dark"
   fi
-  echo "Setup Solarized Colors: Terminal.app, Apple Color Palette, dircolors"
+  # I was hoping this would cause it to reload its new settings, it doesn't
+  # defaults read ~/Library/Preferences/com.apple.Terminal.plist
+  echo "Restart Terminal.app to see new profiles"
 }
 
 function install_brewfile() {
