@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 function setup_macos {
-  # Useful inspiration 
+  # Useful inspiration
   # - https://github.com/mathiasbynens/dotfiles/blob/master/.macos
   # - https://ss64.com/osx/syntax-defaults.html
 
