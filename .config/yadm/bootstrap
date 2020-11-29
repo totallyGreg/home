@@ -111,9 +111,23 @@ function install_brewfile() {
     done
 }
 
+function install_gpg() {
+    echo "do you want to install GPG now?"
+    select yn in Yes No; do
+        case $yn in
+            Yes ) echo "Installing GnuPG";
+              echo;
+              brew install pinentry-mac
+              break;;
+            No ) echo "Skipping GnuPG installation"; break;;
+        esac
+    done
+}
+
+
 function setup_python {
   # from https://opensource.com/article/19/5/python-3-default-mac#what-to-do
-  brew install pyenv 
+  brew install pyenv
   # determine python_version
   python_version=3.8.3
   pyenv install $python_version
@@ -121,4 +135,4 @@ function setup_python {
 }
 setup_macos
 setup_terminal
-
+install_gpg

@@ -23,6 +23,12 @@ disabled = false
 
 [env_var]
 
+[gcloud]
+disabled = true
+
+[gcloud.region_aliases]
+us-west1 = "usw1"
+
 [git_branch]
 symbol = ''
 # truncation_length = 2^63 - 1

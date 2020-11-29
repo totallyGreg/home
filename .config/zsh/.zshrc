@@ -245,6 +245,8 @@ if type gpg &>/dev/null; then
   export GPG_TTY=$(tty)
   export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
   gpgconf --launch gpg-agent
+else
+  # echo "GPG not found using ssh-agent"
 fi
 
 # Unique the paths
