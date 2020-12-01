@@ -380,63 +380,6 @@ function ERROR()
  echo "[$timeAndDate] [ERROR]  $msg" >> $SCRIPT_LOG
 }
 
-# Home Brew Functions using FZF
-# https://github.com/junegunn/fzf/wiki/examples
-
-# Install (one or multiple) selected application(s)
-# using "brew search" as source input
-# mnemonic [B]rew [I]nstall [P]lugin
-bip() {
-  local inst
-  local preview
-  preview="$(brew info --json=v1 tig | jq '.[] | {name,desc,homepage,dependencies}')"
-  inst=$(brew search | fzf -m --ansi --preview="brew info --json=v1 {} | jq -C '.[] | {name,desc,homepage,dependencies}'" \
-    --preview-window=:wrap --min-height=17)
-
-  if [[ $inst ]]; then
-    brew install $inst
-    brew bundle dump --all --describe --force
-  fi
-}
-
-# Update (one or multiple) selected application(s)
-# mnemonic [B]rew [U]pdate [P]lugin
-bup() {
-  local updates
-  local preview
-  # this fails because it shows a separate mapping for each dependency
-  # preview="brew info --json=v1 {} | jq -C '.[] | {name, desc, homepage, dependencies: .dependencies[]}'"
-  preview="brew info --json=v1 {} | jq -C '.[] | {name, desc, homepage, dependencies: .dependencies}'"
-  updates <$(brew outdated | fzf -m \
-                              --ansi \
-                              --bind '?:toggle-preview' \
-                              --min-height=20 \
-                              --preview $preview )
-  # eventually, I'd like preview to show me what's changed
-    # brew log --oneline --stat --max-count=2 {}"
-
-  if [[ $updates ]]; then
-    brew upgrade $updates
-  else
-    echo "No updates found: $updates"
-  fi
-  # git diff $@ --name-only | fzf -m --ansi --preview $preview
-
-  # brew bundle dump --brews --file=- | brew bundle check --file=- --verbose
-
-}
-
-# Delete (one or multiple) selected application(s)
-# mnemonic [B]rew [C]lean [P]lugin (e.g. uninstall)
-bcp() {
-  local uninst=$(brew leaves | fzf -m)
-
-  if [[ $uninst ]]; then
-    brew uninstall $uninst
-    brew bundle dump --all --describe --force
-  fi
-}
-
 # Freom https://stackoverflow.com/questions/957928/is-there-a-way-to-get-the-git-root-directory-in-one-command
 # Print the name of the git working tree's root directory
 function git_root() {

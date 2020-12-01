@@ -62,7 +62,9 @@ if type brew &>/dev/null; then
     FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
 fi
 # My completions
-fpath=($ZDOTDIR/completions $fpath)
+if [[ -d $ZDOTDIR/completions ]]; then
+  fpath=($ZDOTDIR/completions $fpath)
+fi
 
 # Autoload all shell functions from all directories in $fpath (following
 # symlinks) that have the executable bit on (the executable bit is not
@@ -76,7 +78,7 @@ zstyle ':fzf-tab:*' command $FZF_TAB_COMMAND
 # The following lines were added by compinstall
 
 # Expansion options
-zstyle ':completion:*' completer _complete _ignored _approximate
+zstyle ':completion:*' completer _complete _correct _approximate
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]} r:|[._-]=** r:|=**'
 # zstyle ':completion::prefix-1:*' completer _complete

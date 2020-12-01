@@ -10,6 +10,8 @@ fi
 
 # FZF Functions
 source "$XDG_CONFIG_HOME/fzf/GITheartFZF.sh"
+source "$XDG_CONFIG_HOME/fzf/Docker"
+source "$XDG_CONFIG_HOME/fzf/Homebrew"
 
 # Key bindings
 # ------------
