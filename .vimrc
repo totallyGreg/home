@@ -39,21 +39,11 @@ Plug 'janko-m/vim-test'
 Plug 'sunaku/tmux-navigate'
 " }}}
 " {{{ Code Completion
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-" Coc extensions are currently installed by CocInstall
-" I am considering replacing coc-list with a better fuzzy matcher
-" https://github.com/neoclide/coc.nvim/issues/1732
-" Possibly incorporating vim-clap
-let g:coc_global_extensions = [
-      \'coc-git',
-      \'coc-json',
-      \'coc-python',
-      \'coc-yaml'
-      \]
+" source ~/.config/coc/coc.vimrc
 " }}}
 " {{{ Visual
 Plug 'altercation/vim-colors-solarized', {'do': ':so $HOME/.vim/bundle/vim-colors-solarized/autoload/togglebg.vim' } " Ethan's best
-let g:solarized_termtrans=1          " This gives me a dark background, but breaks light/dark toggle
+let g:solarized_termtrans=0          " This gives me a dark background, but breaks light/dark toggle
 let g:solarized_visibility="normal"  " Special characters such as trailing whitespace, tabs, newlines, when displayed using :set list
 
 Plug 'majutsushi/tagbar'                " Open tag navigation split with :Tagbar
@@ -73,6 +63,10 @@ autocmd FileType markdown normal zR
 
 let g:vim_markdown_frontmatter=1
 let g:vim_markdown_strikethrough=1
+let g:vim_markdown_autowrite = 1
+let g:vim_markdown_follow_anchor = 1
+let g:vim_markdown_no_extensions_in_markdown = 1
+let g:markdown_fenced_languages = ['html', 'python', 'bash=sh', 'yaml']
 "}}}
 
 
@@ -160,7 +154,7 @@ set title titlestring=%{progname}\ %f\ +%l\ #%{tabpagenr()}.%{winnr()}
 if &term =~ '^screen' && !has('nvim') | exe "set t_ts=\e]2; t_fs=\7" | endif
 
 Plug 'tmux-plugins/vim-tmux'
-Plug 'edkolev/tmuxline.vim', { 'on': ['Tmuxline', 'TmuxlineSimple', 'TmuxlineSnapshot'] }
+" Plug 'edkolev/tmuxline.vim', { 'on': ['Tmuxline', 'TmuxlineSimple', 'TmuxlineSnapshot'] }
 " Plug 'christoomey/vim-tmux-navigator'
 " Plug 'urbainvaes/vim-tmux-pilot'
 " Plug 'benmills/vimux'                   " vim plugin to interact with tmux
@@ -420,10 +414,10 @@ autocmd BufRead,BufNewFile *.txt,*.asciidoc,README,TODO,CHANGELOG,NOTES,ABOUT
     \ comments=s1:/*,ex:*/,://,b:#,:%,:XCOMM,fb:-,fb:*,fb:+,fb:.,fb:>
 " }}}
 " UI Config {{{
-" syntax enable
-colorscheme solarized
+syntax enable
 set autoindent
 set autoread                      " reload files when changed on disk, i.e. via `git checkout`
+set background=dark
 set backspace=2                   " Fix broken backspace in some setups
 set backupcopy=yes                " see :help crontab
 set breakindent                   " set indent on wrapped lines
@@ -465,6 +459,9 @@ set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc,*.pyc,__pycache__
 " set wildmenu              " show a navigable menu for tab completion
 set wildmode=list:longest,list:full
 
+colorscheme solarized
+" added to fix gitgutter sign column color issue
+autocmd ColorScheme * highlight! link SignColumn LineNr
 " Copy/Paste {{{
 " Don't copy the contents of an overwritten selection.
 vnoremap p "_dP
@@ -530,22 +527,22 @@ let g:fzf_colors =
 " }}}
 "}}}
 " GUI Specific  Settings {{{
-if (&t_Co == 256 || has('gui_running'))
-  if ($TERM_PROGRAM == ('iTerm.app'||'Apple_Terminal'))
-    " set termguicolors
-    let s:tab_settings = system("osascript -e 'tell app \"Terminal\" to get name of (current settings of selected tab of front window)'")
-    if s:tab_settings =~? "Dark"
-    " if s:mode ==? "Totally Dark"
-      set background=dark
-    else
-      set background=light
-    endif
-    colorscheme solarized
-  else
-    colorscheme desert
-  endif
+" if (&t_Co == 256 || has('gui_running'))
+"   if ($TERM_PROGRAM == ('iTerm.app'||'Apple_Terminal'))
+"     " set termguicolors
+" "    let s:tab_settings = system("osascript -e 'tell app \"Terminal\" to get name of (current settings of selected tab of front window)'")
+"     if s:tab_settings =~? "Dark"
+"     " if s:mode ==? "Totally Dark"
+"       set background=dark
+"     else
+"       set background=light
+"     endif
+"     colorscheme solarized
+"   else
+"     colorscheme desert
+"   endif
 
-endif
+" endif
 
 "Enble basic mouse behavior such as resizing buffers.
 set mouse=a
@@ -680,123 +677,6 @@ xmap \S
 
 " Folding controls
 " noremap <space> za        " open/close folds
-
-" {{{ COC Mappings
-" Use tab for trigger completion with characters ahead and navigate.
-" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-
-" Use <c-space> to trigger completion.
-if has('nvim')
-  inoremap <silent><expr> <c-space> coc#refresh()
-else
-  inoremap <silent><expr> <c-@> coc#refresh()
-endif
-
-
-" Use `[g` and `]g` to navigate diagnostics
-" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)
-
-" Remap keys for gotos
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
-
-" Coc autocmds
-" Close the preview window when completion is done.
-autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
-
-" Coc Commands
-command! -nargs=0 Prettier :CocCommand prettier.formatFile
-" Use `:Format` to format current buffer
-command! -nargs=0 Format :call CocAction('format')
-" Use `:Fold` to fold current buffer
-command! -nargs=? Fold :call     CocAction('fold', <f-args>)
-
-" From https://scalameta.org/metals/docs/editors/vim.html
-" Use K to either doHover or show documentation in preview window
-nnoremap <silent> K :call <SID>show_documentation()<CR>
-
-function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  else
-    call CocAction('doHover')
-  endif
-endfunction
-
-" Highlight symbol under cursor on CursorHold
-autocmd CursorHold * silent call CocActionAsync('highlight')
-
-" Symbol renaming.
-nmap <leader>rn <Plug>(coc-rename)
-
-" Formatting selected code.
-xmap <leader>=  <Plug>(coc-format-selected)
-nmap <leader>=  <Plug>(coc-format-selected)
-
-" augroup mygroup
-"   autocmd!
-"   " Setup formatexpr specified filetype(s).
-"   autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
-"   " Update signature help on jump placeholder.
-"   autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
-" augroup end
-
-" " Applying codeAction to the selected region.
-" " Example: `<leader>aap` for current paragraph
-" xmap <leader>a  <Plug>(coc-codeaction-selected)
-" nmap <leader>a  <Plug>(coc-codeaction-selected)
-
-" Remap keys for applying codeAction to the current buffer.
-nmap <leader>ac  <Plug>(coc-codeaction)
-" Apply AutoFix to problem on the current line.
-nmap <leader>qf  <Plug>(coc-fix-current)
-
-" Mappings for CoCList
-" Show all diagnostics
-nnoremap <silent><nowait> <space>a  :<C-u>CocList diagnostics<cr>
-" Manage extensions
-nnoremap <silent><nowait> <space>e  :<C-u>CocList extensions<cr>
-" Show commands
-nnoremap <silent><nowait> <space>c  :<C-u>CocList commands<cr>
-" Find symbol of current document
-nnoremap <silent><nowait> <space>o  :<C-u>CocList outline<cr>
-" Search workspace symbols
-nnoremap <silent><nowait> <space>s  :<C-u>CocList -I symbols<cr>
-" Do default action for next item.
-nnoremap <silent><nowait> <space>j  :<C-u>CocNext<CR>
-" Do default action for previous item.
-nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
-" Resume latest coc list
-nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
-
-" Coc-git mappings
-" nmap [g <Plug><coc-git-prevchunk)
-" nmap ]g <Plug><coc-git-nextchunk)
-" show chunk diff at current position
-nmap gs <Plug><coc-git-chunkinfo)
-" show commit contains current position
-" nmap gc <Plug>(coc-git-commit)
-" create text object for git chunks
-omap ig <Plug>(coc-git-chunk-inner)
-xmap ig <Plug>coc-git-chunk-inner)
-omap ag <Plug>(coc-git-chunk-outer)
-xmap ag <Plug>(coc-git-chunk-outer)
-
-" }}} COC Mappings
 "}}}
 " Custom Functions {{{
 " function! Cond(cond, ...)
