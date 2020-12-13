@@ -205,12 +205,16 @@ export Podcasts="${HOME}/Library/Group Containers/243LU875E5.groups.com.apple.po
 
 
 # Homebrew
+if [ -d /opt/homebrew ] ; then
+  export PATH=/opt/homebrew/bin:$PATH
+fi
 if (hash brew > /dev/null 2>&1 ) ; then
+  export HOMEBREW_PREFIX=$(brew --prefix)
   export HOMEBREW_BUNDLE_FILE=${XDG_CONFIG_HOME}/Brewfile
   export HOMEBREW_CASK_OPTS="--appdir=~/Applications"
   # Need for the tmux-exec plugin to kubectl
   export GNU_GETOPT_PREFIX="$(brew --prefix gnu-getopt)"
-  export PATH="/usr/local/sbin:$PATH"
+  export PATH="${HOMEBREW_PREFIX}/sbin:$PATH"
 fi
 
 # Linuxbrew
