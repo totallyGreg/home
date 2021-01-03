@@ -38,7 +38,7 @@ setopt INTERACTIVE_COMMENTS   # allow #style comments to be added on commandline
 # Changing directories
 setopt AUTO_CD
 setopt AUTO_PUSHD
-cdpath=($HOME/Repositories $HOME/Downloads)
+cdpath=($HOME $HOME/Repositories $HOME/Downloads)
 
 # Other misc settings
 LISTMAX=0
@@ -230,7 +230,13 @@ fi
 
 # Kubernetes
 KUBECONFIG=$HOME/.kube/config
-# kubeconfig+=$HOME/.kube/config.d/*
+# # List of files in config.d
+kubeConfigFileList=$(find ${HOME}/.kube/config.d -type f)
+# Combine all file paths into the single `KUBECONFIG` variable.
+while IFS= read -r kubeConfigFile; do
+  KUBECONFIG+=":${kubeConfigFile}"
+done <<< ${kubeConfigFileList}
+
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 export HELM_EXPERIMENTAL_OCI=1
 export K9SCONFIG=$XDG_CONFIG_HOME/k9s
