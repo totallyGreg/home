@@ -66,25 +66,21 @@ if [[ -d $ZDOTDIR/completions ]]; then
   fpath=($ZDOTDIR/completions $fpath)
 fi
 
-# Autoload all shell functions from all directories in $fpath (following
-# symlinks) that have the executable bit on (the executable bit is not
-# necessary, but gives you an easy way to stop the autoloading of a
-# particular shell function). $fpath should not be empty for this to work.
-# for func in $^fpath/*(N-.x:t); autoload $func
-# still trying to get _stern completions to load....
-
-zstyle ':fzf-tab:*' command $FZF_TAB_COMMAND
+# zstyle ':fzf-tab:*' command $FZF_TAB_COMMAND
+# zstyle ':completion:*:*:aws' 
+# zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
+# zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup    ## This won't work until tmux 3.2 is released on homebrew
 
 # The following lines were added by compinstall
 
 # Expansion options
-zstyle ':completion:*' completer _complete _correct _approximate
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
-zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]} r:|[._-]=** r:|=**'
+# zstyle ':completion:*' completer _complete _correct _approximate
+# zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+# zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]} r:|[._-]=** r:|=**'
 # zstyle ':completion::prefix-1:*' completer _complete
 # zstyle ':completion:incremental:*' completer _complete _correct
 # zstyle ':completion:predict:*' completer _complete
-zstyle :compinstall filename '/Users/totally/.zshrc'
+# zstyle :compinstall filename '/Users/totally/.zshrc'
 
 # Completion caching
 zstyle ':completion::complete:*' use-cache 1
@@ -138,10 +134,7 @@ zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 
 # Shows highlighted completion menu
 # from https://www.reddit.com/r/zsh/comments/efi857/use_fzf_as_zshs_completion_selection_menu/
-zstyle ':completion:*:*:*:default' menu yes select search
-
-# fzf-tab-completion hint
-zstyle ':completion:*' fzf-search-display true
+# zstyle ':completion:*:*:*:default' menu yes select search
 
 autoload -Uz compinit
 typeset -i updated_at=$(date +'%j' -r ~/.zcompdump 2>/dev/null || stat -f '%Sm' -t '%j' ~/.zcompdump 2>/dev/null)
@@ -299,6 +292,8 @@ autoload -Uz _zinit
 
 zinit light zdharma/zui
 zinit light zdharma/zplugin-crasis
+
+zinit light Aloxaf/fzf-tab
 
 # make'!...' -> run make before atclone & atpull
 zinit ice as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' atpull'%atclone' src"zhook.zsh"
