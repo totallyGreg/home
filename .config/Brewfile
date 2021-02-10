@@ -1,6 +1,8 @@
+tap "aws/tap"
 tap "cloudfoundry/tap"
 tap "derailed/k9s"
 tap "fabianishere/personal"
+tap "homebrew-ffmpeg/ffmpeg"
 tap "homebrew/bundle"
 tap "homebrew/cask"
 tap "homebrew/cask-fonts"
@@ -13,6 +15,8 @@ tap "stevenacoffman/keyfob"
 tap "universal-ctags/universal-ctags"
 tap "watsonbox/cmu-sphinx"
 tap "zdcthomas/tools"
+# CLI for Amazon ECS to manage clusters and tasks for development
+brew "amazon-ecs-cli"
 # Automate deployment, configuration, and upgrading
 brew "ansible"
 # Checks ansible playbooks for practices and behaviour
@@ -41,6 +45,8 @@ brew "bat"
 brew "bfg"
 # Core application library for C
 brew "glib"
+# Vector graphics library with cross-device output support
+brew "cairo"
 # Tool to obtain certs from Let's Encrypt and autoenable HTTPS
 brew "certbot"
 # Cross-platform make
@@ -55,14 +61,22 @@ brew "curl"
 brew "dateutils"
 # Load/unload environment variables based on $PWD
 brew "direnv"
+# Create Docker hosts locally and on cloud providers
+brew "docker-machine"
+# Simple command-line tool for creating clusters on Amazon EKS
+brew "eksctl"
 # Banner-like program prints strings as ASCII art
 brew "figlet"
 # Lint your Python code for style and logical errors
 brew "flake8"
 # Infamous electronic fortune-cookie generator
 brew "fortune"
+# Libraries to talk to Microsoft SQL Server and Sybase databases
+brew "freetds"
 # Command-line fuzzy finder written in Go
 brew "fzf"
+# Toolkit for image loading and pixel buffer manipulation
+brew "gdk-pixbuf"
 # Distributed revision control system
 brew "git"
 # Extensions to follow Vincent Driessen's branching model
@@ -99,6 +113,8 @@ brew "htop"
 brew "ipmitool"
 # Interactive computing in Python
 brew "ipython"
+# Istio configuration command-line utility
+brew "istioctl"
 # Lightweight and flexible command-line JSON processor
 brew "jq"
 # Swiss-army knife of markup format conversion
@@ -109,10 +125,14 @@ brew "jupyterlab"
 brew "kompose"
 # Kubernetes command-line interface
 brew "kubernetes-cli"
+# Package manager for kubectl plugins
+brew "krew"
 # Tool that can switch between kubectl contexts easily and create aliases
 brew "kubectx"
 # Consume Services in k8s using the OSB API
 brew "kubernetes-service-catalog-client"
+# Template-free customization of Kubernetes YAML manifests
+brew "kustomize"
 # Powerful, clean, object-oriented scripting language
 brew "ruby"
 # Library implementing a curses-based widget set for terminals
@@ -125,6 +145,8 @@ brew "mas"
 brew "maven"
 # Unified display of technical and tag data for audio/video
 brew "media-info"
+# MP3 technical info viewer and ID3 1.x tag editor
+brew "mp3info"
 # 'traceroute' and 'ping' in a single tool
 brew "mtr"
 # Ambitious Vim-fork focused on extensibility and agility
@@ -175,7 +197,7 @@ brew "terraform-ls"
 brew "tflint"
 # Code-search similar to ack
 brew "the_silver_searcher"
-# Programatically correct mistyped console commands
+# Programmatically correct mistyped console commands
 brew "thefuck"
 # Simplified and community-driven man pages
 brew "tldr"
@@ -193,6 +215,8 @@ brew "vim"
 brew "watch"
 # Internet file retriever
 brew "wget"
+# Fast CSV toolkit written in Rust
+brew "xsv"
 # Yet Another Dotfiles Manager
 brew "yadm"
 # Linter for YAML files
@@ -205,6 +229,8 @@ brew "yq"
 brew "zsh-completions"
 # Fish shell like syntax highlighting for zsh
 brew "zsh-syntax-highlighting"
+# EC2 Instance Selector is a tool filter EC2 instance types based on resource criteria
+brew "aws/tap/ec2-instance-selector"
 # BOSH CLI
 brew "cloudfoundry/tap/bosh-cli"
 brew "cloudfoundry/tap/cf-cli"
@@ -216,6 +242,8 @@ brew "cloudfoundry/tap/uaa-cli"
 brew "derailed/k9s/k9s"
 # PAM module for reattaching to the user's GUI (Aqua) session
 brew "fabianishere/personal/pam_reattach"
+# Play, record, convert, and stream audio and video
+brew "homebrew-ffmpeg/ffmpeg/ffmpeg", args: ["with-fdk-aac"]
 # Imgpkg
 brew "k14s/tap/imgpkg"
 # Kapp
@@ -241,14 +269,25 @@ brew "watsonbox/cmu-sphinx/cmu-pocketsphinx", args: ["HEAD"]
 brew "watsonbox/cmu-sphinx/cmu-sphinxtrain", args: ["HEAD"]
 # Creates and handles tmux workspaces
 brew "zdcthomas/tools/dmux"
-cask "amethyst"
+# Automatic tiling window manager similar to xmonad
+cask "amethyst", args: { appdir: "~/Applications/Ops/Administration/Window Managment" }
 cask "aws-vault"
-cask "docker"
+# App to build and share containerized applications and microservices
+cask "docker", args: { appdir: "~/Applications/Holodeck" }
 cask "font-hack-nerd-font"
+# Audio tagger focusing on efficiency
+cask "kid3", args: { appdir: "~/Applications/Ops/Organization/Metadata" }
+# Music tagger
+cask "musicbrainz-picard", args: { appdir: "~/Applications/Ops/Organization/Metadata" }
+# Open-source software for live streaming and screen recording
+cask "obs", args: { appdir: "~/Applications/Comm/Visual" }
+# Knowledge base that works on top of a local folder of plain text Markdown files
 cask "obsidian"
 cask "qlstephen"
-cask "quicksilver"
+# Free and open-source hosted hypervisor for x86 virtualization
 cask "virtualbox"
+# Collect, organize, cite, and share research sources
+cask "zotero", args: { appdir: "~/Applications/Ops/Organization" }
 mas "123D Design", id: 566042322
 mas "Airmail", id: 918858936
 mas "Audiobook Builder", id: 1437681957
@@ -284,7 +323,6 @@ mas "Paprika Recipe Manager 3", id: 1303222628
 mas "Pearl", id: 1152715357
 mas "PiPifier", id: 1160374471
 mas "PiPifier", id: 1160374471
-mas "progeCAD Viewer DWG", id: 468632219
 mas "RBdigital", id: 491365225
 mas "Remind Me Later", id: 408236729
 mas "Smart JSON Editor", id: 1268962404

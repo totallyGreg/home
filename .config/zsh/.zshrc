@@ -67,8 +67,8 @@ if [[ -d $ZDOTDIR/completions ]]; then
 fi
 
 # zstyle ':fzf-tab:*' command $FZF_TAB_COMMAND
-# zstyle ':completion:*:*:aws' 
-# zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
+# zstyle ':fzf-tab:completion:*:*:aws'
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls -1 -G $realpath'
 # zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup    ## This won't work until tmux 3.2 is released on homebrew
 
 # The following lines were added by compinstall
@@ -222,13 +222,20 @@ if command -v pyenv 1>/dev/null 2>&1; then
 fi
 
 # Kubernetes
+set_kubeconfig () {
 KUBECONFIG=$HOME/.kube/config
-# # List of files in config.d
-kubeConfigFileList=$(find ${HOME}/.kube/config.d -type f)
+# Lists of kubeconfig files to add to my KUBECONFIG
+local configd="${HOME}/.kube/config.d"
+local eks_clusters="${HOME}/.kube/eksctl/clusters"
+mkdir -p ${configd} ${eks_clusters}
+kubeConfigFileList=$(find ${configd} ${eks_clusters} -type f)
+
 # Combine all file paths into the single `KUBECONFIG` variable.
 while IFS= read -r kubeConfigFile; do
   KUBECONFIG+=":${kubeConfigFile}"
 done <<< ${kubeConfigFileList}
+}
+set_kubeconfig
 
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 export HELM_EXPERIMENTAL_OCI=1
