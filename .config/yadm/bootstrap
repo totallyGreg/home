@@ -87,6 +87,7 @@ function setup_macos {
   # Top left screen corner → Mission Control
   # defaults write com.apple.dock wvous-tl-corner -int 2
   # defaults write com.apple.dock wvous-tl-modifier -int 0
+  #
   # Top right screen corner → Control ^Desktop
   defaults write com.apple.dock wvous-tr-corner -int 4
   defaults write com.apple.dock wvous-tr-modifier -int 262144
@@ -100,7 +101,7 @@ function setup_terminal {
   default_window=$(defaults read com.apple.terminal "Default Window Settings")
   if [ "$default_window" != 'Totally Dark' ]; then
     # This may help programatically https://apple.stackexchange.com/questions/344401/how-to-programatically-set-terminal-theme-profile
-    themes=("${HOME}/.config/Totally Dark.terminal" "${HOME}/.config/Totally Light.terminal")
+    themes=("${HOME}/.config/Themes/Totally Dark.terminal" "${HOME}/.config/Themes/Totally Light.terminal")
     echo "Installing Terminal Profiles"
     for theme in $themes; do
       echo "Installing $theme"
@@ -111,10 +112,10 @@ function setup_terminal {
     done
     defaults write com.apple.terminal "Default Window Settings" "Totally Dark"
     defaults write com.apple.terminal "Startup Window Settings" "Totally Dark"
+    echo "Restart Terminal.app to see new profiles"
   fi
   # I was hoping this would cause it to reload its new settings, it doesn't
   # defaults read ~/Library/Preferences/com.apple.Terminal.plist
-  echo "Restart Terminal.app to see new profiles"
 }
 
 function install_brewfile() {
