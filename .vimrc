@@ -97,6 +97,7 @@ Plug 'maximbaz/lightline-ale'           " ALE indicator for the lightline vim pl
 Plug 'editorconfig/editorconfig-vim' "Allows project wide consistent coding styles
 let g:EditorConfig_exclude_patterns = ['fugitive://.*', 'scp://.*']
 
+Plug 'tmux-plugins/vim-tmux'  " Provides tmux.conf syntax highlighting and some functions
 Plug 'tpope/vim-surround'     " Adds the surround motion bound to s
 Plug 'tpope/vim-commentary'   " Adds comment action with 'gc'
 " Plug 'pelodelfuego/vim-swoop' " It allows you to find and replace occurrences in many buffers being aware of the context.
@@ -114,10 +115,10 @@ vnoremap <silent> <Enter> :EasyAlign<cr>
 
 " Maybe this will work with obsidian?
 " Plug 'https://github.com/alok/notational-fzf-vim'
-  let g:nv_search_paths = ['~/Documents/Notes', './docs', './doc', 'docs.md' , './notes.md']
-  " String. Must be in the form 'ctrl-KEY' or 'alt-KEY'
-  let g:nv_create_note_key = 'alt-z'
-  nnoremap <silent> <C-p> :NV<CR> " Notational Velocity Trigger
+  " let g:nv_search_paths = ['~/Documents/Notes', './docs', './doc', 'docs.md' , './notes.md']
+  " " String. Must be in the form 'ctrl-KEY' or 'alt-KEY'
+  " let g:nv_create_note_key = 'alt-z'
+  " nnoremap <silent> <C-p> :NV<CR> " Notational Velocity Trigger
 
 Plug 'dense-analysis/ale' " {{{ ALE and it's Options
 " nmap <silent> <C-k> <Plug>(ale_previous_wrap)
@@ -147,13 +148,7 @@ let g:mustache_abbreviations = 1
 Plug 'nvie/vim-flake8'
 " }}}
 " {{{ Tmux Tools
-" Intelligently navigate tmux panes and Vim splits using the same keys.
-" " See https://sunaku.github.io/tmux-select-pane.html for documentation.
-let progname = substitute($VIM, '.*[/\\]', '', '')
-set title titlestring=%{progname}\ %f\ +%l\ #%{tabpagenr()}.%{winnr()}
-if &term =~ '^screen' && !has('nvim') | exe "set t_ts=\e]2; t_fs=\7" | endif
 
-Plug 'tmux-plugins/vim-tmux'
 " Plug 'edkolev/tmuxline.vim', { 'on': ['Tmuxline', 'TmuxlineSimple', 'TmuxlineSnapshot'] }
 " Plug 'christoomey/vim-tmux-navigator'
 " Plug 'urbainvaes/vim-tmux-pilot'
