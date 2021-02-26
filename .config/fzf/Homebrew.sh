@@ -7,7 +7,7 @@
 # mnemonic [B]rew [I]nstall [P]lugin
 bip() {
   local preview="brew info --json=v1 {} | jq -C '.[] | {name,desc,homepage,dependencies}'"
-  local installs=($(brew search | fzf -m --ansi --preview $preview --preview-window=:wrap --min-height=17))
+  local installs=($(brew formulae | fzf -m --ansi --preview $preview --preview-window=:wrap --min-height=17))
   if [[ $installs ]]; then
     brew install $installs;
     brew bundle dump --all --describe --force;
