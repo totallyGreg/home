@@ -52,6 +52,9 @@ alias kvu="kubectl view-utilization "
 alias kx='kubectl exec -i -t'
 alias qapla='kubectl apply -f '
 
+## Terraform
+alias tf=terraform
+
 ## Tmux stuff
 alias t="tmux "
 alias ta="t a -t"
@@ -83,6 +86,7 @@ alias chrome='open -a "Google Chrome" '
 alias test_portal='open http://captive.apple.com/hotspot-detect.html'
 alias local_rsync='rsync -av -e rcp --delete --progress '
 alias books='~/Library/Containers/com.apple.BKAgentService/Data/Documents/iBooks/Books'
+alias oblique="curl -s http://brianeno.needsyourhelp.org/draw | jq .strategy"
 
 # Read Log files with embeded control characters (e.g. screenlog.0)
 alias readlog='less -raw-control-chars'
