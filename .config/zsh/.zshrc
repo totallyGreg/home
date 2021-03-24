@@ -14,6 +14,15 @@ fi
 export EDITOR=vim
 bindkey -v
 
+# Yank to the system clipboard
+function vi-yank-xclip {
+    zle vi-yank
+   echo "$CUTBUFFER" | pbcopy -i
+}
+
+zle -N vi-yank-xclip
+bindkey -M vicmd 'y' vi-yank-xclip
+
 # remove list-expand binding since i can't figure out what it does and it interferes with Git heart fzf
 bindkey -r '^G'
 
@@ -244,7 +253,7 @@ export K9SCONFIG=$XDG_CONFIG_HOME/k9s
 # Setup Go environment
 export GOPATH="${HOME}/.go"
 # export GOPATH="$(brew --prefix golang)"
-export GOROOT="$(brew --prefix golang)/libexec"
+# export GOROOT="$(brew --prefix golang)/libexec"
 # export GOROOT="/usr/local/go"
 export PATH=$PATH:$GOPATH/bin
 # path+=${GOPATH}/bin
@@ -270,7 +279,6 @@ export PATH FPATH KUBECONFIG
 
 # ZLE custom widgets
 source $ZDOTDIR/zle.zsh
-
 
 ## setprompt
 eval "$(starship init zsh)"
