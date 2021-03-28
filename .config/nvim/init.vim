@@ -7,14 +7,14 @@ endif
 "}}}
 
 if executable('tmux') && filereadable(expand('~/.bashrc')) && $TMUX !=# ''
-    let g:vimIsInTmux = 1
-    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-    " set termguicolors
+  let g:vimIsInTmux = 1
+  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+  " set termguicolors
 else
-    let g:vimIsInTmux = 0
+  let g:vimIsInTmux = 0
 endif
-
+set nocompatible
 " {{{ Plugin Managment
 " {{{ Bootstrap Plug
 let autoload_plug_path = stdpath('data') . '/site/autoload/plug.vim'
@@ -31,7 +31,9 @@ Plug 'tpope/vim-sensible'   " Sensible vim defaults
 Plug 'tpope/vim-unimpaired' " Pairs of handy bracket mappings
 Plug 'tpope/vim-repeat'     " Add repeat support with '.' for lots of plugins
 Plug 'gabesoft/vim-ags'     " A Vim plugin for the silver searcher that focuses on clear display of the search results
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' } | Plug 'junegunn/fzf.vim'
+" Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug '/usr/local/opt/fzf'
+Plug 'junegunn/fzf.vim'
 Plug 'vim-scripts/restore_view.vim'
 set viewoptions=cursor,slash,unix
 let g:skipview_files = ['*\.vim']
@@ -40,27 +42,40 @@ Plug 'janko-m/vim-test'
 Plug 'sunaku/tmux-navigate'
 " }}}
 " {{{ Code Completion
-Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
-" Coc extensions are currently installed by CocInstall
-" I am considering replacing coc-list with a better fuzzy matcher
-" https://github.com/neoclide/coc.nvim/issues/1732
-" Possibly incorporating vim-clap
+" source ~/.config/coc/coc.vimrc
 " }}}
 " {{{ Visual
-Plug 'altercation/vim-colors-solarized', {'do': ':so $HOME/.vim/bundle/vim-colors-solarized/autoload/togglebg.vim' } " Ethan's best
+Plug 'altercation/vim-colors-solarized', {'do': ':so $HOME/.local/share/nvim/plugged/vim-colors-solarized/autoload/togglebg.vim' } " Ethan's best
+let g:solarized_termtrans=0          " This gives me a dark background, but breaks light/dark toggle
+let g:solarized_visibility="normal"  " Special characters such as trailing whitespace, tabs, newlines, when displayed using :set list
+
 Plug 'majutsushi/tagbar'                " Open tag navigation split with :Tagbar
 Plug 'ryanoasis/vim-devicons'
 " {{{ Syntax
-let g:polyglot_disabled = ['asciidoc','markdown','ansible','terraform','helm','yaml'] " disabled since asciidoc is out of date
 Plug 'sheerun/vim-polyglot' " Polyglot autoloads many language packs replacing: {{{
+let g:polyglot_disabled = ['asciidoc','ansible','terraform','helm','yaml'] " disabled since asciidoc is out of date
 let g:ansible_attribute_highlight = "ab"
 let g:ansible_extra_keywords_highlight = 1
 let g:ansible_name_highlight = 'd'
 " let g:ansible_unindent_after_newline = 1
 let g:terraform_fold_sections=1
-                            " }}}
+" plasticboy/vim-markdown{{{
+autocmd FileType markdown let b:sleuth_automatic=0
+autocmd FileType markdown set conceallevel=2
+autocmd FileType markdown normal zR
+
+let g:vim_markdown_frontmatter=1
+let g:vim_markdown_strikethrough=1
+let g:vim_markdown_autowrite = 1
+let g:vim_markdown_follow_anchor = 1
+let g:vim_markdown_no_extensions_in_markdown = 1
+let g:markdown_fenced_languages = ['html', 'python', 'bash=sh', 'yaml']
+"}}}
+
+
+" }}}
 Plug 'fatih/vim-go'
-Plug 'glench/vim-jinja2-syntax'
+" Plug 'glench/vim-jinja2-syntax'
 Plug 'habamax/vim-asciidoctor'
 Plug 'hashivim/vim-terraform'
 Plug 'isene/hyperlist.vim'
@@ -69,9 +84,9 @@ Plug 'pedrohdz/vim-yaml-folds'
 Plug 'reedes/vim-pencil'
 Plug 'stephpy/vim-yaml'
 Plug 'towolf/vim-helm'
-Plug 'towolf/vim-helm'
-Plug 'vim-pandoc/vim-pandoc'
-Plug 'vim-pandoc/vim-pandoc-syntax'
+" Plug 'vim-pandoc/vim-pandoc'
+" Plug 'vim-pandoc/vim-pandoc-syntax'
+" Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install' }
 "}}}
 " }}}
 " {{{ Statusline (lightline)
@@ -85,6 +100,7 @@ Plug 'maximbaz/lightline-ale'           " ALE indicator for the lightline vim pl
 Plug 'editorconfig/editorconfig-vim' "Allows project wide consistent coding styles
 let g:EditorConfig_exclude_patterns = ['fugitive://.*', 'scp://.*']
 
+Plug 'tmux-plugins/vim-tmux'  " Provides tmux.conf syntax highlighting and some functions
 Plug 'tpope/vim-surround'     " Adds the surround motion bound to s
 Plug 'tpope/vim-commentary'   " Adds comment action with 'gc'
 " Plug 'pelodelfuego/vim-swoop' " It allows you to find and replace occurrences in many buffers being aware of the context.
@@ -99,6 +115,13 @@ xmap ga <Plug>(EasyAlign)
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(EasyAlign)
 vnoremap <silent> <Enter> :EasyAlign<cr>
+
+" Maybe this will work with obsidian?
+" Plug 'https://github.com/alok/notational-fzf-vim'
+  " let g:nv_search_paths = ['~/Documents/Notes', './docs', './doc', 'docs.md' , './notes.md']
+  " " String. Must be in the form 'ctrl-KEY' or 'alt-KEY'
+  " let g:nv_create_note_key = 'alt-z'
+  " nnoremap <silent> <C-p> :NV<CR> " Notational Velocity Trigger
 
 Plug 'dense-analysis/ale' " {{{ ALE and it's Options
 " nmap <silent> <C-k> <Plug>(ale_previous_wrap)
@@ -127,16 +150,9 @@ Plug 'mustache/vim-mustache-handlebars'
 let g:mustache_abbreviations = 1
 Plug 'nvie/vim-flake8'
 " }}}
-Plug 'rottencandy/vimkubectl'
 " {{{ Tmux Tools
-" Intelligently navigate tmux panes and Vim splits using the same keys.
-" " See https://sunaku.github.io/tmux-select-pane.html for documentation.
-let progname = substitute($VIM, '.*[/\\]', '', '')
-set title titlestring=%{progname}\ %f\ +%l\ #%{tabpagenr()}.%{winnr()}
-if &term =~ '^screen' && !has('nvim') | exe "set t_ts=\e]2; t_fs=\7" | endif
 
-Plug 'tmux-plugins/vim-tmux'
-Plug 'edkolev/tmuxline.vim', { 'on': ['Tmuxline', 'TmuxlineSimple', 'TmuxlineSnapshot'] }
+" Plug 'edkolev/tmuxline.vim', { 'on': ['Tmuxline', 'TmuxlineSimple', 'TmuxlineSnapshot'] }
 " Plug 'christoomey/vim-tmux-navigator'
 " Plug 'urbainvaes/vim-tmux-pilot'
 " Plug 'benmills/vimux'                   " vim plugin to interact with tmux
@@ -299,7 +315,7 @@ let g:lightline.component_function = {
       \ 'currentfunction':      'CocCurrentFunction',
       \ 'readonly':             'LightlineReadonly',
       \ 'fugitive':             'LightlineFugitive',
-      \ 'blame':                'LightlineGitBlame',
+      \ 'blame':                'LightlineGitBlame'
       \ }
 let g:lightline.component_expand = {
       \   'linter_checking': 'lightline#ale#checking',
@@ -330,6 +346,7 @@ if has ('autocmd') " Remain compatible with earlier versions
  augroup vimrc     " Source vim configuration upon save
     autocmd! BufWritePost $MYVIMRC nested source % | echom "Reloaded " . $MYVIMRC | redraw
     autocmd! BufWritePost $MYGVIMRC if has('gui_running') | so % | echom "Reloaded " . $MYGVIMRC | endif | redraw
+    autocmd User CocGitStatusChange lightline_update()
   augroup END
 endif " has autocmd
 " }}}
@@ -369,9 +386,9 @@ autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 " fdoc is yaml
 autocmd BufRead,BufNewFile *.fdoc set filetype=yaml
 " md is markdown
-autocmd BufRead,BufNewFile *.md set filetype=markdown
-autocmd BufRead,BufNewFile *.md set spell
-" au BufRead,BufNewFile *.{md,markdown,mdown,mkd,mkdn} call s:MarkedPreview()
+" autocmd BufRead,BufNewFile *.md set filetype=markdown
+" autocmd BufRead,BufNewFile *.md set spell
+" " au BufRead,BufNewFile *.{md,markdown,mdown,mkd,mkdn} call s:MarkedPreview()
 
 " autocmd BufWritePre *.php,*.py,*.js,*.txt,*.hs,*.java,*.md
 "                 \:call <SID>StripTrailingWhitespaces()
@@ -395,15 +412,16 @@ autocmd BufRead,BufNewFile *.txt,*.asciidoc,README,TODO,CHANGELOG,NOTES,ABOUT
     \ comments=s1:/*,ex:*/,://,b:#,:%,:XCOMM,fb:-,fb:*,fb:+,fb:.,fb:>
 " }}}
 " UI Config {{{
-" syntax enable
-colorscheme solarized
+syntax enable
 set autoindent
 set autoread                      " reload files when changed on disk, i.e. via `git checkout`
+set background=dark
 set backspace=2                   " Fix broken backspace in some setups
 set backupcopy=yes                " see :help crontab
 set breakindent                   " set indent on wrapped lines
 set breakindentopt=shift:2
-set clipboard=unnamed,unnamedplus " yank and paste with the system clipboard
+" set clipboard=unnamed,unnamedplus " yank and paste with the system clipboard
+set clipboard=unnamed             " yank and paste with the system clipboard
 set cmdheight=1                   " Better display for messages (when using COC)
 set cursorline                    " don't highlight current line
 set diffopt=filler,vertical,hiddenoff
@@ -439,6 +457,9 @@ set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc,*.pyc,__pycache__
 " set wildmenu              " show a navigable menu for tab completion
 set wildmode=list:longest,list:full
 
+colorscheme solarized
+" added to fix gitgutter sign column color issue
+autocmd ColorScheme * highlight! link SignColumn LineNr
 " Copy/Paste {{{
 " Don't copy the contents of an overwritten selection.
 vnoremap p "_dP
@@ -466,43 +487,43 @@ if executable('ag')
 endif
 
 " Settings for FZF
-" need to fix the window color in order to use floating window
-" let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.6 } }
-let g:fzf_colors =
-\ { 'fg':      ['fg', 'Normal'],
-  \ 'bg':      ['bg', 'Normal'],
-  \ 'hl':      ['fg', 'Comment'],
-  \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-  \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-  \ 'hl+':     ['fg', 'Statement'],
-  \ 'info':    ['fg', 'PreProc'],
-  \ 'border':  ['fg', 'Ignore'],
-  \ 'prompt':  ['fg', 'Conditional'],
-  \ 'pointer': ['fg', 'Exception'],
-  \ 'marker':  ['fg', 'Keyword'],
-  \ 'spinner': ['fg', 'Label'],
-  \ 'header':  ['fg', 'Comment'] }
+" An action can be a reference to a function that processes selected lines
+function! s:build_quickfix_list(lines)
+  call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
+  copen
+  cc
+endfunction
 
-let $FZF_DEFAULT_COMMAND = "find * -path '*/\.*' -prune -o -path 'node_modules/**' -prune -o -path 'target/**' -prune 'dist/**' -prune -o -type f -print -o l -print 2> /dev/null"
+let g:fzf_action = {
+  \ 'ctrl-q': function('s:build_quickfix_list'),
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit' }
+
+" You can set up fzf window using a Vim command (Neovim or latest Vim 8
+" required)
+
+let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.7 } }
+
 " }}}
 "}}}
 " GUI Specific  Settings {{{
-if (&t_Co == 256 || has('gui_running'))
-  if ($TERM_PROGRAM == ('iTerm.app'||'Apple_Terminal'))
-    " set termguicolors
-    let s:tab_settings = system("osascript -e 'tell app \"Terminal\" to get name of (current settings of selected tab of front window)'")
-    if s:tab_settings =~? "Dark"
-    " if s:mode ==? "Totally Dark"
-      set background=dark
-    else
-      set background=light
-    endif
-    colorscheme solarized
-  else
-    colorscheme desert
-  endif
+" if (&t_Co == 256 || has('gui_running'))
+"   if ($TERM_PROGRAM == ('iTerm.app'||'Apple_Terminal'))
+"     " set termguicolors
+" "    let s:tab_settings = system("osascript -e 'tell app \"Terminal\" to get name of (current settings of selected tab of front window)'")
+"     if s:tab_settings =~? "Dark"
+"     " if s:mode ==? "Totally Dark"
+"       set background=dark
+"     else
+"       set background=light
+"     endif
+"     colorscheme solarized
+"   else
+"     colorscheme desert
+"   endif
 
-endif
+" endif
 
 "Enble basic mouse behavior such as resizing buffers.
 set mouse=a
@@ -606,7 +627,7 @@ nmap <silent> <leader>m :Map<CR>
 nmap <Leader>t :BTags<CR>
 nmap <Leader>T :Tags<CR>
 " nmap <silent> <leader>w :Windows<CR>
-nmap <silent> <leader>: :Commands<CR>
+nmap <silent> <leader>; :Commands<CR>
 " }}} FZF bindings
 
 nnoremap <leader>a :Ag<space>
@@ -637,110 +658,6 @@ xmap \S
 
 " Folding controls
 " noremap <space> za        " open/close folds
-
-" {{{ COC Mappings
-" Use tab for trigger completion with characters ahead and navigate.
-" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-
-" Use <c-space> to trigger completion.
-if has('nvim')
-  inoremap <silent><expr> <c-space> coc#refresh()
-else
-  inoremap <silent><expr> <c-@> coc#refresh()
-endif
-
-
-" Use `[g` and `]g` to navigate diagnostics
-" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)
-
-" Remap keys for gotos
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
-
-" Coc autocmds
-" Close the preview window when completion is done.
-autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
-
-" Coc Commands
-command! -nargs=0 Prettier :CocCommand prettier.formatFile
-" Use `:Format` to format current buffer
-command! -nargs=0 Format :call CocAction('format')
-" Use `:Fold` to fold current buffer
-command! -nargs=? Fold :call     CocAction('fold', <f-args>)
-
-" From https://scalameta.org/metals/docs/editors/vim.html
-" Use K to either doHover or show documentation in preview window
-nnoremap <silent> K :call <SID>show_documentation()<CR>
-
-function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  else
-    call CocAction('doHover')
-  endif
-endfunction
-
-" Highlight symbol under cursor on CursorHold
-autocmd CursorHold * silent call CocActionAsync('highlight')
-
-" Symbol renaming.
-nmap <leader>rn <Plug>(coc-rename)
-
-" Formatting selected code.
-xmap <leader>=  <Plug>(coc-format-selected)
-nmap <leader>=  <Plug>(coc-format-selected)
-
-" augroup mygroup
-"   autocmd!
-"   " Setup formatexpr specified filetype(s).
-"   autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
-"   " Update signature help on jump placeholder.
-"   autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
-" augroup end
-
-" " Applying codeAction to the selected region.
-" " Example: `<leader>aap` for current paragraph
-" xmap <leader>a  <Plug>(coc-codeaction-selected)
-" nmap <leader>a  <Plug>(coc-codeaction-selected)
-
-" Remap keys for applying codeAction to the current buffer.
-nmap <leader>ac  <Plug>(coc-codeaction)
-" Apply AutoFix to problem on the current line.
-nmap <leader>qf  <Plug>(coc-fix-current)
-
-" Mappings for CoCList
-" Show all diagnostics
-nnoremap <silent><nowait> <space>a  :<C-u>CocList diagnostics<cr>
-" Manage extensions
-nnoremap <silent><nowait> <space>e  :<C-u>CocList extensions<cr>
-" Show commands
-nnoremap <silent><nowait> <space>c  :<C-u>CocList commands<cr>
-" Find symbol of current document
-nnoremap <silent><nowait> <space>o  :<C-u>CocList outline<cr>
-" Search workspace symbols
-nnoremap <silent><nowait> <space>s  :<C-u>CocList -I symbols<cr>
-" Do default action for next item.
-nnoremap <silent><nowait> <space>j  :<C-u>CocNext<CR>
-" Do default action for previous item.
-nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
-" Resume latest coc list
-nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
-
-" }}} COC Mappings
 "}}}
 " Custom Functions {{{
 " function! Cond(cond, ...)

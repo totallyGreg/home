@@ -29,7 +29,8 @@ Plug 'tpope/vim-sensible'   " Sensible vim defaults
 Plug 'tpope/vim-unimpaired' " Pairs of handy bracket mappings
 Plug 'tpope/vim-repeat'     " Add repeat support with '.' for lots of plugins
 Plug 'gabesoft/vim-ags'     " A Vim plugin for the silver searcher that focuses on clear display of the search results
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+" Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug '/usr/local/opt/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'vim-scripts/restore_view.vim'
 set viewoptions=cursor,slash,unix
@@ -42,7 +43,7 @@ Plug 'sunaku/tmux-navigate'
 " source ~/.config/coc/coc.vimrc
 " }}}
 " {{{ Visual
-Plug 'altercation/vim-colors-solarized', {'do': ':so $HOME/.vim/bundle/vim-colors-solarized/autoload/togglebg.vim' } " Ethan's best
+Plug 'altercation/vim-colors-solarized', {'do': ':so $HOME/.local/share/nvim/plugged/vim-colors-solarized/autoload/togglebg.vim' } " Ethan's best
 let g:solarized_termtrans=0          " This gives me a dark background, but breaks light/dark toggle
 let g:solarized_visibility="normal"  " Special characters such as trailing whitespace, tabs, newlines, when displayed using :set list
 
@@ -501,23 +502,6 @@ let g:fzf_action = {
 " required)
 
 let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.7 } }
-
-" Customize fzf colors to match your color scheme
-" - fzf#wrap translates this to a set of `--color` options
-let g:fzf_colors =
-\ { 'fg':      ['fg', 'Normal'],
-  \ 'bg':      ['bg', 'Normal'],
-  \ 'hl':      ['fg', 'Comment'],
-  \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-  \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-  \ 'hl+':     ['fg', 'Statement'],
-  \ 'info':    ['fg', 'PreProc'],
-  \ 'border':  ['fg', 'Ignore'],
-  \ 'prompt':  ['fg', 'Conditional', 'Comment'],
-  \ 'pointer': ['fg', 'Exception'],
-  \ 'marker':  ['fg', 'Keyword'],
-  \ 'spinner': ['fg', 'Label'],
-  \ 'header':  ['fg', 'Comment'] }
 
 " }}}
 "}}}
