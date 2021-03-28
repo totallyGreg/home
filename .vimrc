@@ -17,10 +17,20 @@ endif
 set nocompatible
 " {{{ Plugin Managment
 " {{{ Bootstrap Plug
-if empty(glob('~/.vim/autoload/plug.vim'))
-  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  autocmd VimEnter * PlugInstall --sync | nested source $MYVIMRC
+if has('nvim')
+  let autoload_plug_path = stdpath('data') . '/site/autoload/plug.vim'
+  if !filereadable(autoload_plug_path)
+    silent execute '!curl -fLo ' . autoload_plug_path . '  --create-dirs 
+        \ "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"'
+    autocmd VimEnter * PlugInstall --sync | nested source $MYVIMRC
+  endif
+  unlet autoload_plug_path
+else
+  if empty(glob('~/.vim/autoload/plug.vim'))
+    silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+      \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    autocmd VimEnter * PlugInstall --sync | nested source $MYVIMRC
+  endif
 endif
 "}}}
 call plug#begin('~/.local/share/nvim/plugged')
