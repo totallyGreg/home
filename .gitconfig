@@ -63,5 +63,8 @@
 	tool = vimdiff
 [merge]
 	tool = vimdiff
-[url "git@github.com:"]
-	insteadOf = https://github.com/
+; heavy hammer that breaks stuff if your keys aren't installed yet
+; [url "git@github.com:"]
+; 	insteadOf = https://github.com/
+[init]
+	defaultBranch = main
