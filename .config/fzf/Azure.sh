@@ -1,15 +1,25 @@
 # Fuzzy Azure account switch
 faz() {
-  # query='[].{name: name, subscriptionId: id}'
-  az account set --subscription \
-  "$(az account list -o table \
-    --query '[].{name: name, subscriptionId: id}' | \
-    fzf-down --header-lines=2 --nth='1,2' \
+  # This function will list all of the accounts
+  # filter them with fzf
+  # and set the current account to the one selected
+  local JMESPath_template subscription_name 
+  JMESPath_template='[].{name: name, subscriptionId: id}'
+  subscription_name=$(
+    az account list -o table \
+      --query $JMESPath_template |
+      fzf-down \
+        --header-lines=2 \
+        --nth='1,2' \
         --height="50%" \
         --min-height=17 \
-        --preview='az account show -o json -s {-1}| jq -C' \
-      | rev | cut -d' ' -f1 | rev
-  )" &&  az account show
+        --preview='az account show -o json -s {-1}| jq -C' |
+       rev | cut -d' ' -f1 | rev
+    )
+
+  if [ -n "$subscription_name" ] ; then
+    az account set --subscription $subscription_name && az account show
+  fi
 }
 
 # Azure functions to keep costs down
