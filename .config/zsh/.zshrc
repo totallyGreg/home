@@ -70,14 +70,24 @@ if type brew &>/dev/null; then
     FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
     FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
 fi
-# My completions
+# My custom completions
 if [[ -d $ZDOTDIR/completions ]]; then
   fpath=($ZDOTDIR/completions $fpath)
 fi
 
+## FZF tab completion
+# disable sort when completing options of any command
+zstyle ':completion:complete:*:options' sort false
+
+zstyle ':completion:*:descriptions' format
+
+# give a preview of commandline arguments when completing `kill`
+zstyle ':completion:*:*:*:*:processes' command "ps -u $USER -o pid,user,comm,cmd -w -w"
+zstyle ':fzf-tab:complete:kill:argument-rest' extra-opts --preview=$extract'ps --pid=$in[(w)1] -o cmd --no-headers -w -w' --preview-window=down:3:wrap
+
 # zstyle ':fzf-tab:*' command $FZF_TAB_COMMAND
 # zstyle ':fzf-tab:completion:*:*:aws'
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls -1 -G $realpath'
+# zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls -1 -G $realpath'
 # zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup    ## This won't work until tmux 3.2 is released on homebrew
 
 # The following lines were added by compinstall
@@ -280,8 +290,8 @@ export PATH FPATH KUBECONFIG
 # ZLE custom widgets
 source $ZDOTDIR/zle.zsh
 
-## setprompt
-eval "$(starship init zsh)"
+## setprompt with starship if it exists
+hash starship > /dev/null 2>&1 && eval "$(starship init zsh)"
 
 #{{{ end profiling script
 if [[ "$PROFILE_STARTUP" == true ]]; then
