@@ -40,7 +40,7 @@ Plug 'janko-m/vim-test'
 Plug 'sunaku/tmux-navigate'
 " }}}
 " {{{ Code Completion
-" source ~/.config/coc/coc.vimrc
+source ~/.config/coc/coc.vimrc
 " }}}
 " {{{ Visual
 Plug 'altercation/vim-colors-solarized', {'do': ':so $HOME/.local/share/nvim/plugged/vim-colors-solarized/autoload/togglebg.vim' } " Ethan's best
@@ -531,6 +531,12 @@ if !has('nvim')
 endif
 
 if exists('$TMUX')  " Support resizing in tmux
+  " Change tmux window to filename
+  autocmd BufEnter * call system("tmux rename-window '" . expand("%:t") . "'")
+  " Now change Terminal Title to match full file path
+  " autocmd BufEnter * let &titlestring = ' ' . expand("%:t")                                                                 
+  " set title
+  autocmd VimLeave * call system("tmux setw automatic-rename")
   " set ttymouse=xterm2
 endif
 
