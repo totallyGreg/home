@@ -1,7 +1,9 @@
 tap "aws/tap"
+tap "buildpacks/tap"
 tap "cloudfoundry/tap"
 tap "derailed/k9s"
 tap "fabianishere/personal"
+tap "federico-terzi/espanso"
 tap "homebrew-ffmpeg/ffmpeg"
 tap "homebrew/bundle"
 tap "homebrew/cask"
@@ -12,6 +14,7 @@ tap "martido/brew-graph"
 tap "mczachurski/wallpapper"
 tap "sandreas/tap"
 tap "stevenacoffman/keyfob"
+tap "sttz/tap", "https://github.com/sttz/homebrew-tap.git"
 tap "universal-ctags/universal-ctags"
 tap "watsonbox/cmu-sphinx"
 tap "zdcthomas/tools"
@@ -23,6 +26,8 @@ brew "ansible"
 brew "ansible-lint"
 # Strip or convert ANSI codes into HTML, (La)Tex, RTF, or BBCode
 brew "ansifilter"
+# Formatter/translator for text files to numerous formats. Includes a2x
+brew "asciidoc"
 # Text processor and publishing toolchain for AsciiDoc
 brew "asciidoctor"
 # Record and share terminal sessions
@@ -107,8 +112,12 @@ brew "hadolint"
 brew "helm"
 # Convert source code to formatted text with syntax highlighting
 brew "highlight"
+# Text-based UI library
+brew "ncurses"
 # Improved top (interactive process viewer)
 brew "htop"
+# Get events and tasks from the macOS calendar database
+brew "ical-buddy"
 # Utility for IPMI control with kernel driver or LAN interface
 brew "ipmitool"
 # Interactive computing in Python
@@ -121,8 +130,12 @@ brew "jq"
 brew "pandoc"
 # Interactive environments for writing and running code
 brew "jupyterlab"
+# Utility to create k3s clusters on any local or remote VM
+brew "k3sup"
 # Tool to move from `docker-compose` to Kubernetes
 brew "kompose"
+# Network authentication protocol
+brew "krb5"
 # Kubernetes command-line interface
 brew "kubernetes-cli"
 # Package manager for kubectl plugins
@@ -133,6 +146,8 @@ brew "kubectx"
 brew "kubernetes-service-catalog-client"
 # Template-free customization of Kubernetes YAML manifests
 brew "kustomize"
+# Postgres C API library
+brew "libpq"
 # Powerful, clean, object-oriented scripting language
 brew "ruby"
 # Library implementing a curses-based widget set for terminals
@@ -157,6 +172,8 @@ brew "newsboat"
 brew "nmap"
 # Kubernetes introspection tool for developers
 brew "octant"
+# Command-line tool to generate, analyze, convert and manipulate colors
+brew "pastel"
 # General-purpose scripting language
 brew "php"
 # Pinentry for GPG on Mac
@@ -179,6 +196,10 @@ brew "rust"
 brew "shellcheck"
 # Autoformat shell script source code
 brew "shfmt"
+# SMART hard drive monitoring
+brew "smartmontools"
+# Editor of encrypted files
+brew "sops"
 # SOund eXchange: universal sound sample translator
 brew "sox"
 # Command-line interface for https://speedtest.net bandwidth tests
@@ -209,6 +230,8 @@ brew "tree"
 brew "urlview"
 # Bash completion for Vagrant
 brew "vagrant-completion"
+# Secures, stores, and tightly controls access to secrets
+brew "vault"
 # Vi 'workalike' with many additional features
 brew "vim"
 # Executes a program periodically, showing output fullscreen
@@ -231,6 +254,8 @@ brew "zsh-completions"
 brew "zsh-syntax-highlighting"
 # EC2 Instance Selector is a tool filter EC2 instance types based on resource criteria
 brew "aws/tap/ec2-instance-selector"
+# A CLI for building apps using Cloud Native Buildpacks
+brew "buildpacks/tap/pack"
 # BOSH CLI
 brew "cloudfoundry/tap/bosh-cli"
 brew "cloudfoundry/tap/cf-cli"
@@ -242,6 +267,8 @@ brew "cloudfoundry/tap/uaa-cli"
 brew "derailed/k9s/k9s"
 # PAM module for reattaching to the user's GUI (Aqua) session
 brew "fabianishere/personal/pam_reattach"
+# Cross-platform Text Expander written in Rust
+brew "federico-terzi/espanso/espanso"
 # Play, record, convert, and stream audio and video
 brew "homebrew-ffmpeg/ffmpeg/ffmpeg", args: ["with-fdk-aac"]
 # Imgpkg
@@ -262,6 +289,8 @@ brew "mczachurski/wallpapper/wallpapper"
 brew "sandreas/tap/m4b-tool"
 # keyfob - a two-factor authentication agent suitable for AWS and Github
 brew "stevenacoffman/keyfob/keyfob"
+# expresso is a command line interface to control the ExpressVPN app
+brew "sttz/tap/expresso"
 # Maintained ctags implementation
 brew "universal-ctags/universal-ctags/universal-ctags", args: ["HEAD"]
 brew "watsonbox/cmu-sphinx/cmu-sphinxbase", args: ["HEAD"]
@@ -271,6 +300,7 @@ brew "watsonbox/cmu-sphinx/cmu-sphinxtrain", args: ["HEAD"]
 brew "zdcthomas/tools/dmux"
 # Automatic tiling window manager similar to xmonad
 cask "amethyst", args: { appdir: "~/Applications/Ops/Administration/Window Managment" }
+# Securely stores and accesses AWS credentials in a development environment
 cask "aws-vault"
 # App to build and share containerized applications and microservices
 cask "docker", args: { appdir: "~/Applications/Holodeck" }
@@ -279,11 +309,17 @@ cask "font-hack-nerd-font"
 cask "kid3", args: { appdir: "~/Applications/Ops/Organization/Metadata" }
 # Music tagger
 cask "musicbrainz-picard", args: { appdir: "~/Applications/Ops/Organization/Metadata" }
+# Calculator and converter application
+cask "numi"
 # Open-source software for live streaming and screen recording
 cask "obs", args: { appdir: "~/Applications/Comm/Visual" }
 # Knowledge base that works on top of a local folder of plain text Markdown files
 cask "obsidian"
+# Command-line shell and scripting language
+cask "powershell", args: { appdir: "~/Applications/Comm/Terminals" }
 cask "qlstephen"
+# Development environment
+cask "vagrant"
 # Free and open-source hosted hypervisor for x86 virtualization
 cask "virtualbox"
 # Collect, organize, cite, and share research sources
@@ -302,6 +338,7 @@ mas "Controllers Lite", id: 673660806
 mas "Decked Builder", id: 406479348
 mas "Deliveries", id: 924726344
 mas "Disk Speed Test", id: 425264550
+mas "Drafts", id: 1435957248
 mas "eDrawings", id: 1209754386
 mas "GarageBand", id: 682658836
 mas "Growl", id: 467939042
@@ -323,9 +360,11 @@ mas "Paprika Recipe Manager 3", id: 1303222628
 mas "Pearl", id: 1152715357
 mas "PiPifier", id: 1160374471
 mas "PiPifier", id: 1160374471
+mas "progeCAD Viewer DWG", id: 468632219
 mas "RBdigital", id: 491365225
 mas "Remind Me Later", id: 408236729
 mas "Smart JSON Editor", id: 1268962404
+mas "Soulver 3", id: 1508732804
 mas "Tempest", id: 488576138
 mas "TweetDeck", id: 485812721
 mas "Twitter", id: 1482454543
