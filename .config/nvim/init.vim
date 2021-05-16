@@ -29,8 +29,8 @@ Plug 'tpope/vim-sensible'   " Sensible vim defaults
 Plug 'tpope/vim-unimpaired' " Pairs of handy bracket mappings
 Plug 'tpope/vim-repeat'     " Add repeat support with '.' for lots of plugins
 Plug 'gabesoft/vim-ags'     " A Vim plugin for the silver searcher that focuses on clear display of the search results
-" Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug '/usr/local/opt/fzf'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+" Plug '/usr/local/opt/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'vim-scripts/restore_view.vim'
 set viewoptions=cursor,slash,unix
@@ -49,6 +49,7 @@ let g:solarized_visibility="normal"  " Special characters such as trailing white
 
 Plug 'majutsushi/tagbar'                " Open tag navigation split with :Tagbar
 Plug 'ryanoasis/vim-devicons'
+" Plug 'wincent/terminus'
 " {{{ Syntax
 Plug 'sheerun/vim-polyglot' " Polyglot autoloads many language packs replacing: {{{
 let g:polyglot_disabled = ['asciidoc','ansible','terraform','helm','yaml'] " disabled since asciidoc is out of date
@@ -59,15 +60,17 @@ let g:ansible_name_highlight = 'd'
 let g:terraform_fold_sections=1
 " plasticboy/vim-markdown{{{
 autocmd FileType markdown let b:sleuth_automatic=0
-autocmd FileType markdown set conceallevel=2
+autocmd FileType markdown set conceallevel=0
 autocmd FileType markdown normal zR
 
 let g:vim_markdown_frontmatter=1
 let g:vim_markdown_strikethrough=1
 let g:vim_markdown_autowrite = 1
+let g:vim_markdown_new_list_item_indent = 2
 let g:vim_markdown_follow_anchor = 1
 let g:vim_markdown_no_extensions_in_markdown = 1
-let g:markdown_fenced_languages = ['html', 'python', 'bash=sh', 'yaml']
+let g:vim_markdown_conceal_code_blocks = 0
+let g:markdown_fenced_languages = ['html', 'python', 'bash=sh', 'yaml', 'mermaid']
 "}}}
 
 
@@ -113,6 +116,9 @@ xmap ga <Plug>(EasyAlign)
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(EasyAlign)
 vnoremap <silent> <Enter> :EasyAlign<cr>
+
+" <leader>tm to toggle table mode; <leader>tt to tabelize a csv selection
+Plug 'dhruvasagar/vim-table-mode'
 
 " Maybe this will work with obsidian?
 " Plug 'https://github.com/alok/notational-fzf-vim'
