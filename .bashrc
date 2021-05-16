@@ -131,7 +131,7 @@ fi
 [ -f ~/.aliases ] && source ~/.aliases
 ## Source Terraform variables
 # include ~/.oci/env-vars
-[ -f ~/.fzf.bash  ] && source ~/.fzf.bash
+[ -f "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.bash ] && source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.bash
 # Starship prompt if it exists
 [ $(which starship) ] && eval "$(starship init bash)"
 
@@ -139,3 +139,4 @@ fi
 if hash direnv 2>/dev/null; then
   eval "$(direnv hook bash)"
 fi
+
