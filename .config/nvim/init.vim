@@ -49,7 +49,7 @@ let g:solarized_visibility="normal"  " Special characters such as trailing white
 
 Plug 'majutsushi/tagbar'                " Open tag navigation split with :Tagbar
 Plug 'ryanoasis/vim-devicons'
-" Plug 'wincent/terminus'
+Plug 'wincent/terminus'
 " {{{ Syntax
 Plug 'sheerun/vim-polyglot' " Polyglot autoloads many language packs replacing: {{{
 let g:polyglot_disabled = ['asciidoc','ansible','terraform','helm','yaml'] " disabled since asciidoc is out of date
@@ -88,6 +88,7 @@ Plug 'towolf/vim-helm'
 " Plug 'vim-pandoc/vim-pandoc'
 " Plug 'vim-pandoc/vim-pandoc-syntax'
 " Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install' }
+Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 "}}}
 " }}}
 " {{{ Statusline (lightline)
@@ -121,8 +122,8 @@ vnoremap <silent> <Enter> :EasyAlign<cr>
 Plug 'dhruvasagar/vim-table-mode'
 
 " Maybe this will work with obsidian?
-" Plug 'https://github.com/alok/notational-fzf-vim'
-  " let g:nv_search_paths = ['~/Documents/Notes', './docs', './doc', 'docs.md' , './notes.md']
+Plug 'https://github.com/alok/notational-fzf-vim'
+  let g:nv_search_paths = ['~/Notes']
   " " String. Must be in the form 'ctrl-KEY' or 'alt-KEY'
   " let g:nv_create_note_key = 'alt-z'
   " nnoremap <silent> <C-p> :NV<CR> " Notational Velocity Trigger
@@ -173,7 +174,6 @@ call plug#end()
 " {{{ Lightline Configuration
 set laststatus=2
 set noshowmode    " Do not need to show -- Insert --, as lightline handles it already
-" autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
 
 " augroup lightlineCustom
 "   autocmd
@@ -356,6 +356,9 @@ endif " has autocmd
 " }}}
 autocmd VimResized * :wincmd =          " automatically rebalance windows on vim resize
 
+" added to fix gitgutter sign column color issue https://github.com/airblade/vim-gitgutter/commit/0da302c28a08fe62c31c77ac854914affd2180b8
+autocmd ColorScheme * highlight! link SignColumn LineNr
+
 " Override for yaml hosts format instead of INI
 " augroup ansible_vim_fthosts
 "   autocmd!
@@ -426,7 +429,6 @@ set breakindent                   " set indent on wrapped lines
 set breakindentopt=shift:2
 " set clipboard=unnamed,unnamedplus " yank and paste with the system clipboard
 set clipboard=unnamed             " yank and paste with the system clipboard
-set cmdheight=1                   " Better display for messages (when using COC)
 set cursorline                    " don't highlight current line
 set diffopt=filler,vertical,hiddenoff
 set directory-=.                  " don't store swapfiles in the current directory
@@ -446,12 +448,6 @@ set scrolloff=3                   " show context above/below cursorline
 set shiftwidth=2                  " normal mode indentation commands use 2 spaces
 " set showbreak=↳                 " Wrapped line symbol
 set showcmd
-set shortmess+=c                  " Coc: Don't pass messages to |ins-completion-menu|.
-if has("patch-8.1.1564")
-  set signcolumn=number           " New commbined colume
-else
-  set signcolumn=yes              " Consistent column for Coc
-endif
 set smartcase                     " case-sensitive search if any caps
 set smartindent
 set softtabstop=2                 " insert mode tab and backspace use 2 spaces
@@ -462,8 +458,6 @@ set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc,*.pyc,__pycache__
 set wildmode=list:longest,list:full
 
 colorscheme solarized
-" added to fix gitgutter sign column color issue
-autocmd ColorScheme * highlight! link SignColumn LineNr
 " Copy/Paste {{{
 " Don't copy the contents of an overwritten selection.
 vnoremap p "_dP
@@ -714,9 +708,6 @@ endfunction "}}}
 "call SetBackgroundMode()
 "" call timer_start(3000, "SetBackgroundMode", {"repeat": -1})
 ""}}}
-function! CocCurrentFunction()"{{{
-  return get(b:, 'coc_current_function', '')
-endfunction"}}}
 function! MarkedPreview() " {{{ Open current file in Marked
   :w
   exec ':silent !open -a "Marked.app" ' . shellescape('%:p')
