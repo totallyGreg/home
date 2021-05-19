@@ -22,6 +22,9 @@ style = 'bold cyan'
 disabled = false
 
 [env_var]
+# variable = "ExpressVPN"
+# symbol = '🔐'
+# format = "$symbol "
 
 [gcloud]
 disabled = true
