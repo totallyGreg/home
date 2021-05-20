@@ -65,6 +65,8 @@ alias takeover="tmux detach -a"
 alias vgs='vagrant global-status'
 alias v='vagrant'
 
+alias vim=nvim
+
 ## Random Crap
 # https://apple.stackexchange.com/questions/348762/how-to-have-a-random-background-color-in-terminal-app
 alias dark_mode_toggle="osascript -e 'tell application \"System Events\" to tell appearance preferences to set dark mode to not dark mode' -e 'tell application \"Terminal\" to set current settings of window 1 to settings set \"Totally Dark\"'; vim -c Tmuxline +qall"
