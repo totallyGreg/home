@@ -12,6 +12,9 @@ function setup_macos {
   ###############################################################################
   # Inputs
   ###############################################################################
+  # Always expand Save Panel by default
+  defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
+
   # Disable press-and-hold for keys in favor of key repeat
   defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
 
@@ -56,6 +59,13 @@ function setup_macos {
   # Enable text Selection in Quick Look Windows
   defaults write com.apple.finder QLEnableTextSelection -bool true
 
+  # Finder Show Status bar
+  defaults write com.apple.finder ShowStatusBar -bool true
+  defaults write com.apple.finder ShowPathbar -bool true
+
+  # Default Finder view is Column
+  defaults write com.apple.Finder FXPreferredViewStyle clmv
+
   ###############################################################################
   # Dock, Dashboard, and hot corners                                            #
   ###############################################################################
@@ -85,15 +95,45 @@ function setup_macos {
   # 12: Notification Center
   # 13: Lock Screen
   # Top left screen corner → Mission Control
-  # defaults write com.apple.dock wvous-tl-corner -int 2
-  # defaults write com.apple.dock wvous-tl-modifier -int 0
   #
+  # Modifiers:
+  #  131072: Shift Key
+  #  262144: Control Key
+  #  524288: Option Key
+  #  1048576: Command Key
+
+  # Top left screen corner → Control ^Mission Control
+  defaults write com.apple.dock wvous-tl-corner -int 2
+  defaults write com.apple.dock wvous-tl-modifier -int 262144
   # Top right screen corner → Control ^Desktop
+  defaults write com.apple.dock wvous-tr-corner -int 12
+  defaults write com.apple.dock wvous-tr-modifier -int 262144
+  # Bottom left screen corner → Control ^Start screen saver
+  defaults write com.apple.dock wvous-bl-corner -int 5
+  defaults write com.apple.dock wvous-bl-modifier -int 262144
+  # Bottom right screen corner → Control ^Desktop
   defaults write com.apple.dock wvous-tr-corner -int 4
   defaults write com.apple.dock wvous-tr-modifier -int 262144
-  # Bottom left screen corner → Start screen saver
-  defaults write com.apple.dock wvous-bl-corner -int 5
-  defaults write com.apple.dock wvous-bl-modifier -int 0
+
+  ###############################################################################
+  # Safari                                                                      #
+  ###############################################################################
+  # Show Status bar
+  defaults write com.apple.Safari ShowOverlayStatusBar -bool true
+  # Show favorites bar
+  defaults write com.apple.Safari ShowFavoritesBar -bool true
+  # Show Develop menu
+  defaults write com.apple.Safari IncludeDevelopMenu -bool true
+  # Don't open files after downloading
+  defaults write com.apple.Safari AutoOpenSafeDownloads -bool false
+
+  ###############################################################################
+  # Mail
+  ###############################################################################
+  # Don't load remote content
+  defaults write com.apple.mail-shared DisableURLLoading -bool true
+
+
 }
 
 function setup_terminal {
