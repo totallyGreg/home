@@ -156,7 +156,7 @@ zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 # zstyle ':completion:*:*:*:default' menu yes select search
 
 autoload -Uz compinit
-typeset -i updated_at=$(date +'%j' -r ~/.zcompdump 2>/dev/null || stat -f '%Sm' -t '%j' ~/.zcompdump 2>/dev/null)
+typeset -i updated_at=$(date +'%j' -r $ZDOTDIR/.zcompdump 2>/dev/null || stat -f '%Sm' -t '%j' $ZDOTDIR/.zcompdump 2>/dev/null)
 if [ $(date +'%j') != $updated_at ]; then
   compinit -i
 else
@@ -206,6 +206,7 @@ alias ls='ls -G '
 alias -s {yml,yaml}=vim       # quick editing of yaml files in vim
 
 [ -f ~/.aliases ] && source ~/.aliases
+[ -f $ZDOTDIR/solo ] && source $ZDOTDIR/solo
 
 # Enable the fuck if it exists
 hash thefuck > /dev/null 2>&1 && eval "$(thefuck --alias)"
@@ -262,11 +263,9 @@ export K9SCONFIG=$XDG_CONFIG_HOME/k9s
 
 # Setup Go environment
 export GOPATH="${HOME}/.go"
-# export GOPATH="$(brew --prefix golang)"
-# export GOROOT="$(brew --prefix golang)/libexec"
-# export GOROOT="/usr/local/go"
-export PATH=$PATH:$GOPATH/bin
-# path+=${GOPATH}/bin
+export GOROOT="$(brew --prefix golang)/libexec"
+export PATH=${GOPATH}/bin:${GOROOT}/bin:$PATH
+[[ -s "$HOME/.gvm/scripts/gvm" ]] && source "$HOME/.gvm/scripts/gvm"
 
 # My stuff
 PATH=${HOME}/bin:$PATH
@@ -319,6 +318,12 @@ zinit light zdharma/zui
 zinit light zdharma/zplugin-crasis
 
 zinit light Aloxaf/fzf-tab
+# Adds autosuggestions but not a useful as fzf
+# zinit light zsh-users/zsh-autosuggestions
+# ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+# bindkey '^M' autosuggest-execute
+
+zinit light zsh-users/zsh-syntax-highlighting
 
 # make'!...' -> run make before atclone & atpull
 zinit ice as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' atpull'%atclone' src"zhook.zsh"
