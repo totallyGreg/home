@@ -16,10 +16,10 @@ bip() {
 # Update (one or multiple) selected application(s)
 # mnemonic [B]rew [U]pdate [P]lugin
 bup() {
-  preview="brew info --json=v1 {} | jq -C '.[] | {name, desc, homepage, dependencies: .dependencies}'"
+  local preview="brew info --json=v1 {} | jq -C '.[] | {name, desc, homepage, dependencies: .dependencies}'"
   # eventually, I'd like preview to show me what's changed
     # brew log --oneline --stat --max-count=2 {}"
-  local updates=$(brew outdated | fzf -m --ansi --min-height=20 --preview $preview )
+  local updates=($(brew outdated | fzf -m --ansi --min-height=20 --preview $preview ))
   if [[ $updates ]]; then
     brew upgrade $updates
     brew bundle dump --all --describe --force;
