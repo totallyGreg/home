@@ -8,7 +8,7 @@ export FZF_DEFAULT_OPTS="
 --layout=reverse
 --border
 --bind '?:toggle-preview'
---bind 'ctrl-a:select-all'
+--bind 'alt-a:select-all'
 --bind 'ctrl-y:execute-silent(echo {+} | pbcopy)'
 --bind 'ctrl-e:execute(echo {+} | xargs -o vim)'
 --bind 'ctrl-v:execute(code {+})'
