@@ -11,7 +11,7 @@ fi
 #}}}
 
 # Gotsta have vi bindings
-export EDITOR=vim
+export EDITOR=nvim
 bindkey -v
 
 # Yank to the system clipboard
@@ -234,11 +234,10 @@ fi
 # test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
 # test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
 
-
 # Python globally managed by pyenv
 # https://opensource.com/article/19/5/python-3-default-mac#what-to-do
 if command -v pyenv 1>/dev/null 2>&1; then
-  eval "$(pyenv init -)"
+  eval "$(pyenv init --path)"
 fi
 
 # Kubernetes
@@ -319,12 +318,13 @@ zinit light zdharma/zplugin-crasis
 
 zinit light Aloxaf/fzf-tab
 # Adds autosuggestions but not a useful as fzf
-# zinit light zsh-users/zsh-autosuggestions
-# ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+zinit light zsh-users/zsh-autosuggestions
+ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 # bindkey '^M' autosuggest-execute
 
 zinit light zsh-users/zsh-syntax-highlighting
 
-# make'!...' -> run make before atclone & atpull
-zinit ice as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' atpull'%atclone' src"zhook.zsh"
-zinit light direnv/direnv
+zinit from"gh-r" as"program" mv"direnv* -> direnv" \
+    atclone'./direnv hook zsh > zhook.zsh' atpull'%atclone' \
+    pick"direnv" src="zhook.zsh" for \
+        direnv/direnv
