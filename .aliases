@@ -88,6 +88,7 @@ alias chrome='open -a "Google Chrome" '
 alias test_portal='open http://captive.apple.com/hotspot-detect.html'
 alias local_rsync='rsync -av -e rcp --delete --progress '
 alias books='~/Library/Containers/com.apple.BKAgentService/Data/Documents/iBooks/Books'
+alias audiobooks='/Users/totally/Library/Containers/com.apple.BKAgentService/Data/Documents/iBooks/Books/Audiobooks'
 alias oblique="curl -s http://brianeno.needsyourhelp.org/draw | jq .strategy"
 alias dad_joke='curl -H "Accept: text/plain" https://icanhazdadjoke.com/'
 
