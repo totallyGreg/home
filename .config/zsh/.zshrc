@@ -1,15 +1,6 @@
 #!/usr/bin/env zsh
 emulate zsh
 
-#{{{ profiling tools # copied shamelessly from https://gitlab.com/yramagicman/stow-dotfiles/-/blob/master/config/zsh/zshrc
-PROFILE_STARTUP=false
-if [[ "$PROFILE_STARTUP" == true ]]; then
-  zmodload zsh/zprof
-  exec 3>&2 2>$HOME/startlog.$$
-  setopt xtrace prompt_subst
-fi
-#}}}
-
 # Gotsta have vi bindings
 export EDITOR=nvim
 bindkey -v
@@ -34,7 +25,7 @@ export KEYTIMEOUT=1
 HISTSIZE=99999
 HISTFILESIZE=999999
 SAVEHIST=$HISTSIZE
-HISTORY_IGNORE='(history|ls|l|cd|cd ..|cd -|pwd|exit|date|* --help)'
+HISTORY_IGNORE='(history|ls|l|cd|cd ..|cd -|pwd|exit|date|*xyzzy*|* --help)'
 
 setopt SHARE_HISTORY          # share history between different instances of the shell
 #setopt HIST_EXPIRE_DUPS_FIRST # expire duplicates first
@@ -52,7 +43,6 @@ cdpath=($HOME $HOME/Repositories $HOME/Downloads)
 # Other misc settings
 LISTMAX=0
 
-
 # Yes, these are a pain to customize. Fortunately, Geoff Greer made an online
 # tool that makes it easy to customize your color scheme and keep them in sync
 # # across Linux and OS X/*BSD at http://geoff.greer.fm/lscolors/
@@ -60,10 +50,6 @@ export LS_COLORS='no=00:fi=00:di=01;33:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40
 
 # eval  `dircolors -b`
 export ZLS_COLORS=$LS_COLORS
-
-# Load zsh-syntax-highlighting
-# Installed with brew
-# source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Begin Completions
 if type brew &>/dev/null; then
@@ -78,8 +64,8 @@ fi
 ## FZF tab completion
 # disable sort when completing options of any command
 zstyle ':completion:complete:*:options' sort false
-
-zstyle ':completion:*:descriptions' format
+# set descriptions format to enable group support
+zstyle ':completion:*:descriptions' format '[%d]'
 
 # give a preview of commandline arguments when completing `kill`
 zstyle ':completion:*:*:*:*:processes' command "ps -u $USER -o pid,user,comm,cmd -w -w"
@@ -89,17 +75,11 @@ zstyle ':fzf-tab:complete:kill:argument-rest' extra-opts --preview=$extract'ps -
 # zstyle ':fzf-tab:completion:*:*:aws'
 # zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls -1 -G $realpath'
 # zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup    ## This won't work until tmux 3.2 is released on homebrew
+# zstyle ':fzf-tab:*' fzf-bindings 'space:accept'
+# zstyle ':fzf-tab:*' accept-line enter
+zstyle ':fzf-tab:*' continuous-trigger '/'
 
-# The following lines were added by compinstall
-
-# Expansion options
-# zstyle ':completion:*' completer _complete _correct _approximate
-# zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
-# zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]} r:|[._-]=** r:|=**'
-# zstyle ':completion::prefix-1:*' completer _complete
-# zstyle ':completion:incremental:*' completer _complete _correct
-# zstyle ':completion:predict:*' completer _complete
-# zstyle :compinstall filename '/Users/totally/.zshrc'
+zstyle :completion::complete:cd::paths accept-exact-dirs true
 
 # Completion caching
 zstyle ':completion::complete:*' use-cache 1
@@ -133,12 +113,12 @@ zstyle ':completion:*:complete:-command-::commands' ignored-patterns '*\~'
 # Separate matches into groups
 zstyle ':completion:*:matches' group 'yes'
 
-# Describe each match group.
-zstyle ':completion:*:descriptions' format "%B---- %d%b"
+# # Describe each match group.
+# zstyle ':completion:*:descriptions' format "%B---- %d%b"
 
-# Messages/warnings format
-zstyle ':completion:*:messages' format '%B%U---- %d%u%b'
-zstyle ':completion:*:warnings' format '%B%U---- no match for: %d%u%b'
+# # Messages/warnings format
+# zstyle ':completion:*:messages' format '%B%U---- %d%u%b'
+# zstyle ':completion:*:warnings' format '%B%U---- no match for: %d%u%b'
 
 # Describe options in full
 zstyle ':completion:*:options' description 'yes'
@@ -150,6 +130,9 @@ zstyle ':completion:*:history-words' list false
 
 # Use colors in completion
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
+
+zstyle ":prezto:module:thefuck" alias "doh"
+zstyle ":prezto:runcom" zpreztorc "$HOME/.config/zsh/.zshrc"
 
 # Shows highlighted completion menu
 # from https://www.reddit.com/r/zsh/comments/efi857/use_fzf_as_zshs_completion_selection_menu/
@@ -179,14 +162,10 @@ fi
 precmd () {
     local TERMWIDTH
     (( TERMWIDTH = ${COLUMNS} - 1 ))
-
-
     PR_FILLBAR=""
     PR_PWDLEN=""
-
     local promptsize=${#${(%):---(%n@%m:%l)---()--}}
     local pwdsize=${#${(%):-%~}}
-
     if [[ "$promptsize + $pwdsize" -gt $TERMWIDTH ]]; then
       ((PR_PWDLEN=$TERMWIDTH - $promptsize))
     else
@@ -216,7 +195,6 @@ hash thefuck > /dev/null 2>&1 && eval "$(thefuck --alias)"
 export Books=${HOME}/Library/Containers/com.apple.BKAgentService/Data/Documents/iBooks/Books
 export Podcasts="${HOME}/Library/Group Containers/243LU875E5.groups.com.apple.podcasts"
 
-
 # Homebrew
 if [ -d /opt/homebrew ] ; then
   export PATH=/opt/homebrew/bin:$PATH
@@ -242,17 +220,18 @@ fi
 
 # Kubernetes
 set_kubeconfig () {
-KUBECONFIG=$HOME/.kube/config
-# Lists of kubeconfig files to add to my KUBECONFIG
-local configd="${HOME}/.kube/config.d"
-local eks_clusters="${HOME}/.kube/eksctl/clusters"
-mkdir -p ${configd} ${eks_clusters}
-kubeConfigFileList=$(find ${configd} ${eks_clusters} -type f)
+  KUBECONFIG=$HOME/.kube/config
+  # Lists of kubeconfig directories to add to my KUBECONFIG
+  local configd="${HOME}/.kube/config.d"
+  local eks_clusters="${HOME}/.kube/eksctl/clusters"
+  local k3d="${HOME}/.k3d"
+  mkdir -p ${configd} ${eks_clusters}
+  kubeConfigFileList=$(find ${configd} ${eks_clusters} ${k3d} -type f)
 
-# Combine all file paths into the single `KUBECONFIG` variable.
-while IFS= read -r kubeConfigFile; do
-  KUBECONFIG+=":${kubeConfigFile}"
-done <<< ${kubeConfigFileList}
+  # Combine all file paths into the single `KUBECONFIG` variable.
+  while IFS= read -r kubeConfigFile; do
+    KUBECONFIG+=":${kubeConfigFile}"
+  done <<< ${kubeConfigFileList}
 }
 set_kubeconfig
 
@@ -291,14 +270,6 @@ source $ZDOTDIR/zle.zsh
 ## setprompt with starship if it exists
 hash starship > /dev/null 2>&1 && eval "$(starship init zsh)"
 
-#{{{ end profiling script
-if [[ "$PROFILE_STARTUP" == true ]]; then
-    unsetopt xtrace
-    exec 2>&3 3>&-
-    zprof > ~/zshprofile$(date +'%s')
-fi
-#}}}
-
 ### Added by Zinit's installer
 if [[ ! -f $HOME/.config/zsh/.zinit/bin/zinit.zsh ]]; then
     print -P "%F{33}▓▒░ %F{220}Installing %F{33}DHARMA%F{220} Initiative Plugin Manager (%F{33}zdharma/zinit%F{220})…%f"
@@ -313,16 +284,33 @@ autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
 ### End of Zinit's installer chunk
 
-zinit light zdharma/zui
-zinit light zdharma/zplugin-crasis
+# zinit light zdharma/zui
+# zinit light zdharma/zplugin-crasis
 
 zinit light Aloxaf/fzf-tab
-# Adds autosuggestions but not a useful as fzf
-zinit light zsh-users/zsh-autosuggestions
-ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
-# bindkey '^M' autosuggest-execute
 
-zinit light zsh-users/zsh-syntax-highlighting
+# Fancy new for-syntax
+zinit wait lucid light-mode for \
+  atinit"zicompinit; zicdreplay" \
+      zdharma/fast-syntax-highlighting \
+  atload'_zsh_autosuggest_start; bindkey "^[[Z" autosuggest-accept'\
+      zsh-users/zsh-autosuggestions \
+  blockf atpull'zinit creinstall -q .' \
+      zsh-users/zsh-completions
+# zinit ice wait"0a" lucid atload'_zsh_autosuggest_start; bindkey "^ " autosuggest-accept;'
+# zinit light zsh-users/zsh-autosuggestions
+ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+ZSH_AUTOSUGGEST_USE_ASYNC=true
+# bindkey '^M' autosuggest-eecute
+# bindkey '^I'   complete-word      # tab          | complete
+# bindkey '^I^I'   fzf-tab-complete # double tab          | complete
+# bindkey '^[[Z' autosuggest-accept # shift + tab  | autosuggest
+
+zinit ice wait'1' lucid
+zinit light laggardkernel/zsh-thefuck
+# This breaks all kinds of aliases and who knows what else
+# zinit light unixorn/tumult.plugin.zsh
 
 zinit from"gh-r" as"program" mv"direnv* -> direnv" \
     atclone'./direnv hook zsh > zhook.zsh' atpull'%atclone' \
