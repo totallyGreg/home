@@ -268,7 +268,7 @@ export PATH FPATH KUBECONFIG
 source $ZDOTDIR/zle.zsh
 
 ## setprompt with starship if it exists
-hash starship > /dev/null 2>&1 && eval "$(starship init zsh)"
+# hash starship > /dev/null 2>&1 && eval "$(starship init zsh)"
 
 ### Added by Zinit's installer
 if [[ ! -f $HOME/.config/zsh/.zinit/bin/zinit.zsh ]]; then
@@ -316,3 +316,7 @@ zinit from"gh-r" as"program" mv"direnv* -> direnv" \
     atclone'./direnv hook zsh > zhook.zsh' atpull'%atclone' \
     pick"direnv" src="zhook.zsh" for \
         direnv/direnv
+
+### Starship prompt
+zinit ice from"gh-r" as"program" atload'!eval $(starship init zsh)'
+zinit light starship/starship
