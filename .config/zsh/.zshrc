@@ -286,8 +286,8 @@ autoload -Uz _zinit
 
 # zinit light zdharma/zui
 # zinit light zdharma/zplugin-crasis
-
 zinit light Aloxaf/fzf-tab
+zinit light xPMo/zsh-toggle-command-prefix
 
 # Fancy new for-syntax
 zinit wait lucid light-mode for \
@@ -302,10 +302,19 @@ zinit wait lucid light-mode for \
 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 ZSH_AUTOSUGGEST_USE_ASYNC=true
-# bindkey '^M' autosuggest-eecute
+# bindkey '^M' autosuggest-execute  # unfortunatley this isn't control return just return
 # bindkey '^I'   complete-word      # tab          | complete
 # bindkey '^I^I'   fzf-tab-complete # double tab          | complete
 # bindkey '^[[Z' autosuggest-accept # shift + tab  | autosuggest
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f "$HOMEBREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc" ]; 
+then 
+  . "$HOMEBREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc"
+  zinit ice blockf if'[[ "$(uname)" == "Darwin" ]]'
+  zinit snippet $HOMEBREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc
+fi
+
 
 zinit ice wait'1' lucid
 zinit light laggardkernel/zsh-thefuck

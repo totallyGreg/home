@@ -8,13 +8,15 @@ function _git-status {
 zle -N _git-status
 bindkey '\eg' _git-status
 
-function watch-command {
-    # If line buffer is full (i.e. I've started typing)
-    # insert the watch command in front of text
-    zle vi-beginning-of-line
-    # if line buffer empty, assume I want to watch the last command from history
-    # or better yet run watch with an fzf list of history
-    # Or simply add an fzf keybinding to insert watch from history or all of these!
+.toggle-watch(){
+    .toggle-command-prefix 'watch ' 'watch'
 
 }
-zle -N watch-command
+# zle -N watch-command
+zle -N .toggle-watch
+bindkey '\ew' .toggle-watch     # Alt-W to toggle watch or apply to previous command
+
+# Open command line in editor
+autoload -U edit-command-line
+zle -N edit-command-line
+bindkey '^e' edit-command-line

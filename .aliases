@@ -50,7 +50,8 @@ alias kpod='kubectl get pods --all-namespaces'
 alias ksvc='kubectl get services --all-namespaces'
 alias kvu="kubectl view-utilization "
 alias kx='kubectl exec -i -t'
-alias qapla='kubectl apply -f '
+alias kapply='kubectl apply -f '
+alias qapla='pbpaste | kubectl apply -f -'
 
 ## Terraform
 alias tf=terraform
