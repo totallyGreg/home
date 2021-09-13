@@ -39,7 +39,7 @@ alias gpg_clear_cache='echo "CLEAR_PASSPHRASE --mode=normal $keygrip " | gpg-con
 
 # Kubernetes
 alias busybox='kubectl run -it --rm --restart=Never busybox --image=busybox sh'
-alias netshoot='open https://github.com/nicolaka/netshoot ; kubectl run -it --rm --restart=Never netshoot --image=nicolaka/netshoot -- /bin/bash'
+alias netshoot='open https://github.com/nicolaka/netshoot ; kubectl run tmp-shell --rm -i --tty --image nicolaka/netshoot -- /bin/bash'
 alias k='kubectl '
 alias kctx='kubectx '
 alias kns='kubens '
@@ -128,3 +128,7 @@ alias install_home_brew='/usr/bin/ruby -e "$(curl -fsSL https://raw.githubuserco
 
 alias restart_dns='ssh portcullis sudo /etc/init.d/dnsmasq force-reload'
 alias m4b-tool='docker run -it --rm -u $(id -u):$(id -g) -v "$(pwd)":/mnt m4b-tool'
+alias mp4chaps='docker run -it --rm -u $(id -u):$(id -g) -v "$(pwd)":/mnt --entrypoint mp4chaps m4b-tool'
+alias mp4tags='docker run -it --rm -u $(id -u):$(id -g) -v "$(pwd)":/mnt --entrypoint mp4tags m4b-tool'
+alias mp4info='docker run -it --rm -u $(id -u):$(id -g) -v "$(pwd)":/mnt --entrypoint mp4info m4b-tool'
+

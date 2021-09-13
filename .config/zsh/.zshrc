@@ -38,7 +38,7 @@ setopt INTERACTIVE_COMMENTS   # allow #style comments to be added on commandline
 # Changing directories
 setopt AUTO_CD
 setopt AUTO_PUSHD
-cdpath=($HOME $HOME/Repositories $HOME/Downloads)
+cdpath=($HOME $HOME/Repositories $HOME/Downloads $HOME/Work)
 
 # Other misc settings
 LISTMAX=0
@@ -77,7 +77,7 @@ zstyle ':fzf-tab:complete:kill:argument-rest' extra-opts --preview=$extract'ps -
 # zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup    ## This won't work until tmux 3.2 is released on homebrew
 # zstyle ':fzf-tab:*' fzf-bindings 'space:accept'
 # zstyle ':fzf-tab:*' accept-line enter
-zstyle ':fzf-tab:*' continuous-trigger '/'
+# zstyle ':fzf-tab:*' continuous-trigger '/'
 
 zstyle :completion::complete:cd::paths accept-exact-dirs true
 
@@ -188,7 +188,7 @@ alias -s {yml,yaml}=vim       # quick editing of yaml files in vim
 [ -f $ZDOTDIR/solo ] && source $ZDOTDIR/solo
 
 # Enable the fuck if it exists
-hash thefuck > /dev/null 2>&1 && eval "$(thefuck --alias)"
+# hash thefuck > /dev/null 2>&1 && eval "$(thefuck --alias)"
 
 # iCloud Obscured Locations
 [ -d "${HOME}/Library/Mobile Documents/com~apple~CloudDocs" ] && export iCloud="${HOME}/Clouds/iCloud"
@@ -216,7 +216,14 @@ fi
 # https://opensource.com/article/19/5/python-3-default-mac#what-to-do
 if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv init --path)"
+  eval "$(pyenv virtualenv-init -)"
 fi
+
+
+# ASDF to manage various versions of cli binaries
+# if command -v asdf 1>/dev/null 2>&1; then
+#   $(brew --prefix asdf)/libexec/asdf.sh
+# fi
 
 # Kubernetes
 set_kubeconfig () {
@@ -244,6 +251,9 @@ export GOPATH="${HOME}/.go"
 export GOROOT="$(brew --prefix golang)/libexec"
 export PATH=${GOPATH}/bin:${GOROOT}/bin:$PATH
 [[ -s "$HOME/.gvm/scripts/gvm" ]] && source "$HOME/.gvm/scripts/gvm"
+
+# Cargo
+PATH=${HOME}/.cargo/bin:$PATH
 
 # My stuff
 PATH=${HOME}/bin:$PATH
@@ -315,10 +325,10 @@ then
   zinit snippet $HOMEBREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc
 fi
 
-
 zinit ice wait'1' lucid
 zinit light laggardkernel/zsh-thefuck
 # This breaks all kinds of aliases and who knows what else
+# But I really must steal the security keychain bits
 # zinit light unixorn/tumult.plugin.zsh
 
 zinit from"gh-r" as"program" mv"direnv* -> direnv" \

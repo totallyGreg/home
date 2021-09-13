@@ -1,3 +1,6 @@
+[aws]
+disabled = false
+
 [battery.display]
 threshold = 10
 style = 'bold red'
@@ -34,6 +37,7 @@ us-west1 = "usw1"
 
 [git_branch]
 symbol = ''
+# symbol = ""
 # truncation_length = 2^63 - 1
 disabled = false
 

@@ -136,7 +136,7 @@ let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
 let g:ale_open_list = 0
 " let g:ale_list_vertical = 1
 let g:ale_set_quickfix = 0
-let b:ale_linters = ['proselint', 'tflint', 'shellcheck', 'vint', 'prettier', 'yamllint', 'pyflakes', 'flake8', 'pylint']
+" let b:ale_linters = ['proselint', 'tflint', 'shellcheck', 'vint', 'prettier', 'yamllint', 'pyflakes', 'flake8', 'pylint']
 let g:ale_fixers = ['prettier', 'shfmt' ]
 let g:ale_python_flake8_args="--ignore=E501" " }}}
 " }}}

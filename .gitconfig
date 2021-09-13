@@ -1,15 +1,21 @@
 [user]
-  email = totallyGreg@gmail.com
+  email = 283704+totallyGreg@users.noreply.github.com
   name = J. Greg Williams
+; heavy hammer that breaks stuff if your keys aren't installed yet
+[url "ssh://git@github.com/"]
+  insteadOf = https://github.com/
 [alias]
+  alias = config --get-regexp ^alias.
+  br = branch --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(contents:subject) %(color:green)(%(committerdate:relative)) [%(authorname)]' --sort=-committerdate
+  brs = br -avv
   branches = branch -avv
   ci = commit
   co = checkout
+  contrib = shortlog -e --summary --numbered
   dump = cat-file -p
   find = "!git log --color -p -S "
   hist = log --graph --pretty=format:'%Cred%h%Creset %s%C(yellow)%d%Creset %Cgreen(%cr)%Creset [%an]' --abbrev-commit --date=relative
-  last = log -
-  last = log -1 HEAD      # view last commit
+  last = log -1 HEAD --stat     # view last commit
   ll = log --decorate --oneline --graph --numstat
   ls = log --decorate --oneline --graph
   pretty = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
@@ -17,6 +23,7 @@
   remotes = remote -v
   review = "log master..origin/master"
   size = "count-objects -vH"
+  st = status -sb
   staged = diff --staged    # view the diff of what is currently staged
   today = diff --stat 'HEAD@{midnight}'
   tree = log --graph --oneline --all
@@ -44,10 +51,10 @@
   changed = yellow
   untracked = cyan
 [filter "lfs"]
-  clean = git-lfs clean -- %f
-  process = git-lfs filter-process
-  required = true
-  smudge = git-lfs smudge -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
 [status]
   submoduleSummary = true
 [commit]
@@ -63,8 +70,7 @@
 	tool = vimdiff
 [merge]
 	tool = vimdiff
-; heavy hammer that breaks stuff if your keys aren't installed yet
-; [url "git@github.com:"]
-; 	insteadOf = https://github.com/
 [init]
 	defaultBranch = main
+[tag]
+	sort = version:refname

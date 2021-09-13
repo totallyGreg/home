@@ -26,6 +26,8 @@ hdiutil create -volname Totally_Backed_Up -format UDSB \
   -verbose -noatomic -skipunreadable -spotlight -ov \
   -srcfolder ~/.gnupg \
   -srcfolder ~/.ssh \
+  -srcfolder ~/.aws \
+  -srcfolder ~/.kube \
   -srcfolder ~/Downloads \
   -srcfolder ~/Library/Application\ Support  \
   -srcfolder ~/Library/Audio \

@@ -10,7 +10,6 @@ bindkey '\eg' _git-status
 
 .toggle-watch(){
     .toggle-command-prefix 'watch ' 'watch'
-
 }
 # zle -N watch-command
 zle -N .toggle-watch
