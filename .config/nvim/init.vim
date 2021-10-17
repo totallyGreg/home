@@ -155,13 +155,6 @@ Plug 'mustache/vim-mustache-handlebars'
 let g:mustache_abbreviations = 1
 Plug 'nvie/vim-flake8'
 " }}}
-" {{{ Tmux Tools
-
-" Plug 'edkolev/tmuxline.vim', { 'on': ['Tmuxline', 'TmuxlineSimple', 'TmuxlineSnapshot'] }
-" Plug 'christoomey/vim-tmux-navigator'
-" Plug 'urbainvaes/vim-tmux-pilot'
-" Plug 'benmills/vimux'                   " vim plugin to interact with tmux
-" }}}
 " {{{ On-demand loading
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
 
