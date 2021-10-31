@@ -19,3 +19,16 @@ bindkey '\ew' .toggle-watch     # Alt-W to toggle watch or apply to previous com
 autoload -U edit-command-line
 zle -N edit-command-line
 bindkey '^e' edit-command-line
+
+# Autosuggest bindings
+# bindkey '^M' autosuggest-execute  # unfortunatley this isn't control return just return
+bindkey '^\n' autosuggest-execute
+bindkey '^f' forward-word
+# bindkey '^I'   complete-word      # tab         | complete
+bindkey '^N' autosuggest-fetch      # N         | complete
+bindkey '\el' autosuggest-clear      # N         | complete
+# bindkey '^I^I'   fzf-tab-complete # double tab  | complete
+# bindkey '^[[Z' autosuggest-accept # shift + tab | autosuggest
+bindkey '^ ' autosuggest-accept
+
+
