@@ -51,8 +51,6 @@ export LS_COLORS='no=00:fi=00:di=01;33:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40
 # eval  `dircolors -b`
 export ZLS_COLORS=$LS_COLORS
 
-## Now sourcing completions
-source $ZDOTDIR/completion.zsh
 
 precmd () {
     local TERMWIDTH
@@ -83,7 +81,7 @@ alias -s {yml,yaml}=vim       # quick editing of yaml files in vim
 [ -f $ZDOTDIR/solo ] && source $ZDOTDIR/solo
 
 # Enable the fuck if it exists
-# hash thefuck > /dev/null 2>&1 && eval "$(thefuck --alias)"
+hash thefuck > /dev/null 2>&1 && eval "$(thefuck --alias doh)"
 
 # iCloud Obscured Locations
 [ -d "${HOME}/Library/Mobile Documents/com~apple~CloudDocs" ] && export iCloud="${HOME}/Clouds/iCloud"
@@ -165,76 +163,52 @@ export PATH FPATH KUBECONFIG
 # Load FZF
 [ -f "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.zsh ] && source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.zsh
 
-# ZLE custom widgets
-source $ZDOTDIR/zle.zsh
-
-## setprompt with starship if it exists
-# hash starship > /dev/null 2>&1 && eval "$(starship init zsh)"
-
-### Added by Zinit's installer
-if [[ ! -f $HOME/.config/zsh/.zinit/bin/zinit.zsh ]]; then
-    print -P "%F{33}▓▒░ %F{220}Installing %F{33}DHARMA%F{220} Initiative Plugin Manager (%F{33}zdharma/zinit%F{220})…%f"
-    command mkdir -p "$HOME/.config/zsh/.zinit" && command chmod g-rwX "$HOME/.config/zsh/.zinit"
-    command git clone https://github.com/zdharma/zinit "$HOME/.config/zsh/.zinit/bin" && \
-        print -P "%F{33}▓▒░ %F{34}Installation successful.%f%b" || \
-        print -P "%F{160}▓▒░ The clone has failed.%f%b"
-fi
-
-source "$HOME/.config/zsh/.zinit/bin/zinit.zsh"
-autoload -Uz _zinit
-(( ${+_comps} )) && _comps[zinit]=_zinit
-### End of Zinit's installer chunk
-
-# zinit light zdharma/zui
-# zinit light zdharma/zplugin-crasis
-zinit light Aloxaf/fzf-tab
-zinit light xPMo/zsh-toggle-command-prefix
-
-# Fancy new for-syntax
-zinit wait lucid light-mode for \
-  atinit"zicompinit; zicdreplay" \
-      zdharma/fast-syntax-highlighting \
-  atload'_zsh_autosuggest_start; bindkey "^[[Z" autosuggest-accept'\
-      zsh-users/zsh-autosuggestions \
-  blockf atpull'zinit creinstall -q .' \
-      zsh-users/zsh-completions
-# zinit ice wait"0a" lucid atload'_zsh_autosuggest_start; bindkey "^ " autosuggest-accept;'
-# zinit light zsh-users/zsh-autosuggestions
 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
-ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+ZSH_AUTOSUGGEST_STRATEGY=(match_prev_cmd completion)
 ZSH_AUTOSUGGEST_USE_ASYNC=true
-# bindkey '^M' autosuggest-execute  # unfortunatley this isn't control return just return
-# bindkey '^I'   complete-word      # tab          | complete
-# bindkey '^I^I'   fzf-tab-complete # double tab          | complete
-# bindkey '^[[Z' autosuggest-accept # shift + tab  | autosuggest
 
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f "$HOMEBREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc" ]; 
-then 
-  . "$HOMEBREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc"
-  zinit ice blockf if'[[ "$(uname)" == "Darwin" ]]'
-  zinit snippet $HOMEBREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc
+# # The next line updates PATH for the Google Cloud SDK.
+# if [ -f "$HOMEBREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc" ]; 
+# then 
+#   . "$HOMEBREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc"
+#   zinit ice blockf if'[[ "$(uname)" == "Darwin" ]]'
+#   zinit snippet $HOMEBREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc
+# fi
+
+
+eval "$(direnv hook zsh)"
+
+# Switching to zcomet https://github.com/agkozak/zcomet
+# Clone zcomet if necessary
+if [[ ! -f ${ZDOTDIR:-${HOME}}/.zcomet/bin/zcomet.zsh ]]; then
+  command git clone https://github.com/agkozak/zcomet.git ${ZDOTDIR:-${HOME}}/.zcomet/bin
 fi
+source ${ZDOTDIR:-${HOME}}/.zcomet/bin/zcomet.zsh
 
-zinit ice wait'1' lucid
-zinit light laggardkernel/zsh-thefuck
+# Load some plugins
+zcomet load zdharma-continuum/fast-syntax-highlighting
+zcomet load zsh-users/zsh-autosuggestions
+zcomet load zsh-users/zsh-completions
+zcomet load Aloxaf/fzf-tab
+zcomet load asdf-vm/asdf
+# zcomet load xPMo/zsh-toggle-command-prefix # keeps throwing sudo errors 
+zcomet load laggardkernel/zsh-thefuck
+zcomet load starship/starship
+
+# Lazy-load some plugins
+zcomet trigger zhooks agkozak/zhooks
+
 # This breaks all kinds of aliases and who knows what else
 # But I really must steal the security keychain bits
 # zinit light unixorn/tumult.plugin.zsh
 
-zinit from"gh-r" as"program" mv"direnv* -> direnv" \
-    atclone'./direnv hook zsh > zhook.zsh' atpull'%atclone' \
-    pick"direnv" src="zhook.zsh" for \
-        direnv/direnv
+# ZLE custom widgets
+source $ZDOTDIR/zle.zsh
+# Now sourcing completions
+source $ZDOTDIR/completion.zsh
 
-# ASDF to manage various versions of cli binaries
-# if command -v asdf 1>/dev/null 2>&1; then
-#   $(brew --prefix asdf)/libexec/asdf.sh
-# fi
-zinit ice src="asdf.sh" atinit'zpcompinit; zpcdreplay' nocd
-zinit load asdf-vm/asdf
-zinit cdclear -q
+# Run compinit and compile its cache
+zcomet compinit
 
 ### Starship prompt
-zinit ice from"gh-r" as"program" atload'!eval $(starship init zsh)'
-zinit light starship/starship
+eval "$(starship init zsh)"

@@ -3,7 +3,7 @@ if type brew &>/dev/null; then
     FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
     FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
 fi
-# My custom completions
+# # My custom completions
 if [[ -d $ZDOTDIR/completions ]]; then
   fpath=($ZDOTDIR/completions $fpath)
 fi
@@ -103,13 +103,13 @@ zstyle ":prezto:runcom" zpreztorc "$HOME/.config/zsh/.zshrc"
 # zstyle ':completion:*:*:*:default' menu yes select search
 
 ## updated date stamp each day to invalidate the cache
-autoload -Uz compinit
-typeset -i updated_at=$(date +'%j' -r $ZDOTDIR/.zcompdump 2>/dev/null || stat -f '%Sm' -t '%j' $ZDOTDIR/.zcompdump 2>/dev/null)
-if [ $(date +'%j') != $updated_at ]; then
-  compinit -i
-else
-  compinit -C -i
-fi
+# autoload -Uz compinit
+# typeset -i updated_at=$(date +'%j' -r $ZDOTDIR/.zcompdump 2>/dev/null || stat -f '%Sm' -t '%j' $ZDOTDIR/.zcompdump 2>/dev/null)
+# if [ $(date +'%j') != $updated_at ]; then
+#   compinit -i
+# else
+#   compinit -C -i
+# fi
 # End of lines added by compinstall
 
 # # Hoping to steal bash completions for free
