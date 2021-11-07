@@ -1,6 +1,31 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 
-function setup_macos {
+confirm() {
+  local _prompt _default _response
+
+  if [ "$@" ]; then _prompt="$@"; else _prompt="Are you sure"; fi
+  _prompt="$_prompt [y/n] ?"
+
+  # Loop forever until the user enters a valid response (Y/N or Yes/No).
+  while true; do
+    read -r -p "$_prompt " _response
+    case "$_response" in
+      [Yy][Ee][Ss]|[Yy]) # Yes or Y (case-insensitive).
+        "$@"
+        return 0
+        ;;
+      [Nn][Oo]|[Nn])  # No or N.
+        return 1
+        ;;
+      *) # Anything else (including a blank) is invalid.
+        ;;
+    esac
+  # else
+    # echo "[❌] Failed to enable TouchID Sudo"
+  done
+}
+
+function macos_defaults {
   # Useful inspiration
   # - https://github.com/mathiasbynens/dotfiles/blob/master/.macos
   # - https://ss64.com/osx/syntax-defaults.html
@@ -34,7 +59,8 @@ function setup_macos {
   defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 
   # Enable three finger tap for data lookups
-  defaults -currentHost write -g com.apple.AppleMultitouchTrackpad TrackpadThreeFingerTapGesture -int 2
+  # disabled: This does not work.. 
+  # defaults -currentHost write -g com.apple.AppleMultitouchTrackpad TrackpadThreeFingerTapGesture -int 2
 
   # Use scroll gesture with the Ctrl (^) modifier key to zoom
   # Requires Terminal.app full disk access: System Preferences -> Privacy -> Full Disk Access
@@ -133,7 +159,6 @@ function setup_macos {
   # Don't load remote content
   # defaults write com.apple.mail-shared DisableURLLoading -bool true
 
-
 }
 
 function setup_terminal {
@@ -156,31 +181,36 @@ function setup_terminal {
   fi
   # I was hoping this would cause it to reload its new settings, it doesn't
   # defaults read ~/Library/Preferences/com.apple.Terminal.plist
+  confirm enable_touchid
+
+}
+
+function enable_touchid {
+  # enable_touchid_sudo
+  #   Check if already enabled in /etc pam.d/sudo
+  #   Use vim to insert required text to sudo
+  if grep -q 'pam_tid.so' /etc/pam.d/sudo; then
+    echo "[✅] TouchID Sudo Already Enabled"
+    return 0
+  fi
+
+  if sudo ex -s -c '2i|auth       sufficient     pam_tid.so' -c x! -c x! /etc/pam.d/sudo; then
+    # Invoke Vim in ex mode
+    # Select line 2, enter insert mode, insert that text write changes and exit
+    # Need to exit twice to get passed the read only file warning
+    echo "[✅] TouchID Sudo Enabled"
+  else
+    echo "[❌] Failed to enable TouchID Sudo"
+  fi
 }
 
 function install_brewfile() {
-    echo "do you want to install the Brewfile now?"
-    select yn in Yes No; do
-        case $yn in
-            Yes ) echo "Installing Brewfile"; brew bundle install ; break;;
-            No ) echo "Skipping Brewfile installation"; break;;
-        esac
-    done
+  brew bundle install
 }
 
 function install_gpg() {
-    echo "do you want to install GPG now?"
-    select yn in Yes No; do
-        case $yn in
-            Yes ) echo "Installing GnuPG";
-              echo;
-              brew install pinentry-mac
-              break;;
-            No ) echo "Skipping GnuPG installation"; break;;
-        esac
-    done
+  brew install pinentry-mac
 }
-
 
 function setup_python {
   # from https://opensource.com/article/19/5/python-3-default-mac#what-to-do
@@ -190,7 +220,46 @@ function setup_python {
   pyenv install $python_version
   pyenv global $python_version
 }
-setup_macos
-setup_terminal
+
+function macos {
+  function_list=(\
+    macos_defaults \
+    setup_terminal \
+    install_gpg \
+    install_brewfile)
+  # setup_python
+  for function in "${function_list[@]}"; do
+    confirm $function
+  done
+}
+
+function linux {
+  function_list=(install_brewfile)
+  for function in "${function_list[@]}"; do
+    confirm $function
+  done
+}
+
+function vim {
+  if command -v vim >/dev/null 2>&1; then
+    echo "Bootstraping Vim"
+    vim '+PlugUpdate' '+PlugClean!' '+PlugUpdate' '+qall'
+  fi
+}
+
+function system {
+  system_type=$(uname -s)
+  case "$system_type" in
+    "Darwin") macos
+              ;;
+    "Linux") linux
+              ;;
+    *) echo "Good Luck with that!"
+              ;;
+  esac
+}
 # install_gpg
-install_brewfile
+# Moving to a taskfile pattern
+# Default should be determine system type
+# macos should call most of the functions
+"${@:-system}"
