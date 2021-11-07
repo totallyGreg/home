@@ -112,25 +112,29 @@ if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv virtualenv-init -)"
 fi
 
-
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc' ]; then . '/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc'; fi
 
 # Kubernetes
 set_kubeconfig () {
   KUBECONFIG=$HOME/.kube/config
-  # Lists of kubeconfig directories to add to my KUBECONFIG
-  local configd="${HOME}/.kube/config.d"
-  local eks_clusters="${HOME}/.kube/eksctl/clusters"
-  local k3d="${HOME}/.k3d"
-  mkdir -p ${configd} ${eks_clusters}
-  kubeConfigFileList=$(find ${configd} ${eks_clusters} ${k3d} -type f)
+  # List of common kubeconfig directories to add to my KUBECONFIG
+  local configd="${HOME}/.kube/config.d"             # My personal one off configs
+  local eks_clusters="${HOME}/.kube/eksctl/clusters" # default directory for eks
+  local k3d="${HOME}/.k3d"                           # default directory for k3d
 
-  # Combine all file paths into the single `KUBECONFIG` variable.
+  kube_dir=(${configd} ${eks_clusters} ${k3d})
+  # This will create a list of config files located in $kube_dir
+  # while ignoring any errors (directoreis that don't exist)
+  kubeConfigFileList=$(find ${kube_dir} -type f 2>/dev/null)
+  # Combine all file paths into the single `KUBECONFIG` path variable.
   while IFS= read -r kubeConfigFile; do
     KUBECONFIG+=":${kubeConfigFile}"
   done <<< ${kubeConfigFileList}
 }
 set_kubeconfig
 
+export KUBECTL_EXTERNAL_DIFF="dyff between --omit-header --set-exit-code"
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 export HELM_EXPERIMENTAL_OCI=1
 export K9SCONFIG=$XDG_CONFIG_HOME/k9s
@@ -168,13 +172,10 @@ ZSH_AUTOSUGGEST_STRATEGY=(match_prev_cmd completion)
 ZSH_AUTOSUGGEST_USE_ASYNC=true
 
 # # The next line updates PATH for the Google Cloud SDK.
-# if [ -f "$HOMEBREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc" ]; 
-# then 
-#   . "$HOMEBREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc"
-#   zinit ice blockf if'[[ "$(uname)" == "Darwin" ]]'
-#   zinit snippet $HOMEBREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc
+# if [ -f "$HOMEBREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc" ];
+# then
+#   source "$HOMEBREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc"
 # fi
-
 
 eval "$(direnv hook zsh)"
 
@@ -210,5 +211,11 @@ source $ZDOTDIR/completion.zsh
 # Run compinit and compile its cache
 zcomet compinit
 
+# Since google is doing their own test of whether or not to add completions instead of adding to fpath
+# It has to be added after the compinit is compiled
+# The next line enables shell command completion for gcloud.
+if [ -f '/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc' ]; then . '/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc'; fi
+
 ### Starship prompt
 eval "$(starship init zsh)"
+
