@@ -161,7 +161,8 @@ function macos_defaults {
 
 }
 
-function setup_terminal {
+function TerminalApp_profiles {
+  # This installs my favorite light and dark profiles and set the dark one as default
   # Change default to something else in order to get it to rerun/test install
   default_window=$(defaults read com.apple.terminal "Default Window Settings")
   if [ "$default_window" != 'Totally Dark' ]; then
@@ -177,7 +178,10 @@ function setup_terminal {
     done
     defaults write com.apple.terminal "Default Window Settings" "Totally Dark"
     defaults write com.apple.terminal "Startup Window Settings" "Totally Dark"
-    echo "Restart Terminal.app to see new profiles"
+    echo "[✅] Profiles are installed"
+    echo "    📓: You must restart Terminal.app to see new profiles"
+  else
+    echo "[✅] Profiles are already installed"
   fi
   # I was hoping this would cause it to reload its new settings, it doesn't
   # defaults read ~/Library/Preferences/com.apple.Terminal.plist
@@ -221,10 +225,18 @@ function setup_python {
   pyenv global $python_version
 }
 
+function nvim {
+  # This seg faults currently when running through script
+  if command -v nvim >/dev/null 2>&1; then
+    echo "Bootstraping Vim"
+    nvim '+PlugUpdate' '+PlugClean!' '+PlugUpdate' '+qall'
+  fi
+}
+
 function macos {
   function_list=(\
     macos_defaults \
-    setup_terminal \
+    TerminalApp_profiles \
     install_gpg \
     install_brewfile)
   # setup_python
@@ -240,13 +252,6 @@ function linux {
   done
 }
 
-function vim {
-  if command -v vim >/dev/null 2>&1; then
-    echo "Bootstraping Vim"
-    vim '+PlugUpdate' '+PlugClean!' '+PlugUpdate' '+qall'
-  fi
-}
-
 function system {
   system_type=$(uname -s)
   case "$system_type" in
@@ -258,8 +263,10 @@ function system {
               ;;
   esac
 }
-# install_gpg
+
 # Moving to a taskfile pattern
 # Default should be determine system type
 # macos should call most of the functions
+
 "${@:-system}"
+
