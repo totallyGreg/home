@@ -15,7 +15,7 @@ else
   let g:vimIsInTmux = 0
 endif
 set nocompatible
-" {{{ Plugin Managment
+" {{{ Plugin Management
 " {{{ Bootstrap Plug
 let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
 if empty(glob(data_dir . '/autoload/plug.vim'))
@@ -29,8 +29,49 @@ Plug 'tpope/vim-sensible'   " Sensible vim defaults
 Plug 'tpope/vim-unimpaired' " Pairs of handy bracket mappings
 Plug 'tpope/vim-repeat'     " Add repeat support with '.' for lots of plugins
 Plug 'gabesoft/vim-ags'     " A Vim plugin for the silver searcher that focuses on clear display of the search results
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+" Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf', { 'do': './install --xdg --all' }
+" Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all --xdg' }
 " Plug '/usr/local/opt/fzf'
+" Settings for FZF
+" An action can be a reference to a function that processes selected lines
+function! s:build_quickfix_list(lines)
+  call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
+  copen
+  cc
+endfunction
+
+" See `man fzf-tmux` for available options
+if exists('$TMUX')
+  let g:fzf_layout = { 'tmux': '-p90%,60%' }
+else
+" You can set up fzf window using a Vim command (Neovim or latest Vim 8
+" required)
+  let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.6 } }
+endif
+
+let g:fzf_action = {
+  \ 'ctrl-q': function('s:build_quickfix_list'),
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit' }
+
+let g:fzf_colors =
+\ { 'fg':         ['fg', 'Normal'],
+  \ 'bg':         ['bg', 'Normal'],
+  \ 'preview-bg': ['bg', 'NormalFloat'],
+  \ 'hl':         ['fg', 'Comment'],
+  \ 'fg+':        ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+  \ 'bg+':        ['bg', 'CursorLine', 'CursorColumn'],
+  \ 'hl+':        ['fg', 'Statement'],
+  \ 'info':       ['fg', 'PreProc'],
+  \ 'border':     ['fg', 'Ignore'],
+  \ 'prompt':     ['fg', 'Conditional'],
+  \ 'pointer':    ['fg', 'Exception'],
+  \ 'marker':     ['fg', 'Keyword'],
+  \ 'spinner':    ['fg', 'Label'],
+  \ 'header':     ['fg', 'Comment'] }
+
 Plug 'junegunn/fzf.vim'
 Plug 'vim-scripts/restore_view.vim'
 set viewoptions=cursor,slash,unix
@@ -163,7 +204,7 @@ if has('mac')
 endif
 call plug#end()
 " }}}
-" }}} Plugin Managment
+" }}} Plugin Management
 " {{{ Lightline Configuration
 set laststatus=2
 set noshowmode    " Do not need to show -- Insert --, as lightline handles it already
@@ -477,24 +518,6 @@ if executable('ag')
   set grepprg=ag\ --nogroup\ --nocolor
 endif
 
-" Settings for FZF
-" An action can be a reference to a function that processes selected lines
-function! s:build_quickfix_list(lines)
-  call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
-  copen
-  cc
-endfunction
-
-let g:fzf_action = {
-  \ 'ctrl-q': function('s:build_quickfix_list'),
-  \ 'ctrl-t': 'tab split',
-  \ 'ctrl-x': 'split',
-  \ 'ctrl-v': 'vsplit' }
-
-" You can set up fzf window using a Vim command (Neovim or latest Vim 8
-" required)
-
-let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.7 } }
 
 " }}}
 "}}}

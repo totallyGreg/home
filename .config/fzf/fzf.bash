@@ -1,7 +1,7 @@
 # Setup fzf
 # ---------
-if [[ ! "$PATH" == */Users/totally/.local/share/nvim/plugged/fzf/bin* ]]; then
-  export PATH="${PATH:+${PATH}:}/Users/totally/.local/share/nvim/plugged/fzf/bin"
+if [[ ! "$PATH" == *$XDG_DATA_HOME/nvim/plugged/fzf/bin* ]]; then
+  export PATH="${PATH:+${PATH}:}$XDG_DATA_HOME/nvim/plugged/fzf/bin"
 fi
 
 # Auto-completion
@@ -11,3 +11,7 @@ fi
 # Key bindings
 # ------------
 source "/Users/totally/.local/share/nvim/plugged/fzf/shell/key-bindings.bash"
+source "$XDG_CONFIG_HOME/fzf/key-bindings.bash"
+
+# Customizations
+source "$XDG_CONFIG_HOME/fzf/env"
