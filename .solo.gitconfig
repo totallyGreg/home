@@ -1,0 +1,6 @@
+[user]
+  email = greg.williams@solo.io
+  name = J. Greg Williams
+; heavy hammer that breaks stuff if your keys aren't installed yet
+[url "ssh://git@github.com/"]
+  insteadOf = https://github.com/

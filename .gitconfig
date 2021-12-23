@@ -2,8 +2,8 @@
   email = 283704+totallyGreg@users.noreply.github.com
   name = J. Greg Williams
 ; heavy hammer that breaks stuff if your keys aren't installed yet
-[url "ssh://git@github.com/"]
-  insteadOf = https://github.com/
+[includeIf "gitdir:~/Work/"]
+  path = ~/.solo.gitconfig
 [alias]
   alias = config --get-regexp ^alias.
   br = branch --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(contents:subject) %(color:green)(%(committerdate:relative)) [%(authorname)]' --sort=-committerdate
@@ -13,6 +13,7 @@
   co = checkout
   contrib = shortlog -e --summary --numbered
   dump = cat-file -p
+  email = log --format="%aN <%aE>"
   find = "!git log --color -p -S "
   hist = log --graph --pretty=format:'%Cred%h%Creset %s%C(yellow)%d%Creset %Cgreen(%cr)%Creset [%an]' --abbrev-commit --date=relative
   last = log -1 HEAD --stat     # view last commit
@@ -58,6 +59,7 @@
 [status]
   submoduleSummary = true
 [commit]
+	gpgsign = true
   ; template = \"$HOME\"/.stCommitMsg
 [push]
 	default = current
