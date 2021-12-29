@@ -1,45 +1,40 @@
 [aws]
 disabled = false
 
-[battery.display]
+[battery]
 disabled = true
+
+[battery.display]
 threshold = 10
 style = 'bold red'
 
 [character]
-# symbol = '❯'
-# error_symbol = '✗'
-success_symbol = "[❯](green)"
-error_symbol = "[❯](bold red)"
-vicmd_symbol = "[❮](green)"
+success_symbol = '[❯](green)'
+error_symbol = '[❯](bold red)'
+vicmd_symbol = '[❮](green)'
 
 [cmd_duration]
 min_time = 5000
-format = "lag [$duration]($style) "
+format = 'lag [$duration]($style) '
 style = 'yellow'
 
 [directory]
-format = "[$path]($style)[$read_only]($read_only_style) "
+format = '[$path]($style)[$read_only]($read_only_style) '
 truncation_length = 3
 truncate_to_repo = true
 style = 'bold cyan'
 disabled = false
 
 [env_var]
-# variable = "ExpressVPN"
-# symbol = '🔐'
-# format = "$symbol "
 
 [gcloud]
 disabled = true
 
 [gcloud.region_aliases]
-us-west1 = "usw1"
+us-west1 = 'usw1'
 
 [git_branch]
 symbol = ''
-# symbol = ""
-# truncation_length = 2^63 - 1
 disabled = false
 
 [git_commit]
@@ -56,9 +51,7 @@ disabled = false
 
 [hostname]
 ssh_only = true
-format = "⟪[$hostname]($style)⟫ in "
-# prefix = '⟪'
-# suffix = '⟫'
+format = '⟪[$hostname]($style)⟫ in '
 trim_at = '.falcone.us'
 disabled = false
 
@@ -66,7 +59,6 @@ disabled = false
 disabled = true
 
 [kubernetes]
-# symbol = ' '
 style = 'blue'
 disabled = false
 
