@@ -1,0 +1,94 @@
+[aws]
+disabled = false
+
+[battery.display]
+disabled = true
+threshold = 10
+style = 'bold red'
+
+[character]
+# symbol = '❯'
+# error_symbol = '✗'
+success_symbol = "[❯](green)"
+error_symbol = "[❯](bold red)"
+vicmd_symbol = "[❮](green)"
+
+[cmd_duration]
+min_time = 5000
+format = "lag [$duration]($style) "
+style = 'yellow'
+
+[directory]
+format = "[$path]($style)[$read_only]($read_only_style) "
+truncation_length = 3
+truncate_to_repo = true
+style = 'bold cyan'
+disabled = false
+
+[env_var]
+# variable = "ExpressVPN"
+# symbol = '🔐'
+# format = "$symbol "
+
+[gcloud]
+disabled = true
+
+[gcloud.region_aliases]
+us-west1 = "usw1"
+
+[git_branch]
+symbol = ''
+# symbol = ""
+# truncation_length = 2^63 - 1
+disabled = false
+
+[git_commit]
+disabled = false
+
+[git_state]
+cherry_pick = '🍒 PICKING'
+merge = 'MERGING '
+disabled = false
+
+[git_status]
+stashed = '🧺'
+disabled = false
+
+[hostname]
+ssh_only = true
+format = "⟪[$hostname]($style)⟫ in "
+# prefix = '⟪'
+# suffix = '⟫'
+trim_at = '.falcone.us'
+disabled = false
+
+[java]
+disabled = true
+
+[kubernetes]
+# symbol = ' '
+style = 'blue'
+disabled = false
+
+[kubernetes.context_aliases]
+gb-aks-snd-admin = 'sbx'
+minix = 'minix'
+
+[memory_usage]
+show_percentage = true
+show_swap = true
+threshold = 90
+separator = '/'
+disabled = true
+
+[python]
+pyenv_version_name = true
+pyenv_prefix = 'foo '
+
+[terraform]
+disabled = true
+
+[username]
+style_root = 'bold red'
+style_user = 'yellow'
+disabled = false
