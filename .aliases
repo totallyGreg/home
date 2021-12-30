@@ -37,10 +37,14 @@ alias gpf='git pull --ff-only '
 # GPG
 alias gpg_clear_cache='echo "CLEAR_PASSPHRASE --mode=normal $keygrip " | gpg-connect-agent'
 
+# Lima
+alias lctl='limactl'
+
 # Kubernetes
 alias busybox='kubectl run -it --rm --restart=Never busybox --image=busybox sh'
 alias netshoot='open https://github.com/nicolaka/netshoot ; kubectl run tmp-shell --rm -i --tty --image nicolaka/netshoot -- /bin/bash'
 alias k='kubectl '
+alias ka='kubectl apply -f '
 alias kctx='kubectx '
 alias kns='kubens '
 alias kedp='kubectl get endpoints --all-namespaces '
@@ -50,7 +54,6 @@ alias kpod='kubectl get pods --all-namespaces'
 alias ksvc='kubectl get services --all-namespaces'
 alias kvu="kubectl view-utilization "
 alias kx='kubectl exec -i -t'
-alias kapply='kubectl apply -f '
 alias qapla='pbpaste | kubectl apply -f -'
 
 ## Terraform
