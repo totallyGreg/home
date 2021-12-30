@@ -4,15 +4,16 @@ export FZF_DEFAULT_COMMAND='ag -l --ignore Library --ignore Music --ignore .git 
 
 export FZF_DEFAULT_OPTS="
 --no-color
---height 40%
 --layout=reverse
 --border
 --bind '?:toggle-preview'
 --bind 'alt-a:select-all'
---bind 'ctrl-y:execute-silent(echo {+} | pbcopy)'
+--bind 'ctrl-y:execute-silent(echo {+} | pbcopy)+abort'
 --bind 'ctrl-e:execute(echo {+} | xargs -o vim)'
 --bind 'ctrl-v:execute(code {+})'
 "
+
+export FZF_TMUX_OPTS="-p 40%"
 
 # export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'
 #   --color=fg:-1,bg:-1,hl:#6c71c4

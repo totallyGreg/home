@@ -9,6 +9,7 @@ tap "homebrew/bundle"
 tap "homebrew/cask"
 tap "homebrew/cask-fonts"
 tap "homebrew/core"
+tap "homeport/tap"
 tap "k14s/tap"
 tap "knative/client"
 tap "martido/brew-graph"
@@ -22,6 +23,8 @@ tap "watsonbox/cmu-sphinx"
 tap "zdcthomas/tools"
 # CLI for Amazon ECS to manage clusters and tasks for development
 brew "amazon-ecs-cli"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.10"
 # Automate deployment, configuration, and upgrading
 brew "ansible"
 # Checks ansible playbooks for practices and behaviour
@@ -34,7 +37,7 @@ brew "argocd"
 brew "boost"
 # Source-code syntax highlighter
 brew "source-highlight"
-# Formatter/translator for text files to numerous formats. Includes a2x
+# Formatter/translator for text files to numerous formats
 brew "asciidoc"
 # Text processor and publishing toolchain for AsciiDoc
 brew "asciidoctor"
@@ -42,8 +45,8 @@ brew "asciidoctor"
 brew "asciinema"
 # Tool for generating GNU Standards-compliant Makefiles
 brew "automake"
-# Extendable version manager with support for Ruby, Node.js, Erlang & more
-brew "asdf"
+# Securely store and access AWS credentials in development environments
+brew "aws-vault"
 # Official Amazon AWS command-line interface
 brew "awscli"
 # Azure Storage data transfer utility
@@ -66,16 +69,36 @@ brew "dialog"
 brew "certbot"
 # Cross-platform make
 brew "cmake"
+# GNU Ubiquitous Intelligent Language for Extensions
+brew "guile"
+# Validating, recursive, caching DNS resolver
+brew "unbound"
+# GNU Transport Layer Security (TLS) Library
+brew "gnutls"
+# Compression/decompression library aiming for high speed
+brew "snappy"
+# Emulator for x86 and PowerPC
+brew "qemu"
+# Linux virtual machines
+brew "lima"
+# Container runtimes on MacOS with minimal setup
+brew "colima"
 # Tool for service discovery, monitoring and configuration
 brew "consul"
+# GNU File, Shell, and Text utilities
+brew "coreutils"
 # Configurable talking characters in ASCII art
 brew "cowsay"
 # Tools to manipulate dates with a focus on financial data
 brew "dateutils"
+# Load/unload environment variables based on $PWD
+brew "direnv"
 # Pack, ship and run any application as a lightweight container
-brew "docker"
+brew "docker", link: false
 # Create Docker hosts locally and on cloud providers
 brew "docker-machine"
+# Text processing system for reStructuredText
+brew "docutils"
 # Simple command-line tool for creating clusters on Amazon EKS
 brew "eksctl"
 # Banner-like program prints strings as ASCII art
@@ -112,12 +135,14 @@ brew "glooctl"
 brew "gnu-getopt"
 # GNU implementation of the famous stream editor
 brew "gnu-sed"
-# Validating, recursive, caching DNS resolver
-brew "unbound"
-# GNU Transport Layer Security (TLS) Library
-brew "gnutls"
+# Generate introspection data for GObject libraries
+brew "gobject-introspection"
+# Fast linters runner for Go
+brew "golangci-lint"
 # OpenType text shaping engine
 brew "harfbuzz"
+# Framework for layout and rendering of i18n text
+brew "pango"
 # Library to render SVG files using Cairo
 brew "librsvg"
 # Graph visualization software from AT&T and Bell Labs
@@ -126,10 +151,10 @@ brew "graphviz"
 brew "grep"
 # GitHub Markdown previewer
 brew "grip"
+# Like cURL, but for gRPC
+brew "grpcurl"
 # Smarter Dockerfile linter to validate best practices
 brew "hadolint"
-# Kubernetes package manager
-brew "helm"
 # HTTP load generator, ApacheBench (ab) replacement
 brew "hey"
 # Convert source code to formatted text with syntax highlighting
@@ -142,8 +167,8 @@ brew "ical-buddy"
 brew "ipmitool"
 # Interactive computing in Python
 brew "ipython"
-# Istio configuration command-line utility
-brew "istioctl"
+# Json incremental digger
+brew "jid"
 # Lightweight and flexible command-line JSON processor
 brew "jq"
 # Swiss-army knife of markup format conversion
@@ -154,6 +179,8 @@ brew "jupyterlab"
 brew "k3d"
 # Utility to create k3s clusters on any local or remote VM
 brew "k3sup"
+# Kubernetes CLI To Manage Your Clusters In Style!
+brew "k9s"
 # Run local Kubernetes cluster in Docker
 brew "kind"
 # Tool to move from `docker-compose` to Kubernetes
@@ -166,16 +193,18 @@ brew "krew"
 brew "kubectx"
 # Consume Services in k8s using the OSB API
 brew "kubernetes-service-catalog-client"
+# Much more powerful alternative to kubectx and kubens
+brew "kubie"
 # Template-free customization of Kubernetes YAML manifests
 brew "kustomize"
+# Subtitle renderer for the ASS/SSA subtitle format
+brew "libass"
 # Library implementing a curses-based widget set for terminals
 brew "libstfl"
-# Compression/decompression library aiming for high speed
-brew "snappy"
-# Linux virtual machines
-brew "lima"
 # Rainbows and unicorns in your console!
 brew "lolcat"
+# Clone of ls with colorful output, file type icons, and more
+brew "lsd"
 # Mac App Store command-line interface
 brew "mas"
 # Development kit for the Java programming language
@@ -198,6 +227,8 @@ brew "neovim"
 brew "netcat"
 # RSS/Atom feed reader for text terminals
 brew "newsboat"
+# HTTP/2 C Library
+brew "nghttp2"
 # Port scanning utility for large networks
 brew "nmap"
 # Kubernetes introspection tool for developers
@@ -208,6 +239,8 @@ brew "packer"
 brew "pastel"
 # General-purpose scripting language
 brew "php"
+# Pinentry for GPG on Mac
+brew "pinentry-mac", link: false
 # Tool for managing OCI containers and pods
 brew "podman"
 # Code formatter for JavaScript, CSS, JSON, GraphQL, Markdown, YAML
@@ -242,6 +275,8 @@ brew "sops"
 brew "sox"
 # Command-line interface for https://speedtest.net bandwidth tests
 brew "speedtest-cli"
+# Cross-shell prompt for astronauts
+brew "starship"
 # Crypto and x509 Swiss-Army-Knife
 brew "step"
 # Tail multiple Kubernetes pods & their containers
@@ -274,6 +309,8 @@ brew "urlview"
 brew "vagrant-completion"
 # Secures, stores, and tightly controls access to secrets
 brew "vault"
+# HTTP load testing tool and library
+brew "vegeta"
 # Vi 'workalike' with many additional features
 brew "vim"
 # Executes a program periodically, showing output fullscreen
@@ -290,6 +327,8 @@ brew "yamllint"
 brew "youtube-dl"
 # Process YAML documents from the CLI
 brew "yq"
+# Additional completion definitions for zsh
+brew "zsh-completions"
 # EC2 Instance Selector is a tool to filter EC2 instance types based on resource criteria
 brew "aws/tap/ec2-instance-selector"
 # CLI for managing EKS Anywhere Kubernetes clusters
@@ -303,14 +342,14 @@ brew "cloudfoundry/tap/cf-cli"
 brew "cloudfoundry/tap/credhub-cli"
 # CLI for UAA written in golang
 brew "cloudfoundry/tap/uaa-cli"
-# Kubernetes CLI To Manage Your Clusters In Style!
-brew "derailed/k9s/k9s"
 # PAM module for reattaching to the user's GUI (Aqua) session
 brew "fabianishere/personal/pam_reattach"
 # Cross-platform Text Expander written in Rust
 brew "federico-terzi/espanso/espanso"
 # Play, record, convert, and stream audio and video
 brew "homebrew-ffmpeg/ffmpeg/ffmpeg", args: ["with-fdk-aac"]
+# δyƒƒ /ˈdʏf/ - A diff tool for YAML files, and sometimes JSON
+brew "homeport/tap/dyff"
 # Imgpkg
 brew "k14s/tap/imgpkg"
 # Kapp
@@ -337,109 +376,27 @@ brew "ubuntu/microk8s/microk8s"
 brew "universal-ctags/universal-ctags/universal-ctags", args: ["HEAD"]
 # Creates and handles tmux workspaces
 brew "zdcthomas/tools/dmux"
-# Automatic tiling window manager similar to xmonad
-cask "amethyst", args: { appdir: "~/Applications/Ops/Administration/Window Managment" }
-# Securely stores and accesses AWS credentials in a development environment
-cask "aws-vault"
-# App to build and share containerized applications and microservices
-cask "docker", args: { appdir: "~/Applications/Ops/Engineering" }
-cask "font-fira-mono-nerd-font"
-cask "font-hack-nerd-font"
 # Set of tools to manage resources and applications hosted on Google Cloud
 cask "google-cloud-sdk"
 # Tools to protect your emails and files
 cask "gpg-suite", args: { appdir: "~/Applications/Ops/Clandestine" }
-# End-to-end encryption software
-cask "keybase", args: { appdir: "~/Applications/Ops/Clandestine" }
-# Audio tagger focusing on efficiency
-cask "kid3", args: { appdir: "~/Applications/Ops/Organization/Metadata" }
-# Music tagger
-cask "musicbrainz-picard", args: { appdir: "~/Applications/Ops/Organization/Metadata" }
-# Calculator and converter application
-cask "numi"
-# Open-source software for live streaming and screen recording
-cask "obs", args: { appdir: "~/Applications/Comm/Visual" }
 # Knowledge base that works on top of a local folder of plain text Markdown files
 cask "obsidian"
 # Command-line shell and scripting language
 cask "powershell"
-# Productivity application
-cask "quicksilver", args: { appdir: "~/Applications/Ops/Administration" }
-# Team communication and collaboration software
-cask "slack", args: { appdir: "~/Applications/Comm/Instant" }
 # Development environment
 cask "vagrant", args: { appdir: "~/Applications/Ops/Engineering" }
-cask "vagrant-manager", args: { appdir: "~/Applications/Ops/Engineering" }
-# Free and open-source hosted hypervisor for x86 virtualization
+# Virtualizer for x86 hardware
 cask "virtualbox", args: { appdir: "~/Applications/Ops/Engineering" }
-# AMD64/Intel64 and x86 virtualization
+# Extend the functionality of VirtualBox
 cask "virtualbox-extension-pack"
-mas "123D Design", id: 566042322
-mas "123D Design", id: 566042322
-mas "Airmail", id: 918858936
-mas "Airmail", id: 918858936
-mas "Audiobook Builder", id: 1437681957
-mas "Audiobook Builder", id: 1437681957
-mas "AutoCAD WS", id: 454730552
-mas "AutoCAD WS", id: 454730552
-mas "Banktivity", id: 1394863440
-mas "Banktivity", id: 1394863440
-mas "Brilliance", id: 998457288
-mas "Brilliance", id: 998457288
-mas "Cappuccino", id: 492594411
-mas "Cappuccino", id: 492594411
-mas "Cellar", id: 1071756314
-mas "Cellar", id: 1071756314
-mas "Colors for Hue", id: 581915465
-mas "Colors for Hue", id: 581915465
-mas "com.delve.chroma", id: 756399907
-mas "com.delve.chroma", id: 756399907
-mas "Controllers Lite", id: 673660806
-mas "Controllers Lite", id: 673660806
-mas "Decked Builder", id: 406479348
-mas "Decked Builder", id: 406479348
-mas "Deliveries", id: 924726344
-mas "Deliveries", id: 924726344
-mas "Disk Speed Test", id: 425264550
-mas "Disk Speed Test", id: 425264550
-mas "Drafts", id: 1435957248
-mas "eDrawings", id: 1209754386
-mas "eDrawings", id: 1209754386
 mas "GarageBand", id: 682658836
-mas "Growl", id: 467939042
-mas "Growl", id: 467939042
-mas "HueParty", id: 792963035
-mas "HueParty", id: 792963035
 mas "iMovie", id: 408981434
 mas "Keynote", id: 409183694
-mas "Loopman", id: 1207828889
-mas "Loopman", id: 1207828889
-mas "Lyrical", id: 924743736
-mas "Lyrical", id: 924743736
-mas "Magnet", id: 441258766
-mas "Magnet", id: 441258766
 mas "Microsoft OneNote", id: 784801555
-mas "MindNode", id: 1289197285
-mas "MindNode", id: 1289197285
-mas "MindupPro", id: 921449793
-mas "MindupPro", id: 921449793
-mas "NetUse Traffic Monitor", id: 440301281
-mas "NetUse Traffic Monitor", id: 440301281
 mas "Numbers", id: 409203825
 mas "Pages", id: 409201541
 mas "Paprika Recipe Manager 3", id: 1303222628
-mas "Pearl", id: 1152715357
-mas "Pearl", id: 1152715357
-mas "PiPifier", id: 1160374471
-mas "PiPifier", id: 1160374471
-mas "RBdigital", id: 491365225
-mas "RBdigital", id: 491365225
-mas "Remind Me Later", id: 408236729
-mas "Remind Me Later", id: 408236729
-mas "Smart JSON Editor", id: 1268962404
-mas "Smart JSON Editor", id: 1268962404
-mas "Tempest", id: 488576138
-mas "Tempest", id: 488576138
-mas "TweetDeck", id: 485812721
-mas "TweetDeck", id: 485812721
+mas "Soulver 3", id: 1508732804
 mas "Twitter", id: 1482454543
+mas "Xcode", id: 497799835
