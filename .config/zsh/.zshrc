@@ -112,6 +112,15 @@ if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv virtualenv-init -)"
 fi
 
+# Setup Go environment
+export GOPATH="${HOME}/.go"
+export GOROOT="$(brew --prefix golang)/libexec"
+export PATH="$PATH:${GOPATH}/bin"
+# export PATH="$PATH:${GOROOT}/bin" # Not needed with brew install go
+
+# Cargo
+PATH=${HOME}/.cargo/bin:$PATH
+
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc' ]; then . '/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc'; fi
 
@@ -138,15 +147,6 @@ export KUBECTL_EXTERNAL_DIFF="dyff between --omit-header --set-exit-code"
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 export HELM_EXPERIMENTAL_OCI=1
 export K9SCONFIG=$XDG_CONFIG_HOME/k9s
-
-# Setup Go environment
-export GOPATH="${HOME}/.go"
-export GOROOT="$(brew --prefix golang)/libexec"
-export PATH=${GOPATH}/bin:${GOROOT}/bin:$PATH
-[[ -s "$HOME/.gvm/scripts/gvm" ]] && source "$HOME/.gvm/scripts/gvm"
-
-# Cargo
-PATH=${HOME}/.cargo/bin:$PATH
 
 # My stuff
 PATH=${HOME}/bin:$PATH

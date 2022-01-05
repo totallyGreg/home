@@ -26,8 +26,3 @@ declare -xm 'ZSH_*'
 
 [[ -d $ZDOTDIR ]] || echo Error: ZDOTDIR=${(q)ZDOTDIR} does not exist. >&2
 
-# Go
-: ${GOPATH:=$HOME/.go}
-# export $GOPATH
-
-# [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*

@@ -1,11 +1,13 @@
 ## Beginning of Aliases
 # if [ ! ${machine} == "Mac" ]; then alias ls='ls --color=auto' ; fi
 # if [ ! ${CLICOLOR} == "1" ]; then alias ls='ls --color=auto' ; fi
+alias ls='lsd'
 alias l='ls -lhF'
 alias ll='ls -lhF'
-alias l1='ls -1'
+alias l1='lsd -1 --icon never'
 alias la='ls -alhF'
-alias lt='ls -alhFtr'
+alias lr='ls -alhFtr'
+alias lt='lsd --tree'
 alias grep='grep --color=auto'
 alias cd..='cd ..'
 alias ic='cd ~/Library/Mobile\ Documents/com~apple~CloudDocs'
