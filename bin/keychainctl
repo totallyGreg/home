@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
 # Original source: https://gist.github.com/AriaFallah/fe7b651ba2652bd301334e011749e4b2/
+# with some modifications adapted from https://www.netmeister.org/blog/keychain-passwords.html
 
 KEYCHAIN=${KEYCHAIN:-"login.keychain"}
 ITEM_KIND=${ITEM_KIND:-"secret"}
@@ -11,10 +12,10 @@ main () {
   fi
 
   case "$1" in
-    ls) list_secrets ;;
+    list|ls) list_secrets ;;
     get) get_secret "$2" ;;
     set) set_secret "$2" "$3" ;;
-    rm) delete_secret "$2" ;;
+    delete|rm) delete_secret "$2" ;;
     *) print_usage ;;
   esac
 }

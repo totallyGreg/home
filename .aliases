@@ -1,10 +1,10 @@
 ## Beginning of Aliases
 # if [ ! ${machine} == "Mac" ]; then alias ls='ls --color=auto' ; fi
 # if [ ! ${CLICOLOR} == "1" ]; then alias ls='ls --color=auto' ; fi
-alias ls='lsd'
+if [ 'command -v lsd' ]; then alias ls='lsd' ; fi
 alias l='ls -lhF'
 alias ll='ls -lhF'
-alias l1='lsd -1 --icon never'
+alias l1='ls -1 --icon never'
 alias la='ls -alhF'
 alias lr='ls -alhFtr'
 alias lt='lsd --tree'
@@ -41,6 +41,10 @@ alias gpg_clear_cache='echo "CLEAR_PASSPHRASE --mode=normal $keygrip " | gpg-con
 
 # Lima
 alias lctl='limactl'
+
+# ~/bin/keychainctl
+alias keyctl='keychainctl'
+alias kctl='keychainctl'
 
 # Kubernetes
 alias busybox='kubectl run -it --rm --restart=Never busybox --image=busybox sh'
