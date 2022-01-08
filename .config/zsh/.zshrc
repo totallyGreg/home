@@ -74,7 +74,6 @@ alias mv='nocorrect mv'       # no spelling correction on mv
 alias cp='nocorrect cp'       # no spelling correction on cp
 alias mkdir='nocorrect mkdir' # no spelling correction on mkdir
 alias dirs='dirs -v'
-alias ls='ls -G '
 alias -s {yml,yaml}=vim       # quick editing of yaml files in vim
 
 [ -f ~/.aliases ] && source ~/.aliases
@@ -186,9 +185,11 @@ if [[ ! -f ${ZDOTDIR:-${HOME}}/.zcomet/bin/zcomet.zsh ]]; then
 fi
 source ${ZDOTDIR:-${HOME}}/.zcomet/bin/zcomet.zsh
 
+# Thinking about making fzf available on all machines via zsh instead of vim
+# zcomet load junegunn/fzf shell completion.zsh key-bindings.zsh
+# (( ${+commands[fzf]} )) || ~[fzf]/install --bin
+
 # Load some plugins
-zcomet load zdharma-continuum/fast-syntax-highlighting
-zcomet load zsh-users/zsh-autosuggestions
 zcomet load zsh-users/zsh-completions
 zcomet load Aloxaf/fzf-tab
 zcomet load asdf-vm/asdf
@@ -198,10 +199,15 @@ zcomet load starship/starship
 
 # Lazy-load some plugins
 zcomet trigger zhooks agkozak/zhooks
+zcomet trigger zsh-prompt-benchmark romkatv/zsh-prompt-benchmark
 
 # This breaks all kinds of aliases and who knows what else
 # But I really must steal the security keychain bits
 # zinit light unixorn/tumult.plugin.zsh
+
+# These plugins which will wrap widgets prefer to be last
+zcomet load zdharma-continuum/fast-syntax-highlighting
+zcomet load zsh-users/zsh-autosuggestions
 
 # ZLE custom widgets
 source $ZDOTDIR/zle.zsh
