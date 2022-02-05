@@ -12,8 +12,7 @@ alias grep='grep --color=auto'
 alias cd..='cd ..'
 alias ic='cd ~/Library/Mobile\ Documents/com~apple~CloudDocs'
 alias watch='watch ' # this allows alias expansion
-# alias fuck='sudo $(history -p \!\!)'
-# if [ -e (which bat) ]; alias cat='bat --theme TwoDark'
+if [ 'command -v bat' ]; then alias cat='bat --style=plain'; fi
 
 # Python source venv
 alias sv='source venv/bin/activate'
@@ -67,9 +66,10 @@ alias tf=terraform
 
 ## Tmux stuff
 alias t="tmux "
-alias ta="t a -t"
+# alias ta="t a -t"  # replaced with ~/bin/ta
 alias tls="t ls"
 alias takeover="tmux detach -a"
+alias tkill="for s in \$(tmux list-sessions | awk '{print \$1}' | rg ':' -r '' | fzf); do tmux kill-session -t \$s; done;"
 
 ## Vagrant Stuff
 alias vgs='vagrant global-status'
