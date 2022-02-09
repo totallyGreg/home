@@ -46,20 +46,17 @@ alias keyctl='keychainctl'
 alias kctl='keychainctl'
 
 # Kubernetes
+# Recently adopted https://github.com/kubermatic/fubectl
+# likely to replace many of my aliases and 
 alias busybox='kubectl run -it --rm --restart=Never busybox --image=busybox sh'
 alias netshoot='open https://github.com/nicolaka/netshoot ; kubectl run tmp-shell --rm -i --tty --image nicolaka/netshoot -- /bin/bash'
-alias k='kubectl '
+alias k='kubectl'
 alias ka='kubectl apply -f '
-alias kctx='kubectx '
-alias kns='kubens '
+alias kctx='kcs'
+alias kns='kcns'
 alias kedp='kubectl get endpoints --all-namespaces '
-alias kg='kubectl get '
-alias kl='kubectl logs '
-alias kpod='kubectl get pods --all-namespaces'
-alias ksvc='kubectl get services --all-namespaces'
 alias kvu="kubectl view-utilization "
-alias kx='kubectl exec -i -t'
-alias qapla='pbpaste | kubectl apply -f -'
+alias qapla='pbpaste | kubectl apply -f -'    # I hope I'm not the only one on this planet who finds this hilarious
 
 ## Terraform
 alias tf=terraform

@@ -38,6 +38,7 @@ setopt INTERACTIVE_COMMENTS   # allow #style comments to be added on commandline
 # Changing directories
 setopt AUTO_CD
 setopt AUTO_PUSHD
+# setopt cdablevars
 cdpath=($HOME $HOME/Repositories $HOME/Downloads $HOME/Work)
 
 # Other misc settings
@@ -196,6 +197,7 @@ zcomet load asdf-vm/asdf
 # zcomet load xPMo/zsh-toggle-command-prefix # keeps throwing sudo errors 
 zcomet load laggardkernel/zsh-thefuck
 zcomet load starship/starship
+zcomet load kubermatic/fubectl # https://github.com/kubermatic/fubectl
 
 # Lazy-load some plugins
 zcomet trigger zhooks agkozak/zhooks
