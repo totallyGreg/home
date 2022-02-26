@@ -30,6 +30,8 @@ alias dmx='docker-machine ssh'
 alias docker-ips='docker ps | tail -n +2 | while read -a a; do name=${a[$((${#a[@]}-1))]}; echo -ne "$name\t"; docker inspect $name | grep IPAddress | cut -d \" -f 4; done'
 alias dkps="docker ps --format '{{.ID}} - {{.Names}} - {{.Status}} - {{.Image}}'"
 
+alias envoy='docker run --net=host -v ${PWD}:${PWD}:ro -w $PWD -e ENVOY_UID=0 envoyproxy/envoy:v1.20.0'
+
 # Git
 alias g='git '
 alias gfa='git fetch --all '
@@ -73,6 +75,9 @@ alias vgs='vagrant global-status'
 alias v='vagrant'
 
 alias vim=nvim
+alias yavim="GIT_DIR=$HOME/.local/share/yadm/repo.git GIT_WORK_TREE=$HOME vim"
+alias tedit='GIT_DIR=$HOME/.local/share/yadm/repo.git GIT_WORK_TREE=$HOME vim ~/.config/tmux/tmux.conf'
+alias zedit='GIT_DIR=$HOME/.local/share/yadm/repo.git GIT_WORK_TREE=$HOME vim ~/.config/zsh/.zshrc'
 
 ## Random Crap
 # https://apple.stackexchange.com/questions/348762/how-to-have-a-random-background-color-in-terminal-app
