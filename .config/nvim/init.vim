@@ -632,6 +632,28 @@ nnoremap <M-k>    :resize +2<CR>
 nnoremap <M-h>    :vertical resize -2<CR>
 nnoremap <M-l>    :vertical resize +2<CR>
 
+" Some Primeagen love https://github.com/ThePrimeagen/.dotfiles/blob/master/nvim/.config/nvim/init.vim
+
+nnoremap Y yg$
+nnoremap n nzzzv
+nnoremap N Nzzzv
+nnoremap J mzJ`z
+
+" Number 3: Undo break points
+inoremap , ,<c-g>u
+inoremap . .<c-g>u
+inoremap [ [<c-g>u
+inoremap ! !<c-g>u
+inoremap ? ?<c-g>u
+
+" Number 1: Moving text
+vnoremap J :m '>+1<CR>gv=gv
+vnoremap K :m '<-2<CR>gv=gv
+inoremap <C-j> <esc>:m .+1<CR>==
+inoremap <C-k> <esc>:m .-2<CR>==
+nnoremap <leader>k :m .-2<CR>==
+nnoremap <leader>j :m .+1<CR>==
+
 let mapleader = ';'
 " {{{ FZF bindings
 " nmap <silent> <C-P> :Files<CR>
@@ -649,6 +671,17 @@ nmap <Leader>T :Tags<CR>
 " nmap <silent> <leader>w :Windows<CR>
 nmap <silent> <leader>; :Commands<CR>
 " }}} FZF bindings
+
+" greatest remap ever
+xnoremap <leader>p "_dP
+
+" next greatest remap ever : asbjornHaland
+nnoremap <leader>y "+y
+vnoremap <leader>y "+y
+nmap <leader>Y "+Y
+
+" nnoremap <leader>d "_d
+" vnoremap <leader>d "_d
 
 nnoremap <leader>a :Ag<space>
 nnoremap <leader>d :NERDTreeToggle<CR>
