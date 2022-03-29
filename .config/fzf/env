@@ -1,6 +1,9 @@
-export FZF_DEFAULT_COMMAND='ag -l --ignore Library --ignore Music --ignore .git -g ""'
+# export FZF_DEFAULT_COMMAND='ag -l -t -g ""'
+export FZF_DEFAULT_COMMAND='ag --hidden -g ""'
+# export FZF_DEFAULT_COMMAND="rg --files --hidden --follow --glob '!.git'"
+# export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
 
-#   fzf --bind 'ctl-r:reload($FZF_DEFAULT_COMMAND),ctrl-y:execute-silent(echo {} | pbcopy)+abort'\
+# export FZF_ALT_C_COMMAND="find . -mindepth 1 -type d"
 
 export FZF_DEFAULT_OPTS="
 --no-color
@@ -13,7 +16,7 @@ export FZF_DEFAULT_OPTS="
 --bind 'ctrl-v:execute(code {+})'
 "
 
-export FZF_TMUX_OPTS="-p 40%"
+export FZF_TMUX_OPTS=""
 
 # export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'
 #   --color=fg:-1,bg:-1,hl:#6c71c4
@@ -25,7 +28,4 @@ export FZF_TMUX_OPTS="-p 40%"
   # --color=fg:-1,header:#586e75,info:#cb4b16,pointer:#719e07
   # --color=marker:#719e07,fg+:#839496,prompt:#719e07,hl+:#719e07
 
-export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-# export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range :500 {}'"
 
-export FZF_CTRL_R_OPTS=''

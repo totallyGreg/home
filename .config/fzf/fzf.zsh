@@ -1,4 +1,5 @@
 # Setup fzf
+# This gets sourced by .zshrc and then sources all my fzf configs
 # ---------
 if [[ ! "$PATH" == *$XDG_DATA_HOME/nvim/plugged/fzf/bin* ]]; then
   export PATH="${PATH:+${PATH}:}$XDG_DATA_HOME/nvim/plugged/fzf/bin"
@@ -17,7 +18,7 @@ source "$XDG_CONFIG_HOME/fzf/Azure.sh"
 # Key bindings
 # ------------
 source "$XDG_DATA_HOME/nvim/plugged/fzf/shell/key-bindings.zsh"
-source "$XDG_CONFIG_HOME/fzf/key-bindings.zsh"
+# source "$XDG_CONFIG_HOME/fzf/key-bindings.zsh"
 
 # Customizations
 source "$XDG_CONFIG_HOME/fzf/env"

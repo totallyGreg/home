@@ -14,9 +14,6 @@ function vi-yank-xclip {
 zle -N vi-yank-xclip
 bindkey -M vicmd 'y' vi-yank-xclip
 
-# remove list-expand binding since i can't figure out what it does and it interferes with Git heart fzf
-bindkey -r '^G'
-
 # Make Vi mode transitions faster (KEYTIMEOUT is in hundredths of a second)
 export KEYTIMEOUT=1
 
@@ -164,7 +161,7 @@ fi
 typeset -U path fpath kubeconfig cdpath
 export PATH FPATH KUBECONFIG
 
-# Load FZF
+# Load FZF Configurations
 [ -f "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.zsh ] && source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.zsh
 
 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
@@ -198,6 +195,7 @@ zcomet load asdf-vm/asdf
 zcomet load laggardkernel/zsh-thefuck
 zcomet load starship/starship
 zcomet load kubermatic/fubectl # https://github.com/kubermatic/fubectl
+zcomet load reegnz/jq-zsh-plugin # default keybinding alt-j needs to be changed!
 
 # Lazy-load some plugins
 zcomet trigger zhooks agkozak/zhooks
@@ -207,7 +205,11 @@ zcomet trigger zsh-prompt-benchmark romkatv/zsh-prompt-benchmark
 # But I really must steal the security keychain bits
 # zinit light unixorn/tumult.plugin.zsh
 
-# These plugins which will wrap widgets prefer to be last
+## These plugins which will wrap widgets prefer to be last
+# zcomet load marlonrichert/zsh-autocomplete # Sorta useful but visually busy
+
+# Set custom fast syntax highlighting work directory
+FAST_WORK_DIR=XDG
 zcomet load zdharma-continuum/fast-syntax-highlighting
 zcomet load zsh-users/zsh-autosuggestions
 

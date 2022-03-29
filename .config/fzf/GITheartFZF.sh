@@ -55,3 +55,38 @@ _gs() {
   git stash list | fzf-down --reverse -d: --preview 'git show --color=always {1}' |
   cut -d: -f1
 }
+
+
+if [ $ZSH_SUBSHELL ] ; then
+  # remove list-expand binding since i can't figure out what it does and it interferes with Git heart fzf
+  bindkey -r '^G'
+
+  join-lines() {
+    local item
+    while read item; do
+      echo -n "${(q)item} "
+    done
+  }
+
+  bind-git-helper() {
+    local c
+    for c in $@; do
+      eval "fzf-g$c-widget() { local result=\$(_g$c | join-lines); zle reset-prompt; LBUFFER+=\$result }"
+      eval "zle -N fzf-g$c-widget"
+      eval "bindkey '^g^$c' fzf-g$c-widget"
+    done
+  }
+  bind-git-helper f b t r h s
+  unset -f bind-git-helper
+else
+  ## probably bash so use this
+  if [[ $- =~ i ]]; then
+    bind '"\er": redraw-current-line'
+    bind '"\C-g\C-f": "$(_gf)\e\C-e\er"'
+    bind '"\C-g\C-b": "$(_gb)\e\C-e\er"'
+    bind '"\C-g\C-t": "$(_gt)\e\C-e\er"'
+    bind '"\C-g\C-h": "$(_gh)\e\C-e\er"'
+    bind '"\C-g\C-r": "$(_gr)\e\C-e\er"'
+    bind '"\C-g\C-s": "$(_gs)\e\C-e\er"'
+  fi
+fi
