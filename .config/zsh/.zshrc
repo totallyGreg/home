@@ -64,21 +64,6 @@ precmd () {
     fi
 }
 
-## Source Functions
-[ -f ~/.functions ] && source ~/.functions
-
-# Zsh Specific Aliases
-alias mv='nocorrect mv'       # no spelling correction on mv
-alias cp='nocorrect cp'       # no spelling correction on cp
-alias mkdir='nocorrect mkdir' # no spelling correction on mkdir
-alias dirs='dirs -v'
-alias -s {yml,yaml}=vim       # quick editing of yaml files in vim
-
-[ -f ~/.aliases ] && source ~/.aliases
-[ -f $ZDOTDIR/solo ] && source $ZDOTDIR/solo
-
-# Enable the fuck if it exists
-hash thefuck > /dev/null 2>&1 && eval "$(thefuck --alias doh)"
 
 # iCloud Obscured Locations
 [ -d "${HOME}/Library/Mobile Documents/com~apple~CloudDocs" ] && export iCloud="${HOME}/Clouds/iCloud"
@@ -173,6 +158,23 @@ ZSH_AUTOSUGGEST_USE_ASYNC=true
 # then
 #   source "$HOMEBREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc"
 # fi
+
+## Source Functions
+[ -f ~/.functions ] && source ~/.functions
+
+# Zsh Specific Aliases
+alias mv='nocorrect mv'       # no spelling correction on mv
+alias cp='nocorrect cp'       # no spelling correction on cp
+alias mkdir='nocorrect mkdir' # no spelling correction on mkdir
+alias dirs='dirs -v'
+alias -s {yml,yaml}=vim       # quick editing of yaml files in vim
+
+[ -f ~/.aliases ] && source ~/.aliases
+[ -f $ZDOTDIR/solo ] && source $ZDOTDIR/solo
+
+# Enable the fuck if it exists
+hash thefuck > /dev/null 2>&1 && eval "$(thefuck --alias doh)"
+
 
 eval "$(direnv hook zsh)"
 
