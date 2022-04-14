@@ -14,6 +14,7 @@ source "$XDG_CONFIG_HOME/fzf/GITheartFZF.sh"
 source "$XDG_CONFIG_HOME/fzf/Docker.sh"
 source "$XDG_CONFIG_HOME/fzf/Homebrew.sh"
 source "$XDG_CONFIG_HOME/fzf/Azure.sh"
+source "$XDG_CONFIG_HOME/fzf/kubernetes.sh"
 
 # Key bindings
 # ------------

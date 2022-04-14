@@ -7,7 +7,7 @@
 # mnemonic [B]rew [I]nstall [P]lugin
 bip() {
   local preview="brew info --json=v1 {} | jq -C '.[] | {name,desc,homepage,dependencies}'"
-  local installs=($(brew formulae | fzf -m --ansi --preview $preview --preview-window=:wrap --min-height=17))
+  installs=($(brew formulae | fzf -m --ansi --preview "${preview}" --preview-window=:wrap --min-height=17))
   if [[ $installs ]]; then
     brew install $installs;
     brew bundle dump --all --describe --force;
@@ -19,7 +19,7 @@ bup() {
   local preview="brew info --json=v1 {} | jq -C '.[] | {name, desc, homepage, dependencies: .dependencies}'"
   # eventually, I'd like preview to show me what's changed
     # brew log --oneline --stat --max-count=2 {}"
-  local updates=($(brew outdated | fzf -m --ansi --min-height=20 --preview $preview ))
+  updates=($(brew outdated | fzf -m --ansi --min-height=20 --preview "${preview}" ))
   if [[ $updates ]]; then
     brew upgrade $updates
     brew bundle dump --all --describe --force;
