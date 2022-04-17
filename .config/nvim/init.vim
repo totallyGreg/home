@@ -30,7 +30,7 @@ Plug 'tpope/vim-unimpaired' " Pairs of handy bracket mappings
 Plug 'tpope/vim-repeat'     " Add repeat support with '.' for lots of plugins
 Plug 'gabesoft/vim-ags'     " A Vim plugin for the silver searcher that focuses on clear display of the search results
 " Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf', { 'do': './install --xdg --all' }
+Plug 'junegunn/fzf', { 'do': './install --bin' }
 " Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all --xdg' }
 " Plug '/usr/local/opt/fzf'
 " Settings for FZF
@@ -178,7 +178,12 @@ let g:ale_open_list = 0
 " let g:ale_list_vertical = 1
 let g:ale_set_quickfix = 0
 " let b:ale_linters = ['proselint', 'tflint', 'shellcheck', 'vint', 'prettier', 'yamllint', 'pyflakes', 'flake8', 'pylint']
-let g:ale_fixers = ['prettier', 'shfmt' ]
+" let g:ale_fixers = ['prettier', 'shfmt' ]
+let g:ale_fixers = {
+  \ 'python': ['autopep8'],
+  \ 'go': ['gofmt'],
+  \ '*': ['remove_trailing_lines', 'trim_whitespace', 'prettier', 'shfmt']
+  \ }
 let g:ale_python_flake8_args="--ignore=E501" " }}}
 " }}}
 " {{{ Git Plugins
@@ -478,7 +483,7 @@ set listchars=tab:▸\ ,trail:▫     " define the characters used for displayin
 set modelines=1
 set relativenumber number         " show line number on current line relative number elsewhere
 set ruler                         " show where you are
-set scrolloff=3                   " show context above/below cursorline
+set scrolloff=5                   " show context above/below cursorline
 set shiftwidth=2                  " normal mode indentation commands use 2 spaces
 " set showbreak=↳                 " Wrapped line symbol
 set showcmd
@@ -646,7 +651,7 @@ inoremap [ [<c-g>u
 inoremap ! !<c-g>u
 inoremap ? ?<c-g>u
 
-" Number 1: Moving text
+" Number 1: Moving text with auto indention
 vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
 inoremap <C-j> <esc>:m .+1<CR>==
@@ -679,6 +684,7 @@ xnoremap <leader>p "_dP
 nnoremap <leader>y "+y
 vnoremap <leader>y "+y
 nmap <leader>Y "+Y
+nmap <leader>` ysiw`
 
 " nnoremap <leader>d "_d
 " vnoremap <leader>d "_d
