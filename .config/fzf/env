@@ -6,7 +6,6 @@ export FZF_DEFAULT_COMMAND='ag --hidden -g ""'
 # export FZF_ALT_C_COMMAND="find . -mindepth 1 -type d"
 
 export FZF_DEFAULT_OPTS="
---no-color
 --layout=reverse
 --border
 --bind '?:toggle-preview'
