@@ -202,6 +202,7 @@ let g:mustache_abbreviations = 1
 Plug 'nvie/vim-flake8'
 " }}}
 " {{{ On-demand loading
+Plug 'edkolev/tmuxline.vim', { 'on': ['Tmuxline', 'TmuxlineSimple', 'TmuxlineSnapshot'] }
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
 
 if has('mac')
