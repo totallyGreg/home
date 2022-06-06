@@ -94,6 +94,12 @@ if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv virtualenv-init -)"
 fi
 
+# Apple Xcode Path
+if [ -d /Library/Developer/CommandLineTools/usr/bin ] ; then
+  export PATH=/Library/Developer/CommandLineTools/usr/bin:$PATH
+fi
+
+
 # Setup Go environment
 export GOPATH="${HOME}/.go"
 export GOROOT="$(brew --prefix golang)/libexec"
@@ -103,12 +109,15 @@ export PATH="$PATH:${GOPATH}/bin"
 # Cargo
 PATH=${HOME}/.cargo/bin:$PATH
 
+# Rancher-Desktop
+PATH=${HOME}/.rd/bin:$PATH
+
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc' ]; then . '/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc'; fi
 
 # Kubernetes
 set_kubeconfig () {
-  KUBECONFIG=$HOME/.kube/config
+  kubeconfig=()
   # List of common kubeconfig directories to add to my KUBECONFIG
   local configd="${HOME}/.kube/config.d"             # My personal one off configs
   local eks_clusters="${HOME}/.kube/eksctl/clusters" # default directory for eks
@@ -116,12 +125,15 @@ set_kubeconfig () {
 
   kube_dir=(${configd} ${eks_clusters} ${k3d})
   # This will create a list of config files located in $kube_dir
-  # while ignoring any errors (directoreis that don't exist)
+  # while ignoring any errors (directories that don't exist)
   kubeConfigFileList=$(find ${kube_dir} -type f 2>/dev/null)
   # Combine all file paths into the single `KUBECONFIG` path variable.
   while IFS= read -r kubeConfigFile; do
-    KUBECONFIG+=":${kubeConfigFile}"
+    kubeconfig+="${kubeConfigFile}"
   done <<< ${kubeConfigFileList}
+  kubeconfig+="$HOME/.kube/config"
+  # This appears necessary to join it back into a PATH type variable
+  KUBECONFIG=${(j.:.)kubeconfig}
 }
 set_kubeconfig
 
@@ -195,9 +207,10 @@ zcomet load Aloxaf/fzf-tab
 zcomet load asdf-vm/asdf
 # zcomet load xPMo/zsh-toggle-command-prefix # keeps throwing sudo errors 
 zcomet load laggardkernel/zsh-thefuck
-zcomet load starship/starship
-zcomet load kubermatic/fubectl # https://github.com/kubermatic/fubectl
-zcomet load reegnz/jq-zsh-plugin # default keybinding alt-j needs to be changed!
+# zcomet load starship/starship
+# zcomet load kubermatic/fubectl # https://github.com/kubermatic/fubectl
+zcomet load reegnz/jq-zsh-plugin # default keybinding alt-j needs to be changed! using alt-y
+zcomet load wfxr/forgit
 
 # Lazy-load some plugins
 zcomet trigger zhooks agkozak/zhooks
