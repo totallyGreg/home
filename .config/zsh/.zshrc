@@ -99,6 +99,10 @@ if [ -d /Library/Developer/CommandLineTools/usr/bin ] ; then
   export PATH=/Library/Developer/CommandLineTools/usr/bin:$PATH
 fi
 
+# OpenSSL that generates valid 
+if [ -d /usr/local/opt/openssl@3/bin ] ; then
+  export PATH="/usr/local/opt/openssl@3/bin:$PATH"
+fi
 
 # Setup Go environment
 export GOPATH="${HOME}/.go"
@@ -117,11 +121,12 @@ if [ -f '/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.i
 
 # Kubernetes
 set_kubeconfig () {
-  kubeconfig=()
+  kubeconfig="$HOME/.kube/config"
   # List of common kubeconfig directories to add to my KUBECONFIG
   local configd="${HOME}/.kube/config.d"             # My personal one off configs
   local eks_clusters="${HOME}/.kube/eksctl/clusters" # default directory for eks
   local k3d="${HOME}/.k3d"                           # default directory for k3d
+  local gke="${HOME}/.kube/gke"                      # directory for gke
 
   kube_dir=(${configd} ${eks_clusters} ${k3d})
   # This will create a list of config files located in $kube_dir
@@ -131,9 +136,8 @@ set_kubeconfig () {
   while IFS= read -r kubeConfigFile; do
     kubeconfig+="${kubeConfigFile}"
   done <<< ${kubeConfigFileList}
-  kubeconfig+="$HOME/.kube/config"
   # This appears necessary to join it back into a PATH type variable
-  KUBECONFIG=${(j.:.)kubeconfig}
+  # KUBECONFIG=${(j.:.)kubeconfig}
 }
 set_kubeconfig
 
