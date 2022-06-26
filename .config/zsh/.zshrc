@@ -121,17 +121,19 @@ if [ -f '/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.i
 
 # Kubernetes
 set_kubeconfig () {
-  kubeconfig="$HOME/.kube/config"
-  # List of common kubeconfig directories to add to my KUBECONFIG
-  local configd="${HOME}/.kube/config.d"             # My personal one off configs
-  local eks_clusters="${HOME}/.kube/eksctl/clusters" # default directory for eks
-  local k3d="${HOME}/.k3d"                           # default directory for k3d
-  local gke="${HOME}/.kube/gke"                      # directory for gke
+  typeset -xT KUBECONFIG kubeconfig       # tie scalar and array together making adding easier
+  KUBECONFIG="$HOME/.kube/config"         # many tools assume only this file or it is first in path
 
-  kube_dir=(${configd} ${eks_clusters} ${k3d})
+  # List of common kubeconfig directories to add to my KUBECONFIG
+  local kube_dirs=(
+  ${HOME}/.kube/config.d
+  ${HOME}/.kube/eksctl/clusters
+  ${HOME}/.k3d
+  ${HOME}/.kube/gke
+)
   # This will create a list of config files located in $kube_dir
   # while ignoring any errors (directories that don't exist)
-  kubeConfigFileList=$(find ${kube_dir} -type f 2>/dev/null)
+  kubeConfigFileList=$(find ${kube_dirs} -type f 2>/dev/null)
   # Combine all file paths into the single `KUBECONFIG` path variable.
   while IFS= read -r kubeConfigFile; do
     kubeconfig+="${kubeConfigFile}"
