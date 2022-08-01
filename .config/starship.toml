@@ -1,9 +1,14 @@
 [aws]
 disabled = false
 
-[battery.display]
+[[battery.display]]
 threshold = 10
 style = 'bold red'
+
+[[battery.display]] # "bold yellow" style and 💦 symbol when capacity is between 10% and 30%
+threshold = 30
+style = "bold yellow"
+discharging_symbol = "💦"
 
 [character]
 # symbol = '❯'
@@ -63,6 +68,11 @@ disabled = false
 
 [java]
 disabled = true
+
+[localip]
+ssh_only = true
+format = "@[$localipv4](bold red) "
+disabled = false
 
 [kubernetes]
 # symbol = ' '
