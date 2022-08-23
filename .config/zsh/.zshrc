@@ -97,6 +97,7 @@ fi
 # Apple Xcode Path
 if [ -d /Library/Developer/CommandLineTools/usr/bin ] ; then
   export PATH=/Library/Developer/CommandLineTools/usr/bin:$PATH
+  export CPATH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include
 fi
 
 # OpenSSL that generates valid 
@@ -124,7 +125,7 @@ set_kubeconfig () {
   typeset -xT KUBECONFIG kubeconfig       # tie scalar and array together making adding easier
   KUBECONFIG="$HOME/.kube/config"         # many tools assume only this file or it is first in path
 
-  # List of common kubeconfig directories to add to my KUBECONFIG
+  # List of common directories that contain kubeconfig files to add to my KUBECONFIG
   local kube_dirs=(
   ${HOME}/.kube/config.d
   ${HOME}/.kube/eksctl/clusters
@@ -134,10 +135,15 @@ set_kubeconfig () {
   # This will create a list of config files located in $kube_dir
   # while ignoring any errors (directories that don't exist)
   kubeConfigFileList=$(find ${kube_dirs} -type f 2>/dev/null)
+  # for file in $(ls -d -1 $HOME/.lima/*/conf/kubeconfig.yam)
+  #   do kubeConfigFileList+=$file
+  # done
+
   # Combine all file paths into the single `KUBECONFIG` path variable.
   while IFS= read -r kubeConfigFile; do
     kubeconfig+="${kubeConfigFile}"
   done <<< ${kubeConfigFileList}
+
   # This appears necessary to join it back into a PATH type variable
   # KUBECONFIG=${(j.:.)kubeconfig}
 }
@@ -170,12 +176,6 @@ export PATH FPATH KUBECONFIG
 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 ZSH_AUTOSUGGEST_STRATEGY=(match_prev_cmd completion)
 ZSH_AUTOSUGGEST_USE_ASYNC=true
-
-# # The next line updates PATH for the Google Cloud SDK.
-# if [ -f "$HOMEBREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc" ];
-# then
-#   source "$HOMEBREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc"
-# fi
 
 ## Source Functions
 [ -f ~/.functions ] && source ~/.functions
@@ -210,6 +210,8 @@ source ${ZDOTDIR:-${HOME}}/.zcomet/bin/zcomet.zsh
 # Load some plugins
 zcomet load zsh-users/zsh-completions
 zcomet load Aloxaf/fzf-tab
+zcomet load SleepyBag/zle-fzf
+# zcomet load thirteen37/fzf-brew
 zcomet load asdf-vm/asdf
 # zcomet load xPMo/zsh-toggle-command-prefix # keeps throwing sudo errors 
 zcomet load laggardkernel/zsh-thefuck
@@ -245,7 +247,10 @@ zcomet compinit
 # Since google is doing their own test of whether or not to add completions instead of adding to fpath
 # It has to be added after the compinit is compiled
 # The next line enables shell command completion for gcloud.
-if [ -f '/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc' ]; then . '/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc'; fi
+if [ -f '$HOMEBREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc' ];
+  then . '$HOMEBREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc';
+fi
+export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 
 ### Starship prompt
 eval "$(starship init zsh)"
