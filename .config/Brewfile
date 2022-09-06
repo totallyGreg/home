@@ -1,3 +1,4 @@
+tap "aquasecurity/trivy"
 tap "aws/tap"
 tap "buildpacks/tap"
 tap "cloudfoundry/tap"
@@ -14,7 +15,8 @@ tap "k14s/tap"
 tap "knative/client"
 tap "martido/brew-graph"
 tap "mczachurski/wallpapper"
-tap "sandreas/tap"
+tap "nativeos/i386-elf-toolchain"
+tap "saltbo/bin"
 tap "stevenacoffman/keyfob"
 tap "sttz/tap", "https://github.com/sttz/homebrew-tap.git"
 tap "ubuntu/microk8s"
@@ -24,13 +26,15 @@ tap "zdcthomas/tools"
 # CLI for Amazon ECS to manage clusters and tasks for development
 brew "amazon-ecs-cli"
 # Interpreted, interactive, object-oriented programming language
-brew "python@3.10"
+brew "python@3.10", link: false
 # Automate deployment, configuration, and upgrading
 brew "ansible"
 # Checks ansible playbooks for practices and behaviour
 brew "ansible-lint"
 # Strip or convert ANSI codes into HTML, (La)Tex, RTF, or BBCode
 brew "ansifilter"
+# Companion library to apr, the Apache Portable Runtime library
+brew "apr-util"
 # GitOps Continuous Delivery for Kubernetes
 brew "argocd"
 # Collection of portable C++ source libraries
@@ -43,6 +47,8 @@ brew "asciidoc"
 brew "asciidoctor"
 # Record and share terminal sessions
 brew "asciinema"
+# Automatic configure script builder
+brew "autoconf"
 # Tool for generating GNU Standards-compliant Makefiles
 brew "automake"
 # Securely store and access AWS credentials in development environments
@@ -59,6 +65,8 @@ brew "bash"
 brew "bash-completion@2"
 # Clone of cat(1) with syntax highlighting and Git integration
 brew "bat"
+# High performance key/value database
+brew "berkeley-db", link: true
 # Core application library for C
 brew "glib"
 # Vector graphics library with cross-device output support
@@ -67,28 +75,38 @@ brew "cairo"
 brew "dialog"
 # Tool to obtain certs from Let's Encrypt and autoenable HTTPS
 brew "certbot"
+# CLI to install, manage & troubleshoot Kubernetes clusters running Cilium
+brew "cilium-cli"
 # Cross-platform make
 brew "cmake"
+# Generic library support script
+brew "libtool"
 # GNU Ubiquitous Intelligent Language for Extensions
 brew "guile"
 # Validating, recursive, caching DNS resolver
 brew "unbound"
 # GNU Transport Layer Security (TLS) Library
 brew "gnutls"
+# General purpose TCP-IP emulator
+brew "libslirp"
 # Compression/decompression library aiming for high speed
 brew "snappy"
 # Emulator for x86 and PowerPC
 brew "qemu"
 # Linux virtual machines
 brew "lima"
-# Container runtimes on MacOS with minimal setup
-brew "colima"
+# Container runtimes on MacOS (and Linux) with minimal setup
+brew "colima", args: ["HEAD"]
 # Tool for service discovery, monitoring and configuration
 brew "consul"
 # GNU File, Shell, and Text utilities
 brew "coreutils"
 # Configurable talking characters in ASCII art
 brew "cowsay"
+# Open source suite of directory software
+brew "openldap"
+# Get a file from an HTTP, HTTPS or FTP server
+brew "curl"
 # Tools to manipulate dates with a focus on financial data
 brew "dateutils"
 # Load/unload environment variables based on $PWD
@@ -99,10 +117,18 @@ brew "docker", link: false
 brew "docker-machine"
 # Text processing system for reStructuredText
 brew "docutils"
+# Disk Usage/Free Utility - a better 'df' alternative
+brew "duf"
+# More intuitive version of du in rust
+brew "dust"
 # Simple command-line tool for creating clusters on Amazon EKS
 brew "eksctl"
+# Simple, fast and user-friendly alternative to find
+brew "fd"
 # Banner-like program prints strings as ASCII art
 brew "figlet"
+# I/O benchmark and stress test
+brew "fio"
 # Lint your Python code for style and logical errors
 brew "flake8"
 # Infamous electronic fortune-cookie generator
@@ -115,10 +141,14 @@ brew "gcalcli"
 brew "gdk-pixbuf"
 # GitHub command-line tool
 brew "gh"
+# GIF image/animation creator/editor
+brew "gifsicle"
 # Perl compatible regular expressions library with a new API
 brew "pcre2"
 # Distributed revision control system
 brew "git"
+# Syntax-highlighting pager for git and diff output
+brew "git-delta"
 # Extensions to follow Vincent Driessen's branching model
 brew "git-flow"
 # Platform built on V8 to build network applications
@@ -151,6 +181,8 @@ brew "graphviz"
 brew "grep"
 # GitHub Markdown previewer
 brew "grip"
+# Make JSON greppable
+brew "gron"
 # Like cURL, but for gRPC
 brew "grpcurl"
 # Smarter Dockerfile linter to validate best practices
@@ -161,6 +193,8 @@ brew "hey"
 brew "highlight"
 # Improved top (interactive process viewer)
 brew "htop"
+# Network, Service & Security Observability for Kubernetes using eBPF
+brew "hubble"
 # Get events and tasks from the macOS calendar database
 brew "ical-buddy"
 # Utility for IPMI control with kernel driver or LAN interface
@@ -175,16 +209,18 @@ brew "jq"
 brew "pandoc"
 # Interactive environments for writing and running code
 brew "jupyterlab"
-# Little helper to run Rancher Lab's k3s in Docker
+# Little helper to run CNCF's k3s in Docker
 brew "k3d"
 # Utility to create k3s clusters on any local or remote VM
 brew "k3sup"
 # Kubernetes CLI To Manage Your Clusters In Style!
 brew "k9s"
 # Run local Kubernetes cluster in Docker
-brew "kind"
+brew "kind", args: ["HEAD"]
 # Tool to move from `docker-compose` to Kubernetes
 brew "kompose"
+# Network authentication protocol
+brew "krb5"
 # Kubernetes command-line interface
 brew "kubernetes-cli"
 # Package manager for kubectl plugins
@@ -199,12 +235,18 @@ brew "kubie"
 brew "kustomize"
 # Subtitle renderer for the ASS/SSA subtitle format
 brew "libass"
+# Postgres C API library
+brew "libpq"
+# Powerful, clean, object-oriented scripting language
+brew "ruby"
 # Library implementing a curses-based widget set for terminals
 brew "libstfl"
 # Rainbows and unicorns in your console!
 brew "lolcat"
 # Clone of ls with colorful output, file type icons, and more
 brew "lsd"
+# Utility for directing compilation
+brew "make"
 # Mac App Store command-line interface
 brew "mas"
 # Development kit for the Java programming language
@@ -217,8 +259,12 @@ brew "media-info"
 brew "mercurial"
 # Command-line interface (CLI) for mermaid
 brew "mermaid-cli"
+# Cross platform, open source .NET development framework
+brew "mono"
 # MP3 technical info viewer and ID3 1.x tag editor
 brew "mp3info"
+# Read, create, and modify MP4 files
+brew "mp4v2"
 # 'traceroute' and 'ping' in a single tool
 brew "mtr"
 # Ambitious Vim-fork focused on extensibility and agility
@@ -233,6 +279,8 @@ brew "nghttp2"
 brew "nmap"
 # Kubernetes introspection tool for developers
 brew "octant"
+# Cryptography and SSL/TLS Toolkit
+brew "openssl@3"
 # Tool for creating identical machine images for multiple platforms
 brew "packer"
 # Command-line tool to generate, analyze, convert and manipulate colors
@@ -251,8 +299,10 @@ brew "proselint"
 brew "pyenv"
 # Pyenv plugin to manage virtualenv
 brew "pyenv-virtualenv"
+# Tool Command Language
+brew "tcl-tk"
 # Interpreted, interactive, object-oriented programming language
-brew "python@3.8"
+brew "python@3.8", link: false
 # Unified tool to manage your Rancher server
 brew "rancher-cli"
 # Reattach process (e.g., tmux) to background
@@ -309,6 +359,8 @@ brew "urlview"
 brew "vagrant-completion"
 # Secures, stores, and tightly controls access to secrets
 brew "vault"
+# Creates fully functional virtual k8s cluster inside host k8s cluster's namespace
+brew "vcluster"
 # HTTP load testing tool and library
 brew "vegeta"
 # Vi 'workalike' with many additional features
@@ -327,8 +379,12 @@ brew "yamllint"
 brew "youtube-dl"
 # Process YAML documents from the CLI
 brew "yq"
+# Shell extension to navigate your filesystem faster
+brew "zoxide"
 # Additional completion definitions for zsh
 brew "zsh-completions"
+# Scanner for vulnerabilities in container images, file systems, and Git repositories, as well as for configuration issues
+brew "aquasecurity/trivy/trivy"
 # EC2 Instance Selector is a tool to filter EC2 instance types based on resource criteria
 brew "aws/tap/ec2-instance-selector"
 # CLI for managing EKS Anywhere Kubernetes clusters
@@ -364,8 +420,10 @@ brew "k14s/tap/vendir"
 brew "k14s/tap/ytt"
 brew "knative/client/kn"
 brew "martido/brew-graph/brew-graph"
-# m4b-tool is a command line utility to merge, split and chapterize audiobook files such as mp3, ogg, flac, m4a or m4b
-brew "sandreas/tap/m4b-tool"
+# GNU GRUB 2 targetting i386-elf
+brew "nativeos/i386-elf-toolchain/i386-elf-grub"
+# Let's see the configs of the Envoy
+brew "saltbo/bin/seenvoy"
 # keyfob - a two-factor authentication agent suitable for AWS and Github
 brew "stevenacoffman/keyfob/keyfob"
 # expresso is a command line interface to control the ExpressVPN app
@@ -380,10 +438,14 @@ brew "zdcthomas/tools/dmux"
 cask "google-cloud-sdk"
 # Tools to protect your emails and files
 cask "gpg-suite", args: { appdir: "~/Applications/Ops/Clandestine" }
+# Orchestrates virtual Ubuntu instances
+cask "multipass"
 # Knowledge base that works on top of a local folder of plain text Markdown files
 cask "obsidian"
 # Command-line shell and scripting language
 cask "powershell"
+# QuickLook generator for Markdown files
+cask "qlmarkdown"
 # Development environment
 cask "vagrant", args: { appdir: "~/Applications/Ops/Engineering" }
 # Virtualizer for x86 hardware
@@ -397,6 +459,9 @@ mas "Microsoft OneNote", id: 784801555
 mas "Numbers", id: 409203825
 mas "Pages", id: 409201541
 mas "Paprika Recipe Manager 3", id: 1303222628
+mas "Peek", id: 1554235898
+mas "Silicio", id: 933627574
 mas "Soulver 3", id: 1508732804
 mas "Twitter", id: 1482454543
+mas "Vimari", id: 1480933944
 mas "Xcode", id: 497799835
