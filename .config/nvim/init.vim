@@ -80,9 +80,6 @@ Plug 'yggdroot/indentLine'  " A vim plugin to display the indention levels with 
 Plug 'janko-m/vim-test'
 Plug 'sunaku/tmux-navigate'
 " }}}
-" {{{ Code Completion
-source ~/.config/coc/coc.vimrc
-" }}}
 " {{{ Visual
 Plug 'altercation/vim-colors-solarized', {'do': ':so $HOME/.local/share/nvim/plugged/vim-colors-solarized/autoload/togglebg.vim' } " Ethan's best
 let g:solarized_termtrans=0          " This gives me a dark background, but breaks light/dark toggle
@@ -168,8 +165,45 @@ Plug 'https://github.com/alok/notational-fzf-vim'
   " " String. Must be in the form 'ctrl-KEY' or 'alt-KEY'
   " let g:nv_create_note_key = 'alt-z'
   " nnoremap <silent> <C-p> :NV<CR> " Notational Velocity Trigger
+" }}}
+" {{{ Language-Server Protocol Support
+" source ~/.config/coc/coc.vimrc
+" LSP Support from https://github.com/VonHeikemen/lsp-zero.nvim
+Plug 'neovim/nvim-lspconfig'
+Plug 'williamboman/mason.nvim'            " Auto install lsp's based on filetype
+Plug 'williamboman/mason-lspconfig.nvim'
+
+" Autocompletion
+Plug 'hrsh7th/nvim-cmp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
+Plug 'saadparwaiz1/cmp_luasnip'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-nvim-lua'
+
+"  Snippets
+Plug 'L3MON4D3/LuaSnip'
+Plug 'rafamadriz/friendly-snippets'
+
+Plug 'VonHeikemen/lsp-zero.nvim'
 
 Plug 'dense-analysis/ale' " {{{ ALE and it's Options
+" Testing non-native lsp with ale
+" Plug 'prabirshrestha/vim-lsp'
+" Plug 'rhysd/vim-lsp-ale'
+
+" if executable('gopls')
+"       autocmd User lsp_setup call lsp#register_server({
+"           \ 'name': 'gopls',
+"           \ 'cmd': ['gopls'],
+"           \ 'allowlist': ['go', 'gomod'],
+"           \ })
+"   endif
+" " let b:ale_linters = ['proselint', 'tflint', 'shellcheck', 'vint', 'prettier', 'yamllint', 'pyflakes', 'flake8', 'pylint']
+"   let g:ale_linters = {
+"       \   'go': ['vim-lsp', 'golint'],
+"       \ }
+
 " nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 " nmap <silent> <C-j> <Plug>(ale_next_wrap)
 let g:ale_statusline_format = ['⨉ %d', '⚠ %d', '⬥ ok']
@@ -177,8 +211,6 @@ let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
 let g:ale_open_list = 0
 " let g:ale_list_vertical = 1
 let g:ale_set_quickfix = 0
-" let b:ale_linters = ['proselint', 'tflint', 'shellcheck', 'vint', 'prettier', 'yamllint', 'pyflakes', 'flake8', 'pylint']
-" let g:ale_fixers = ['prettier', 'shfmt' ]
 let g:ale_fixers = {
   \ 'python': ['autopep8'],
   \ 'go': ['gofmt'],
@@ -211,6 +243,14 @@ endif
 call plug#end()
 " }}}
 " }}} Plugin Management
+" Lua running lsp-zero after call plug#end()
+lua <<EOF
+local lsp = require('lsp-zero')
+
+lsp.preset('recommended')
+lsp.setup()
+EOF
+
 " {{{ Lightline Configuration
 set laststatus=2
 set noshowmode    " Do not need to show -- Insert --, as lightline handles it already
@@ -405,7 +445,7 @@ autocmd ColorScheme * highlight! link SignColumn LineNr
 "   autocmd BufNewFile,BufRead hosts setfiletype yaml.ansible
 " augroup END
 
-" Ale windows close automatically on buffer close
+" Ale windows close automatically on buffer close/
 augroup CloseLoclistWindowGroup
   autocmd!
   autocmd QuitPre * if empty(&buftype) | lclose | endif
