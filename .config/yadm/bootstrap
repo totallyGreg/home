@@ -47,8 +47,17 @@ function macos_defaults {
   defaults write NSGlobalDomain KeyRepeat -int 2
   defaults write NSGlobalDomain InitialKeyRepeat -int 15
 
+  # Disable spelling Automatically
+  defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool true
+
+  # Disable spelling Automatically
+  defaults write NSGlobalDomain WebAutomaticSpellingCorrectionEnabled -bool false
+
   # Disable automatic capitalization as it’s annoying when typing code
   defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
+
+  # Disable add period after two spaces
+  defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
 
   # Disable smart dashes as they’re annoying when typing code
   defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
@@ -106,6 +115,9 @@ function macos_defaults {
 
   # Make Dock icons of hidden applications translucent
   defaults write com.apple.dock showhidden -bool true
+
+  # Force Command Tab focus on All screens
+  # defaults write com.apple.Dock appswitcher-all-displays -bool true
 
   # Hot corners
   # Possible values:
@@ -199,6 +211,30 @@ function enable_touchid {
   fi
 
   if sudo ex -s -c '2i|auth       sufficient     pam_tid.so' -c x! -c x! /etc/pam.d/sudo; then
+    # Invoke Vim in ex mode
+    # Select line 2, enter insert mode, insert that text write changes and exit
+    # Need to exit twice to get passed the read only file warning
+    echo "[✅] TouchID Sudo Enabled"
+  else
+    echo "[❌] Failed to enable TouchID Sudo"
+  fi
+}
+function enable_touchid2 {
+  # enable_touchid_sudo
+  # NEEDS FIXING
+  # Extra pam_reattach.so is needed when using tmux
+  #   Check if already enabled in /etc pam.d/sudo
+  #   Use vim to insert required text to sudo
+  if grep -q 'pam_tid.so' /etc/pam.d/sudo; then
+    echo "[✅] TouchID Sudo Already Enabled"
+    return 0
+  fi
+
+  if sudo ex -s -c '2i|auth       sufficient     pam_tid.so' -c x! -c x! /etc/pam.d/sudo; then
+auth       optional       pam_reattach.so ignore_ssh
+auth       sufficient     pam_tid.so
+EOF
+
     # Invoke Vim in ex mode
     # Select line 2, enter insert mode, insert that text write changes and exit
     # Need to exit twice to get passed the read only file warning
