@@ -1,3 +1,14 @@
+add_newline = true
+"$schema" = 'https://starship.rs/config-schema.json'
+# format = '''
+# [┌───────────────────>](green)
+# [│](green)$all
+# [└─>](green)$character '''
+right_format = """$cmd_duration $time"""
+
+palette = ''
+palettes = {}
+
 [aws]
 disabled = false
 
@@ -28,6 +39,15 @@ truncation_length = 3
 truncate_to_repo = true
 style = 'bold cyan'
 disabled = false
+# style = "fg:#e3e5e5 bg:#769ff0"
+
+[directory.substitutions]
+"Downloads" = " "
+"Music" = " "
+"Pictures" = " "
+"Library/Mobile Documents/com~apple~CloudDocs" = "☁️  "
+"greg.williams@solo.io - Google Drive" = "🦉 "
+"totallygreg@gmail.com - Google Drive" = "🄶 "
 
 [env_var.ExpressVPN]
 # variable = "ExpressVPN"
@@ -96,6 +116,10 @@ pyenv_prefix = 'foo '
 
 [terraform]
 disabled = true
+
+[time]
+format = '[$time]($style)'
+disabled = false
 
 [username]
 style_root = 'bold red'
