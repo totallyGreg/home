@@ -6,8 +6,8 @@ add_newline = true
 # [└─>](green)$character '''
 right_format = """$cmd_duration $time"""
 
-palette = ''
-palettes = {}
+# palette = ''
+# palettes = {}
 
 [aws]
 disabled = false
@@ -53,6 +53,11 @@ disabled = false
 # variable = "ExpressVPN"
 # symbol = '🔐'
 format = "[$env_value]($style) "
+
+[custom.ExpressVPN]
+when = "pgrep lightway"
+symbol = '🔐'
+format = "[$symbol]($style) "
 
 [gcloud]
 disabled = true
