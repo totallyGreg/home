@@ -3,45 +3,87 @@
 # Original source: https://gist.github.com/AriaFallah/fe7b651ba2652bd301334e011749e4b2/
 # with some modifications adapted from https://www.netmeister.org/blog/keychain-passwords.html
 
-KEYCHAIN=${KEYCHAIN:-"login.keychain"}
+# In calling functions and haivng them return the output of the filtered list is failing
+# See https://stackoverflow.com/questions/3236871/how-to-return-a-string-value-from-a-bash-function/38997681#38997681
+
+select_keychain() {
+  KEYCHAIN=$(security list-keychains | xargs -I{} basename {} '-db' | fzf)
+  if [[ $KEYCHAIN ]]; then
+    export KEYCHAIN=$KEYCHAIN
+  else
+    echo "No Keychain found setting to default login.keychain"
+    KEYCHAIN=${KEYCHAIN:-"login.keychain"}
+  fi
+}
 ITEM_KIND=${ITEM_KIND:-"secret"}
 
 main () {
-  if [[ -z "$1" ]]; then
+  if [[ $# -lt 1 ]]; then
     print_usage
   fi
 
+  # It seems to strip the quotes off an argument like
+  # keychainctl get 'acme-shell API key'
+  # echo "Getting arguments $@"
   case "$1" in
     list|ls) list_secrets ;;
-    get) get_secret "$2" ;;
-    set) set_secret "$2" "$3" ;;
-    delete|rm) delete_secret "$2" ;;
+    get) shift; get_secret "$@" ;;
+    set) shift; set_secret "$@" ;;
+    delete|rm) shift; delete_secret "$@" ;;
     *) print_usage ;;
   esac
 }
 
+list_keychains() {
+  security list-keychains | xargs -I{} basename {} -db
+}
+
 list_secrets() {
-  security dump-keychain "$KEYCHAIN" | awk -F= '/0x00000007/ {print $2}' | tr -d \"
+  select_keychain
+  security dump-keychain "$KEYCHAIN" | awk -F= '/0x00000007/ {print $2}' | tr -d \" | fzf
 }
 
 get_secret() {
-  if [[ -z "$1" ]]; then
-    print_usage
+  KEYCHAIN=${KEYCHAIN:-login.keychain}
+  # echo "get_secret is being passed $# arguments with KEYCHAIN currently set to $KEYCHAIN"
+  if [ $# -eq 2 ]; then
+    SERVICE="${1}"
+    KEYCHAIN="${2}"
+    # echo "KEYCHAIN is now: $KEYCHAIN"
+  elif [ $# -eq 1 ]; then
+    SERVICE="${1}"
+  else
+    select_keychain
+    SERVICE=$(security dump-keychain "$KEYCHAIN" | awk -F= '/0x00000007/ {print $2}' | tr -d \" | fzf)
   fi
-  security find-generic-password -a "$USER" -s "$1" -w "$KEYCHAIN"
+  # echo "security find-generic-password -a '$USER' -s '$SERVICE' -w '$KEYCHAIN'"
+  security find-generic-password -a "$USER" -s "$SERVICE" -w "$KEYCHAIN"
 }
 
 set_secret() {
-  if [[ -z "$1" ]] || [[ -z "$2" ]]; then
+  KEYCHAIN=${KEYCHAIN:-login.keychain}
+  # echo "set_secret is being passed $# arguments with KEYCHAIN currently set to $KEYCHAIN"
+  if [ $# -eq 2 ]; then
+    echo "Only two arguments, choose the keychain"
+    select_keychain
+    ## WARNING bailing on the FZF select currently continues with default login which may overwrite existing values
+  elif [ $# -eq 3 ]; then
+    KEYCHAIN="${3}"
+  else
     print_usage
   fi
-  # -U  Update item if it already exists (if omitted, the item cannot already exist)
-  security add-generic-password -D $ITEM_KIND -U -a "$USER" -s "$1" -w "$2" "$KEYCHAIN"
+  SECRET="${1}"
+  PASSWORD="${2}"
+  echo "security add-generic-password -D '$ITEM_KIND' -U -a '$USER' -s '$SECRET'  -w '$PASSWORD' '$KEYCHAIN'"
+  security add-generic-password -D "$ITEM_KIND" -U -a "$USER" -s "$SECRET"  -w "$PASSWORD" "$KEYCHAIN"
 }
 
 delete_secret() {
   if [[ -z "$1" ]]; then
     print_usage
+  fi
+  if [[ -z "$2" ]]; then
+    select_keychain
   fi
   security delete-generic-password -a "$USER" -s "$1" "$KEYCHAIN"
 }
@@ -60,3 +102,4 @@ EOF
 
 # shellcheck disable=SC2068
 main $@
+# "${@:-main}"
