@@ -79,6 +79,11 @@ let g:skipview_files = ['*\.vim']
 Plug 'yggdroot/indentLine'  " A vim plugin to display the indention levels with thin vertical lines
 Plug 'janko-m/vim-test'
 Plug 'sunaku/tmux-navigate'
+
+" Neovim specific fuzzy finding
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.1' }
+" or                                , { 'branch': '0.1.x' }
 " }}}
 " {{{ Visual
 Plug 'altercation/vim-colors-solarized', {'do': ':so $HOME/.local/share/nvim/plugged/vim-colors-solarized/autoload/togglebg.vim' } " Ethan's best
@@ -168,24 +173,29 @@ Plug 'https://github.com/alok/notational-fzf-vim'
 " }}}
 " {{{ Language-Server Protocol Support
 " source ~/.config/coc/coc.vimrc
-" LSP Support from https://github.com/VonHeikemen/lsp-zero.nvim
-Plug 'neovim/nvim-lspconfig'
-Plug 'williamboman/mason.nvim'            " Auto install lsp's based on filetype
-Plug 'williamboman/mason-lspconfig.nvim'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
-" Autocompletion
-Plug 'hrsh7th/nvim-cmp'
-Plug 'hrsh7th/cmp-buffer'
-Plug 'hrsh7th/cmp-path'
-Plug 'saadparwaiz1/cmp_luasnip'
-Plug 'hrsh7th/cmp-nvim-lsp'
-Plug 'hrsh7th/cmp-nvim-lua'
+" LSP Support from https://github.com/VonHeikemen/lsp-zero.nvim
+Plug 'neovim/nvim-lspconfig'                           " Required
+Plug 'williamboman/mason.nvim', {'do': ':MasonUpdate'} " Optional
+Plug 'williamboman/mason-lspconfig.nvim'               " Optional
+
+" Autocompletion Engine
+Plug 'hrsh7th/nvim-cmp'         " Required
+Plug 'hrsh7th/cmp-nvim-lsp'     " Required
+Plug 'hrsh7th/cmp-buffer'       " Optional
+Plug 'hrsh7th/cmp-path'         " Optional
+Plug 'saadparwaiz1/cmp_luasnip' " Optional
+Plug 'hrsh7th/cmp-nvim-lua'     " Optional
 
 "  Snippets
-Plug 'L3MON4D3/LuaSnip'
-Plug 'rafamadriz/friendly-snippets'
+Plug 'L3MON4D3/LuaSnip'             " Required
+Plug 'rafamadriz/friendly-snippets' " Optional
 
-Plug 'VonHeikemen/lsp-zero.nvim'
+Plug 'VonHeikemen/lsp-zero.nvim', {'branch': 'v1.x'}
+
+" Get, set and autodetect YAML schemas in your buffers
+Plug 'someone-stole-my-name/yaml-companion.nvim'
 
 Plug 'dense-analysis/ale' " {{{ ALE and it's Options
 " Testing non-native lsp with ale
@@ -248,7 +258,32 @@ lua <<EOF
 local lsp = require('lsp-zero')
 
 lsp.preset('recommended')
+
+lsp.on_attach(function(client, bufnr)
+  local opts = {buffer = bufnr}
+
+  vim.keymap.set({'n', 'x'}, 'gq', function()
+    vim.lsp.buf.format({async = false, timeout_ms = 10000})
+  end, opts)
+end)
+
 lsp.setup()
+EOF
+
+lua << EOF
+require('telescope').setup{
+  -- ...
+}
+EOF
+
+lua <<EOF
+local cfg = require("yaml-companion").setup({
+  -- Add any options here, or leave empty to use the default settings
+  -- lspconfig = {
+  --   cmd = {"yaml-language-server"}
+  -- },
+})
+require("lspconfig")["yamlls"].setup(cfg)
 EOF
 
 " {{{ Lightline Configuration
@@ -463,7 +498,7 @@ augroup pencil
   " autocmd FileType markdown,mkd,md call SetMarkdownOptions()
   " autocmd FileType rst call SetRestructuredTextOptions()
   autocmd FileType c,h call SetCOptions()
-  autocmd FileType go       call SetGoOptions()
+  " autocmd FileType go       call SetGoOptions()
   autocmd FileType Makefile call SetMakefileOptions()
   autocmd FileType text            call pencil#init({'wrap': 'soft'})
 
@@ -678,12 +713,20 @@ nnoremap <M-k>    :resize +2<CR>
 nnoremap <M-h>    :vertical resize -2<CR>
 nnoremap <M-l>    :vertical resize +2<CR>
 
+" manually format buffer with prettier
+nnoremap gp :silent %!prettier --stdin-filepath %<CR>
+
 " Some Primeagen love https://github.com/ThePrimeagen/.dotfiles/blob/master/nvim/.config/nvim/init.vim
 
 nnoremap Y yg$
 nnoremap n nzzzv
 nnoremap N Nzzzv
 nnoremap J mzJ`z
+
+" Center curson on page up/down
+nnoremap <C-u> <C-u>zz
+nnoremap <C-d> <C-d>zz
+nnoremap n nzz
 
 " Number 3: Undo break points
 inoremap , ,<c-g>u
@@ -700,7 +743,8 @@ inoremap <C-k> <esc>:m .-2<CR>==
 nnoremap <leader>k :m .-2<CR>==
 nnoremap <leader>j :m .+1<CR>==
 
-let mapleader = ';'
+" let mapleader = ';'
+let mapleader = ' '
 " {{{ FZF bindings
 " nmap <silent> <C-P> :Files<CR>
 nmap <silent> <leader>b :Buffers<CR>
@@ -717,6 +761,13 @@ nmap <Leader>T :Tags<CR>
 " nmap <silent> <leader>w :Windows<CR>
 nmap <silent> <leader>; :Commands<CR>
 " }}} FZF bindings
+
+" Telescope Keybindings
+" " Find files using Telescope command-line sugar.
+nnoremap <leader>ff <cmd>Telescope find_files<cr>
+nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+nnoremap <leader>fb <cmd>Telescope buffers<cr>
+nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 
 " greatest remap ever
 xnoremap <leader>p "_dP
