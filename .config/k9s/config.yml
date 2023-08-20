@@ -1,37 +1,164 @@
 k9s:
   refreshRate: 2
+  maxConnRetry: 5
+  enableMouse: false
   headless: false
+  logoless: false
+  crumbsless: false
   readOnly: false
+  noExitOnCtrlC: false
   noIcons: false
+  skipLatestRevCheck: false
   logger:
     tail: 100
     buffer: 5000
-    sinceSeconds: -1
+    sinceSeconds: 60
     fullScreenLogs: false
     textWrap: false
     showTime: false
-  currentContext: minix
-  currentCluster: minix
+  currentContext: mgmt
+  currentCluster: gke_customer-success-386314_us-east4_default-simple-gke-mgmt
   clusters:
-    minix:
+    ge-single.us-east-2.eksctl.io:
       namespace:
-        active: ""
+        active: all
+        lockFavorites: false
         favorites:
-        - traefik-v2
-        - test
-        - democratic-csi
+        - httpbin
+        - argocd
+        - ben
+        - kube-system
         - all
+        - gloo-portal
+        - gloo-system
         - default
       view:
-        active: pod traefik-v2
+        active: virtualservices
       featureGates:
         nodeShell: false
       shellPod:
-        image: busybox:1.31
+        image: busybox:1.35.0
+        command: []
+        args: []
         namespace: default
         limits:
           cpu: 100m
           memory: 100Mi
+        labels: {}
+      portForwardAddress: localhost
+    gke_customer-success-386314_us-east4-a_default-simple-cluster1:
+      namespace:
+        active: gloo-mesh
+        lockFavorites: false
+        favorites:
+        - gloo-mesh
+        - gmp-system
+        - default
+      view:
+        active: contexts
+      featureGates:
+        nodeShell: false
+      shellPod:
+        image: busybox:1.35.0
+        command: []
+        args: []
+        namespace: default
+        limits:
+          cpu: 100m
+          memory: 100Mi
+        labels: {}
+      portForwardAddress: localhost
+    gke_customer-success-386314_us-east4-c_default-simple-cluster2:
+      namespace:
+        active: gloo-mesh
+        lockFavorites: false
+        favorites:
+        - gloo-mesh
+        - all
+        - gloo-mesh-addons
+        - default
+      view:
+        active: cm
+      featureGates:
+        nodeShell: false
+      shellPod:
+        image: busybox:1.35.0
+        command: []
+        args: []
+        namespace: default
+        limits:
+          cpu: 100m
+          memory: 100Mi
+        labels: {}
+      portForwardAddress: localhost
+    gke_customer-success-386314_us-east4_default-simple-gke-mgmt:
+      namespace:
+        active: all
+        lockFavorites: false
+        favorites:
+        - gmp-system
+        - gmp-public
+        - gloo-mesh
+        - httpbin
+        - all
+      view:
+        active: gatewaylifecyclemanager
+      featureGates:
+        nodeShell: false
+      shellPod:
+        image: busybox:1.35.0
+        command: []
+        args: []
+        namespace: default
+        limits:
+          cpu: 100m
+          memory: 100Mi
+        labels: {}
+      portForwardAddress: localhost
+    minix:
+      namespace:
+        active: test
+        lockFavorites: false
+        favorites:
+        - test
+        - default
+      view:
+        active: services
+      featureGates:
+        nodeShell: false
+      shellPod:
+        image: busybox:1.35.0
+        command: []
+        args: []
+        namespace: default
+        limits:
+          cpu: 100m
+          memory: 100Mi
+        labels: {}
+      portForwardAddress: localhost
+    vcluster_mgmt_mgmt_rancher-desktop:
+      namespace:
+        active: istio-gateways
+        lockFavorites: false
+        favorites:
+        - istio-system
+        - kube-system
+        - all
+        - istio-gateways
+        - default
+      view:
+        active: services
+      featureGates:
+        nodeShell: false
+      shellPod:
+        image: busybox:1.35.0
+        command: []
+        args: []
+        namespace: default
+        limits:
+          cpu: 100m
+          memory: 100Mi
+        labels: {}
       portForwardAddress: localhost
   thresholds:
     cpu:
@@ -40,3 +167,4 @@ k9s:
     memory:
       critical: 90
       warn: 70
+  screenDumpDir: /var/folders/r_/20t3nn7x0z73d61qkqsr38qh0000gn/T/k9s-screens-totally

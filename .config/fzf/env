@@ -3,7 +3,8 @@ export FZF_DEFAULT_COMMAND='ag --hidden -g ""'
 # export FZF_DEFAULT_COMMAND="rg --files --hidden --follow --glob '!.git'"
 # export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
 
-# export FZF_ALT_C_COMMAND="find . -mindepth 1 -type d"
+export FZF_ALT_C_COMMAND="fd --hidden -t d . /Users/totally"
+
 
 export FZF_DEFAULT_OPTS="
 --layout=reverse
@@ -15,7 +16,7 @@ export FZF_DEFAULT_OPTS="
 --bind 'ctrl-v:execute(code {+})'
 "
 
-export FZF_TMUX_OPTS=""
+# export FZF_TMUX_OPTS=""
 
 # export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'
 #   --color=fg:-1,bg:-1,hl:#6c71c4

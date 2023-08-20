@@ -141,8 +141,18 @@ tw() {
 colours() {
   ( for i in {0..255}; do
     color="\x1b[38;5;${i}mcolour${i}\x1b[0m"
-    printf "$color\n"
-  done ) | column -t -c 2
+    printf "%30s $color\n"
+  done ) | column -c330
+}
+
+colors() {
+  for i in {0..255}; do  
+    printf "\x1b[38;5;${i}mcolor%-5i\x1b[0m" $i ; 
+    if ! (( ($i + 1 ) % 8 )); 
+    then
+      echo
+    fi
+  done
 }
 
 settitle()
@@ -239,7 +249,30 @@ kexec() {
     echo "Pod: ${PODNAME}"
     echo
     NS=`echo ${PODS} |awk '{print $1}'`
-    kubectl exec -it --namespace=${NS} ${PODNAME} /bin/bash
+    kubectl exec -it --namespace=${NS} ${PODNAME} -- /bin/bash
+}
+
+purge_ns(){
+  # replace finalizers on stuck namespace
+  if [ -z "$1" ]
+  then 
+      echo 'namespace required!' 
+      return 0 
+  fi 
+    kubectl get namespace $1 -o json |jq '.spec = {"finalizers":[]}' > /tmp/temp.json
+    kubectl replace --raw "/api/v1/namespaces/$1/finalize" -f /tmp/temp.json
+}
+
+show_all_resources() {
+  if [ -z "$1" ]
+  then 
+    echo 'namespace required!'
+    return 0
+  else
+    namespace=$1
+  fi
+  kubectl api-resources --verbs=list --namespaced -o name \
+  | xargs -n 1 kubectl get --show-kind --ignore-not-found -n $namespace
 }
 
 # Attempt to fzfy
@@ -456,9 +489,48 @@ vs(){
   cd $(cat ~/.vagrant.d/data/machine-index/index | jq '.machines[] | {name, vagrantfile_path, state}' | jq '.name + "," + .state  + "," + .vagrantfile_path'| sed 's/^"\(.*\)"$/\1/'| column -s, -t | sort -rk 2 | fzf | awk '{print $3}'); vagrant ssh
 }
 
-markdown-to-adoc() (
+markdown-to-adoc() {
   # Markdown to asciidoc the way I like it.
   f="$1"
   shift
   pandoc --atx-headers --base-header-level 2 -o "${f%.*}.adoc" --wrap=none "$f" "$@"
-)
+}
+
+clone_directory() {
+  # e.g.
+  # cd '~/Google Drive/Shared drives/Field/Customer Success/Account Activity
+  # clone_directory Customer_Folder_Template North\ America/CBP
+  # IF TEMPLATE set use it.  Otherwise Default to defined TEMPLATE which needs to be defined only if there are 1 arg. Otherwise it should use $1... needs work
+  TEMPLATE=/Users/totally/Library/CloudStorage/GoogleDrive-greg.williams@solo.io/Shared\ drives/Field/Customer\ Success/Account\ Activity/Customer_Folder_Template
+  skel_dir=${TEMPLATE:-$1}
+  dest_dir=${2:-$1}
+  echo "skel: $skel_dir dest: $dest_dir"
+  rsync -avz --ignore-existing --ignore-times "${skel_dir}/" "$dest_dir"
+}
+
+delete-stuck-pods() {
+  # Delete pods stuck in terminating state
+  kubectl get pods --all-namespaces | grep Terminating | while read line; do
+    pod_name=$(echo $line | awk '{print $2}' ) \
+    name_space=$(echo $line | awk '{print $1}' ); \
+    kubectl delete pods $pod_name -n $name_space --grace-period=0 --force
+  done
+}
+
+sampleThis() {
+  IFS=+ curl "cheat.sh/$1"
+}
+
+# function nvims() {
+#   items=("default" "CosmicNvim" "kickstart" "AstroNvim" "NvChad" )
+#   config=$(printf "%s\n" "${items[@]}" | fzf --prompt=" Neovim Config » " --height=~50% --layout=reverse --border --exit-0)
+#   if [[ -z $config ]];
+#   then
+#     echo "Nothing selected"
+#     return 0
+#   elif [[ $config = "default" ]]; 
+#    then config=""
+#   fi
+#   NVIM_APPNAME=$config nvim $@
+# }
+

@@ -18,12 +18,12 @@ disabled = false
 [[battery.display]]
 threshold = 10
 style = 'bold red'
-charging_symbol = '⚡️'
+charging_symbol = "⚡️"
 
 [[battery.display]] # "bold yellow" style and 💦 symbol when capacity is between 10% and 30%
 threshold = 30
 style = "bold yellow"
-charging_symbol = '⚡️'
+charging_symbol = "⚡️"
 discharging_symbol = "💦"
 
 [character]
@@ -52,7 +52,7 @@ disabled = false
 "Pictures" = " "
 "Library/Mobile Documents/com~apple~CloudDocs" = "☁️  "
 "greg.williams@solo.io - Google Drive" = "🦉 "
-"totallygreg@gmail.com - Google Drive" = "🄶 "
+"totallygreg@gmail.com - Google Drive" = ""
 
 # [env_var.ExpressVPN]
 # variable = "ExpressVPN"
@@ -90,6 +90,9 @@ disabled = false
 [git_status]
 stashed = '🧺'
 disabled = false
+
+[golang]
+symbol = ""
 
 [hostname]
 ssh_only = true

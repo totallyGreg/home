@@ -13,3 +13,5 @@ fi
 # Since most of my stuff is in .profile and bash will only source the first profile it finds
 [[ -s "$HOME/.profile" ]] && source "$HOME/.profile"  # Load the default .profile
 [[ -s "$HOME/.bashrc" ]] && source "$HOME/.bashrc"    # Load the default .bashrc
+
+complete -C /Users/totally/.asdf/installs/terraform/1.5.2/bin/terraform terraform

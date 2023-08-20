@@ -12,10 +12,14 @@ alias grep='grep --color=auto'
 alias cd..='cd ..'
 alias ic='cd ~/Library/Mobile\ Documents/com~apple~CloudDocs'
 alias watch='watch ' # this allows alias expansion
+alias stamp='date "+%Y-%m-%d⏱ %H.%M"'
 if [ 'command -v bat' ]; then alias cat='bat --style=plain'; fi
 
 # Python source venv
 alias sv='source venv/bin/activate'
+
+# AWS
+alias aws-ping='aws sts get-caller-identity'
 
 # Docker
 alias d='docker'
@@ -33,7 +37,6 @@ alias dkps="docker ps --format '{{.ID}} - {{.Names}} - {{.Status}} - {{.Image}}'
 alias envoy='docker run --net=host -v ${PWD}:${PWD}:ro -w $PWD -e ENVOY_UID=0 envoyproxy/envoy:v1.20.0'
 
 # Git
-alias g='git '
 alias gfa='git fetch --all '
 alias gpf='git pull --ff-only '
 
@@ -46,19 +49,29 @@ alias lctl='limactl'
 # ~/bin/keychainctl
 alias keyctl='keychainctl'
 alias kctl='keychainctl'
+alias kc='keychainctl'
 
 # Kubernetes
 # Recently adopted https://github.com/kubermatic/fubectl
 # likely to replace many of my aliases and 
-alias busybox='kubectl run -it --rm --restart=Never busybox --image=busybox sh'
-alias netshoot='open https://github.com/nicolaka/netshoot ; kubectl run tmp-shell --rm -i --tty --image nicolaka/netshoot -- /bin/bash'
+# alias busybox='kubectl run -it --rm --restart=Never busybox --image=busybox sh'
+alias netshoot='open https://github.com/nicolaka/netshoot ; kubectl run tmp-shell --rm -i --tty --image nicolaka/netshoot -- /bin/zsh'
+alias busybox='kubectl run -i --tty --rm debug --image=busybox --restart=Never -- zsh'
+
 alias k='kubectl'
-alias ka='kubectl apply -f '
-alias kctx='kcs'
-alias kns='kcns'
+alias kaf='kubectl apply -f '
+alias kctx='kubectx'
+alias kns='kubens'
 alias kedp='kubectl get endpoints --all-namespaces '
 alias kvu="kubectl view-utilization "
 alias qapla='pbpaste | kubectl apply -f -'    # I hope I'm not the only one on this planet who finds this hilarious
+
+## OpenSSL
+# can be used with pbpaste | viewCert
+alias viewCert='openssl x509 -noout -issuer -subject -dates -hash'
+
+## Parse istio-bug-report crs
+alias crd_parser="python ~/Work/solo-cop/tools/crd_parser/crd_parser.py "
 
 ## Terraform
 alias tf=terraform
@@ -74,16 +87,24 @@ alias tkill="for s in \$(tmux list-sessions | awk '{print \$1}' | rg ':' -r '' |
 alias vgs='vagrant global-status'
 alias v='vagrant'
 
+## Vim stuff
 alias vim=nvim
+alias view='nvim -R'
+alias vimdiff='nvim -d'
 alias yavim="GIT_DIR=$HOME/.local/share/yadm/repo.git GIT_WORK_TREE=$HOME vim"
+alias zdot="yavim ~/.config/tmux/tmux.conf"
 alias tedit='GIT_DIR=$HOME/.local/share/yadm/repo.git GIT_WORK_TREE=$HOME vim ~/.config/tmux/tmux.conf'
 alias zedit='GIT_DIR=$HOME/.local/share/yadm/repo.git GIT_WORK_TREE=$HOME vim ~/.config/zsh/.zshrc'
+alias nvim-chad="NVIM_APPNAME=NvChad nvim"
+alias nvim-astro="NVIM_APPNAME=AstroNvim nvim"
+
+## Zendesk parsing
+alias organization_name="jq '.organizations[].name'"
 
 ## Random Crap
 # https://apple.stackexchange.com/questions/348762/how-to-have-a-random-background-color-in-terminal-app
 alias dark_mode_toggle="osascript -e 'tell application \"System Events\" to tell appearance preferences to set dark mode to not dark mode' -e 'tell application \"Terminal\" to set current settings of window 1 to settings set \"Totally Dark\"'; vim -c Tmuxline +qall"
 # alias dark_mode_toggle="osascript -e 'tell application \"System Events\" to tell appearance preferences to set dark mode to not dark mode'"
-alias gn='growlnotify'
 alias backscreen='/System/Library/CoreServices/ScreenSaverEngine.app/Contents/MacOS/ScreenSaverEngine -background &'
 alias lockscreen='/System/Library/CoreServices/"Menu Extras"/User.menu/Contents/Resources/CGSession -suspend'
 alias screensaver='open -a /System/Library/Frameworks/ScreenSaver.framework/Versions/A/Resources/ScreenSaverEngine.app'
@@ -94,13 +115,11 @@ alias futurama='fortune ~/Clouds/iCloud/Bookshelf/Quotes/futurama'
 alias serialscreen='screen -L /dev/cu.usbserial -f 9600,cs8,-parenb,-cstopb,-hupcl'
 alias odiff='opendiff'
 alias flushDNS='sudo killall -HUP mDNSResponder;say DNS cache has been flushed'
-alias debugDNS='sudo killall -USR1 mDNSResponder; sudo syslog -C mDNSResponder -d'
+alias resetDNS='sudo killall -USR1 mDNSResponder; sudo syslog -C mDNSResponder -d'
 alias weakssh='ssh -o StrictHostKeyChecking=no '
 alias chrome='open -a "Google Chrome" '
 alias test_portal='open http://captive.apple.com/hotspot-detect.html'
 alias local_rsync='rsync -av -e rcp --delete --progress '
-alias books='~/Library/Containers/com.apple.BKAgentService/Data/Documents/iBooks/Books'
-alias audiobooks='/Users/totally/Library/Containers/com.apple.BKAgentService/Data/Documents/iBooks/Books/Audiobooks'
 alias oblique="curl -s http://brianeno.needsyourhelp.org/draw | jq .strategy"
 alias dad_joke='curl -H "Accept: text/plain" https://icanhazdadjoke.com/'
 
@@ -114,6 +133,7 @@ alias dotupgrade='dotadm submodule update --remote --merge'
 
 # Generate random mac address for wireless
 alias random-mac="openssl rand -hex 6 | sed 's/\(..\)/\1:/g; s/.$//' | xargs sudo ifconfig en0 ether"
+alias spoof-mac="openssl rand -hex 6 | sed 's/\(..\)/\1:/g; s/.$//' | xargs sudo ifconfig en0 ether"
 
 # Setting sensitive values via security
 alias get_pivnet_token='PIVNET_TOKEN=$(ACCOUNT="j.greg.williams@altoros.com" keychain-environment-variable "Pivotal Refresh Token"); export PIVNET_TOKEN'
@@ -138,8 +158,9 @@ alias git_home='curl https://gist.githubusercontent.com/totallyGreg/4c9a430e6965
 alias install_home_brew='/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
 
 alias restart_dns='ssh portcullis sudo /etc/init.d/dnsmasq force-reload'
-alias m4b-tool='docker run -it --rm -u $(id -u):$(id -g) -v "$(pwd)":/mnt m4b-tool'
-alias mp4chaps='docker run -it --rm -u $(id -u):$(id -g) -v "$(pwd)":/mnt --entrypoint mp4chaps m4b-tool'
-alias mp4tags='docker run -it --rm -u $(id -u):$(id -g) -v "$(pwd)":/mnt --entrypoint mp4tags m4b-tool'
-alias mp4info='docker run -it --rm -u $(id -u):$(id -g) -v "$(pwd)":/mnt --entrypoint mp4info m4b-tool'
+# alias m4b-tool='docker run -it --rm -u $(id -u):$(id -g) -v "$(pwd)":/mnt m4b-tool'
+# alias mp4chaps='docker run -it --rm -u $(id -u):$(id -g) -v "$(pwd)":/mnt --entrypoint mp4chaps m4b-tool'
+# alias mp4tags='docker run -it --rm -u $(id -u):$(id -g) -v "$(pwd)":/mnt --entrypoint mp4tags m4b-tool'
+# alias mp4info='docker run -it --rm -u $(id -u):$(id -g) -v "$(pwd)":/mnt --entrypoint mp4info m4b-tool'
 
+alias merge_yaml="yq eval-all '. as $item ireduce ({}; . * $item )' "

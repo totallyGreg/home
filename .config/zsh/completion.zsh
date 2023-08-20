@@ -94,7 +94,7 @@ zstyle ":prezto:module:thefuck" alias "doh"
 zstyle ":prezto:runcom" zpreztorc "$HOME/.config/zsh/.zshrc"
 
 # # Hoping to steal bash completions for free
-# autoload -U +X bashcompinit &&  bashcompinit
+autoload -U +X bashcompinit &&  bashcompinit
 # if type brew &>/dev/null; then
 #   HOMEBREW_PREFIX="$(brew --prefix)"
 #   # for COMPLETION in "${HOMEBREW_PREFIX}/etc/bash_completion.d/"*; do

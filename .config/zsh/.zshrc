@@ -19,24 +19,41 @@ export KEYTIMEOUT=1
 
 # History settings
 # HISTFILE=~/.zsh_history   # set by /etc/zshrc
-HISTSIZE=99999
+HISTSIZE=500000
 HISTFILESIZE=999999
 SAVEHIST=$HISTSIZE
 HISTORY_IGNORE='(history|ls|l|cd|cd ..|cd -|pwd|exit|date|*xyzzy*|* --help)'
 
-setopt SHARE_HISTORY          # share history between different instances of the shell
-#setopt HIST_EXPIRE_DUPS_FIRST # expire duplicates first
+## Mutually Exclusive, choose one
+# setopt SHARE_HISTORY           # share history between different instances of the shell
+# setopt INC_APPEND_HISTORY      # Write to the history file immediately, not when the shell exits.
+setopt INC_APPEND_HISTORY_TIME # history entry is written out to the file after the command is finished, so that the time taken by the command is recorded correctly in the history file in EXTENDED_HISTORY format.
+
+
+# setopt HIST_EXPIRE_DUPS_FIRST # expire duplicates first
 setopt HIST_IGNORE_SPACE      # Remove command lines from history list when first character is a space
 setopt HIST_REDUCE_BLANKS     # removes blank lines from history
 setopt HIST_VERIFY            # show the substituted command in the prompt
 setopt HIST_FIND_NO_DUPS      # Duplicates are written but ignored on find
 setopt INTERACTIVE_COMMENTS   # allow #style comments to be added on commandline
+setopt EXTENDED_HISTORY       # record command start time
 
 # Changing directories
 setopt AUTO_CD
 setopt AUTO_PUSHD
 # setopt cdablevars
-cdpath=($HOME $HOME/Repositories $HOME/Downloads $HOME/Work)
+cdpath=($HOME $HOME/Repositories $HOME/Downloads $HOME/Work $HOME/Work/Customers)
+
+# iCloud Obscured Locations
+if [ -d "${HOME}/Library/Mobile Documents/com~apple~CloudDocs" ]; then
+  export iCloud="${HOME}/Clouds/iCloud"
+  hash -d iCloud=~/Library/Mobile\ Documents/com\~apple\~CloudDocs
+  hash -d audiobooks=~/Library/Containers/com.apple.BKAgentService/Data/Documents/iBooks/Books/audiobooks
+  hash -d books=~/Library/Containers/com.apple.BKAgentService/Data/Documents/iBooks/Books
+  hash -d obsidian=~/Library/Mobile\ Documents/iCloud\~md\~obsidian/Documents
+  hash -d podcasts=~/Library/Group\ Containers/243LU875E5.groups.com.apple.podcasts
+  hash -d accounts="/Users/totally/greg.williams@solo.io - Google Drive/Shared drives/Field/Customer Success/Account Activity"
+fi
 
 # Other misc settings
 LISTMAX=0
@@ -49,26 +66,20 @@ export LS_COLORS='no=00:fi=00:di=01;33:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40
 # eval  `dircolors -b`
 export ZLS_COLORS=$LS_COLORS
 
-
-precmd () {
-    local TERMWIDTH
-    (( TERMWIDTH = ${COLUMNS} - 1 ))
-    PR_FILLBAR=""
-    PR_PWDLEN=""
-    local promptsize=${#${(%):---(%n@%m:%l)---()--}}
-    local pwdsize=${#${(%):-%~}}
-    if [[ "$promptsize + $pwdsize" -gt $TERMWIDTH ]]; then
-      ((PR_PWDLEN=$TERMWIDTH - $promptsize))
-    else
-      PR_FILLBAR="\${(l.(($TERMWIDTH - ($promptsize + $pwdsize)))..${PR_HBAR}.)}"
-    fi
-}
-
-
-# iCloud Obscured Locations
-[ -d "${HOME}/Library/Mobile Documents/com~apple~CloudDocs" ] && export iCloud="${HOME}/Clouds/iCloud"
-export Books=${HOME}/Library/Containers/com.apple.BKAgentService/Data/Documents/iBooks/Books
-export Podcasts="${HOME}/Library/Group Containers/243LU875E5.groups.com.apple.podcasts"
+# I don't remember what this is for but the final else isn't being processed properly
+# precmd () {
+#     local TERMWIDTH
+#     (( TERMWIDTH = ${COLUMNS} - 1 ))
+#     PR_FILLBAR=""
+#     PR_PWDLEN=""
+#     local promptsize=${#${(%):---(%n@%m:%l)---()--}}
+#     local pwdsize=${#${(%):-%~}}
+#     if [[ "$promptsize + $pwdsize" -gt $TERMWIDTH ]]; then
+#       ((PR_PWDLEN=$TERMWIDTH - $promptsize))
+#     else
+#       PR_FILLBAR="\${(l.(($TERMWIDTH - ($promptsize + $pwdsize)))..${PR_HBAR}.)}"
+#     fi
+# }
 
 # Homebrew
 if [ -d /opt/homebrew ] ; then
@@ -98,6 +109,8 @@ fi
 if [ -d /Library/Developer/CommandLineTools/usr/bin ] ; then
   export PATH=/Library/Developer/CommandLineTools/usr/bin:$PATH
   export CPATH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include
+  export CC=$(xcrun --find clang)
+  export CXX=$(xcrun --find clang++)
 fi
 
 # OpenSSL that generates valid 
@@ -106,9 +119,11 @@ if [ -d /usr/local/opt/openssl@3/bin ] ; then
 fi
 
 # Setup Go environment
-export GOPATH="${HOME}/.go"
-export GOROOT="$(brew --prefix golang)/libexec"
+export GOPATH="${HOME}/Work/go"
+# export GOROOT="$(brew --prefix golang)/libexec"
+export GOROOT=~/.local/share/golang
 export PATH="$PATH:${GOPATH}/bin"
+export CGO_CFLAGS="-g -O2 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
 # export PATH="$PATH:${GOROOT}/bin" # Not needed with brew install go
 
 # Cargo
@@ -149,6 +164,13 @@ set_kubeconfig () {
 }
 set_kubeconfig
 
+set_kubeconfig_shell() {
+  # Create a unique KUBECONFIG for the shell
+  export KUBECONFIG="$HOME/.kube/config-$(uuidgen)"
+  cp $HOME/.kube/config "$KUBECONFIG"
+  trap "rm $KUBECONFIG" EXIT
+}
+
 export KUBECTL_EXTERNAL_DIFF="dyff between --omit-header --set-exit-code"
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 export HELM_EXPERIMENTAL_OCI=1
@@ -179,6 +201,7 @@ ZSH_AUTOSUGGEST_USE_ASYNC=true
 
 ## Source Functions
 [ -f ~/.functions ] && source ~/.functions
+[ -f ~/bin/ExpressVPN.sh ] && source ~/bin/ExpressVPN.sh
 
 # Zsh Specific Aliases
 alias mv='nocorrect mv'       # no spelling correction on mv
@@ -188,7 +211,7 @@ alias dirs='dirs -v'
 alias -s {yml,yaml}=vim       # quick editing of yaml files in vim
 
 [ -f ~/.aliases ] && source ~/.aliases
-[ -f $ZDOTDIR/solo ] && source $ZDOTDIR/solo
+[ -f $ZDOTDIR/solo.sh ] && source $ZDOTDIR/solo.sh
 
 # Enable the fuck if it exists
 hash thefuck > /dev/null 2>&1 && eval "$(thefuck --alias doh)"
@@ -247,11 +270,14 @@ zcomet compinit
 # Since google is doing their own test of whether or not to add completions instead of adding to fpath
 # It has to be added after the compinit is compiled
 # The next line enables shell command completion for gcloud.
-if [ -f '$HOMEBREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc' ];
-  then . '$HOMEBREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc';
+if [ -f "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc" ];
+  then
+    source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc";
+    source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc";
 fi
 export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 
 ### Starship prompt
 eval "$(starship init zsh)"
 
+source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc"
