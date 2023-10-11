@@ -101,6 +101,9 @@ function macos_defaults {
   # Default Finder view is Column
   defaults write com.apple.Finder FXPreferredViewStyle clmv
 
+  # Do not create .DS_Store files on remote shares (e.g. Google Drive)
+  defaults write com.apple.desktopservices DSDontWriteNetworkStores true
+
   ###############################################################################
   # Dock, Dashboard, and hot corners                                            #
   ###############################################################################
