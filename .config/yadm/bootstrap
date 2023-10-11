@@ -114,10 +114,13 @@ function macos_defaults {
   defaults write com.apple.dock orientation left
 
   # Turn on Magnifcation
-  defaults write com.apple.dock magnification -boolean TRUE
+  defaults write com.apple.dock magnification -boolean true
 
   # Make Dock icons of hidden applications translucent
   defaults write com.apple.dock showhidden -bool true
+
+  # Scroll up on a Dock icon to show all Space's opened windows for an app, or open stack.
+  defaults write com.apple.dock "scroll-to-open" -bool true
 
   # Force Command Tab focus on All screens
   # defaults write com.apple.Dock appswitcher-all-displays -bool true
