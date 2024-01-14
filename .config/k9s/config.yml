@@ -16,9 +16,34 @@ k9s:
     fullScreenLogs: false
     textWrap: false
     showTime: false
-  currentContext: mgmt
-  currentCluster: gke_customer-success-386314_us-east4_default-simple-gke-mgmt
+  currentContext: jgw-cbp-3053-sse
+  currentCluster: jgw-cbp-3053-sse.us-east-2.eksctl.io
   clusters:
+    command:
+      namespace:
+        active: kube-system
+        lockFavorites: false
+        favorites:
+        - kube-system
+        - cattle-system
+        - cert-manager
+        - all
+        - argocd
+        - default
+      view:
+        active: pod
+      featureGates:
+        nodeShell: false
+      shellPod:
+        image: busybox:1.35.0
+        command: []
+        args: []
+        namespace: default
+        limits:
+          cpu: 100m
+          memory: 100Mi
+        labels: {}
+      portForwardAddress: localhost
     ge-single.us-east-2.eksctl.io:
       namespace:
         active: all
@@ -48,14 +73,20 @@ k9s:
       portForwardAddress: localhost
     gke_customer-success-386314_us-east4-a_default-simple-cluster1:
       namespace:
-        active: gloo-mesh
+        active: gm-iop-1-17
         lockFavorites: false
         favorites:
+        - gloo-system
         - gloo-mesh
-        - gmp-system
-        - default
+        - petstore
+        - all
+        - gloo-mesh-gateways
+        - httpbin
+        - gloo-mesh-addons
+        - gm-iop-1-18
+        - gm-iop-1-17
       view:
-        active: contexts
+        active: pods
       featureGates:
         nodeShell: false
       shellPod:
@@ -73,12 +104,13 @@ k9s:
         active: gloo-mesh
         lockFavorites: false
         favorites:
+        - istio-system
         - gloo-mesh
         - all
         - gloo-mesh-addons
         - default
       view:
-        active: cm
+        active: contexts
       featureGates:
         nodeShell: false
       shellPod:
@@ -93,16 +125,116 @@ k9s:
       portForwardAddress: localhost
     gke_customer-success-386314_us-east4_default-simple-gke-mgmt:
       namespace:
-        active: all
+        active: gloo-system
         lockFavorites: false
         favorites:
-        - gmp-system
-        - gmp-public
         - gloo-mesh
         - httpbin
         - all
+        - default
+        - petstore
+        - kube-public
+        - kube-system
+        - gloo-system
+        - gmp-system
       view:
-        active: gatewaylifecyclemanager
+        active: crds
+      featureGates:
+        nodeShell: false
+      shellPod:
+        image: busybox:1.35.0
+        command: []
+        args: []
+        namespace: default
+        limits:
+          cpu: 100m
+          memory: 100Mi
+        labels: {}
+      portForwardAddress: localhost
+    jgw-cbp-3053-sse.us-east-2.eksctl.io:
+      namespace:
+        active: gloo-mesh-gateways
+        lockFavorites: false
+        favorites:
+        - gm-iop-1-20-1-patch1
+        - all
+        - bookinfo
+        - gloo-mesh-gateways
+        - default
+      view:
+        active: pods
+      featureGates:
+        nodeShell: false
+      shellPod:
+        image: busybox:1.35.0
+        command: []
+        args: []
+        namespace: default
+        limits:
+          cpu: 100m
+          memory: 100Mi
+        labels: {}
+      portForwardAddress: localhost
+    kind-zd-1501:
+      namespace:
+        active: gloo-system
+        lockFavorites: false
+        favorites:
+        - gloo-system
+        - default
+      view:
+        active: services
+      featureGates:
+        nodeShell: false
+      shellPod:
+        image: busybox:1.35.0
+        command: []
+        args: []
+        namespace: default
+        limits:
+          cpu: 100m
+          memory: 100Mi
+        labels: {}
+      portForwardAddress: localhost
+    kind-zd-2814:
+      namespace:
+        active: all
+        lockFavorites: false
+        favorites:
+        - metallb-system
+        - httpbin
+        - gloo-mesh-gateways
+        - bookinfo
+        - all
+        - gloo-mesh
+        - istio-system
+        - default
+      view:
+        active: services
+      featureGates:
+        nodeShell: false
+      shellPod:
+        image: busybox:1.35.0
+        command: []
+        args: []
+        namespace: default
+        limits:
+          cpu: 100m
+          memory: 100Mi
+        labels: {}
+      portForwardAddress: localhost
+    kind-zd-2833:
+      namespace:
+        active: all
+        lockFavorites: false
+        favorites:
+        - echo
+        - gloo-system
+        - metallb-system
+        - all
+        - default
+      view:
+        active: deployments
       featureGates:
         nodeShell: false
       shellPod:
@@ -117,13 +249,44 @@ k9s:
       portForwardAddress: localhost
     minix:
       namespace:
-        active: test
+        active: all
         lockFavorites: false
         favorites:
+        - traefik-v2
+        - all
+        - longhorn-system
         - test
         - default
       view:
-        active: services
+        active: statefulset
+      featureGates:
+        nodeShell: false
+      shellPod:
+        image: busybox:1.35.0
+        command: []
+        args: []
+        namespace: default
+        limits:
+          cpu: 100m
+          memory: 100Mi
+        labels: {}
+      portForwardAddress: localhost
+    rancher-desktop:
+      namespace:
+        active: gloo-system
+        lockFavorites: false
+        favorites:
+        - kube-system
+        - demo
+        - gloo-portal
+        - istio-system
+        - echo
+        - a
+        - gloo-system
+        - all
+        - default
+      view:
+        active: pods
       featureGates:
         nodeShell: false
       shellPod:

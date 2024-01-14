@@ -9,11 +9,25 @@ add_newline = true
 # palette = ''
 # palettes = {}
 
-format = '''
-$battery$all '''
+# format = '''
+# $battery$all '''
+# format = '''
+# [┌───────────────────>](bold green)
+# [│](bold green)$all
+# [└─$character](bold green) '''
+
+format = '$all$directory$character'
 
 [aws]
 disabled = false
+format = '[$symbol($profile )(\($region\) )]($style)'
+style = 'bold blue'
+
+[aws.profile_aliases]
+'customer-success:AdministratorAccess' = 'CSE'
+[aws.region_aliases]
+us-east-1 = 'us-e1'
+us-east-2 = 'us-e2'
 
 [[battery.display]]
 threshold = 10
@@ -54,12 +68,11 @@ disabled = false
 "greg.williams@solo.io - Google Drive" = "🦉 "
 "totallygreg@gmail.com - Google Drive" = ""
 
-# [env_var.ExpressVPN]
-# variable = "ExpressVPN"
-# symbol = '🔐'
-# format = "[$env_value]($style) "
-
 [custom.ExpressVPN]
+# Adds significant time to starting a shell
+# 1)    1          72.83    72.83   23.46%     72.83    72.83   23.46%  express_vpn_on
+disabled = true
+description = 'VPN Activated'
 when = "pgrep lightway"
 symbol = '🔐'
 format = "[$symbol]($style) "
@@ -93,6 +106,7 @@ disabled = false
 
 [golang]
 symbol = ""
+style = "cyan"
 
 [hostname]
 ssh_only = true
@@ -111,13 +125,24 @@ format = "@[$localipv4](bold red) "
 disabled = false
 
 [kubernetes]
+# format = 'on [⛵ ($user on )($cluster in )$context \($namespace\)](dimmed green) '
 # symbol = ' '
 style = 'blue'
 disabled = false
 
-[kubernetes.context_aliases]
-gb-aks-snd-admin = 'sbx'
-minix = 'minix'
+[[kubernetes.contexts]]
+context_pattern = "greg.williams@solo.io@jgw-xff.us-east-2.eksctl.io"
+context_alias = "🦉 EKS"
+# user_pattern = 'greg'
+# user_alias = "🦉"
+
+[[kubernetes.contexts]]
+# Using capture groups
+# Contexts from GKE, AWS and other cloud providers usually carry additional information, like the region/zone.
+# The following entry matches on the GKE format (`gke_projectname_zone_cluster-name`)
+# and renames every matching kube context into a more readable format (`gke-cluster-name`):
+context_pattern = "gke_.*_(?P<cluster>[\\w-]+)"
+context_alias = "gke-$cluster"
 
 [memory_usage]
 show_percentage = true
@@ -130,12 +155,19 @@ disabled = true
 pyenv_version_name = true
 pyenv_prefix = 'foo '
 
+[sudo]
+disabled = false
+
 [terraform]
 disabled = true
 
 [time]
-format = '[$time]($style)'
+format = '[\[$time\]]($style) '
+# format = '🕙[\[$time\]]($style) '
 disabled = false
+time_format = "%R" # Hour:Minute Format
+# style = "bg:#1d2230"
+# format = '[[  $time ](fg:#a0a9cb bg:#1d2230)]($style)'
 
 [username]
 style_root = 'bold red'

@@ -1,4 +1,13 @@
 #!/usr/bin/env zsh
+PROFILE_STARTUP=false
+
+if [[ "$PROFILE_STARTUP" == true ]]; then
+  zmodload zsh/zprof
+  PS4=$'%D{%M%S%.} %N:%i> '
+  exec 3>&2 2>$HOME/startlog.$$
+  setopt xtrace prompt_subst
+fi
+
 emulate zsh
 
 # Gotsta have vi bindings
@@ -30,19 +39,32 @@ HISTORY_IGNORE='(history|ls|l|cd|cd ..|cd -|pwd|exit|date|*xyzzy*|* --help)'
 setopt INC_APPEND_HISTORY_TIME # history entry is written out to the file after the command is finished, so that the time taken by the command is recorded correctly in the history file in EXTENDED_HISTORY format.
 
 
-# setopt HIST_EXPIRE_DUPS_FIRST # expire duplicates first
-setopt HIST_IGNORE_SPACE      # Remove command lines from history list when first character is a space
-setopt HIST_REDUCE_BLANKS     # removes blank lines from history
-setopt HIST_VERIFY            # show the substituted command in the prompt
-setopt HIST_FIND_NO_DUPS      # Duplicates are written but ignored on find
-setopt INTERACTIVE_COMMENTS   # allow #style comments to be added on commandline
-setopt EXTENDED_HISTORY       # record command start time
+# History
+# http://zsh.sourceforge.net/Doc/Release/Options.html#History
+setopt append_history          # append to history file
+setopt extended_history        # write the history file in the ':start:elapsed;command' format
+unsetopt hist_beep             # don't beep when attempting to access a missing history entry
+setopt hist_expire_dups_first  # expire a duplicate event first when trimming history
+setopt hist_find_no_dups       # don't display a previously found event
+setopt hist_ignore_all_dups    # delete an old recorded event if a new event is a duplicate
+setopt hist_ignore_dups        # don't record an event that was just recorded again
+setopt hist_ignore_space       # don't record an event starting with a space
+setopt hist_no_store           # don't store history commands
+setopt hist_reduce_blanks      # remove superfluous blanks from each command line being added to the history list
+setopt hist_save_no_dups       # don't write a duplicate event to the history file
+setopt hist_verify             # don't execute immediately upon history expansion
+setopt inc_append_history      # write to the history file immediately, not when the shell exits
+setopt interactive_comments    # allow #style comments to be added on commandline
+setopt share_history           # don't share history between all sessions
 
-# Changing directories
-setopt AUTO_CD
-setopt AUTO_PUSHD
+# Changing Directories
+# http://zsh.sourceforge.net/Doc/Release/Options.html#Changing-Directories
+setopt auto_cd                 # if a command isn't valid, but is a directory, cd to that dir
+setopt auto_pushd              # make cd push the old directory onto the directory stack
+setopt pushd_ignore_dups       # don’t push multiple copies of the same directory onto the directory stack
+setopt pushd_minus             # exchanges the meanings of ‘+’ and ‘-’ when specifying a directory in the stack
 # setopt cdablevars
-cdpath=($HOME $HOME/Repositories $HOME/Downloads $HOME/Work $HOME/Work/Customers)
+cdpath=($HOME $HOME/Repositories $HOME/Downloads $HOME/Work $HOME/Work/Customers/Americas)
 
 # iCloud Obscured Locations
 if [ -d "${HOME}/Library/Mobile Documents/com~apple~CloudDocs" ]; then
@@ -65,21 +87,6 @@ export LS_COLORS='no=00:fi=00:di=01;33:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40
 
 # eval  `dircolors -b`
 export ZLS_COLORS=$LS_COLORS
-
-# I don't remember what this is for but the final else isn't being processed properly
-# precmd () {
-#     local TERMWIDTH
-#     (( TERMWIDTH = ${COLUMNS} - 1 ))
-#     PR_FILLBAR=""
-#     PR_PWDLEN=""
-#     local promptsize=${#${(%):---(%n@%m:%l)---()--}}
-#     local pwdsize=${#${(%):-%~}}
-#     if [[ "$promptsize + $pwdsize" -gt $TERMWIDTH ]]; then
-#       ((PR_PWDLEN=$TERMWIDTH - $promptsize))
-#     else
-#       PR_FILLBAR="\${(l.(($TERMWIDTH - ($promptsize + $pwdsize)))..${PR_HBAR}.)}"
-#     fi
-# }
 
 # Homebrew
 if [ -d /opt/homebrew ] ; then
@@ -128,6 +135,9 @@ export CGO_CFLAGS="-g -O2 -isysroot /Library/Developer/CommandLineTools/SDKs/Mac
 
 # Cargo
 PATH=${HOME}/.cargo/bin:$PATH
+# From https://braindetour.com/article/20220213 but still getting linker errors
+# export PATH=$PATH:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib # Needed for Rust compilation and linking
+# export LIBRARY_PATH=$LIBRARY_PATH:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib # Needed for Rust compilation and linking
 
 # Rancher-Desktop
 PATH=${HOME}/.rd/bin:$PATH
@@ -189,8 +199,12 @@ else
 fi
 
 # Unique the paths
-typeset -U path fpath kubeconfig cdpath
+typeset -U path fpath kubeconfig cdpath 
 export PATH FPATH KUBECONFIG
+
+# Session Sauce variable
+typeset -TUx SESS_PROJECT_ROOT sess_project_root
+sess_project_root=(~/Work/Customers)
 
 # Load FZF Configurations
 [ -f "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.zsh ] && source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.zsh
@@ -199,9 +213,6 @@ ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 ZSH_AUTOSUGGEST_STRATEGY=(match_prev_cmd completion)
 ZSH_AUTOSUGGEST_USE_ASYNC=true
 
-## Source Functions
-[ -f ~/.functions ] && source ~/.functions
-[ -f ~/bin/ExpressVPN.sh ] && source ~/bin/ExpressVPN.sh
 
 # Zsh Specific Aliases
 alias mv='nocorrect mv'       # no spelling correction on mv
@@ -211,11 +222,14 @@ alias dirs='dirs -v'
 alias -s {yml,yaml}=vim       # quick editing of yaml files in vim
 
 [ -f ~/.aliases ] && source ~/.aliases
+
+## Source Functions after aliases
+[ -f ~/.functions ] && source ~/.functions
+[ -f ~/bin/ExpressVPN.sh ] && source ~/bin/ExpressVPN.sh
 [ -f $ZDOTDIR/solo.sh ] && source $ZDOTDIR/solo.sh
 
-# Enable the fuck if it exists
-hash thefuck > /dev/null 2>&1 && eval "$(thefuck --alias doh)"
-
+# Enable the fuck if it exists, this adds 0.6s to each shell start
+# hash thefuck > /dev/null 2>&1 && eval "$(thefuck --alias doh)"
 
 eval "$(direnv hook zsh)"
 
@@ -233,15 +247,16 @@ source ${ZDOTDIR:-${HOME}}/.zcomet/bin/zcomet.zsh
 # Load some plugins
 zcomet load zsh-users/zsh-completions
 zcomet load Aloxaf/fzf-tab
-zcomet load SleepyBag/zle-fzf
+# zcomet load SeepyBag/zle-fzf
 # zcomet load thirteen37/fzf-brew
 zcomet load asdf-vm/asdf
 # zcomet load xPMo/zsh-toggle-command-prefix # keeps throwing sudo errors 
-zcomet load laggardkernel/zsh-thefuck
+# zcomet load laggardkernel/zsh-thefuck
 # zcomet load starship/starship
 # zcomet load kubermatic/fubectl # https://github.com/kubermatic/fubectl
 zcomet load reegnz/jq-zsh-plugin # default keybinding alt-j needs to be changed! using alt-y
-zcomet load wfxr/forgit
+# zcomet load wfxr/forgit
+zcomet load ChrisPenner/session-sauce
 
 # Lazy-load some plugins
 zcomet trigger zhooks agkozak/zhooks
@@ -264,9 +279,6 @@ source $ZDOTDIR/zle.zsh
 # Now sourcing completions
 source $ZDOTDIR/completion.zsh
 
-# Run compinit and compile its cache
-zcomet compinit
-
 # Since google is doing their own test of whether or not to add completions instead of adding to fpath
 # It has to be added after the compinit is compiled
 # The next line enables shell command completion for gcloud.
@@ -277,7 +289,15 @@ if [ -f "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc" ];
 fi
 export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 
+# Run compinit and compile its cache
+zcomet compinit
+
 ### Starship prompt
 eval "$(starship init zsh)"
 
 source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc"
+
+if [[ "$PROFILE_STARTUP" == true ]]; then
+  unsetopt xtrace
+  exec 2>&3 3>&-; zprof > ~/zshprofile$(date +'%s')
+fi

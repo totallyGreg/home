@@ -1,10 +1,13 @@
+# Completions
+# http://zsh.sourceforge.net/Doc/Release/Options.html#Completion-2
+#
 # Begin Completions
 if type brew &>/dev/null; then
     FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
     FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
 fi
 # # My custom completions
-if [[ -d $ZDOTDIR/completions ]]; then
+if [[ -d $ZDOTDIR/completions ]] || mkdir $ZDOTDIR/completions ; then
   fpath=($ZDOTDIR/completions $fpath)
 fi
 
@@ -20,10 +23,12 @@ zmodload zsh/complist
 # | Options |
 # +---------+
 
-# setopt GLOB_COMPLETE      # Show autocompletion menu with globs
-setopt MENU_COMPLETE        # Automatically highlight first element of completion menu
-setopt AUTO_LIST            # Automatically list choices on ambiguous completion.
-setopt COMPLETE_IN_WORD     # Complete from both ends of a word.
+setopt always_to_end           # move cursor to the end of a completed word
+setopt auto_list               # automatically list choices on ambiguous completion
+setopt auto_menu               # show completion menu on a successive tab press
+setopt auto_param_slash        # if completed parameter is a directory, add a trailing slash
+setopt complete_in_word        # complete from both ends of a word
+unsetopt menu_complete         # don't autoselect the first completion entry
 
 ## FZF tab completion using Aloxaf/fzf-tab
 # disable sort when completing options of any command
@@ -94,7 +99,7 @@ zstyle ":prezto:module:thefuck" alias "doh"
 zstyle ":prezto:runcom" zpreztorc "$HOME/.config/zsh/.zshrc"
 
 # # Hoping to steal bash completions for free
-autoload -U +X bashcompinit &&  bashcompinit
+# autoload -Uz +X bashcompinit &&  bashcompinit
 # if type brew &>/dev/null; then
 #   HOMEBREW_PREFIX="$(brew --prefix)"
 #   # for COMPLETION in "${HOMEBREW_PREFIX}/etc/bash_completion.d/"*; do

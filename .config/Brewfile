@@ -59,6 +59,8 @@ brew "source-highlight"
 brew "asciidoc"
 # Text processor and publishing toolchain for AsciiDoc
 brew "asciidoctor"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.11"
 # Record and share terminal sessions
 brew "asciinema"
 # Automatic configure script builder
@@ -67,6 +69,8 @@ brew "autoconf"
 brew "automake"
 # Use AWS IAM credentials to authenticate to Kubernetes
 brew "aws-iam-authenticator"
+# Securely manage AWS API credentials using AWS SSO
+brew "aws-sso-cli"
 # Securely store and access AWS credentials in development environments
 brew "aws-vault"
 # Text processing system for reStructuredText
@@ -89,8 +93,6 @@ brew "berkeley-db", link: true
 brew "pcre2"
 # Core application library for C
 brew "glib"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.9"
 # Vector graphics library with cross-device output support
 brew "cairo"
 # CD/DVD/Blu-ray premastering and recording software
@@ -109,13 +111,15 @@ brew "cmctl"
 brew "unbound"
 # GNU Transport Layer Security (TLS) Library
 brew "gnutls"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.9"
 # General purpose TCP-IP emulator
 brew "libslirp"
 # C library SSHv1/SSHv2 client and server protocols
 brew "libssh"
 # Compression/decompression library aiming for high speed
 brew "snappy"
-# Emulator for x86 and PowerPC
+# Generic machine emulator and virtualizer
 brew "qemu"
 # Linux virtual machines
 brew "lima"
@@ -127,8 +131,18 @@ brew "consul"
 brew "coreutils"
 # Configurable talking characters in ASCII art
 brew "cowsay"
+# Get a file from an HTTP, HTTPS or FTP server
+brew "curl"
 # Tools to manipulate dates with a focus on financial data
 brew "dateutils"
+# Library for JPEG-2000 image manipulation
+brew "openjpeg"
+# Library access to GnuPG
+brew "gpgme"
+# PDF rendering library (based on the xpdf-3.0 code base)
+brew "poppler"
+# Visually compare two PDF files
+brew "diff-pdf"
 # Load/unload environment variables based on $PWD
 brew "direnv"
 # Pack, ship and run any application as a lightweight container
@@ -147,6 +161,8 @@ brew "fd"
 brew "fdk-aac-encoder"
 # Banner-like program prints strings as ASCII art
 brew "figlet"
+# Collection of GNU find, xargs, and locate
+brew "findutils"
 # I/O benchmark and stress test
 brew "fio"
 # Lint your Python code for style and logical errors
@@ -159,14 +175,14 @@ brew "fortune"
 brew "libtool"
 # Libraries to talk to Microsoft SQL Server and Sybase databases
 brew "freetds"
+# GNU awk utility
+brew "gawk"
 # Easily access your Google Calendar(s) from a command-line
 brew "gcalcli"
 # Toolkit for image loading and pixel buffer manipulation
 brew "gdk-pixbuf"
 # GitHub command-line tool
 brew "gh"
-# Library for JPEG-2000 image manipulation
-brew "openjpeg"
 # Interpreter for PostScript and PDF
 brew "ghostscript"
 # GIF image/animation creator/editor
@@ -193,6 +209,8 @@ brew "gobject-introspection"
 brew "jasper"
 # Image manipulation
 brew "netpbm"
+# GNU triangulated surface library
+brew "gts"
 # OpenType text shaping engine
 brew "harfbuzz"
 # Framework for layout and rendering of i18n text
@@ -203,8 +221,12 @@ brew "librsvg"
 brew "graphviz"
 # GNU grep, egrep and fgrep
 brew "grep"
+# Python implementation of Markdown
+brew "python-markdown"
 # GitHub Markdown previewer
 brew "grip"
+# Utilities for manipulating PostScript documents
+brew "psutils"
 # GNU troff text-formatting system
 brew "groff"
 # Make JSON greppable
@@ -213,6 +235,8 @@ brew "gron"
 brew "grpcurl"
 # GNU Ubiquitous Intelligent Language for Extensions
 brew "guile"
+# Tool for glamorous shell scripts
+brew "gum"
 # Smarter Dockerfile linter to validate best practices
 brew "hadolint"
 # Kubernetes package manager
@@ -241,6 +265,8 @@ brew "jq"
 brew "jsonschema"
 # Swiss-army knife of markup format conversion
 brew "pandoc"
+# Python Language Server for the Language Server Protocol
+brew "python-lsp-server"
 # Interactive environments for writing and running code
 brew "jupyterlab"
 # Little helper to run CNCF's k3s in Docker
@@ -271,12 +297,16 @@ brew "kustomize"
 brew "lazygit"
 # Subtitle renderer for the ASS/SSA subtitle format
 brew "libass"
+# Conversion library
+brew "libiconv"
 # C virtualization API
 brew "libvirt"
 # Rainbows and unicorns in your console!
 brew "lolcat"
 # Clone of ls with colorful output, file type icons, and more
 brew "lsd"
+# Text-based web browser
+brew "lynx"
 # Utility for directing compilation
 brew "make"
 # Mac App Store command-line interface
@@ -297,6 +327,8 @@ brew "mp3info"
 brew "mp4v2"
 # 'traceroute' and 'ping' in a single tool
 brew "mtr"
+# Fast, highly customisable system info script
+brew "neofetch"
 # Ambitious Vim-fork focused on extensibility and agility
 brew "neovim"
 # Utility for managing network connections
@@ -343,8 +375,8 @@ brew "reattach-to-user-namespace"
 brew "ripgrep"
 # Rancher Kubernetes Engine, a Kubernetes installer that works everywhere
 brew "rke"
-# Safe, concurrent, practical language
-brew "rust"
+# Rust toolchain installer
+brew "rustup-init"
 # Static analysis and lint tool, for (ba)sh scripts
 brew "shellcheck"
 # Autoformat shell script source code
@@ -395,8 +427,12 @@ brew "vcluster"
 brew "vegeta"
 # Vi 'workalike' with many additional features
 brew "vim"
+# Pager/text based browser
+brew "w3m"
 # Executes a program periodically, showing output fullscreen
 brew "watch"
+# Command-line client for WebSockets
+brew "websocat"
 # Internet file retriever
 brew "wget"
 # Fast CSV toolkit written in Rust
@@ -407,6 +443,8 @@ brew "yadm"
 brew "youtube-dl"
 # Process YAML, JSON, XML, CSV and properties documents from the CLI
 brew "yq"
+# Pluggable terminal workspace, with terminal multiplexer as the base feature
+brew "zellij"
 # Shell extension to navigate your filesystem faster
 brew "zoxide"
 # Additional completion definitions for zsh
@@ -472,12 +510,15 @@ cask "vagrant", args: { appdir: "~/Applications/Ops/Engineering" }
 cask "virtualbox", args: { appdir: "~/Applications/Ops/Engineering" }
 # Extend the functionality of VirtualBox
 cask "virtualbox-extension-pack"
+# Network protocol analyzer
+cask "wireshark-chmodbpf"
 mas "Actions", id: 1586435171
 mas "Actions for Obsidian", id: 1659667937
 mas "GarageBand", id: 682658836
 mas "Health Auto Export", id: 1115567069
 mas "iMovie", id: 408981434
 mas "Keynote", id: 409183694
+mas "Mastonaut", id: 1450757574
 mas "Microsoft OneNote", id: 784801555
 mas "Numbers", id: 409203825
 mas "Pages", id: 409201541
@@ -490,3 +531,5 @@ mas "TestFlight", id: 899247664
 mas "Twitter", id: 1482454543
 mas "Vimari", id: 1480933944
 mas "Xcode", id: 497799835
+vscode "asvetliakov.vscode-neovim"
+vscode "ms-azuretools.vscode-docker"

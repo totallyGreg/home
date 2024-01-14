@@ -1,9 +1,21 @@
 # export FZF_DEFAULT_COMMAND='ag -l -t -g ""'
-export FZF_DEFAULT_COMMAND='ag --hidden -g ""'
+# export FZF_DEFAULT_COMMAND='ag --hidden -g ""'
 # export FZF_DEFAULT_COMMAND="rg --files --hidden --follow --glob '!.git'"
 # export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
 
-export FZF_ALT_C_COMMAND="fd --hidden -t d . /Users/totally"
+export FZF_DEFAULT_COMMAND='command fd -H --no-ignore-vcs -E .git -td -tf'
+export FZF_ALT_C_COMMAND='command fd -H --no-ignore-vcs -E .git -td'
+_fzf_compgen_path() {
+  command fd -H --no-ignore-vcs -E .git -td -tf . ${1} 
+}
+
+_fzf_compgen_dir() {
+  command fd -H --no-ignore-vcs -E .git -td . ${1}
+}
+
+# export FZF_ALT_C_COMMAND="fd --hidden -t d . /Users/totally"
+ls_cmd='ls --color=always'
+export FZF_ALT_C_OPTS="--bind ctrl-/:toggle-preview --preview 'command ${ls_cmd} -CF {}' ${FZF_ALT_C_OPTS}"
 
 
 export FZF_DEFAULT_OPTS="
@@ -15,6 +27,9 @@ export FZF_DEFAULT_OPTS="
 --bind 'ctrl-e:execute(echo {+} | xargs -o vim)'
 --bind 'ctrl-v:execute(code {+})'
 "
+
+export FZF_COMPLETION_DIR_COMMANDS="cd pushd rmdir tree zoxide"
+
 
 # export FZF_TMUX_OPTS=""
 

@@ -14,6 +14,9 @@ alias ic='cd ~/Library/Mobile\ Documents/com~apple~CloudDocs'
 alias watch='watch ' # this allows alias expansion
 alias stamp='date "+%Y-%m-%d⏱ %H.%M"'
 if [ 'command -v bat' ]; then alias cat='bat --style=plain'; fi
+alias pp='pbpaste'
+alias pc='pbcopy'
+alias z='zoxide'
 
 # Python source venv
 alias sv='source venv/bin/activate'
@@ -122,6 +125,7 @@ alias test_portal='open http://captive.apple.com/hotspot-detect.html'
 alias local_rsync='rsync -av -e rcp --delete --progress '
 alias oblique="curl -s http://brianeno.needsyourhelp.org/draw | jq .strategy"
 alias dad_joke='curl -H "Accept: text/plain" https://icanhazdadjoke.com/'
+alias wattage='/usr/sbin/system_profiler SPPowerDataType | grep Wattage'
 
 # Read Log files with embeded control characters (e.g. screenlog.0)
 alias readlog='less -raw-control-chars'

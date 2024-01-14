@@ -19,6 +19,7 @@ readonly neovim_apps=(
   "VapourNvim| Traap/VapourNvim        | default"
   "zulu      | Traap/nvim              | v0.6.8-packer"
   "void      | nvoid-lua/nvoid         | default"
+  "boiler    | tokiory/newovim-boilerplate | default"
 )
 
 # File name that is overwritten with nvim appname aliases.
