@@ -15,21 +15,21 @@
 # Also zsh did not allow me to use the backslash line break and thus I switched to #!/bin/bash
 
 # This fails in every way to write directly to the iCloud directory/cache
+local iCloud Archive
 iCloud="$HOME/Library/Mobile Documents/com~apple~CloudDocs"
 
 # Archive=~/Desktop/Totally_Backed_Up.sparsebundle
-Archive="${iCloud}/Archives/Totally_Backed_Up.sparsebundle"
+# Archive="${iCloud}/Archives/Totally_Backed_Up-$(date -I).sparsebundle"
+Archive="/Volumes/EvoStick/Totally_Backed_Up-$(date -I).sparsebundle"
 echo "Backup will be created in '${Archive}'"
 
 hdiutil create -volname Totally_Backed_Up -format UDSB \
-  ${Archive} \
+  "${Archive}" \
   -verbose -noatomic -skipunreadable -spotlight -ov \
   -srcfolder ~/.gnupg \
   -srcfolder ~/.ssh \
   -srcfolder ~/.aws \
   -srcfolder ~/.kube \
-  -srcfolder ~/Downloads \
-  -srcfolder ~/Library/Application\ Support  \
   -srcfolder ~/Library/Audio \
   -srcfolder ~/Library/ColorPickers \
   -srcfolder ~/Library/Colors \
@@ -42,5 +42,6 @@ hdiutil create -volname Totally_Backed_Up -format UDSB \
   -srcfolder ~/Library/Services \
   -srcfolder ~/Library/Sounds \
 
-
-# -srcfolder ~/Repositories
+  # -srcfolder ~/Downloads \
+  # -srcfolder ~/Repositories
+  # -srcfolder ~/Library/Application Support  \
