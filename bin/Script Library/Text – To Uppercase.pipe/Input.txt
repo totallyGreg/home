@@ -1,3 +1,0 @@
-this text should be converted to all upper case, but only the text and not things like 1, 2, 3, numbers!
-
-ünïcöde äwäre!
