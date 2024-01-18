@@ -1,1 +1,0 @@
-test foo \M-C\M-$\M-C\M-6\M-C\M-<

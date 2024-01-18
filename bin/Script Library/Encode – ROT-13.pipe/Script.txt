@@ -1,1 +1,0 @@
-#!/usr/bin/perl -w## A simple ROT13 converter.while (<>) {        tr/A-MN-Za-mn-z/N-ZA-Mn-za-m/;        print;}
