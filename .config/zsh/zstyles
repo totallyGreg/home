@@ -1,0 +1,1 @@
+zstyle ':antidote:bundle' file ${ZDOTDIR}/zsh_plugins.txt
