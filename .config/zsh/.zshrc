@@ -26,36 +26,36 @@ bindkey -M vicmd 'y' vi-yank-xclip
 # Make Vi mode transitions faster (KEYTIMEOUT is in hundredths of a second)
 export KEYTIMEOUT=1
 
-# History settings
-# HISTFILE=~/.zsh_history   # set by /etc/zshrc
-HISTSIZE=500000
-HISTFILESIZE=999999
-SAVEHIST=$HISTSIZE
-HISTORY_IGNORE='(history|ls|l|cd|cd ..|cd -|pwd|exit|date|*xyzzy*|* --help)'
+# # History settings
+# # HISTFILE=~/.zsh_history   # set by /etc/zshrc
+# HISTSIZE=500000
+# HISTFILESIZE=999999
+# SAVEHIST=$HISTSIZE
+# HISTORY_IGNORE='(history|ls|l|cd|cd ..|cd -|pwd|exit|date|*xyzzy*|* --help)'
 
-## Mutually Exclusive, choose one
-# setopt SHARE_HISTORY           # share history between different instances of the shell
-# setopt INC_APPEND_HISTORY      # Write to the history file immediately, not when the shell exits.
-setopt INC_APPEND_HISTORY_TIME # history entry is written out to the file after the command is finished, so that the time taken by the command is recorded correctly in the history file in EXTENDED_HISTORY format.
+# ## Mutually Exclusive, choose one
+# # setopt SHARE_HISTORY           # share history between different instances of the shell
+# # setopt INC_APPEND_HISTORY      # Write to the history file immediately, not when the shell exits.
+# setopt INC_APPEND_HISTORY_TIME # history entry is written out to the file after the command is finished, so that the time taken by the command is recorded correctly in the history file in EXTENDED_HISTORY format.
 
 
-# History
-# http://zsh.sourceforge.net/Doc/Release/Options.html#History
-setopt append_history          # append to history file
-setopt extended_history        # write the history file in the ':start:elapsed;command' format
-unsetopt hist_beep             # don't beep when attempting to access a missing history entry
-setopt hist_expire_dups_first  # expire a duplicate event first when trimming history
-setopt hist_find_no_dups       # don't display a previously found event
-setopt hist_ignore_all_dups    # delete an old recorded event if a new event is a duplicate
-setopt hist_ignore_dups        # don't record an event that was just recorded again
-setopt hist_ignore_space       # don't record an event starting with a space
-setopt hist_no_store           # don't store history commands
-setopt hist_reduce_blanks      # remove superfluous blanks from each command line being added to the history list
-setopt hist_save_no_dups       # don't write a duplicate event to the history file
-setopt hist_verify             # don't execute immediately upon history expansion
-setopt inc_append_history      # write to the history file immediately, not when the shell exits
-setopt interactive_comments    # allow #style comments to be added on commandline
-setopt share_history           # don't share history between all sessions
+# # History
+# # http://zsh.sourceforge.net/Doc/Release/Options.html#History
+# setopt append_history          # append to history file
+# setopt extended_history        # write the history file in the ':start:elapsed;command' format
+# unsetopt hist_beep             # don't beep when attempting to access a missing history entry
+# setopt hist_expire_dups_first  # expire a duplicate event first when trimming history
+# setopt hist_find_no_dups       # don't display a previously found event
+# setopt hist_ignore_all_dups    # delete an old recorded event if a new event is a duplicate
+# setopt hist_ignore_dups        # don't record an event that was just recorded again
+# setopt hist_ignore_space       # don't record an event starting with a space
+# setopt hist_no_store           # don't store history commands
+# setopt hist_reduce_blanks      # remove superfluous blanks from each command line being added to the history list
+# setopt hist_save_no_dups       # don't write a duplicate event to the history file
+# setopt hist_verify             # don't execute immediately upon history expansion
+# setopt inc_append_history      # write to the history file immediately, not when the shell exits
+# setopt interactive_comments    # allow #style comments to be added on commandline
+# setopt share_history           # don't share history between all sessions
 
 # Changing Directories
 # http://zsh.sourceforge.net/Doc/Release/Options.html#Changing-Directories
@@ -115,7 +115,6 @@ fi
 # Apple Xcode Path
 if [ -d /Library/Developer/CommandLineTools/usr/bin ] ; then
   export PATH=/Library/Developer/CommandLineTools/usr/bin:$PATH
-  export CPATH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include
   export CC=$(xcrun --find clang)
   export CXX=$(xcrun --find clang++)
 fi
@@ -209,9 +208,9 @@ sess_project_root=(~/Work/Customers)
 # Load FZF Configurations
 [ -f "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.zsh ] && source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.zsh
 
-ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
-ZSH_AUTOSUGGEST_STRATEGY=(match_prev_cmd completion)
-ZSH_AUTOSUGGEST_USE_ASYNC=true
+# ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+# ZSH_AUTOSUGGEST_STRATEGY=(match_prev_cmd completion)
+# ZSH_AUTOSUGGEST_USE_ASYNC=true
 
 
 # Zsh Specific Aliases
@@ -224,43 +223,47 @@ alias -s {yml,yaml}=vim       # quick editing of yaml files in vim
 [ -f ~/.aliases ] && source ~/.aliases
 
 ## Source Functions after aliases
-[ -f ~/.functions ] && source ~/.functions
-[ -f ~/bin/ExpressVPN.sh ] && source ~/bin/ExpressVPN.sh
-[ -f $ZDOTDIR/solo.sh ] && source $ZDOTDIR/solo.sh
+## Autoload functions you might want to use with antidote.
+ZFUNCDIR=${ZFUNCDIR:-$ZDOTDIR/functions}
+fpath=($ZFUNCDIR $fpath)
+autoload -Uz $fpath[1]/*(.:t)
+
+# [ -f ~/bin/ExpressVPN.sh ] && source ~/bin/ExpressVPN.sh
+# [ -f $ZDOTDIR/solo.sh ] && source $ZDOTDIR/solo.sh
+
+# Source zstyles you might use with antidote.
+[[ -e ${ZDOTDIR:-~}/zstyles ]] && source ${ZDOTDIR:-~}/zstyles
 
 # Enable the fuck if it exists, this adds 0.6s to each shell start
 # hash thefuck > /dev/null 2>&1 && eval "$(thefuck --alias doh)"
 
 eval "$(direnv hook zsh)"
 
-# Switching to zcomet https://github.com/agkozak/zcomet
-# Clone zcomet if necessary
-if [[ ! -f ${ZDOTDIR:-${HOME}}/.zcomet/bin/zcomet.zsh ]]; then
-  command git clone https://github.com/agkozak/zcomet.git ${ZDOTDIR:-${HOME}}/.zcomet/bin
-fi
-source ${ZDOTDIR:-${HOME}}/.zcomet/bin/zcomet.zsh
+# Clone antidote if necessary.
+[[ -d ${ZDOTDIR:-~}/antidote ]] ||
+  git clone https://github.com/mattmc3/antidote ${ZDOTDIR:-~}/antidote
+
+# Create an amazing Zsh config using antidote plugins.
+source ${ZDOTDIR:-~}/antidote/antidote.zsh
+antidote load
 
 # Thinking about making fzf available on all machines via zsh instead of vim
 # zcomet load junegunn/fzf shell completion.zsh key-bindings.zsh
 # (( ${+commands[fzf]} )) || ~[fzf]/install --bin
 
 # Load some plugins
-zcomet load zsh-users/zsh-completions
-zcomet load Aloxaf/fzf-tab
-# zcomet load SeepyBag/zle-fzf
-# zcomet load thirteen37/fzf-brew
-zcomet load asdf-vm/asdf
+# zcomet load zsh-users/zsh-completions
+# zcomet load Aloxaf/fzf-tab
+# zcomet load asdf-vm/asdf
 # zcomet load xPMo/zsh-toggle-command-prefix # keeps throwing sudo errors 
-# zcomet load laggardkernel/zsh-thefuck
 # zcomet load starship/starship
 # zcomet load kubermatic/fubectl # https://github.com/kubermatic/fubectl
-zcomet load reegnz/jq-zsh-plugin # default keybinding alt-j needs to be changed! using alt-y
-# zcomet load wfxr/forgit
-zcomet load ChrisPenner/session-sauce
+# zcomet load reegnz/jq-zsh-plugin # default keybinding alt-j needs to be changed! using alt-y
+# zcomet load ChrisPenner/session-sauce
 
 # Lazy-load some plugins
-zcomet trigger zhooks agkozak/zhooks
-zcomet trigger zsh-prompt-benchmark romkatv/zsh-prompt-benchmark
+# zcomet trigger zhooks agkozak/zhooks
+# zcomet trigger zsh-prompt-benchmark romkatv/zsh-prompt-benchmark
 
 # This breaks all kinds of aliases and who knows what else
 # But I really must steal the security keychain bits
@@ -271,13 +274,13 @@ zcomet trigger zsh-prompt-benchmark romkatv/zsh-prompt-benchmark
 
 # Set custom fast syntax highlighting work directory
 FAST_WORK_DIR=XDG
-zcomet load zdharma-continuum/fast-syntax-highlighting
-zcomet load zsh-users/zsh-autosuggestions
+# zcomet load zdharma-continuum/fast-syntax-highlighting
+# zcomet load zsh-users/zsh-autosuggestions
 
 # ZLE custom widgets
-source $ZDOTDIR/zle.zsh
+# source $ZDOTDIR/zle.zsh
 # Now sourcing completions
-source $ZDOTDIR/completion.zsh
+# source $ZDOTDIR/completion.zsh
 
 # Since google is doing their own test of whether or not to add completions instead of adding to fpath
 # It has to be added after the compinit is compiled
@@ -290,7 +293,7 @@ fi
 export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 
 # Run compinit and compile its cache
-zcomet compinit
+# zcomet compinit
 
 ### Starship prompt
 eval "$(starship init zsh)"
