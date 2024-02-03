@@ -240,11 +240,12 @@ autoload -Uz $fpath[1]/*(.:t)
 eval "$(direnv hook zsh)"
 
 # Clone antidote if necessary.
-[[ -d ${ZDOTDIR:-~}/antidote ]] ||
-  git clone https://github.com/mattmc3/antidote ${ZDOTDIR:-~}/antidote
+zstyle ':antidote:bundle' use-friendly-names on
+[[ -d ${ZDOTDIR:-~}/.antidote ]] ||
+  git clone https://github.com/mattmc3/antidote ${ZDOTDIR:-~}/.antidote
 
 # Create an amazing Zsh config using antidote plugins.
-source ${ZDOTDIR:-~}/antidote/antidote.zsh
+source ${ZDOTDIR:-~}/.antidote/antidote.zsh
 antidote load
 
 # Thinking about making fzf available on all machines via zsh instead of vim
@@ -252,13 +253,10 @@ antidote load
 # (( ${+commands[fzf]} )) || ~[fzf]/install --bin
 
 # Load some plugins
-# zcomet load zsh-users/zsh-completions
-# zcomet load Aloxaf/fzf-tab
 # zcomet load asdf-vm/asdf
 # zcomet load xPMo/zsh-toggle-command-prefix # keeps throwing sudo errors 
 # zcomet load starship/starship
 # zcomet load kubermatic/fubectl # https://github.com/kubermatic/fubectl
-# zcomet load reegnz/jq-zsh-plugin # default keybinding alt-j needs to be changed! using alt-y
 # zcomet load ChrisPenner/session-sauce
 
 # Lazy-load some plugins
@@ -274,8 +272,6 @@ antidote load
 
 # Set custom fast syntax highlighting work directory
 FAST_WORK_DIR=XDG
-# zcomet load zdharma-continuum/fast-syntax-highlighting
-# zcomet load zsh-users/zsh-autosuggestions
 
 # ZLE custom widgets
 # source $ZDOTDIR/zle.zsh

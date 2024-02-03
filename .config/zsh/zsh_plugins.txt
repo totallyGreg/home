@@ -23,6 +23,10 @@ mattmc3/zephyr path:plugins/homebrew
 mattmc3/zephyr path:plugins/macos
 mattmc3/zephyr path:plugins/zfunctions
 
+Aloxaf/fzf-tab
+
+reegnz/jq-zsh-plugin  # Interactive jq explorer
+
 ### Local Plugins
 #
 # Plugins don't have to come from GitHub. You can also use local files or directories to
