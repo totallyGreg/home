@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
-confirm() {
+# helpers
+function echo_ok() { echo -e '\033[1;32m'"$1"'\033[0m'; }
+function echo_warn() { echo -e '\033[1;33m'"$1"'\033[0m'; }
+function echo_error() { echo -e '\033[1;31mERROR: '"$1"'\033[0m'; }
+function confirm() {
   local _prompt _default _response
 
   if [ "$@" ]; then _prompt="$@"; else _prompt="Are you sure"; fi
@@ -44,6 +48,9 @@ function macos_defaults {
   defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
 
   # Set a blazingly fast keyboard repeat rate
+  # The step values that correspond to the sliders on the GUI are as follow (lower equals faster):
+  # KeyRepeat: 120, 90, 60, 30, 12, 6, 2
+  # InitialKeyRepeat: 120, 94, 68, 35, 25, 15
   defaults write NSGlobalDomain KeyRepeat -int 2
   defaults write NSGlobalDomain InitialKeyRepeat -int 15
 
@@ -103,6 +110,9 @@ function macos_defaults {
 
   # Do not create .DS_Store files on remote shares (e.g. Google Drive)
   defaults write com.apple.desktopservices DSDontWriteNetworkStores true
+
+  # Show Hidden files (e.g. ~/.profile)
+  # defaults write com.apple.finder AppleShowAllFiles YES
 
   ###############################################################################
   # Dock, Dashboard, and hot corners                                            #
@@ -177,6 +187,8 @@ function macos_defaults {
   # Don't load remote content
   # defaults write com.apple.mail-shared DisableURLLoading -bool true
 
+  echo_ok 'Running OSX Software Updates...'
+  sudo softwareupdate -i -a
 }
 
 function TerminalApp_profiles {
@@ -203,8 +215,6 @@ function TerminalApp_profiles {
   fi
   # I was hoping this would cause it to reload its new settings, it doesn't
   # defaults read ~/Library/Preferences/com.apple.Terminal.plist
-  confirm enable_touchid
-
 }
 
 function enable_touchid {
@@ -281,16 +291,17 @@ function macos {
     TerminalApp_profiles \
     install_gpg \
     install_brewfile)
+  # enable_touchid
   # setup_python
   for function in "${function_list[@]}"; do
-    confirm $function
+    confirm "${function}"
   done
 }
 
 function linux {
   function_list=(install_brewfile)
   for function in "${function_list[@]}"; do
-    confirm $function
+    confirm "${function}"
   done
 }
 
