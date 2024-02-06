@@ -29,10 +29,11 @@ Plug 'tpope/vim-sensible'   " Sensible vim defaults
 Plug 'tpope/vim-unimpaired' " Pairs of handy bracket mappings
 Plug 'tpope/vim-repeat'     " Add repeat support with '.' for lots of plugins
 Plug 'gabesoft/vim-ags'     " A Vim plugin for the silver searcher that focuses on clear display of the search results
-" Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf', { 'do': './install --bin' }
+" Plug 'junegunn/fzf'
+" Plug 'junegunn/fzf', { 'do': './install --bin' }
 " Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all --xdg' }
-" Plug '/usr/local/opt/fzf'
+" Plug '/Users/totally/.config/zsh/.zcomet/repos/junegunn/fzf'
+Plug '$XDG_CACHE_HOME/antidote/junegunn/fzf'
 " Settings for FZF
 " An action can be a reference to a function that processes selected lines
 function! s:build_quickfix_list(lines)
