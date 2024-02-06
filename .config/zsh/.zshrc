@@ -248,6 +248,16 @@ zstyle ':antidote:bundle' use-friendly-names on
 source ${ZDOTDIR:-~}/.antidote/antidote.zsh
 antidote load
 
+# Install fzf binary if not found
+# This directory is cloned in zsh_plugin.txt binary is added to path and default key-bindings and completions are set
+if ! [[ -e "$(antidote home)/junegunn/fzf/bin/fzf" ]]
+then
+  antidote load
+  "$(antidote home)/junegunn/fzf/install" --bin
+fi
+# My FZF based configuration and extra functions
+source $XDG_CONFIG_HOME/fzf/env
+
 # Thinking about making fzf available on all machines via zsh instead of vim
 # zcomet load junegunn/fzf shell completion.zsh key-bindings.zsh
 # (( ${+commands[fzf]} )) || ~[fzf]/install --bin
@@ -261,7 +271,6 @@ antidote load
 
 # Lazy-load some plugins
 # zcomet trigger zhooks agkozak/zhooks
-# zcomet trigger zsh-prompt-benchmark romkatv/zsh-prompt-benchmark
 
 # This breaks all kinds of aliases and who knows what else
 # But I really must steal the security keychain bits

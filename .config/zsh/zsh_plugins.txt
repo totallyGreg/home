@@ -24,6 +24,7 @@ mattmc3/zephyr path:plugins/macos
 mattmc3/zephyr path:plugins/zfunctions
 
 Aloxaf/fzf-tab
+# lincheney/fzf-tab-completion path:zsh
 
 reegnz/jq-zsh-plugin  # Interactive jq explorer
 
@@ -43,7 +44,13 @@ reegnz/jq-zsh-plugin  # Interactive jq explorer
 # example is zsh-bench, which is a utility that benchmarks your Zsh config. Utility
 # bundles can often be made available simply with the `kind:path` annotation.
 #
-###
+## Clone fzf repo
+# Binary is installed in "$(antidote home)/junegunn/fzf/bin/fzf"
+junegunn/fzf kind:clone
+# Add completion scripts and fzf binary to PATH
+junegunn/fzf path:bin kind:path
+junegunn/fzf path:shell kind:zsh
+
 romkatv/zsh-bench kind:path
 
 ### Framework: zsh-utils
