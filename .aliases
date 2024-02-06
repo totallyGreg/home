@@ -1,7 +1,7 @@
 ## Beginning of Aliases
 # if [ ! ${machine} == "Mac" ]; then alias ls='ls --color=auto' ; fi
 # if [ ! ${CLICOLOR} == "1" ]; then alias ls='ls --color=auto' ; fi
-if [ 'command -v lsd' ]; then alias ls='lsd' ; fi
+if (( $+commands[lsd] )); then alias ls='lsd' ; fi
 alias l='ls -lhF'
 alias ll='ls -lhF'
 alias l1='ls -1 --icon never'
@@ -13,9 +13,14 @@ alias cd..='cd ..'
 alias ic='cd ~/Library/Mobile\ Documents/com~apple~CloudDocs'
 alias watch='watch ' # this allows alias expansion
 alias stamp='date "+%Y-%m-%d⏱ %H.%M"'
-if [ 'command -v bat' ]; then alias cat='bat --style=plain'; fi
-alias pp='pbpaste'
-alias pc='pbcopy'
+
+# Conditional command replacements
+if (( $+commands[bat] )); then
+  alias cat='bat --style=plain'
+fi
+
+alias -g pbp='pbpaste'
+alias -g pbc='pbcopy'
 alias z='zoxide'
 
 # Python source venv
@@ -91,10 +96,10 @@ alias vgs='vagrant global-status'
 alias v='vagrant'
 
 ## Vim stuff
-alias vim=nvim
-alias view='nvim -R'
-alias vimdiff='nvim -d'
-alias yavim="GIT_DIR=$HOME/.local/share/yadm/repo.git GIT_WORK_TREE=$HOME vim"
+alias -g vim=nvim
+alias -g view='nvim -R'
+alias -g vimdiff='nvim -d'
+alias -g yavim="GIT_DIR=$HOME/.local/share/yadm/repo.git GIT_WORK_TREE=$HOME vim"
 alias zdot="yavim ~/.config/tmux/tmux.conf"
 alias tedit='GIT_DIR=$HOME/.local/share/yadm/repo.git GIT_WORK_TREE=$HOME vim ~/.config/tmux/tmux.conf'
 alias zedit='GIT_DIR=$HOME/.local/share/yadm/repo.git GIT_WORK_TREE=$HOME vim ~/.config/zsh/.zshrc'
@@ -158,8 +163,7 @@ alias morbotron="curl -s https://morbotron.com/api/random | jq --raw-output '.Su
 alias dict='curl dict://dict.org/d:$1'
 alias excuse='nc towel.blinkenlights.nl 666'
 alias starwars='nc towel.blinkenlights.nl 23'
-alias git_home='curl https://gist.githubusercontent.com/totallyGreg/4c9a430e6965280a60fcec628e1d03d5/raw | bash'
-alias install_home_brew='/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
+alias git_home='curl -sL https://git.io/JsMgi | zsh'
 
 alias restart_dns='ssh portcullis sudo /etc/init.d/dnsmasq force-reload'
 # alias m4b-tool='docker run -it --rm -u $(id -u):$(id -g) -v "$(pwd)":/mnt m4b-tool'
