@@ -40,10 +40,10 @@ fi
 # bindkey '^M' autosuggest-execute # all returns accept suggestion :( 
 bindkey '^u' autosuggest-execute # all returns accept suggestion :( 
 bindkey '^f' forward-word
-# bindkey '^I'   complete-word      # tab         | complete
+# bindkey '^I' autosuggest-accept      # tab         | complete
+bindkey '^ ' autosuggest-accept     # Control-space
 bindkey '^N' autosuggest-fetch
 bindkey '\el' autosuggest-clear     # N         | complete
 bindkey '^I^I'   fzf-tab-complete   # double tab  | complete
 # bindkey '^[[Z' autosuggest-accept # shift + tab | autosuggest
-bindkey '^ ' autosuggest-accept
 
