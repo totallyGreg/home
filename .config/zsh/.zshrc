@@ -64,7 +64,7 @@ setopt auto_pushd              # make cd push the old directory onto the directo
 setopt pushd_ignore_dups       # don’t push multiple copies of the same directory onto the directory stack
 setopt pushd_minus             # exchanges the meanings of ‘+’ and ‘-’ when specifying a directory in the stack
 # setopt cdablevars
-cdpath=($HOME $HOME/Repositories $HOME/Downloads $HOME/Work $HOME/Work/Customers/Americas)
+cdpath=($HOME $HOME/Repositories $HOME/Downloads $HOME/Work)
 
 # iCloud Obscured Locations
 if [ -d "${HOME}/Library/Mobile Documents/com~apple~CloudDocs" ]; then
@@ -205,8 +205,6 @@ export PATH FPATH KUBECONFIG
 typeset -TUx SESS_PROJECT_ROOT sess_project_root
 sess_project_root=(~/Work/Customers)
 
-# Load FZF Configurations
-[ -f "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.zsh ] && source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.zsh
 
 # ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 # ZSH_AUTOSUGGEST_STRATEGY=(match_prev_cmd completion)
@@ -256,7 +254,7 @@ then
   "$(antidote home)/junegunn/fzf/install" --bin
 fi
 # My FZF based configuration and extra functions
-source $XDG_CONFIG_HOME/fzf/env
+[ -f "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/env ] && source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/env
 
 # Thinking about making fzf available on all machines via zsh instead of vim
 # zcomet load junegunn/fzf shell completion.zsh key-bindings.zsh
