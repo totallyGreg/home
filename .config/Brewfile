@@ -7,9 +7,7 @@ tap "fabianishere/personal"
 tap "federico-terzi/espanso"
 tap "homebrew-ffmpeg/ffmpeg"
 tap "homebrew/bundle"
-tap "homebrew/cask"
 tap "homebrew/cask-fonts"
-tap "homebrew/core"
 tap "homeport/tap"
 tap "k14s/tap"
 tap "knative/client"
@@ -27,8 +25,6 @@ tap "watsonbox/cmu-sphinx"
 tap "zdcthomas/tools"
 # CLI for Amazon ECS to manage clusters and tasks for development
 brew "amazon-ecs-cli"
-# Mozilla CA certificate store
-brew "ca-certificates"
 # Automate deployment, configuration, and upgrading
 brew "ansible"
 # Python code formatter
@@ -51,16 +47,12 @@ brew "aom"
 brew "argocd"
 # Collection of portable C++ source libraries
 brew "boost"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.10"
 # Source-code syntax highlighter
 brew "source-highlight"
 # Formatter/translator for text files to numerous formats
 brew "asciidoc"
 # Text processor and publishing toolchain for AsciiDoc
 brew "asciidoctor"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.11"
 # Record and share terminal sessions
 brew "asciinema"
 # Automatic configure script builder
@@ -75,14 +67,14 @@ brew "aws-sso-cli"
 brew "aws-vault"
 # Text processing system for reStructuredText
 brew "docutils"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.11"
 # Official Amazon AWS command-line interface
 brew "awscli"
 # Azure Storage data transfer utility
 brew "azcopy"
 # Microsoft Azure CLI 2.0
 brew "azure-cli"
-# Bourne-Again SHell, a UNIX command interpreter
-brew "bash"
 # Programmable completion for Bash 4.2+
 brew "bash-completion@2"
 # Clone of cat(1) with syntax highlighting and Git integration
@@ -111,8 +103,6 @@ brew "cmctl"
 brew "unbound"
 # GNU Transport Layer Security (TLS) Library
 brew "gnutls"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.9"
 # General purpose TCP-IP emulator
 brew "libslirp"
 # C library SSHv1/SSHv2 client and server protocols
@@ -135,10 +125,10 @@ brew "cowsay"
 brew "curl"
 # Tools to manipulate dates with a focus on financial data
 brew "dateutils"
-# Library for JPEG-2000 image manipulation
-brew "openjpeg"
 # Library access to GnuPG
 brew "gpgme"
+# Library for JPEG-2000 image manipulation
+brew "openjpeg"
 # PDF rendering library (based on the xpdf-3.0 code base)
 brew "poppler"
 # Visually compare two PDF files
@@ -146,7 +136,7 @@ brew "diff-pdf"
 # Load/unload environment variables based on $PWD
 brew "direnv"
 # Pack, ship and run any application as a lightweight container
-brew "docker", link: false
+brew "docker"
 # Create Docker hosts locally and on cloud providers
 brew "docker-machine"
 # Disk Usage/Free Utility - a better 'df' alternative
@@ -352,7 +342,7 @@ brew "perl"
 # General-purpose scripting language
 brew "php"
 # Pinentry for GPG on Mac
-brew "pinentry-mac", link: false
+brew "pinentry-mac"
 # Tool for managing OCI containers and pods
 brew "podman"
 # Code formatter for JavaScript, CSS, JSON, GraphQL, Markdown, YAML
@@ -363,10 +353,14 @@ brew "proselint"
 brew "pyenv"
 # Pyenv plugin to manage virtualenv
 brew "pyenv-virtualenv"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.10"
 # Tool Command Language
 brew "tcl-tk"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.8"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.9"
 # Unified tool to manage your Rancher server
 brew "rancher-cli"
 # Reattach process (e.g., tmux) to background
@@ -427,6 +421,8 @@ brew "vcluster"
 brew "vegeta"
 # Vi 'workalike' with many additional features
 brew "vim"
+# Generator for LS_COLORS with support for multiple color themes
+brew "vivid"
 # Pager/text based browser
 brew "w3m"
 # Executes a program periodically, showing output fullscreen
@@ -435,6 +431,8 @@ brew "watch"
 brew "websocat"
 # Internet file retriever
 brew "wget"
+# Automatic workarounds for problems in Wine
+brew "winetricks"
 # Fast CSV toolkit written in Rust
 brew "xsv"
 # Yet Another Dotfiles Manager
@@ -466,8 +464,6 @@ brew "cloudfoundry/tap/credhub-cli"
 brew "cloudfoundry/tap/uaa-cli"
 # PAM module for reattaching to the user's GUI (Aqua) session
 brew "fabianishere/personal/pam_reattach"
-# Cross-platform Text Expander written in Rust
-brew "federico-terzi/espanso/espanso"
 # Play, record, convert, and stream audio and video
 brew "homebrew-ffmpeg/ffmpeg/ffmpeg", args: ["with-fdk-aac"]
 # δyƒƒ /ˈdʏf/ - A diff tool for YAML files, and sometimes JSON
@@ -480,20 +476,16 @@ brew "nativeos/i386-elf-toolchain/i386-elf-grub"
 brew "saltbo/bin/seenvoy"
 # keyfob - a two-factor authentication agent suitable for AWS and Github
 brew "stevenacoffman/keyfob/keyfob"
-# expresso is a command line interface to control the ExpressVPN app
-brew "sttz/tap/expresso"
 # Regal is a linter for Rego, with the goal of making your Rego magnificent!
 brew "styrainc/packages/regal"
 # Maintained ctags implementation
 brew "universal-ctags/universal-ctags/universal-ctags", args: ["HEAD"]
-# Creates and handles tmux workspaces
-brew "zdcthomas/tools/dmux"
 # Set of tools to manage resources and applications hosted on Google Cloud
 cask "google-cloud-sdk"
 # Tools to protect your emails and files
 cask "gpg-suite", args: { appdir: "~/Applications/Ops/Clandestine" }
-# Orchestrates virtual Ubuntu instances
-cask "multipass"
+# Open Source Multimedia Framework
+cask "gstreamer-runtime"
 # Knowledge base that works on top of a local folder of plain text Markdown files
 cask "obsidian"
 # ZFS driver and utilities
@@ -506,14 +498,14 @@ cask "qlmarkdown"
 cask "raycast"
 # Development environment
 cask "vagrant", args: { appdir: "~/Applications/Ops/Engineering" }
-# Virtualizer for x86 hardware
-cask "virtualbox", args: { appdir: "~/Applications/Ops/Engineering" }
-# Extend the functionality of VirtualBox
-cask "virtualbox-extension-pack"
+# Compatibility layer to run Windows applications
+cask "wine-stable"
 # Network protocol analyzer
 cask "wireshark-chmodbpf"
 mas "Actions", id: 1586435171
 mas "Actions for Obsidian", id: 1659667937
+mas "Animoog Z", id: 1586841361
+mas "Audiobook Builder", id: 1437681957
 mas "GarageBand", id: 682658836
 mas "Health Auto Export", id: 1115567069
 mas "iMovie", id: 408981434
@@ -521,15 +513,15 @@ mas "Keynote", id: 409183694
 mas "Mastonaut", id: 1450757574
 mas "Microsoft OneNote", id: 784801555
 mas "Numbers", id: 409203825
+mas "Omnivore", id: 1564031042
 mas "Pages", id: 409201541
 mas "Paprika Recipe Manager 3", id: 1303222628
 mas "Peek", id: 1554235898
 mas "Prime Video", id: 545519333
 mas "Save to Reader", id: 1640236961
 mas "Silicio", id: 933627574
+mas "Steam Link", id: 1246969117
 mas "TestFlight", id: 899247664
 mas "Twitter", id: 1482454543
 mas "Vimari", id: 1480933944
 mas "Xcode", id: 497799835
-vscode "asvetliakov.vscode-neovim"
-vscode "ms-azuretools.vscode-docker"
