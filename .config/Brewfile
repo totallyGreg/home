@@ -25,6 +25,8 @@ tap "watsonbox/cmu-sphinx"
 tap "zdcthomas/tools"
 # CLI for Amazon ECS to manage clusters and tasks for development
 brew "amazon-ecs-cli"
+# Implements a XML/HTML/XHTML Markup safe string for Python
+brew "python-markupsafe"
 # Automate deployment, configuration, and upgrading
 brew "ansible"
 # Python code formatter
@@ -255,6 +257,8 @@ brew "jq"
 brew "jsonschema"
 # Swiss-army knife of markup format conversion
 brew "pandoc"
+# Extremely fast Python linter, written in Rust
+brew "ruff"
 # Python Language Server for the Language Server Protocol
 brew "python-lsp-server"
 # Interactive environments for writing and running code
@@ -371,6 +375,8 @@ brew "ripgrep"
 brew "rke"
 # Rust toolchain installer
 brew "rustup-init"
+# Low-level access to audio, keyboard, mouse, joystick, and graphics
+brew "sdl2"
 # Static analysis and lint tool, for (ba)sh scripts
 brew "shellcheck"
 # Autoformat shell script source code
@@ -492,7 +498,7 @@ cask "obsidian"
 cask "openzfs"
 # Command-line shell and scripting language
 cask "powershell"
-# QuickLook generator for Markdown files
+# Quick Look generator for Markdown files
 cask "qlmarkdown"
 # Control your tools with a few keystrokes
 cask "raycast"
