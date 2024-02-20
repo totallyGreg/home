@@ -415,6 +415,8 @@ brew "tldr"
 brew "tmux"
 # Display directories as trees (with optional color/HTML output)
 brew "tree"
+# Maintained ctags implementation
+brew "universal-ctags", args: ["HEAD"]
 # URL extractor/launcher
 brew "urlview"
 # Bash completion for Vagrant
@@ -484,8 +486,6 @@ brew "saltbo/bin/seenvoy"
 brew "stevenacoffman/keyfob/keyfob"
 # Regal is a linter for Rego, with the goal of making your Rego magnificent!
 brew "styrainc/packages/regal"
-# Maintained ctags implementation
-brew "universal-ctags/universal-ctags/universal-ctags", args: ["HEAD"]
 # Set of tools to manage resources and applications hosted on Google Cloud
 cask "google-cloud-sdk"
 # Tools to protect your emails and files
@@ -525,6 +525,7 @@ mas "Paprika Recipe Manager 3", id: 1303222628
 mas "Peek", id: 1554235898
 mas "Prime Video", id: 545519333
 mas "Save to Reader", id: 1640236961
+mas "Screens 5", id: 1663047912
 mas "Silicio", id: 933627574
 mas "Steam Link", id: 1246969117
 mas "TestFlight", id: 899247664

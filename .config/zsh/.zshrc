@@ -254,7 +254,7 @@ then
   "$(antidote home)/junegunn/fzf/install" --bin
 fi
 # My FZF based configuration and extra functions
-[ -f "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/env ] && source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/env
+(( ${+commands[fzf]} )) && source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf_env.zsh
 
 # Thinking about making fzf available on all machines via zsh instead of vim
 # zcomet load junegunn/fzf shell completion.zsh key-bindings.zsh
