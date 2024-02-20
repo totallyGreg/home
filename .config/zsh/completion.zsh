@@ -30,13 +30,6 @@ setopt auto_param_slash        # if completed parameter is a directory, add a tr
 setopt complete_in_word        # complete from both ends of a word
 unsetopt menu_complete         # don't autoselect the first completion entry
 
-## FZF tab completion using Aloxaf/fzf-tab
-# disable sort when completing options of any command
-zstyle ':completion:complete:*:options' sort false
-# set descriptions format to enable group support
-zstyle ':completion:*:descriptions' format '[%d]'
-# switch group using `,` and `.`
-zstyle ':fzf-tab:*' switch-group ',' '.'
 
 # give a preview of commandline arguments when completing `kill`
 zstyle ':completion:*:*:*:*:processes' command "ps -u $USER -o pid,user,comm,cmd -w -w"
@@ -54,7 +47,6 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'lsd -1 --color=always $realpath'
 # zstyle ':fzf-tab:*' accept-line enter
 # zstyle ':fzf-tab:*' continuous-trigger '/'
 
-zstyle :completion::complete:cd::paths accept-exact-dirs true
 
 # Completion caching
 zstyle ':completion::complete:*' use-cache 1

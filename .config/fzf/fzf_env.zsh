@@ -1,26 +1,22 @@
 # Setup fzf
 # This gets sourced by .zshrc and then sources all my fzf configs
 
-# # Zcomet ---------
-# if [[ ! "$PATH" == *$XDG_CONFIG_HOME/zsh/.zcomet/repos/junegunn/fzf/bin* ]]; then
-#   PATH="${PATH:+${PATH}:}$XDG_CONFIG_HOME/zsh/.zcomet/repos/junegunn/fzf/bin"
-# fi
-
-# export FZF_DEFAULT_COMMAND='ag -l -t -g ""'
-# export FZF_DEFAULT_COMMAND='ag --hidden -g ""'
-# export FZF_DEFAULT_COMMAND="rg --files --hidden --follow --glob '!.git'"
-# export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
-#
 # FZF Functions
+# Contemplating moving these to $ZDOTDIR/functions for autoload goodness
 source "$XDG_CONFIG_HOME/fzf/GITheartFZF.sh"
 source "$XDG_CONFIG_HOME/fzf/Docker.sh"
 source "$XDG_CONFIG_HOME/fzf/Homebrew.sh"
 source "$XDG_CONFIG_HOME/fzf/Azure.sh"
 
 export FZF_DEFAULT_COMMAND='command fd -H --no-ignore-vcs -E .git -td -tf'
+# export FZF_DEFAULT_COMMAND='ag -l -t -g ""'
+# export FZF_DEFAULT_COMMAND='ag --hidden -g ""'
+# export FZF_DEFAULT_COMMAND="rg --files --hidden --follow --glob '!.git'"
+# export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
+#
 export FZF_ALT_C_COMMAND='command fd -H --no-ignore-vcs -E .git -td'
 _fzf_compgen_path() {
-  command fd -H --no-ignore-vcs -E .git -td -tf . ${1} 
+  command fd -H --no-ignore-vcs -E .git -td -tf . ${1}
 }
 
 _fzf_compgen_dir() {
@@ -29,7 +25,6 @@ _fzf_compgen_dir() {
 
 # export FZF_ALT_C_COMMAND="fd --hidden -t d . /Users/totally"
 # export FZF_ALT_C_OPTS="--bind ctrl-/:toggle-preview --preview 'command ${ls_cmd} -CF {}' ${FZF_ALT_C_OPTS}"
-
 
 export FZF_DEFAULT_OPTS="
 --layout=reverse
@@ -42,7 +37,6 @@ export FZF_DEFAULT_OPTS="
 "
 
 export FZF_COMPLETION_DIR_COMMANDS="cd pushd rmdir tree zoxide"
-
 
 # export FZF_TMUX_OPTS=""
 
@@ -58,6 +52,7 @@ export FZF_COMPLETION_DIR_COMMANDS="cd pushd rmdir tree zoxide"
 
 
 # CTRL-R - Paste the selected command from history into the command line
+# My override that provides date and lag to the history ( `fc -rliD 1` )
 fzf-history-widget() {
   local selected num
   setopt localoptions noglobsubst noposixbuiltins pipefail no_aliases 2> /dev/null
