@@ -97,7 +97,7 @@ alias v='vagrant'
 
 ## Vim stuff
 alias -g vim=nvim
-alias -g view='nvim -R'
+alias view='nvim -R'  # Globally aliasing this broke `gh gist view`
 alias -g vimdiff='nvim -d'
 alias -g yavim="GIT_DIR=$HOME/.local/share/yadm/repo.git GIT_WORK_TREE=$HOME vim"
 alias zdot="yavim ~/.config/tmux/tmux.conf"
