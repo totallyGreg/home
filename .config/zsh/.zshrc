@@ -205,12 +205,6 @@ export PATH FPATH KUBECONFIG
 typeset -TUx SESS_PROJECT_ROOT sess_project_root
 sess_project_root=(~/Work/Customers)
 
-
-# ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
-# ZSH_AUTOSUGGEST_STRATEGY=(match_prev_cmd completion)
-# ZSH_AUTOSUGGEST_USE_ASYNC=true
-
-
 # Zsh Specific Aliases
 alias mv='nocorrect mv'       # no spelling correction on mv
 alias cp='nocorrect cp'       # no spelling correction on cp
@@ -222,9 +216,9 @@ alias -s {yml,yaml}=vim       # quick editing of yaml files in vim
 
 ## Source Functions after aliases
 ## Autoload functions you might want to use with antidote.
-ZFUNCDIR=${ZFUNCDIR:-$ZDOTDIR/functions}
-fpath=($ZFUNCDIR $fpath)
-autoload -Uz $fpath[1]/*(.:t)
+# ZFUNCDIR=${ZFUNCDIR:-$ZDOTDIR/functions}
+# fpath=($ZFUNCDIR $fpath)
+# autoload -Uz $fpath[1]/*(.:t)
 
 # [ -f ~/bin/ExpressVPN.sh ] && source ~/bin/ExpressVPN.sh
 # [ -f $ZDOTDIR/solo.sh ] && source $ZDOTDIR/solo.sh
@@ -262,6 +256,13 @@ fi
 
 # Load some plugins
 # zcomet load asdf-vm/asdf
+# zcomet load mattmc3/zephyr path:plugins/color
+# zcomet load mattmc3/zephyr path:plugins/confd
+# zcomet load mattmc3/zephyr path:plugins/homebrew
+# zcomet load mattmc3/zephyr path:plugins/macos
+# zcomet load mattmc3/zephyr path:plugins/zfunctions
+
+#
 # zcomet load xPMo/zsh-toggle-command-prefix # keeps throwing sudo errors 
 # zcomet load starship/starship
 # zcomet load kubermatic/fubectl # https://github.com/kubermatic/fubectl
@@ -269,6 +270,7 @@ fi
 
 # Lazy-load some plugins
 # zcomet trigger zhooks agkozak/zhooks
+# zcomet trigger reegnz/jq-zsh-plugin
 
 # This breaks all kinds of aliases and who knows what else
 # But I really must steal the security keychain bits
@@ -279,11 +281,6 @@ fi
 
 # Set custom fast syntax highlighting work directory
 FAST_WORK_DIR=XDG
-
-# ZLE custom widgets
-# source $ZDOTDIR/zle.zsh
-# Now sourcing completions
-# source $ZDOTDIR/completion.zsh
 
 # Since google is doing their own test of whether or not to add completions instead of adding to fpath
 # It has to be added after the compinit is compiled
