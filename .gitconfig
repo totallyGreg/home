@@ -1,11 +1,6 @@
 [user]
   email = 283704+totallyGreg@users.noreply.github.com
   name = J. Greg Williams
-; heavy hammer that breaks stuff if your keys aren't installed yet
-[includeIf "gitdir:~/Work/"]
-  path = ~/.solo.gitconfig
-[includeIf "gitdir:~/.go/src/github.com/solo-io"]
-  path = ~/.solo.gitconfig
 [alias]
   alias = config --get-regexp ^alias.
   br = branch --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(contents:subject) %(color:green)(%(committerdate:relative)) [%(authorname)]' --sort=-committerdate
