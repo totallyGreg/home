@@ -99,12 +99,15 @@ alias v='vagrant'
 alias -g vim=nvim
 alias view='nvim -R'  # Globally aliasing this broke `gh gist view`
 alias -g vimdiff='nvim -d'
-alias -g yavim="GIT_DIR=$HOME/.local/share/yadm/repo.git GIT_WORK_TREE=$HOME vim"
 alias zdot="yavim ~/.config/tmux/tmux.conf"
 alias tedit='GIT_DIR=$HOME/.local/share/yadm/repo.git GIT_WORK_TREE=$HOME vim ~/.config/tmux/tmux.conf'
 alias zedit='GIT_DIR=$HOME/.local/share/yadm/repo.git GIT_WORK_TREE=$HOME vim ~/.config/zsh/.zshrc'
 alias nvim-chad="NVIM_APPNAME=NvChad nvim"
 alias nvim-astro="NVIM_APPNAME=AstroNvim nvim"
+
+## Yadm stuff
+alias -g yalazy='lazygit --git-dir=$HOME/.local/share/yadm/repo.git --work-tree=$HOME'
+alias -g yavim="GIT_DIR=$HOME/.local/share/yadm/repo.git GIT_WORK_TREE=$HOME vim"
 
 ## Zendesk parsing
 alias organization_name="jq '.organizations[].name'"

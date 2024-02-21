@@ -224,43 +224,58 @@ alias -s {yml,yaml}=vim       # quick editing of yaml files in vim
 # [ -f $ZDOTDIR/solo.sh ] && source $ZDOTDIR/solo.sh
 
 # Source zstyles you might use with antidote.
-[[ -e ${ZDOTDIR:-~}/zstyles ]] && source ${ZDOTDIR:-~}/zstyles
+# [[ -e ${ZDOTDIR:-~}/zstyles ]] && source ${ZDOTDIR:-~}/zstyles
 
 # Enable the fuck if it exists, this adds 0.6s to each shell start
 # hash thefuck > /dev/null 2>&1 && eval "$(thefuck --alias doh)"
 
 eval "$(direnv hook zsh)"
 
-# Clone antidote if necessary.
-zstyle ':antidote:bundle' use-friendly-names on
-[[ -d ${ZDOTDIR:-~}/.antidote ]] ||
-  git clone https://github.com/mattmc3/antidote ${ZDOTDIR:-~}/.antidote
+######
+# # Clone antidote if necessary.
+# zstyle ':antidote:bundle' use-friendly-names on
+# [[ -d ${ZDOTDIR:-~}/.antidote ]] ||
+#   git clone https://github.com/mattmc3/antidote ${ZDOTDIR:-~}/.antidote
 
-# Create an amazing Zsh config using antidote plugins.
-source ${ZDOTDIR:-~}/.antidote/antidote.zsh
-antidote load
+# # Create an amazing Zsh config using antidote plugins.
+# source ${ZDOTDIR:-~}/.antidote/antidote.zsh
+# antidote load
 
-# Install fzf binary if not found
-# This directory is cloned in zsh_plugin.txt binary is added to path and default key-bindings and completions are set
-if ! [[ -e "$(antidote home)/junegunn/fzf/bin/fzf" ]]
-then
-  antidote load
-  "$(antidote home)/junegunn/fzf/install" --bin
+# # Install fzf binary if not found
+# # This directory is cloned in zsh_plugin.txt binary is added to path and default key-bindings and completions are set
+# if ! [[ -e "$(antidote home)/junegunn/fzf/bin/fzf" ]]
+# then
+#   antidote load
+#   "$(antidote home)/junegunn/fzf/install" --bin
+# fi
+#######
+
+## Clone zcomet if necessary
+if [[ ! -f ${ZDOTDIR:-${HOME}}/.zcomet/bin/zcomet.zsh ]]; then
+  git clone https://github.com/agkozak/zcomet.git ${ZDOTDIR:-${HOME}}/.zcomet/bin
 fi
+
+# Source zcomet.zsh
+source ${ZDOTDIR:-${HOME}}/.zcomet/bin/zcomet.zsh
+
+# Install Fzf
+zcomet load junegunn/fzf shell completion.zsh key-bindings.zsh
+( (( ${+commands[fzf]} )) || ~[fzf]/install --bin ) && source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf_env.zsh
+
+
 # My FZF based configuration and extra functions
-(( ${+commands[fzf]} )) && source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf_env.zsh
+# (( ${+commands[fzf]} )) && source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf_env.zsh
 
-# Thinking about making fzf available on all machines via zsh instead of vim
-# zcomet load junegunn/fzf shell completion.zsh key-bindings.zsh
-# (( ${+commands[fzf]} )) || ~[fzf]/install --bin
-
-# Load some plugins
-# zcomet load asdf-vm/asdf
-# zcomet load mattmc3/zephyr path:plugins/color
-# zcomet load mattmc3/zephyr path:plugins/confd
-# zcomet load mattmc3/zephyr path:plugins/homebrew
-# zcomet load mattmc3/zephyr path:plugins/macos
-# zcomet load mattmc3/zephyr path:plugins/zfunctions
+## Load some plugins
+zcomet load zsh-users/zsh-completions
+zcomet load mattmc3/zephyr plugins/completion
+zcomet load asdf-vm/asdf
+zcomet load mattmc3/zephyr plugins/color
+zcomet load mattmc3/zephyr plugins/homebrew
+zcomet load mattmc3/zephyr plugins/macos
+zcomet load mattmc3/zephyr plugins/zfunctions
+zcomet load Aloxaf/fzf-tab
+zcomet load reegnz/jq-zsh-plugin  # Interactive jq explorer
 
 #
 # zcomet load xPMo/zsh-toggle-command-prefix # keeps throwing sudo errors 
@@ -269,15 +284,17 @@ fi
 # zcomet load ChrisPenner/session-sauce
 
 # Lazy-load some plugins
-# zcomet trigger zhooks agkozak/zhooks
-# zcomet trigger reegnz/jq-zsh-plugin
+zcomet trigger zhooks agkozak/zhooks
+# zcomet trigger zsh-prompt-benchmark romkatv/zsh-prompt-benchmark
 
 # This breaks all kinds of aliases and who knows what else
 # But I really must steal the security keychain bits
 # zinit light unixorn/tumult.plugin.zsh
 
 ## These plugins which will wrap widgets prefer to be last
-# zcomet load marlonrichert/zsh-autocomplete # Sorta useful but visually busy
+zcomet load zdharma-continuum/fast-syntax-highlighting
+zcomet load zsh-users/zsh-autosuggestions
+zcomet load mattmc3/zephyr plugins/confd     # autosuggestions wants the keybinds after the plugin has been installed
 
 # Set custom fast syntax highlighting work directory
 FAST_WORK_DIR=XDG
@@ -293,12 +310,12 @@ fi
 export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 
 # Run compinit and compile its cache
-# zcomet compinit
+zcomet compinit
 
 ### Starship prompt
 eval "$(starship init zsh)"
 
-source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc"
+# source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc"
 
 if [[ "$PROFILE_STARTUP" == true ]]; then
   unsetopt xtrace
