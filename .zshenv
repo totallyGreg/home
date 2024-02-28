@@ -23,6 +23,7 @@ export XDG_RUNTIME_HOME=$HOME/.tmp
 ZDOTDIRS=({$ZDOTDIR,$LOCAL_ZDOTDIR}(-/N))
 declare -x 'ZDOTDIR'
 declare -xm 'ZSH_*'
+export PATH=/opt/homebrew/bin:$PATH
 
 [[ -d $ZDOTDIR ]] || echo Error: ZDOTDIR=${(q)ZDOTDIR} does not exist. >&2
 
