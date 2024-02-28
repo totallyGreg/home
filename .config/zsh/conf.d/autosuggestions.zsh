@@ -25,9 +25,9 @@ ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(bracketed-paste up-line-or-search down-line-or-s
 
 
 
-# export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#586e75"   # base01 (Bright Green) for Solarized dark
-# export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#93a1a1"   # base1 (Bright Cyan) for Solarized Light
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=244,bg=default,standout" # #808080 for both 
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#586e75"   # base01 (Bright Green) for Solarized dark
+# ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#93a1a1"   # base1 (Bright Cyan) for Solarized Light
+# ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=244,bg=default,standout" # #808080 for both 
 # ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=60'
 
 if [[ -n "$key_info" ]]; then
