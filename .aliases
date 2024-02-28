@@ -21,7 +21,6 @@ fi
 
 alias -g pbp='pbpaste'
 alias -g pbc='pbcopy'
-alias z='zoxide'
 
 # Python source venv
 alias sv='source venv/bin/activate'

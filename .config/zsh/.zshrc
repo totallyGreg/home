@@ -314,6 +314,8 @@ zcomet compinit
 
 ### Starship prompt
 eval "$(starship init zsh)"
+### Zoxide
+eval "$(zoxide init zsh)"
 
 # source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc"
 
