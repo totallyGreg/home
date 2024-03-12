@@ -1,4 +1,0 @@
-# this is where I will collect all the shit I need to do to make myself at home
-
-# This allows repeating keys again after Yosemite turned them off
-defaults write -g ApplePressAndHoldEnabled -bool false

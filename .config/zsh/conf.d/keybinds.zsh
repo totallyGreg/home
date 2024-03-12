@@ -11,7 +11,6 @@ bindkey '^e' edit-command-line
 zle -N .toggle-watch
 bindkey '\ew' .toggle-watch     # Alt-W to toggle watch or apply to previous command
 
-
 # Change cursor depending on mode
 function zle-keymap-select {
   if [[ ${KEYMAP} == vicmd ]] ||
@@ -31,3 +30,14 @@ _fix_cursor() {
 }
 precmd_functions+=(_fix_cursor)
 
+# Yank to the system clipboard
+function vi-yank-xclip {
+    zle vi-yank
+   echo "$CUTBUFFER" | pbcopy -i
+}
+
+zle -N vi-yank-xclip
+bindkey -M vicmd 'y' vi-yank-xclip
+
+# Make Vi mode transitions faster (KEYTIMEOUT is in hundredths of a second)
+export KEYTIMEOUT=1
