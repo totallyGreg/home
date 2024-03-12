@@ -23,7 +23,24 @@ export XDG_RUNTIME_HOME=$HOME/.tmp
 ZDOTDIRS=({$ZDOTDIR,$LOCAL_ZDOTDIR}(-/N))
 declare -x 'ZDOTDIR'
 declare -xm 'ZSH_*'
-export PATH=/opt/homebrew/bin:$PATH
+# zsh uses $path array along with $PATH 
+typeset -U PATH path
+#
+# Homebrew path set here so non-interactive shells can use the tools
+if [ -d /opt/homebrew ] ; then
+  export PATH=/opt/homebrew/bin:$PATH
+fi
+if (hash brew > /dev/null 2>&1 ) ; then
+  export HOMEBREW_PREFIX=$(brew --prefix)
+  export HOMEBREW_BUNDLE_FILE=${XDG_CONFIG_HOME}/Brewfile
+  export HOMEBREW_CASK_OPTS="--appdir=~/Applications"
+  # Need for the tmux-exec plugin to kubectl
+  export GNU_GETOPT_PREFIX="$(brew --prefix gnu-getopt)"
+  export PATH="${HOMEBREW_PREFIX}/sbin:$PATH"
+fi
+
+# personal bin directory
+export PATH=${HOME}/bin:$PATH
 
 [[ -d $ZDOTDIR ]] || echo Error: ZDOTDIR=${(q)ZDOTDIR} does not exist. >&2
 

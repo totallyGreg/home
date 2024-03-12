@@ -33,6 +33,8 @@ export PATH=/usr/bin:/bin
 [ -d /usr/X11R6/bin ] && export PATH=/usr/X11R6/bin:${PATH}
 [ -d /usr/openwin/bin ] && export PATH=/usr/openwin/bin:${PATH}
 [ -d /usr/dt/bin ] && export PATH=/usr/dt/bin:${PATH}
+[ -d /opt/homebrew/bin ] && export PATH=/opt/homebrew/bin:${PATH}
+[ -d /opt/homebrew/sbin ] && export PATH=/opt/homebrew/sbin:${PATH}
 [ -d /usr/local/bin ] && export PATH=/usr/local/bin:${PATH}
 [ -d /opt/local/bin ] && export PATH=/opt/local/bin:${PATH}
 [ -d /opt/local/sbin ] && export PATH=/opt/local/sbin:${PATH}
@@ -66,9 +68,6 @@ export HOMEBREW_CASK_OPTS="--appdir=~/Applications"
 # Linuxbrew
 test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
 test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
-
-# Enable the fuck if it exists
-command -v thefuck >/dev/null 2>&1 && eval "$(thefuck --alias)"
 
 # virtualenv
 export WORKON_HOME=$HOME/.virtualenvs

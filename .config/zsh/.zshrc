@@ -14,48 +14,7 @@ emulate zsh
 export EDITOR=nvim
 bindkey -v
 
-# Yank to the system clipboard
-function vi-yank-xclip {
-    zle vi-yank
-   echo "$CUTBUFFER" | pbcopy -i
-}
-
-zle -N vi-yank-xclip
-bindkey -M vicmd 'y' vi-yank-xclip
-
-# Make Vi mode transitions faster (KEYTIMEOUT is in hundredths of a second)
-export KEYTIMEOUT=1
-
-# # History settings
-# # HISTFILE=~/.zsh_history   # set by /etc/zshrc
-# HISTSIZE=500000
-# HISTFILESIZE=999999
-# SAVEHIST=$HISTSIZE
-# HISTORY_IGNORE='(history|ls|l|cd|cd ..|cd -|pwd|exit|date|*xyzzy*|* --help)'
-
-# ## Mutually Exclusive, choose one
-# # setopt SHARE_HISTORY           # share history between different instances of the shell
-# # setopt INC_APPEND_HISTORY      # Write to the history file immediately, not when the shell exits.
-# setopt INC_APPEND_HISTORY_TIME # history entry is written out to the file after the command is finished, so that the time taken by the command is recorded correctly in the history file in EXTENDED_HISTORY format.
-
-
-# # History
-# # http://zsh.sourceforge.net/Doc/Release/Options.html#History
-# setopt append_history          # append to history file
-# setopt extended_history        # write the history file in the ':start:elapsed;command' format
-# unsetopt hist_beep             # don't beep when attempting to access a missing history entry
-# setopt hist_expire_dups_first  # expire a duplicate event first when trimming history
-# setopt hist_find_no_dups       # don't display a previously found event
-# setopt hist_ignore_all_dups    # delete an old recorded event if a new event is a duplicate
-# setopt hist_ignore_dups        # don't record an event that was just recorded again
-# setopt hist_ignore_space       # don't record an event starting with a space
-# setopt hist_no_store           # don't store history commands
-# setopt hist_reduce_blanks      # remove superfluous blanks from each command line being added to the history list
-# setopt hist_save_no_dups       # don't write a duplicate event to the history file
-# setopt hist_verify             # don't execute immediately upon history expansion
-# setopt inc_append_history      # write to the history file immediately, not when the shell exits
-# setopt interactive_comments    # allow #style comments to be added on commandline
-# setopt share_history           # don't share history between all sessions
+# # History settings are now in config.d/history.zsh
 
 # Changing Directories
 # http://zsh.sourceforge.net/Doc/Release/Options.html#Changing-Directories
@@ -74,7 +33,6 @@ if [ -d "${HOME}/Library/Mobile Documents/com~apple~CloudDocs" ]; then
   hash -d books=~/Library/Containers/com.apple.BKAgentService/Data/Documents/iBooks/Books
   hash -d obsidian=~/Library/Mobile\ Documents/iCloud\~md\~obsidian/Documents
   hash -d podcasts=~/Library/Group\ Containers/243LU875E5.groups.com.apple.podcasts
-  hash -d accounts="/Users/totally/greg.williams@solo.io - Google Drive/Shared drives/Field/Customer Success/Account Activity"
 fi
 
 # Other misc settings
@@ -88,18 +46,7 @@ export LS_COLORS='no=00:fi=00:di=01;33:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40
 # eval  `dircolors -b`
 export ZLS_COLORS=$LS_COLORS
 
-# Homebrew
-if [ -d /opt/homebrew ] ; then
-  export PATH=/opt/homebrew/bin:$PATH
-fi
-if (hash brew > /dev/null 2>&1 ) ; then
-  export HOMEBREW_PREFIX=$(brew --prefix)
-  export HOMEBREW_BUNDLE_FILE=${XDG_CONFIG_HOME}/Brewfile
-  export HOMEBREW_CASK_OPTS="--appdir=~/Applications"
-  # Need for the tmux-exec plugin to kubectl
-  export GNU_GETOPT_PREFIX="$(brew --prefix gnu-getopt)"
-  export PATH="${HOMEBREW_PREFIX}/sbin:$PATH"
-fi
+# # Homebrew path is now set in ~/.zshenv so non-interactive shells can use tools
 
 # Linuxbrew
 # test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
@@ -186,7 +133,7 @@ export HELM_EXPERIMENTAL_OCI=1
 export K9SCONFIG=$XDG_CONFIG_HOME/k9s
 
 # My stuff
-PATH=${HOME}/bin:$PATH
+# PATH=${HOME}/bin:$PATH
 
 # GPG Agent
 if type gpg &>/dev/null; then
@@ -198,8 +145,8 @@ else
 fi
 
 # Unique the paths
-typeset -U path fpath kubeconfig cdpath 
-export PATH FPATH KUBECONFIG
+typeset -U fpath kubeconfig cdpath 
+export FPATH KUBECONFIG
 
 # Session Sauce variable
 typeset -TUx SESS_PROJECT_ROOT sess_project_root
@@ -219,36 +166,6 @@ alias -s {yml,yaml}=vim       # quick editing of yaml files in vim
 # ZFUNCDIR=${ZFUNCDIR:-$ZDOTDIR/functions}
 # fpath=($ZFUNCDIR $fpath)
 # autoload -Uz $fpath[1]/*(.:t)
-
-# [ -f ~/bin/ExpressVPN.sh ] && source ~/bin/ExpressVPN.sh
-# [ -f $ZDOTDIR/solo.sh ] && source $ZDOTDIR/solo.sh
-
-# Source zstyles you might use with antidote.
-# [[ -e ${ZDOTDIR:-~}/zstyles ]] && source ${ZDOTDIR:-~}/zstyles
-
-# Enable the fuck if it exists, this adds 0.6s to each shell start
-# hash thefuck > /dev/null 2>&1 && eval "$(thefuck --alias doh)"
-
-eval "$(direnv hook zsh)"
-
-######
-# # Clone antidote if necessary.
-# zstyle ':antidote:bundle' use-friendly-names on
-# [[ -d ${ZDOTDIR:-~}/.antidote ]] ||
-#   git clone https://github.com/mattmc3/antidote ${ZDOTDIR:-~}/.antidote
-
-# # Create an amazing Zsh config using antidote plugins.
-# source ${ZDOTDIR:-~}/.antidote/antidote.zsh
-# antidote load
-
-# # Install fzf binary if not found
-# # This directory is cloned in zsh_plugin.txt binary is added to path and default key-bindings and completions are set
-# if ! [[ -e "$(antidote home)/junegunn/fzf/bin/fzf" ]]
-# then
-#   antidote load
-#   "$(antidote home)/junegunn/fzf/install" --bin
-# fi
-#######
 
 ## Clone zcomet if necessary
 if [[ ! -f ${ZDOTDIR:-${HOME}}/.zcomet/bin/zcomet.zsh ]]; then
@@ -295,6 +212,7 @@ zcomet trigger zhooks agkozak/zhooks
 zcomet load zdharma-continuum/fast-syntax-highlighting
 zcomet load zsh-users/zsh-autosuggestions
 zcomet load mattmc3/zephyr plugins/confd     # autosuggestions wants the keybinds after the plugin has been installed
+# zcomet load zsh-users/zsh-syntax-highlighting
 
 # Set custom fast syntax highlighting work directory
 FAST_WORK_DIR=XDG
@@ -316,6 +234,8 @@ zcomet compinit
 eval "$(starship init zsh)"
 ### Zoxide
 eval "$(zoxide init zsh)"
+### direnv
+eval "$(direnv hook zsh)"
 
 # source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc"
 
