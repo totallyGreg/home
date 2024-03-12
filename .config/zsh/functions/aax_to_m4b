@@ -1,0 +1,33 @@
+##############################################################################
+# TODO: Remove this header block
+# Do NOT include function definition block (ie: omit 'function aax_to_m4b() { }').
+# See: https://zsh.sourceforge.io/Doc/Release/Functions.html#Autoloading-Functions
+#
+# Use ##? comments for help/usage docs.
+##############################################################################
+
+##? aax_to_m4b - convert downloaded aax (audible) file to m4b
+##?
+##? usage: aax_to_m4b [-h|--help]
+##?        aax_to_m4b [-a] activation bytes from Audible
+
+#function aax_to_m4b {
+
+local -a o_help
+zmodload zsh/zutil
+zparseopts -D -F -K --   {h,-help}=o_help ||
+  return 1
+
+if (( $#o_help )); then
+  funchelp "aax_to_m4b"
+  return
+fi
+
+local activation_bytes=$(audible activation-bytes)
+for file in *.aax; do
+  ffmpeg -activation_bytes "$activation_bytes" -i "$file" -c copy "${file%.aax}.m4b"
+  rm "$file"
+done
+
+#}
+

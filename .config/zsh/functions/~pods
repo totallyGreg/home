@@ -1,0 +1,39 @@
+##############################################################################
+# TODO: Remove this header block
+# Do NOT include function definition block (ie: omit 'function pods() { }').
+# See: https://zsh.sourceforge.io/Doc/Release/Functions.html#Autoloading-Functions
+#
+# Use ##? comments for help/usage docs.
+##############################################################################
+
+##? pods - TODO: add description here
+##?
+##? usage: pods [-h|--help]
+##?        pods [<options>] <arguments>
+
+#function pods {
+
+local -a o_help
+zmodload zsh/zutil
+zparseopts -D -F -K --   {h,-help}=o_help ||
+  return 1
+
+if (( $#o_help )); then
+  funchelp "pods"
+  return
+fi
+
+#pods() {
+command='kubectl get pods --all-namespaces' fzf \
+  --info=inline --layout=reverse --header-lines=1 \
+  --prompt "$(kubectl config current-context | sed 's/-context$//')> " \
+  --header $'╱ Enter (kubectl exec) ╱ CTRL-O (open log in editor) ╱ CTRL-R (reload) ╱\n\n' \
+  --bind 'start:reload:$command' \
+  --bind 'ctrl-r:reload:$command' \
+  --bind 'ctrl-/:change-preview-window(80%,border-bottom|hidden|)' \
+  --bind 'enter:execute:kubectl exec -it --namespace {1} {2} -- bash > /dev/tty' \
+  --bind 'ctrl-o:execute:${EDITOR:-vim} <(kubectl logs --all-containers --namespace {1} {2}) > /dev/tty' \
+  --preview-window up:follow \
+  --preview 'kubectl logs --follow --all-containers --tail=10000 --namespace {1} {2}' "$@"
+#}
+

@@ -1,0 +1,50 @@
+##? kdebug - Attach netshoot container to existing pod
+##?
+##? usage: kdebug [-h|--help]
+##?        kdebug [-p|--pod] <POD_NAME>
+##?        kdebug [-t|--tool] <Image to mount>  Defaults to 'nicolaka/netshoot'
+
+#function kdebug {
+
+local -a o_help o_pod o_tool 
+local IMAGE
+zmodload zsh/zutil
+zparseopts -D -F -K --   \
+  {h,-help}=flag_help \
+  {i,-image}=arg_image \
+  {p,-pod}:=arg_pod ||
+  return 1
+
+if (( $#flag_help )); then
+  funchelp "kdebug"
+  return
+fi
+
+if (( $#arg_image )); then
+  IMAGE=$arg_image
+  echo "Using image: ${IMAGE}"
+else
+  IMAGE="nicolaka/netshoot"
+  echo "Using Default image: $IMAGE"
+fi
+
+if (( $#arg_pod )); then
+  POD=$arg_pod
+else
+  POD="${@}"
+fi
+kubectl get pods --all-namespaces | fzf \
+--query=$POD \
+--nth=2 --info=inline \
+--bind 'enter:become(echo kubectl debug -it --image=$IMAGE --namespace=${1} {2})'
+# --bind 'enter:become(kubectl debug -it --image=nicolaka/netshoot --namespace=${1} {2})'
+
+# Create an interactive debugging session on a node and immediately attach to it.
+# The container will run in the host namespaces and the host's filesystem will be mounted at /host
+#--bind 'enter:become(kubectl debug node/mynode -it --image=busybox)'
+# echo "--image: $arg_image"
+# echo "--pod: $arg_pod"
+# echo "postional: $@"
+
+#}
+# vim: ft=zsh sw=2 ts=2 et
