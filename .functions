@@ -240,18 +240,6 @@ wpod() {
     watch kubectl get pods $NAMESPACE
 }
 
-kexec() {
-    POD=$1
-    INPUT_INDEX=$2
-    INDEX="${INPUT_INDEX:-1}"
-    PODS=`kubectl get pods --all-namespaces|grep ${POD} |head -${INDEX} |tail -1`
-    PODNAME=`echo ${PODS} |awk '{print $2}'`
-    echo "Pod: ${PODNAME}"
-    echo
-    NS=`echo ${PODS} |awk '{print $1}'`
-    kubectl exec -it --namespace=${NS} ${PODNAME} -- /bin/bash
-}
-
 purge_ns(){
   # replace finalizers on stuck namespace
   if [ -z "$1" ]
