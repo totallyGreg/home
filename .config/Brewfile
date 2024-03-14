@@ -9,6 +9,7 @@ tap "homebrew-ffmpeg/ffmpeg"
 tap "homebrew/bundle"
 tap "homebrew/cask-fonts"
 tap "homeport/tap"
+tap "joshmedeski/sesh"
 tap "k14s/tap"
 tap "knative/client"
 tap "martido/brew-graph"
@@ -16,7 +17,6 @@ tap "mczachurski/wallpapper"
 tap "nativeos/i386-elf-toolchain"
 tap "saltbo/bin"
 tap "solo-io/tap"
-tap "stevenacoffman/keyfob"
 tap "sttz/tap", "https://github.com/sttz/homebrew-tap.git"
 tap "styrainc/packages"
 tap "ubuntu/microk8s"
@@ -25,8 +25,6 @@ tap "watsonbox/cmu-sphinx"
 tap "zdcthomas/tools"
 # CLI for Amazon ECS to manage clusters and tasks for development
 brew "amazon-ecs-cli"
-# Implements a XML/HTML/XHTML Markup safe string for Python
-brew "python-markupsafe"
 # Automate deployment, configuration, and upgrading
 brew "ansible"
 # Python code formatter
@@ -67,8 +65,6 @@ brew "aws-iam-authenticator"
 brew "aws-sso-cli"
 # Securely store and access AWS credentials in development environments
 brew "aws-vault"
-# Text processing system for reStructuredText
-brew "docutils"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.11"
 # Official Amazon AWS command-line interface
@@ -117,8 +113,6 @@ brew "qemu"
 brew "lima"
 # Container runtimes on MacOS (and Linux) with minimal setup
 brew "colima", args: ["HEAD"]
-# Tool for service discovery, monitoring and configuration
-brew "consul"
 # GNU File, Shell, and Text utilities
 brew "coreutils"
 # Configurable talking characters in ASCII art
@@ -141,6 +135,8 @@ brew "direnv"
 brew "docker"
 # Create Docker hosts locally and on cloud providers
 brew "docker-machine"
+# Text processing system for reStructuredText
+brew "docutils"
 # Disk Usage/Free Utility - a better 'df' alternative
 brew "duf"
 # More intuitive version of du in rust
@@ -213,8 +209,6 @@ brew "librsvg"
 brew "graphviz"
 # GNU grep, egrep and fgrep
 brew "grep"
-# Python implementation of Markdown
-brew "python-markdown"
 # GitHub Markdown previewer
 brew "grip"
 # Utilities for manipulating PostScript documents
@@ -253,14 +247,8 @@ brew "ipython"
 brew "jid"
 # Lightweight and flexible command-line JSON processor
 brew "jq"
-# Implementation of JSON Schema for Python
-brew "jsonschema"
 # Swiss-army knife of markup format conversion
 brew "pandoc"
-# Extremely fast Python linter, written in Rust
-brew "ruff"
-# Python Language Server for the Language Server Protocol
-brew "python-lsp-server"
 # Interactive environments for writing and running code
 brew "jupyterlab"
 # Little helper to run CNCF's k3s in Docker
@@ -269,6 +257,8 @@ brew "k3d"
 brew "k3sup"
 # Kubernetes CLI To Manage Your Clusters In Style!
 brew "k9s"
+# keyfob - a two-factor authentication agent suitable for AWS and Github
+brew "keyfob"
 # Run local Kubernetes cluster in Docker
 brew "kind", args: ["HEAD"]
 # Tool to move from `docker-compose` to Kubernetes
@@ -333,8 +323,8 @@ brew "newsboat"
 brew "nghttp2"
 # Port scanning utility for large networks
 brew "nmap"
-# Kubernetes introspection tool for developers
-brew "octant"
+# Create, run, and share large language models (LLMs)
+brew "ollama"
 # API for decoding and seeking in .opus files
 brew "opusfile"
 # Tool for creating identical machine images for multiple platforms
@@ -357,6 +347,14 @@ brew "proselint"
 brew "pyenv"
 # Pyenv plugin to manage virtualenv
 brew "pyenv-virtualenv"
+# Extremely fast Python linter, written in Rust
+brew "ruff"
+# Python Language Server for the Language Server Protocol
+brew "python-lsp-server"
+# Python implementation of Markdown
+brew "python-markdown"
+# Implements a XML/HTML/XHTML Markup safe string for Python
+brew "python-markupsafe"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.10"
 # Tool Command Language
@@ -476,16 +474,16 @@ brew "fabianishere/personal/pam_reattach"
 brew "homebrew-ffmpeg/ffmpeg/ffmpeg", args: ["with-fdk-aac"]
 # δyƒƒ /ˈdʏf/ - A diff tool for YAML files, and sometimes JSON
 brew "homeport/tap/dyff"
+# Smart terminal session manager
+brew "joshmedeski/sesh/sesh"
 brew "knative/client/kn"
 brew "martido/brew-graph/brew-graph"
-# GNU GRUB 2 targetting i386-elf
-brew "nativeos/i386-elf-toolchain/i386-elf-grub"
 # Let's see the configs of the Envoy
 brew "saltbo/bin/seenvoy"
-# keyfob - a two-factor authentication agent suitable for AWS and Github
-brew "stevenacoffman/keyfob/keyfob"
 # Regal is a linter for Rego, with the goal of making your Rego magnificent!
 brew "styrainc/packages/regal"
+# Developer targeted fonts with a high number of glyphs
+cask "font-fira-mono-nerd-font"
 # Set of tools to manage resources and applications hosted on Google Cloud
 cask "google-cloud-sdk"
 # Tools to protect your emails and files
@@ -509,7 +507,7 @@ cask "wine-stable"
 # Network protocol analyzer
 cask "wireshark-chmodbpf"
 mas "Actions", id: 1586435171
-mas "Actions for Obsidian", id: 1659667937
+mas "Actions For Obsidian", id: 1659667937
 mas "Animoog Z", id: 1586841361
 mas "Audiobook Builder", id: 1437681957
 mas "GarageBand", id: 682658836
@@ -531,4 +529,3 @@ mas "Steam Link", id: 1246969117
 mas "TestFlight", id: 899247664
 mas "Twitter", id: 1482454543
 mas "Vimari", id: 1480933944
-mas "Xcode", id: 497799835

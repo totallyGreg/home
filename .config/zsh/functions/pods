@@ -1,10 +1,4 @@
-##############################################################################
-# TODO: Remove this header block
-# Do NOT include function definition block (ie: omit 'function pods() { }').
-# See: https://zsh.sourceforge.io/Doc/Release/Functions.html#Autoloading-Functions
-#
-# Use ##? comments for help/usage docs.
-##############################################################################
+#!/bin/zsh
 
 ##? pods - TODO: add description here
 ##?
@@ -13,7 +7,7 @@
 
 #function pods {
 
-local -a o_help
+local -a o_help command
 zmodload zsh/zutil
 zparseopts -D -F -K --   {h,-help}=o_help ||
   return 1
@@ -24,16 +18,16 @@ if (( $#o_help )); then
 fi
 
 #pods() {
-command='kubectl get pods --all-namespaces' fzf \
-  --info=inline --layout=reverse --header-lines=1 \
+command="kubectl get pods --all-namespaces"
+  kubectl get pods -A | fzf --info=inline --layout=reverse --header-lines=1 \
   --prompt "$(kubectl config current-context | sed 's/-context$//')> " \
   --header $'╱ Enter (kubectl exec) ╱ CTRL-O (open log in editor) ╱ CTRL-R (reload) ╱\n\n' \
-  --bind 'start:reload:$command' \
-  --bind 'ctrl-r:reload:$command' \
   --bind 'ctrl-/:change-preview-window(80%,border-bottom|hidden|)' \
-  --bind 'enter:execute:kubectl exec -it --namespace {1} {2} -- bash > /dev/tty' \
+  --bind 'enter:execute:kubectl exec -it --namespace {1} {2} -- sh > /dev/tty' \
   --bind 'ctrl-o:execute:${EDITOR:-vim} <(kubectl logs --all-containers --namespace {1} {2}) > /dev/tty' \
-  --preview-window up:follow \
   --preview 'kubectl logs --follow --all-containers --tail=10000 --namespace {1} {2}' "$@"
+  # --bind 'start:reload:$command' \
+  # --bind 'ctrl-r:reload:$command' \
+  # --preview-window up:follow \
 #}
 
