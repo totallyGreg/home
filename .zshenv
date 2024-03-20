@@ -13,8 +13,12 @@ export LC_CTYPE=en_US.UTF-8
 # XDG Base Directory Specification https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
 export XDG_CONFIG_HOME=$HOME/.config
 export XDG_DATA_HOME=$HOME/.local/share
+export XDG_STATE_HOME=$HOME/.local/state
 export XDG_CACHE_HOME=$HOME/Library/Caches
 export XDG_RUNTIME_HOME=$HOME/.tmp
+
+## Ahah! Finally! This fixes "can't find stdlib.h"
+export SDKROOT="`xcrun --show-sdk-path`"
 
 # zsh
 : ${ZDOTDIR:=$XDG_CONFIG_HOME/zsh}
@@ -23,20 +27,23 @@ export XDG_RUNTIME_HOME=$HOME/.tmp
 ZDOTDIRS=({$ZDOTDIR,$LOCAL_ZDOTDIR}(-/N))
 declare -x 'ZDOTDIR'
 declare -xm 'ZSH_*'
+
 # zsh uses $path array along with $PATH 
-typeset -U PATH path
-#
-# Homebrew path set here so non-interactive shells can use the tools
-if [ -d /opt/homebrew ] ; then
-  export PATH=/opt/homebrew/bin:$PATH
-fi
+typeset -gU cdpath fpath mailpath path 
+# path set here so non-interactive shells can use the tools
+path=(
+  $HOME/{,s}bin(N)
+  $HOME/brew/{,s}bin(N)
+  /opt/{homebrew,local}/{,s}bin(N)
+  /usr/local/{,s}bin(N)
+  $path
+)
 if (hash brew > /dev/null 2>&1 ) ; then
   export HOMEBREW_PREFIX=$(brew --prefix)
   export HOMEBREW_BUNDLE_FILE=${XDG_CONFIG_HOME}/Brewfile
   export HOMEBREW_CASK_OPTS="--appdir=~/Applications"
   # Need for the tmux-exec plugin to kubectl
   export GNU_GETOPT_PREFIX="$(brew --prefix gnu-getopt)"
-  export PATH="${HOMEBREW_PREFIX}/sbin:$PATH"
 fi
 
 # personal bin directory
