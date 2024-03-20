@@ -1,9 +1,12 @@
 #!/bin/zsh
 
-##? pods - TODO: add description here
+##? pods: select one or more pods from all namespaces in current context
 ##?
 ##? usage: pods [-h|--help]
-##?        pods [<options>] <arguments>
+##?
+##?   when running:
+##?        pods [^e ] opens current pod in editor
+##?        pods [^s ] opens a shel current pod (if it contains one)
 
 #function pods {
 
@@ -18,16 +21,20 @@ if (( $#o_help )); then
 fi
 
 #pods() {
-command="kubectl get pods --all-namespaces"
-  kubectl get pods -A | fzf --info=inline --layout=reverse --header-lines=1 \
-  --prompt "$(kubectl config current-context | sed 's/-context$//')> " \
-  --header $'╱ Enter (kubectl exec) ╱ CTRL-O (open log in editor) ╱ CTRL-R (reload) ╱\n\n' \
-  --bind 'ctrl-/:change-preview-window(80%,border-bottom|hidden|)' \
-  --bind 'enter:execute:kubectl exec -it --namespace {1} {2} -- sh > /dev/tty' \
-  --bind 'ctrl-o:execute:${EDITOR:-vim} <(kubectl logs --all-containers --namespace {1} {2}) > /dev/tty' \
-  --preview 'kubectl logs --follow --all-containers --tail=10000 --namespace {1} {2}' "$@"
+command="kubectl get pods --all-namespaces -o wide"
+  kubectl get pods -A -o wide | fzf -m --info=inline --layout=reverse --header-lines=1 \
+  --tiebreak=chunk,begin,length,index \
+  --prompt 'Loading> ' --bind 'load:change-prompt:> ' \
+  --header $'| CTRL-E Edit ╱ CTRL-S Shell(?) |\n\n' \
+  --bind 'enter:become:(echo {+2})' \
+  --bind 'ctrl-/:toggle-preview' \
+  --bind 'alt-l:toggle-preview' \
+  --bind 'ctrl-e:become:kubectl edit pod --namespace {1} {2}' \
+  --bind 'ctrl-s:become:kubectl exec -it --namespace {1} {2} -- sh > /dev/tty' \
+  --preview 'kubectl logs --follow --all-containers --tail=10000 --namespace {1} {2}' "$@" \
+  --preview-window bottom:25%:follow:hidden \
+  # --bind backward-eof:abort \
   # --bind 'start:reload:$command' \
   # --bind 'ctrl-r:reload:$command' \
-  # --preview-window up:follow \
 #}
 

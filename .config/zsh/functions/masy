@@ -1,0 +1,18 @@
+#!/bin/zsh
+##? masy - fzf based selection tool for mas
+##?
+
+#function masy {
+local search=$1
+local command
+command='mas list'
+$command  | fzf \
+--header "'ctrl-y' to copy, ctrl-o to open in browser, ctrl-u to show updates" \
+--nth=3 --info=inline \
+--preview 'mas info {1}' \
+--preview-window top,6 \
+--bind 'enter:execute-silent(mas open ${1})' \
+--bind 'ctrl-o:execute-silent(mas vendor ${1})' \
+--bind 'ctrl-u:reload(mas outdated)' \
+--bind 'ctrl-y:execute-silent(mas info ${1} | pbcopy)+abort'
+#}
