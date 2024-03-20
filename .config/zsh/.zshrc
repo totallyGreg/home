@@ -188,6 +188,7 @@ zcomet load zsh-users/zsh-completions
 zcomet load mattmc3/zephyr plugins/completion
 zcomet load asdf-vm/asdf
 zcomet load mattmc3/zephyr plugins/color
+zcomet load mattmc3/zephyr plugins/fishcmds
 zcomet load mattmc3/zephyr plugins/homebrew
 zcomet load mattmc3/zephyr plugins/macos
 zcomet load mattmc3/zephyr plugins/zfunctions
