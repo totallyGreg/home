@@ -163,7 +163,7 @@ alias -s {yml,yaml}=vim       # quick editing of yaml files in vim
 
 ## Source Functions after aliases
 ## Autoload functions you might want to use with antidote.
-# ZFUNCDIR=${ZFUNCDIR:-$ZDOTDIR/functions}
+ZFUNCDIR=${ZFUNCDIR:-$ZDOTDIR/functions}
 # fpath=($ZFUNCDIR $fpath)
 # autoload -Uz $fpath[1]/*(.:t)
 
