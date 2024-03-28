@@ -25,9 +25,8 @@ if (( $#o_help )); then
   return
 fi
 
-one()
-local input=$1
-{
+one_file() {
+  local input=$1
   afconvert -v --profile "${input}" -s 3 -f m4bf -q 10
 }
 
@@ -37,7 +36,7 @@ many() {
 }
 
 examine() {
-  ffprobe -print_format json -show_format "$0"
+  ffprobe -print_format json -show_format "$1"
 }
 
 readly() {
@@ -54,7 +53,13 @@ retry() {
   done
 }
 
+preview() {
+  # Add echo to preview the tasks
+  fzf -m | tr '\n' '\0' | xargs -n 1 -0 -- echo $0 one_file
+}
+
+
 TIMEFORMAT="Task completed in %3lR"
-"${@:-default}"
+"${@:-preview}"
 #}
 
