@@ -1,0 +1,40 @@
+#!/bin/zsh
+##############################################################################
+# TODO: Remove this header block
+# Do NOT include function definition block (ie: omit 'function gisty() { }').
+# See: https://zsh.sourceforge.io/Doc/Release/Functions.html#Autoloading-Functions
+#
+# Use ##? comments for help/usage docs.
+##############################################################################
+
+##? gisty - TODO: add description here
+##?
+##? usage: gisty [-h|--help]
+##?        gisty [<options>] <arguments>
+
+#function gisty {
+
+local -a o_help
+zmodload zsh/zutil
+zparseopts -D -F -K --   {h,-help}=o_help ||
+  return 1
+
+if (( $#o_help )); then
+  funchelp "gisty"
+  return
+fi
+
+# TODO: write your function here
+command="gh gist list"
+  gh gist list | fzf  \
+  --prompt 'Loading> ' --bind 'load:change-prompt:> ' \
+  --header $'ID\tDESCRIPTION' \
+  --bind 'ctrl-c:become:gh gist clone {1} {2}' \
+  --bind 'ctrl-e:become:gh gist edit {1} ' \
+  --bind 'ctrl-v:change-prompt(Files> )+reload(gh gist view --files {1})' \
+  --bind 'alt-enter:become:gh gist view {1} | bat --color always' \
+  --bind 'ctrl-/:toggle-preview' \
+  --preview 'gh gist view -r -f {1} | bat --color=always'  \
+  --preview-window follow:hidden \
+#}
+

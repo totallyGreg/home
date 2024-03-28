@@ -1,0 +1,15 @@
+#!/bin/zsh
+do_one() {
+  # Rather than xargs -I {}, it's more flexible to
+  # use a function with $1
+  echo "Do something with $1"
+  echo cp -v "$1" /tmp
+}
+
+do_all() {
+  # Call the do_one function for each item.
+  # Also add -P to make it parallel
+  find "${PWD}/$1" -type f | tr '\n' '\0' |xargs -n 1 -0 -- echo $0 do_one
+}
+
+"$@"  # dispatch on $0

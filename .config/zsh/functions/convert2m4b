@@ -1,0 +1,60 @@
+#!/bin/zsh
+##############################################################################
+#
+# TODO: Remove this header block
+# Do NOT include function definition block (ie: omit 'function convert2m4b() { }').
+# See: https://zsh.sourceforge.io/Doc/Release/Functions.html#Autoloading-Functions
+#
+# Use ##? comments for help/usage docs.
+##############################################################################
+
+##? convert2m4b - tool to quickly convert audio files into an m4b audiobook
+##?
+##? usage: convert2m4b [-h|--help]
+##?        convert2m4b [<options>] <arguments>
+
+#function convert2m4b {
+
+local -a o_help
+zmodload zsh/zutil
+zparseopts -D -F -K --   {h,-help}=o_help ||
+  return 1
+
+if (( $#o_help )); then
+  funchelp "convert2m4b"
+  return
+fi
+
+one()
+local input=$1
+{
+  afconvert -v --profile "${input}" -s 3 -f m4bf -q 10
+}
+
+many() {
+  local input=${@}
+  cat tasks.txt | tr '\n' '\0'  | xargs -n 1 -0 -- one_file
+}
+
+examine() {
+  ffprobe -print_format json -show_format "$0"
+}
+
+readly() {
+ for f in "${@}"; do
+   echo "this was a test: $f"
+ done
+}
+
+retry() {
+  local n=$1
+  shift
+  for i in $(seq $n); do
+    "$@"
+  done
+}
+
+TIMEFORMAT="Task completed in %3lR"
+"${@:-default}"
+#}
+

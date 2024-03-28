@@ -1,0 +1,29 @@
+##############################################################################
+# TODO: Remove this header block
+# Do NOT include function definition block (ie: omit 'function hist() { }').
+# See: https://zsh.sourceforge.io/Doc/Release/Functions.html#Autoloading-Functions
+#
+# Use ##? comments for help/usage docs.
+##############################################################################
+
+##? hist - create a quick histogram of dataset pipe in 
+##?
+##? usage: hist [-h|--help]
+##?        e.g. awk '{print $9}' access.log | hist
+
+#function hist {
+
+local -a o_help
+zmodload zsh/zutil
+zparseopts -D -F -K --   {h,-help}=o_help ||
+  return 1
+
+if (( $#o_help )); then
+  funchelp "hist"
+  return
+fi
+
+sort | uniq -c | sort -n -r
+
+#}
+
