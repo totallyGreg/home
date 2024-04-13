@@ -94,9 +94,10 @@ if [ -f '/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.i
 # Kubernetes
 set_kubeconfig () {
   typeset -xT KUBECONFIG kubeconfig       # tie scalar and array together making adding easier
-  KUBECONFIG="$HOME/.kube/config"         # many tools assume only this file or it is first in path
+  KUBECONFIG="$HOME/.kube/config"         # many tools assume only this file or it is FIRST in path
 
-  # List of common directories that contain kubeconfig files to add to my KUBECONFIG
+  # List of common directories that contain kubeconfig files to append to my KUBECONFIG
+  # It is necessary for these to have unique values for cluster and user so the context merging doesn't conflict
   local kube_dirs=(
   ${HOME}/.kube/config.d
   ${HOME}/.kube/eksctl/clusters
@@ -105,7 +106,7 @@ set_kubeconfig () {
 )
   # This will create a list of config files located in $kube_dir
   # while ignoring any errors (directories that don't exist)
-  kubeConfigFileList=$(find ${kube_dirs} -type f 2>/dev/null)
+  kubeConfigFileList=$(find ${kube_dirs} -type f \( -name '*.yaml' -o -name '*.yml' \) 2>/dev/null)
   # for file in $(ls -d -1 $HOME/.lima/*/conf/kubeconfig.yam)
   #   do kubeConfigFileList+=$file
   # done
