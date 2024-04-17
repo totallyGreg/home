@@ -129,6 +129,9 @@ function macos_defaults {
   # Automatically hide and show the Dock
   defaults write com.apple.dock autohide -bool true
 
+  # Adjust the speed of autohide
+  defaults write com.apple.dock autohide-time-modifier -float 0.25
+
   # move Dock to left side of screen
   defaults write com.apple.dock orientation left
 
