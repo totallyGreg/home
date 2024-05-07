@@ -16,6 +16,7 @@ tap "martido/brew-graph"
 tap "mczachurski/wallpapper"
 tap "nativeos/i386-elf-toolchain"
 tap "saltbo/bin"
+tap "siderolabs/tap"
 tap "solo-io/tap"
 tap "sttz/tap", "https://github.com/sttz/homebrew-tap.git"
 tap "styrainc/packages"
@@ -25,12 +26,16 @@ tap "watsonbox/cmu-sphinx"
 tap "zdcthomas/tools"
 # CLI for Amazon ECS to manage clusters and tasks for development
 brew "amazon-ecs-cli"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.12"
 # Automate deployment, configuration, and upgrading
 brew "ansible"
 # Checks ansible playbooks for practices and behaviour
 brew "ansible-lint"
 # Strip or convert ANSI codes into HTML, (La)Tex, RTF, or BBCode
 brew "ansifilter"
+# Library and utilities for processing GIFs
+brew "giflib"
 # Color management engine supporting ICC profiles
 brew "little-cms2"
 # Image format providing lossless and lossy compression for web images
@@ -81,6 +86,8 @@ brew "black"
 brew "pcre2"
 # Core application library for C
 brew "glib"
+# X.Org: Interface to the X Window System protocol
+brew "libxcb"
 # Vector graphics library with cross-device output support
 brew "cairo"
 # CD/DVD/Blu-ray premastering and recording software
@@ -115,8 +122,6 @@ brew "colima", args: ["HEAD"]
 brew "coreutils"
 # Configurable talking characters in ASCII art
 brew "cowsay"
-# Get a file from an HTTP, HTTPS or FTP server
-brew "curl"
 # Tools to manipulate dates with a focus on financial data
 brew "dateutils"
 # Library access to GnuPG
@@ -129,6 +134,8 @@ brew "poppler"
 brew "diff-pdf"
 # Load/unload environment variables based on $PWD
 brew "direnv"
+# Bash, Zsh and Fish completion for Docker
+brew "docker-completion"
 # Pack, ship and run any application as a lightweight container
 brew "docker"
 # Create Docker hosts locally and on cloud providers
@@ -189,16 +196,22 @@ brew "glooctl"
 brew "gnu-getopt"
 # GNU implementation of the famous stream editor
 brew "gnu-sed"
+# Open source programming language to build simple/reliable/efficient software
+brew "go"
 # Generate introspection data for GObject libraries
 brew "gobject-introspection"
+# OpenType text shaping engine
+brew "harfbuzz"
+# Development kit for the Java programming language
+brew "openjdk"
+# Open-source build automation tool based on the Groovy and Kotlin DSL
+brew "gradle"
 # Library for manipulating JPEG-2000 images
 brew "jasper"
 # Image manipulation
 brew "netpbm"
 # GNU triangulated surface library
 brew "gts"
-# OpenType text shaping engine
-brew "harfbuzz"
 # Framework for layout and rendering of i18n text
 brew "pango"
 # Library to render SVG files using Cairo
@@ -273,6 +286,8 @@ brew "kubeaudit"
 brew "kubectx"
 # Manage multiple kubernetes cluster at the same time
 brew "kubesess"
+# Detects and prevents Kubernetes misconfigurations and violations
+brew "kubevious"
 # Much more powerful alternative to kubectx and kubens
 brew "kubie"
 # Template-free customization of Kubernetes YAML manifests
@@ -283,20 +298,24 @@ brew "lazygit"
 brew "libass"
 # Conversion library
 brew "libiconv"
+# MP3 player for Linux and UNIX
+brew "mpg123"
+# Audio codec
+brew "opus"
 # C virtualization API
 brew "libvirt"
 # Rainbows and unicorns in your console!
 brew "lolcat"
 # Clone of ls with colorful output, file type icons, and more
 brew "lsd"
+# Just-In-Time Compiler (JIT) for the Lua programming language
+brew "luajit"
 # Text-based web browser
 brew "lynx"
 # Utility for directing compilation
 brew "make"
 # Mac App Store command-line interface
 brew "mas"
-# Development kit for the Java programming language
-brew "openjdk"
 # Java-based project management
 brew "maven"
 # Unified display of technical and tag data for audio/video
@@ -309,10 +328,14 @@ brew "mono"
 brew "mp3info"
 # Read, create, and modify MP4 files
 brew "mp4v2"
+# Library for a binary-based efficient data interchange format
+brew "msgpack"
 # 'traceroute' and 'ping' in a single tool
 brew "mtr"
 # Fast, highly customisable system info script
 brew "neofetch"
+# Parser generator tool and incremental parsing library
+brew "tree-sitter"
 # Ambitious Vim-fork focused on extensibility and agility
 brew "neovim"
 # Utility for managing network connections
@@ -327,8 +350,6 @@ brew "nmap"
 brew "ollama"
 # API for decoding and seeking in .opus files
 brew "opusfile"
-# Tool for creating identical machine images for multiple platforms
-brew "packer"
 # Command-line tool to generate, analyze, convert and manipulate colors
 brew "pastel"
 # Highly capable, feature-rich programming language
@@ -337,6 +358,10 @@ brew "perl"
 brew "php"
 # Pinentry for GPG on Mac
 brew "pinentry-mac"
+# Execute binaries from Python packages in isolated environments
+brew "pipx"
+# CLI for the Pkl programming language
+brew "pkl"
 # Tool for managing OCI containers and pods
 brew "podman"
 # Code formatter for JavaScript, CSS, JSON, GraphQL, Markdown, YAML
@@ -347,20 +372,16 @@ brew "proselint"
 brew "pyenv"
 # Pyenv plugin to manage virtualenv
 brew "pyenv-virtualenv"
-# Extremely fast Python linter, written in Rust
-brew "ruff"
 # Python Language Server for the Language Server Protocol
 brew "python-lsp-server"
 # Python implementation of Markdown
 brew "python-markdown"
 # Implements a XML/HTML/XHTML Markup safe string for Python
 brew "python-markupsafe"
+# Easily download, build, install, upgrade, and uninstall Python packages
+brew "python-setuptools"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.10"
-# Tool Command Language
-brew "tcl-tk"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.8"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.9"
 # Unified tool to manage your Rancher server
@@ -371,6 +392,8 @@ brew "reattach-to-user-namespace"
 brew "ripgrep"
 # Rancher Kubernetes Engine, a Kubernetes installer that works everywhere
 brew "rke"
+# Extremely fast Python linter, written in Rust
+brew "ruff"
 # Rust toolchain installer
 brew "rustup-init"
 # Low-level access to audio, keyboard, mouse, joystick, and graphics
@@ -397,18 +420,24 @@ brew "step"
 brew "stern"
 # Generate scripting interfaces to C/C++ code
 brew "swig"
+# Tool Command Language
+brew "tcl-tk"
+# Very fast implementation of tldr in Rust
+brew "tealdeer"
+# Graphical network analyzer and capture tool
+brew "wireshark"
+# Terminal UI for tshark, inspired by Wireshark
+brew "termshark"
 # Terraform Language Server
 brew "terraform-ls"
 # Official documentation format of the GNU project
-brew "texinfo", link: false
+brew "texinfo"
 # Linter for Terraform files
 brew "tflint"
 # Code-search similar to ack
 brew "the_silver_searcher"
 # Programmatically correct mistyped console commands
 brew "thefuck"
-# Simplified and community-driven man pages
-brew "tldr"
 # Terminal multiplexer
 brew "tmux"
 # Display directories as trees (with optional color/HTML output)
@@ -439,6 +468,8 @@ brew "websocat"
 brew "wget"
 # Automatic workarounds for problems in Wine
 brew "winetricks"
+# H.265/HEVC encoder
+brew "x265"
 # Fast CSV toolkit written in Rust
 brew "xsv"
 # Yet Another Dotfiles Manager
@@ -482,6 +513,8 @@ brew "knative/client/kn"
 brew "martido/brew-graph/brew-graph"
 # Let's see the configs of the Envoy
 brew "saltbo/bin/seenvoy"
+# CLI for out-of-band management of Kubernetes nodes created by Talos
+brew "siderolabs/tap/talosctl"
 # Regal is a linter for Rego, with the goal of making your Rego magnificent!
 brew "styrainc/packages/regal"
 # Developer targeted fonts with a high number of glyphs
@@ -512,9 +545,9 @@ mas "Actions", id: 1586435171
 mas "Actions For Obsidian", id: 1659667937
 mas "Animoog Z", id: 1586841361
 mas "Audiobook Builder", id: 1437681957
+mas "Developer", id: 640199958
 mas "GarageBand", id: 682658836
 mas "Health Auto Export", id: 1115567069
-mas "iMovie", id: 408981434
 mas "Keynote", id: 409183694
 mas "Mastonaut", id: 1450757574
 mas "Microsoft OneNote", id: 784801555
@@ -525,7 +558,6 @@ mas "Paprika Recipe Manager 3", id: 1303222628
 mas "Peek", id: 1554235898
 mas "Prime Video", id: 545519333
 mas "Save to Reader", id: 1640236961
-mas "Screens 5", id: 1663047912
 mas "Silicio", id: 933627574
 mas "Steam Link", id: 1246969117
 mas "Surfed", id: 1591590700

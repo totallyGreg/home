@@ -52,6 +52,9 @@ export ZLS_COLORS=$LS_COLORS
 # test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
 # test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
 
+# Java
+export PATH=/opt/homebrew/opt/openjdk/bin:$PATH
+
 # Python globally managed by pyenv
 # https://opensource.com/article/19/5/python-3-default-mac#what-to-do
 if command -v pyenv 1>/dev/null 2>&1; then
@@ -72,9 +75,9 @@ if [ -d /usr/local/opt/openssl@3/bin ] ; then
 fi
 
 # Setup Go environment
-export GOPATH="${HOME}/Work/go"
-# export GOROOT="$(brew --prefix golang)/libexec"
-export GOROOT=~/.local/share/golang
+export GOPATH="${HOME}/Docuements/Projects/golang"
+export GOROOT="$(brew --prefix golang)/libexec"  # no longer recommended? https://stackoverflow.com/questions/7970390/what-should-be-the-values-of-gopath-and-goroot/45529403#45529403
+# export GOROOT=~/.local/share/golang
 export PATH="$PATH:${GOPATH}/bin"
 export CGO_CFLAGS="-g -O2 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
 # export PATH="$PATH:${GOROOT}/bin" # Not needed with brew install go
@@ -189,7 +192,6 @@ zcomet load zsh-users/zsh-completions
 zcomet load mattmc3/zephyr plugins/completion
 zcomet load asdf-vm/asdf
 zcomet load mattmc3/zephyr plugins/color
-zcomet load mattmc3/zephyr plugins/fishcmds
 zcomet load mattmc3/zephyr plugins/homebrew
 zcomet load mattmc3/zephyr plugins/macos
 zcomet load mattmc3/zephyr plugins/zfunctions
