@@ -75,7 +75,7 @@ if [ -d /usr/local/opt/openssl@3/bin ] ; then
 fi
 
 # Setup Go environment
-export GOPATH="${HOME}/Docuements/Projects/golang"
+export GOPATH="${HOME}/Documents/Projects/golang"
 export GOROOT="$(brew --prefix golang)/libexec"  # no longer recommended? https://stackoverflow.com/questions/7970390/what-should-be-the-values-of-gopath-and-goroot/45529403#45529403
 # export GOROOT=~/.local/share/golang
 export PATH="$PATH:${GOPATH}/bin"
@@ -213,10 +213,10 @@ zcomet trigger zhooks agkozak/zhooks
 # zinit light unixorn/tumult.plugin.zsh
 
 ## These plugins which will wrap widgets prefer to be last
-zcomet load zdharma-continuum/fast-syntax-highlighting
+# zcomet load zdharma-continuum/fast-syntax-highlighting
 zcomet load zsh-users/zsh-autosuggestions
 zcomet load mattmc3/zephyr plugins/confd     # autosuggestions wants the keybinds after the plugin has been installed
-# zcomet load zsh-users/zsh-syntax-highlighting
+zcomet load zsh-users/zsh-syntax-highlighting
 
 # Set custom fast syntax highlighting work directory
 FAST_WORK_DIR=XDG
