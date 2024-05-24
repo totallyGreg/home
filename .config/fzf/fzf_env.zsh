@@ -32,7 +32,7 @@ export FZF_DEFAULT_OPTS="
 --bind '?:toggle-preview'
 --bind 'alt-a:select-all'
 --bind 'ctrl-y:execute-silent(echo {+} | pbcopy)+abort'
---bind 'ctrl-e:execute(echo {+} | xargs -o vim)'
+--bind 'ctrl-e:execute(echo {+} | xargs -o nvim)'
 --bind 'ctrl-v:execute(code {+})'
 "
 

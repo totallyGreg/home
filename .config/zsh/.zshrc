@@ -181,7 +181,11 @@ source ${ZDOTDIR:-${HOME}}/.zcomet/bin/zcomet.zsh
 
 # Install Fzf
 zcomet load junegunn/fzf shell completion.zsh key-bindings.zsh
-( (( ${+commands[fzf]} )) || ~[fzf]/install --bin ) && source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf_env.zsh
+# Install if it doesn't exist, but it doesn't update it if it does...
+# May need to consider moving to zim in order to execute install script post update
+( (( ${+commands[fzf]} )) || ~[fzf]/install --bin )
+# My personal options I don't want overwritten
+source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf_env.zsh
 
 
 # My FZF based configuration and extra functions

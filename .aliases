@@ -80,6 +80,9 @@ alias viewCert='openssl x509 -noout -issuer -subject -dates -hash'
 ## Parse istio-bug-report crs
 alias crd_parser="python ~/Work/solo-cop/tools/crd_parser/crd_parser.py "
 
+## Talos
+alias -g tctl=talosctl
+
 ## Terraform
 alias tf=terraform
 
