@@ -38,22 +38,16 @@ fi
 # Other misc settings
 LISTMAX=0
 
-# Yes, these are a pain to customize. Fortunately, Geoff Greer made an online
-# tool that makes it easy to customize your color scheme and keep them in sync
-# # across Linux and OS X/*BSD at http://geoff.greer.fm/lscolors/
-# export LS_COLORS='no=00:fi=00:di=01;33:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.deb=01;31:*.rpm=01;31:*.jpg=01;35:*.png=01;35:*.gif=01;35:*.bmp=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.png=01;35:*.mpg=01;35:*.avi=01;35:*.fli=01;35:*.gl=01;35:*.dl=01;35:';
-
-# TODO: Revist this
-# eval  `dircolors -b`
-# export ZLS_COLORS=$LS_COLORS
 export CLICOLOR=1
-export LSCOLOR="exfxcxdxbxegedabagacad"
+export LSCOLORS="exfxcxdxbxegedabagacad"
+# From `gdircolors ~/.dir_colors` which is https://github.com/seebi/dircolors-solarized/blob/master/dircolors.ansi-universal
+LS_COLORS='no=00:fi=00:di=34:ln=35:pi=30;44:so=35;44:do=35;44:bd=33;44:cd=37;44:or=05;37;41:mi=05;37;41:ex=01;31:*.cmd=01;31:*.exe=01;31:*.com=01;31:*.bat=01;31:*.reg=01;31:*.app=01;31:*.txt=32:*.org=32:*.md=32:*.mkd=32:*.bib=32:*.h=32:*.hpp=32:*.c=32:*.C=32:*.cc=32:*.cpp=32:*.cxx=32:*.objc=32:*.cl=32:*.sh=32:*.bash=32:*.csh=32:*.zsh=32:*.el=32:*.vim=32:*.java=32:*.pl=32:*.pm=32:*.py=32:*.rb=32:*.hs=32:*.php=32:*.htm=32:*.html=32:*.shtml=32:*.erb=32:*.haml=32:*.xml=32:*.rdf=32:*.css=32:*.sass=32:*.scss=32:*.less=32:*.js=32:*.coffee=32:*.man=32:*.0=32:*.1=32:*.2=32:*.3=32:*.4=32:*.5=32:*.6=32:*.7=32:*.8=32:*.9=32:*.l=32:*.n=32:*.p=32:*.pod=32:*.tex=32:*.go=32:*.sql=32:*.csv=32:*.sv=32:*.svh=32:*.v=32:*.vh=32:*.vhd=32:*.bmp=33:*.cgm=33:*.dl=33:*.dvi=33:*.emf=33:*.eps=33:*.gif=33:*.jpeg=33:*.jpg=33:*.JPG=33:*.mng=33:*.pbm=33:*.pcx=33:*.pgm=33:*.png=33:*.PNG=33:*.ppm=33:*.pps=33:*.ppsx=33:*.ps=33:*.svg=33:*.svgz=33:*.tga=33:*.tif=33:*.tiff=33:*.xbm=33:*.xcf=33:*.xpm=33:*.xwd=33:*.xwd=33:*.yuv=33:*.NEF=33:*.nef=33:*.webp=33:*.heic=33:*.HEIC=33:*.avif=33:*.aac=33:*.au=33:*.flac=33:*.m4a=33:*.m4b=33:*.mid=33:*.midi=33:*.mka=33:*.mp3=33:*.mpa=33:*.mpeg=33:*.mpg=33:*.ogg=33:*.opus=33:*.ra=33:*.wav=33:*.anx=33:*.asf=33:*.avi=33:*.axv=33:*.flc=33:*.fli=33:*.flv=33:*.gl=33:*.m2v=33:*.m4v=33:*.mkv=33:*.mov=33:*.MOV=33:*.mp4=33:*.mp4v=33:*.mpeg=33:*.mpg=33:*.nuv=33:*.ogm=33:*.ogv=33:*.ogx=33:*.qt=33:*.rm=33:*.rmvb=33:*.swf=33:*.vob=33:*.webm=33:*.wmv=33:*.doc=31:*.docx=31:*.rtf=31:*.odt=31:*.dot=31:*.dotx=31:*.ott=31:*.xls=31:*.xlsx=31:*.ods=31:*.ots=31:*.ppt=31:*.pptx=31:*.odp=31:*.otp=31:*.fla=31:*.psd=31:*.pdf=31:*.7z=1;35:*.apk=1;35:*.arj=1;35:*.bin=1;35:*.bz=1;35:*.bz2=1;35:*.cab=1;35:*.deb=1;35:*.dmg=1;35:*.gem=1;35:*.gz=1;35:*.iso=1;35:*.jar=1;35:*.msi=1;35:*.rar=1;35:*.rpm=1;35:*.tar=1;35:*.tbz=1;35:*.tbz2=1;35:*.tgz=1;35:*.tx=1;35:*.war=1;35:*.xpi=1;35:*.xz=1;35:*.z=1;35:*.Z=1;35:*.zip=1;35:*.zst=1;35:*.ANSI-30-black=30:*.ANSI-01;30-brblack=01;30:*.ANSI-31-red=31:*.ANSI-01;31-brred=01;31:*.ANSI-32-green=32:*.ANSI-01;32-brgreen=01;32:*.ANSI-33-yellow=33:*.ANSI-01;33-bryellow=01;33:*.ANSI-34-blue=34:*.ANSI-01;34-brblue=01;34:*.ANSI-35-magenta=35:*.ANSI-01;35-brmagenta=01;35:*.ANSI-36-cyan=36:*.ANSI-01;36-brcyan=01;36:*.ANSI-37-white=37:*.ANSI-01;37-brwhite=01;37:*.log=01;32:*~=01;32:*#=01;32:*.bak=01;36:*.BAK=01;36:*.old=01;36:*.OLD=01;36:*.org_archive=01;36:*.off=01;36:*.OFF=01;36:*.dist=01;36:*.DIST=01;36:*.orig=01;36:*.ORIG=01;36:*.swp=01;36:*.swo=01;36:*.v=01;36:*.gpg=34:*.pgp=34:*.asc=34:*.3des=34:*.aes=34:*.enc=34:*.sqlite=34:*.db=34:';
+export LS_COLORS
+# ZLS_COLOR is getting set automatically by fzf-tab
+# Aloxaf/fzf-tab/README.md
+# 140:By default, fzf-tab uses [zsh-ls-colors](https://github.com/xPMo/zsh-ls-colors) to parse and apply ZLS_COLORS if you have set the `list-colors` tag.
 
 # # Homebrew path is now set in ~/.zshenv so non-interactive shells can use tools
-
-# Linuxbrew
-# test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
-# test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
 
 # Java
 export PATH=/opt/homebrew/opt/openjdk/bin:$PATH
@@ -77,7 +71,7 @@ if [ -d /Library/Developer/CommandLineTools/usr/bin ] ; then
   export CXX=$(xcrun --find clang++)
 fi
 
-# OpenSSL that generates valid 
+# OpenSSL that generates valid
 if [ -d /usr/local/opt/openssl@3/bin ] ; then
   export PATH="/usr/local/opt/openssl@3/bin:$PATH"
 fi
@@ -147,7 +141,7 @@ export K9SCONFIG=$XDG_CONFIG_HOME/k9s
 # My stuff
 # PATH=${HOME}/bin:$PATH
 
-# GPG Agent
+# GPG Agent consistent across tmux shells
 if type gpg &>/dev/null; then
   export GPG_TTY=$(tty)
   export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
@@ -169,7 +163,7 @@ alias mv='nocorrect mv'       # no spelling correction on mv
 alias cp='nocorrect cp'       # no spelling correction on cp
 alias mkdir='nocorrect mkdir' # no spelling correction on mkdir
 alias dirs='dirs -v'
-alias -s {yml,yaml}=vim       # quick editing of yaml files in vim
+alias -s {yml,yaml}=nvim       # quick editing of yaml files in nvim
 
 [ -f ~/.aliases ] && source ~/.aliases
 
@@ -224,12 +218,17 @@ zcomet trigger zhooks agkozak/zhooks
 zcomet load z-shell/zsh-fancy-completions
 zcomet load zsh-users/zsh-autosuggestions
 zcomet load mattmc3/zephyr plugins/confd     # autosuggestions wants the keybinds after the plugin has been installed
-zcomet load zdharma-continuum/fast-syntax-highlighting
 zcomet load mattmc3/zephyr plugins/color
-# zcomet load zsh-users/zsh-syntax-highlighting # https://github.com/zsh-users/zsh-syntax-highlighting/pull/749 merged @feature/redrawhook 
-
 # Set custom fast syntax highlighting work directory
-FAST_WORK_DIR=XDG
+# FAST_WORK_DIR=XDG
+# zcomet load zdharma-continuum/fast-syntax-highlighting  #I've given up trying to figure out how to make themes persistent
+zcomet load zsh-users/zsh-syntax-highlighting # https://github.com/zsh-users/zsh-syntax-highlighting/pull/749 merged @feature/redrawhook 
+ZSH_HIGHLIGHT_HIGHLIGHTERS+=(main brackets pattern cursor line)
+ZSH_HIGHLIGHT_MAXLENGTH=512
+# This fails with syntax.zsh:3: ZSH_HIGHLIGHT_STYLES: assignment to invalid subscript range
+ZSH_HIGHLIGHT_STYLES[comment]='fg=241'
+
+
 
 # Since google is doing their own test of whether or not to add completions instead of adding to fpath
 # It has to be added after the compinit is compiled

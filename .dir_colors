@@ -19,7 +19,7 @@
 #   editable text including source, unimportant text, binary docs & multimedia source
 #   files, viewable multimedia, archived/compressed, and unimportant non-text
 # - For uniqueness, we stay away from the Solarized foreground colors are -- either
-#   base00 (brightyellow) or base0 (brighblue).  However, they can be used if
+#   base00 (brightyellow) or base0 (brightblue).  However, they can be used if
 #   you know what the bg/fg colors of your terminal are, in order to optimize the display.
 # - 3 different options are provided: universal, solarized dark, and solarized light.
 #   The only difference between the universal scheme and one that's optimized for
@@ -32,7 +32,7 @@
 # - See table below to see the assignments.
 
 
-# Insatllation instructions:
+# Installation instructions:
 # This file goes in the /etc directory, and must be world readable.
 # You can copy this file to .dir_colors in your $HOME directory to override
 # the system defaults.
@@ -43,6 +43,7 @@
 COLOR tty
 
 # Below, there should be one TERM entry for each termtype that is colorizable
+TERM alacritty
 TERM ansi
 TERM color_xterm
 TERM color-xterm
@@ -65,6 +66,7 @@ TERM dvtm-256color
 TERM Eterm
 TERM eterm-color
 TERM fbterm
+TERM foot
 TERM gnome
 TERM gnome-256color
 TERM jfbterm
@@ -97,15 +99,17 @@ TERM screen-256color-bce-s
 TERM screen-256color-italic
 TERM screen-bce
 TERM screen-w
+TERM screen.xterm-256color
 TERM screen.linux
 TERM screen.xterm-new
 TERM st
 TERM st-meta
 TERM st-256color
 TERM st-meta-256color
+TERM tmux
+TERM tmux-256color
 TERM vt100
 TERM xterm
-TERM xtermc
 TERM xterm-new
 TERM xterm-16color
 TERM xterm-256color
@@ -113,6 +117,7 @@ TERM xterm-256color-italic
 TERM xterm-88color
 TERM xterm-color
 TERM xterm-debian
+TERM xterm-kitty
 TERM xterm-termite
 
 # EIGHTBIT, followed by '1' for on, '0' for off. (8-bit output)
@@ -161,7 +166,7 @@ NORMAL 00
 # normal file
 FILE 00
 # directory
-DIR 36
+DIR 34
 # symbolic link
 LINK 35
 
@@ -205,16 +210,20 @@ EXEC 01;31  # Unix
 .org 32
 .md 32
 .mkd 32
+.bib 32
 
 # Source text
 .h 32
+.hpp 32
 .c 32
 .C 32
 .cc 32
 .cpp 32
 .cxx 32
 .objc 32
+.cl 32
 .sh 32
+.bash 32
 .csh 32
 .zsh 32
 .el 32
@@ -256,6 +265,13 @@ EXEC 01;31  # Unix
 .pod 32
 .tex 32
 .go 32
+.sql 32
+.csv 32
+.sv 32
+.svh 32
+.v 32
+.vh 32
+.vhd 32
 
 ### Multimedia formats
 
@@ -273,7 +289,6 @@ EXEC 01;31  # Unix
 .mng 33
 .pbm 33
 .pcx 33
-.pdf 33
 .pgm 33
 .png 33
 .PNG 33
@@ -292,12 +307,19 @@ EXEC 01;31  # Unix
 .xwd 33
 .xwd 33
 .yuv 33
+.NEF 33 # Nikon RAW format
+.nef 33
+.webp 33
+.heic 33
+.HEIC 33
+.avif 33
 
 # Audio
 .aac 33
 .au  33
 .flac 33
 .m4a 33
+.m4b 33
 .mid 33
 .midi 33
 .mka 33
@@ -306,6 +328,7 @@ EXEC 01;31  # Unix
 .mpeg 33
 .mpg 33
 .ogg  33
+.opus 33
 .ra 33
 .wav 33
 
@@ -345,14 +368,21 @@ EXEC 01;31  # Unix
 .doc 31
 .docx 31
 .rtf 31
+.odt 31
 .dot 31
 .dotx 31
+.ott 31
 .xls 31
 .xlsx 31
+.ods 31
+.ots 31
 .ppt 31
 .pptx 31
+.odp 31
+.otp 31
 .fla 31
 .psd 31
+.pdf 31
 
 # Archives, compressed
 .7z   1;35
@@ -382,6 +412,7 @@ EXEC 01;31  # Unix
 .z    1;35
 .Z    1;35
 .zip  1;35
+.zst  1;35
 
 # For testing
 .ANSI-30-black 30
@@ -430,7 +461,7 @@ EXEC 01;31  # Unix
 .ORIG 01;36
 .swp 01;36
 .swo 01;36
-*,v 01;36
+*.v 01;36
 #.bak 01;33
 #.BAK 01;33
 #.old 01;33
@@ -444,11 +475,10 @@ EXEC 01;31  # Unix
 #.ORIG 01;33
 #.swp 01;33
 #.swo 01;33
-#*,v 01;33
+#*.v 01;33
 
 # The brightmagenta (Solarized: purple) color is free for you to use for your
 # custom file type
-.gpg 34
 .gpg 34
 .pgp 34
 .asc 34
@@ -456,3 +486,4 @@ EXEC 01;31  # Unix
 .aes 34
 .enc 34
 .sqlite 34
+.db 34

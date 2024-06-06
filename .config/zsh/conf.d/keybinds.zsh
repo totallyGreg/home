@@ -22,6 +22,7 @@ bindkey -M menuselect 'j' vi-down-line-or-history
 
 .toggle-watch(){
     .toggle-command-prefix 'watch ' 'watch'
+    # if (( $+functions[_zsh_highlight] ))  _zsh_highlight this may be necessary for fast-syntax-highlighting
 }
 # zle -N watch-command
 zle -N .toggle-watch
