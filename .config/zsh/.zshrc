@@ -41,10 +41,13 @@ LISTMAX=0
 # Yes, these are a pain to customize. Fortunately, Geoff Greer made an online
 # tool that makes it easy to customize your color scheme and keep them in sync
 # # across Linux and OS X/*BSD at http://geoff.greer.fm/lscolors/
-export LS_COLORS='no=00:fi=00:di=01;33:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.deb=01;31:*.rpm=01;31:*.jpg=01;35:*.png=01;35:*.gif=01;35:*.bmp=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.png=01;35:*.mpg=01;35:*.avi=01;35:*.fli=01;35:*.gl=01;35:*.dl=01;35:';
+# export LS_COLORS='no=00:fi=00:di=01;33:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.deb=01;31:*.rpm=01;31:*.jpg=01;35:*.png=01;35:*.gif=01;35:*.bmp=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.png=01;35:*.mpg=01;35:*.avi=01;35:*.fli=01;35:*.gl=01;35:*.dl=01;35:';
 
+# TODO: Revist this
 # eval  `dircolors -b`
-export ZLS_COLORS=$LS_COLORS
+# export ZLS_COLORS=$LS_COLORS
+export CLICOLOR=1
+export LSCOLOR="exfxcxdxbxegedabagacad"
 
 # # Homebrew path is now set in ~/.zshenv so non-interactive shells can use tools
 
@@ -60,6 +63,11 @@ export PATH=/opt/homebrew/opt/openjdk/bin:$PATH
 if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv init --path)"
   eval "$(pyenv virtualenv-init -)"
+fi
+
+# Ruby setup
+if command -v rbenv 1>/dev/null 2>&1; then
+  eval "$(rbenv init - zsh)"
 fi
 
 # Apple Xcode Path
@@ -187,19 +195,15 @@ zcomet load junegunn/fzf shell completion.zsh key-bindings.zsh
 # My personal options I don't want overwritten
 source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf_env.zsh
 
-
-# My FZF based configuration and extra functions
-# (( ${+commands[fzf]} )) && source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf_env.zsh
-
 ## Load some plugins
 zcomet load zsh-users/zsh-completions
 zcomet load mattmc3/zephyr plugins/completion
 zcomet load asdf-vm/asdf
-zcomet load mattmc3/zephyr plugins/color
 zcomet load mattmc3/zephyr plugins/homebrew
 zcomet load mattmc3/zephyr plugins/macos
 zcomet load mattmc3/zephyr plugins/zfunctions
 zcomet load Aloxaf/fzf-tab
+zcomet load Freed-Wu/fzf-tab-source # ⚙️ a collection of fzf-tab completion sources.
 zcomet load reegnz/jq-zsh-plugin  # Interactive jq explorer
 
 #
@@ -217,10 +221,12 @@ zcomet trigger zhooks agkozak/zhooks
 # zinit light unixorn/tumult.plugin.zsh
 
 ## These plugins which will wrap widgets prefer to be last
-# zcomet load zdharma-continuum/fast-syntax-highlighting
+zcomet load z-shell/zsh-fancy-completions
 zcomet load zsh-users/zsh-autosuggestions
 zcomet load mattmc3/zephyr plugins/confd     # autosuggestions wants the keybinds after the plugin has been installed
-zcomet load zsh-users/zsh-syntax-highlighting
+zcomet load zdharma-continuum/fast-syntax-highlighting
+zcomet load mattmc3/zephyr plugins/color
+# zcomet load zsh-users/zsh-syntax-highlighting # https://github.com/zsh-users/zsh-syntax-highlighting/pull/749 merged @feature/redrawhook 
 
 # Set custom fast syntax highlighting work directory
 FAST_WORK_DIR=XDG

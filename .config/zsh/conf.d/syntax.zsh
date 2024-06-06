@@ -1,0 +1,2 @@
+ZSH_HIGHLIGHT_HIGHLIGHTERS+=(main brackets pattern cursor line)
+ZSH_HIGHLIGHT_MAXLENGTH=512
