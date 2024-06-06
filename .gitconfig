@@ -28,6 +28,7 @@
   type = cat-file -t
   unstage = reset HEAD --  # Remove filename from the staging area
   yesterday = diff --stat 'HEAD@{yesterday}' 'HEAD@{midnight}'
+  start-repo = !git init . && git add . && git commit --allow-empty -m \"Initialize repository\"
 [color]
   branch = auto
   diff = auto
@@ -49,17 +50,17 @@
   changed = yellow
   untracked = cyan
 [filter "lfs"]
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
-	required = true
-	clean = git-lfs clean -- %f
+  smudge = git-lfs smudge -- %f
+  process = git-lfs filter-process
+  required = true
+  clean = git-lfs clean -- %f
 [status]
   submoduleSummary = true
 [commit]
-	gpgsign = true
+  gpgsign = true
   ; template = \"$HOME\"/.stCommitMsg
 [push]
-	default = current
+  default = current
 [core]
   excludesfile = /Users/totally/.gitignore_global
   autocrlf = input
@@ -67,13 +68,13 @@
 [github]
   user = totallyGreg@gmail.com
 [diff]
-	tool = vimdiff
+  tool = vimdiff
   colorMoved = default
 [merge]
   tool = vimdiff
   conflictstyle = diff3
 [init]
-	defaultBranch = main
+  defaultBranch = main
 [interactive]
   diffFilter = delta --color-only
 [add.interactive]
@@ -82,9 +83,15 @@
   navigate = true # use n and N to move between diff sections
   light = false   # set to true if you're in a terminal w/ a light background color
 [tag]
-	sort = version:refname
+  sort = version:refname
 [safe]
-	directory = /Users/totally/Repositories/vde_vmnet
-	directory = /Users/totally/Repositories/vde_vmnet/vde-2
+  directory = /Users/totally/Repositories/vde_vmnet
+  directory = /Users/totally/Repositories/vde_vmnet/vde-2
 [gpg]
-	program = /usr/local/bin/gpg
+  program = /usr/local/bin/gpg
+[difftool "sourcetree"]
+  cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+  path = 
+[mergetool "sourcetree"]
+  cmd = /Users/totally/Applications/Ops/Organization/Source Control/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+  trustExitCode = true
