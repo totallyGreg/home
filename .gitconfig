@@ -61,6 +61,7 @@
   ; template = \"$HOME\"/.stCommitMsg
 [push]
   default = current
+	autoSetupRemote = true
 [core]
   excludesfile = /Users/totally/.gitignore_global
   autocrlf = input
