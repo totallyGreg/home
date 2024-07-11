@@ -1,0 +1,2 @@
+echo "Syncing Local with Remote"
+yadm pull --rebase --autostash

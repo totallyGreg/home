@@ -2,3 +2,5 @@
 	conflictstyle = diff3
 [commit]
 	gpgsign = true
+[rebase]
+	autoStash = true
