@@ -1,2 +1,2 @@
-echo "Syncing Local with Remote"
+echo "📠 Pulling data from Remote"
 yadm pull --rebase --autostash

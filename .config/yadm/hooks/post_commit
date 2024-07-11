@@ -1,2 +1,2 @@
-echo "Ensuring each commit is pushed to remote"
+echo "🖨️ Pushing commit to remote"
 yadm push
