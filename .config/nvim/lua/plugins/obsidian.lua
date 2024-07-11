@@ -1,4 +1,24 @@
 return {
+  -- I'd like to incorporate markdown-oxide landguage server https://github.com/Feel-ix-343/markdown-oxide?tab=readme-ov-file
+  -- I have no idea if the mason install configures lsp correctly or not
+  -- {
+  --   "neovim/nvim-lspconfig",
+  --   ---@class PluginLspOpts
+  --   opts = function()
+  --     return {
+  --       -- Ensure that dynamicRegistration is enabled! This allows the LS to take into account actions like the
+  --       -- Create Unresolved File code action, resolving completions for unindexed code blocks, ...
+  --       capabilities = {
+  --         workspace = {
+  --           didChangeWatchedFiles = {
+  --             dynamicRegistration = true,
+  --           },
+  --         },
+  --       },
+  --     }
+  --   end,
+  -- },
+
   {
     "epwalsh/obsidian.nvim",
     version = "*", -- recommended, use latest release instead of latest commit
@@ -19,6 +39,13 @@ return {
       "nvim-treesitter",
 
       -- see below for full list of optional dependencies 👇
+    },
+    keys = {
+      { "<leader>o", "<cmd>ObsidianOpen<cr>", desc = "Obsidian" },
+      { "<leader>oo", "<cmd>ObsidianOpen<cr>", desc = "Obsidian" },
+      { "<leader>od", "<cmd>ObsidianDailies<cr>", desc = "Open Obsidian Daiy Note" },
+      { "<leader>or", "<cmd>ObsidianRename<cr>", desc = "Open Obsidian Rename" },
+      { "<leader>os", "<cmd>ObsidianQuickSwitch<cr>", desc = "Open Obsidian Quick Switch" },
     },
     opts = {
       workspaces = {
@@ -44,7 +71,7 @@ return {
         --   end
         -- end, { noremap = false, expr = true })
 
-        vim.keymap.set("n", "<leader>O", "<cmd>ObsidianOpen<CR>")
+        -- vim.keymap.set("n", "<leader>O", "<cmd>ObsidianOpen<CR>")
       end,
       -- see below for full list of options 👇
       daily_notes = {
