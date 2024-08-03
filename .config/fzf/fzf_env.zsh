@@ -16,7 +16,7 @@ export FZF_DEFAULT_COMMAND='command fd -H --no-ignore-vcs -E .git -td -tf'
 
 export FZF_DEFAULT_OPTS="
 --header 'Press CTRL-Y to copy command into clipboard' \
---color header:italic \
+--color header:underline \
 --border sharp \
 --bind '?:toggle-preview' \
 --bind 'alt-a:select-all' \
@@ -33,7 +33,7 @@ export FZF_ALT_C_COMMAND='command fd -H --no-ignore-vcs -E .git -td'
 export FZF_COMPLETION_DIR_COMMANDS="cd pushd rmdir tree zoxide"
 # Print tree structure in the preview window
 export FZF_ALT_C_OPTS="
-  --color header:italic \
+  --color header:bold \
   --header 'Press CTRL-/ to toggle preview' \
   --walker-skip .git,node_modules,target \
   --preview 'tree -C {}'"
@@ -88,7 +88,7 @@ fi
 export FZF_CTRL_R_OPTS="
   --preview 'echo {}' --preview-window up:3:hidden:wrap
   --bind 'ctrl-y:execute-silent(echo -n {2..} | pbcopy)+abort'
-  --color header:italic
+  --color header:underline
   --header 'Press CTRL-Y to copy command into clipboard'"
 
 # My override that provides date and lag to the history ( `fc -rliD 1` )

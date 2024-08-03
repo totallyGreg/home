@@ -215,7 +215,7 @@ zcomet trigger zhooks agkozak/zhooks
 # zinit light unixorn/tumult.plugin.zsh
 
 ## These plugins which will wrap widgets prefer to be last
-zcomet load z-shell/zsh-fancy-completions
+# zcomet load z-shell/zsh-fancy-completions
 zcomet load zsh-users/zsh-autosuggestions
 zcomet load mattmc3/zephyr plugins/confd     # autosuggestions wants the keybinds after the plugin has been installed
 zcomet load mattmc3/zephyr plugins/color
@@ -228,9 +228,7 @@ ZSH_HIGHLIGHT_MAXLENGTH=512
 # This fails with syntax.zsh:3: ZSH_HIGHLIGHT_STYLES: assignment to invalid subscript range
 ZSH_HIGHLIGHT_STYLES[comment]='fg=241'
 
-
-
-# Since google is doing their own test of whether or not to add completions instead of adding to fpath
+# Since Google is doing their own test of whether or not to add completions instead of adding to fpath
 # It has to be added after the compinit is compiled
 # The next line enables shell command completion for gcloud.
 if [ -f "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc" ];

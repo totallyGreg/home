@@ -68,24 +68,26 @@ style = 'bold blue'
 us-east-1 = 'us-e1'
 us-east-2 = 'us-e2'
 
+[battery]
+# charging_symbol = "󰂄"
+# charging_symbol = "⚡️"
+# discharging_symbol = "󱊡"
+
 [[battery.display]]
 threshold = 10
 style = 'bold red'
-# charging_symbol = "⚡️"
-charging_symbol = "󰂄"
 
 [[battery.display]]
 threshold = 20
 style = "bold yellow"
-charging_symbol = "󰂄"
-discharging_symbol = "󱊡"
+# format = '[$symbol]($style) '
 
 [character]
 # success_symbol = '[❯](green)'
 # error_symbol = '✗'
 success_symbol = "[❯](green)"
 error_symbol = "[❯](bold red)"
-vicmd_symbol = "[](green)"
+vimcmd_symbol = "[](green) "
 
 [cmd_duration]
 min_time = 5000
@@ -107,6 +109,10 @@ disabled = false
 "Library/Mobile Documents/com~apple~CloudDocs" = "☁️  "
 "greg.williams@solo.io - Google Drive" = "🦉 "
 "totallygreg@gmail.com - Google Drive" = ""
+
+[direnv]
+disabled = false
+symbol = ' '
 
 [custom.ExpressVPN]
 # Adds significant time to starting a shell
@@ -185,10 +191,10 @@ context_pattern = "gke_.*_(?P<cluster>[\\w-]+)"
 context_alias = "gke-$cluster"
 
 [memory_usage]
-show_percentage = true
-show_swap = true
+# show_percentage = true
+# show_swap = true
 threshold = 90
-separator = '/'
+# separator = '/'
 disabled = true
 
 [python]
@@ -202,10 +208,10 @@ disabled = false
 disabled = true
 
 [time]
-format = '[\[$time\]]($style) '
+format = ' [\[$time\]]($style) '
 # format = '🕙[\[$time\]]($style) '
 disabled = false
-time_format = "%R" # Hour:Minute Format
+time_format = "%R"           # Hour:Minute Format
 style = "fg:base0 bg:base03"
 # format = '[\[ $time\](fg:yellow bg:base03)]($style)'
 

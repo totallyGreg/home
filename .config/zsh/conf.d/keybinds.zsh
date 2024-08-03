@@ -15,10 +15,11 @@ bindkey -M vicmd ys add-surround
 bindkey -M visual S add-surround
 
 # vi menu selections
-bindkey -M menuselect 'h' vi-backward-char
-bindkey -M menuselect 'k' vi-up-line-or-history
-bindkey -M menuselect 'l' vi-forward-char
-bindkey -M menuselect 'j' vi-down-line-or-history
+# Removed zsh-fancy-completions which provided menuselect
+# bindkey -M menuselect 'h' vi-backward-char
+# bindkey -M menuselect 'k' vi-up-line-or-history
+# bindkey -M menuselect 'l' vi-forward-char
+# bindkey -M menuselect 'j' vi-down-line-or-history
 
 .toggle-watch(){
     .toggle-command-prefix 'watch ' 'watch'
