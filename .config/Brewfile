@@ -7,13 +7,13 @@ tap "fabianishere/personal"
 tap "federico-terzi/espanso"
 tap "homebrew-ffmpeg/ffmpeg"
 tap "homebrew/bundle"
-tap "homebrew/cask-fonts"
 tap "homeport/tap"
 tap "joshmedeski/sesh"
 tap "k14s/tap"
 tap "knative/client"
 tap "martido/brew-graph"
 tap "mczachurski/wallpapper"
+tap "minio/stable"
 tap "nativeos/i386-elf-toolchain"
 tap "saltbo/bin"
 tap "siderolabs/tap"
@@ -26,6 +26,8 @@ tap "watsonbox/cmu-sphinx"
 tap "zdcthomas/tools"
 # CLI for Amazon ECS to manage clusters and tasks for development
 brew "amazon-ecs-cli"
+# C library SSHv1/SSHv2 client and server protocols
+brew "libssh"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.12"
 # Automate deployment, configuration, and upgrading
@@ -108,8 +110,6 @@ brew "unbound"
 brew "gnutls"
 # General purpose TCP-IP emulator
 brew "libslirp"
-# C library SSHv1/SSHv2 client and server protocols
-brew "libssh"
 # Compression/decompression library aiming for high speed
 brew "snappy"
 # Generic machine emulator and virtualizer
@@ -120,8 +120,8 @@ brew "lima"
 brew "colima", args: ["HEAD"]
 # GNU File, Shell, and Text utilities
 brew "coreutils"
-# Configurable talking characters in ASCII art
-brew "cowsay"
+# Portable devkit for CI/CD pipelines
+brew "dagger"
 # Tools to manipulate dates with a focus on financial data
 brew "dateutils"
 # Library access to GnuPG
@@ -172,6 +172,8 @@ brew "freetds"
 brew "gawk"
 # Easily access your Google Calendar(s) from a command-line
 brew "gcalcli"
+# Library for encoding and decoding .avif files
+brew "libavif"
 # Toolkit for image loading and pixel buffer manipulation
 brew "gdk-pixbuf"
 # GitHub command-line tool
@@ -270,8 +272,6 @@ brew "k3d"
 brew "k3sup"
 # Kubernetes CLI To Manage Your Clusters In Style!
 brew "k9s"
-# keyfob - a two-factor authentication agent suitable for AWS and Github
-brew "keyfob"
 # Run local Kubernetes cluster in Docker
 brew "kind", args: ["HEAD"]
 # Tool to move from `docker-compose` to Kubernetes
@@ -298,6 +298,8 @@ brew "lazygit"
 brew "libass"
 # Conversion library
 brew "libiconv"
+# Shared library for mediainfo
+brew "libmediainfo"
 # MP3 player for Linux and UNIX
 brew "mpg123"
 # Audio codec
@@ -322,6 +324,8 @@ brew "maven"
 brew "media-info"
 # Scalable distributed version control system
 brew "mercurial"
+# Dependency manager that installs and runs Swift command-line tool packages
+brew "mint"
 # Cross platform, open source .NET development framework
 brew "mono"
 # MP3 technical info viewer and ID3 1.x tag editor
@@ -332,8 +336,6 @@ brew "mp4v2"
 brew "msgpack"
 # 'traceroute' and 'ping' in a single tool
 brew "mtr"
-# Fast, highly customisable system info script
-brew "neofetch"
 # Parser generator tool and incremental parsing library
 brew "tree-sitter"
 # Ambitious Vim-fork focused on extensibility and agility
@@ -362,8 +364,12 @@ brew "pinentry-mac"
 brew "pipx"
 # CLI for the Pkl programming language
 brew "pkl"
+# Paste PNG into files
+brew "pngpaste"
 # Tool for managing OCI containers and pods
 brew "podman"
+# Kubernetes cluster resource sanitizer
+brew "popeye"
 # Code formatter for JavaScript, CSS, JSON, GraphQL, Markdown, YAML
 brew "prettier"
 # Linter for prose
@@ -376,18 +382,18 @@ brew "pyenv-virtualenv"
 brew "python-lsp-server"
 # Python implementation of Markdown
 brew "python-markdown"
-# Implements a XML/HTML/XHTML Markup safe string for Python
-brew "python-markupsafe"
-# Easily download, build, install, upgrade, and uninstall Python packages
-brew "python-setuptools"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.10"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.9"
 # Unified tool to manage your Rancher server
 brew "rancher-cli"
+# Ruby version manager
+brew "rbenv"
 # Reattach process (e.g., tmux) to background
 brew "reattach-to-user-namespace"
+# Docker and OCI Registry Client in Go and tooling using those libraries
+brew "regclient"
 # Search tool like grep and The Silver Searcher
 brew "ripgrep"
 # Rancher Kubernetes Engine, a Kubernetes installer that works everywhere
@@ -395,7 +401,7 @@ brew "rke"
 # Extremely fast Python linter, written in Rust
 brew "ruff"
 # Rust toolchain installer
-brew "rustup-init"
+brew "rustup"
 # Low-level access to audio, keyboard, mouse, joystick, and graphics
 brew "sdl2"
 # Static analysis and lint tool, for (ba)sh scripts
@@ -420,11 +426,13 @@ brew "step"
 brew "stern"
 # Generate scripting interfaces to C/C++ code
 brew "swig"
+# Configuration helper for talos clusters
+brew "talhelper"
 # Tool Command Language
 brew "tcl-tk"
 # Very fast implementation of tldr in Rust
 brew "tealdeer"
-# Graphical network analyzer and capture tool
+# Network analyzer and capture tool - without graphical user interface
 brew "wireshark"
 # Terminal UI for tshark, inspired by Wireshark
 brew "termshark"
@@ -446,16 +454,10 @@ brew "tree"
 brew "universal-ctags", args: ["HEAD"]
 # URL extractor/launcher
 brew "urlview"
-# Bash completion for Vagrant
-brew "vagrant-completion"
-# Secures, stores, and tightly controls access to secrets
-brew "vault"
 # Creates fully functional virtual k8s cluster inside host k8s cluster's namespace
 brew "vcluster"
 # HTTP load testing tool and library
 brew "vegeta"
-# Vi 'workalike' with many additional features
-brew "vim"
 # Generator for LS_COLORS with support for multiple color themes
 brew "vivid"
 # Pager/text based browser
@@ -476,8 +478,6 @@ brew "xsv"
 brew "yadm"
 # Linter for YAML files
 brew "yamllint"
-# Download YouTube videos from the command-line
-brew "youtube-dl"
 # Process YAML, JSON, XML, CSV and properties documents from the CLI
 brew "yq"
 # Pluggable terminal workspace, with terminal multiplexer as the base feature
@@ -501,8 +501,6 @@ brew "cloudfoundry/tap/cf-cli"
 brew "cloudfoundry/tap/credhub-cli"
 # CLI for UAA written in golang
 brew "cloudfoundry/tap/uaa-cli"
-# PAM module for reattaching to the user's GUI (Aqua) session
-brew "fabianishere/personal/pam_reattach"
 # Play, record, convert, and stream audio and video
 brew "homebrew-ffmpeg/ffmpeg/ffmpeg", args: ["with-fdk-aac"]
 # δyƒƒ /ˈdʏf/ - A diff tool for YAML files, and sometimes JSON
@@ -511,14 +509,17 @@ brew "homeport/tap/dyff"
 brew "joshmedeski/sesh/sesh"
 brew "knative/client/kn"
 brew "martido/brew-graph/brew-graph"
+# MinIO Client for object storage and filesystems
+brew "minio/stable/mc"
 # Let's see the configs of the Envoy
 brew "saltbo/bin/seenvoy"
 # CLI for out-of-band management of Kubernetes nodes created by Talos
 brew "siderolabs/tap/talosctl"
 # Regal is a linter for Rego, with the goal of making your Rego magnificent!
 brew "styrainc/packages/regal"
-# Developer targeted fonts with a high number of glyphs
 cask "font-fira-mono-nerd-font"
+cask "font-jetbrains-mono"
+cask "font-jetbrains-mono-nerd-font"
 # Set of tools to manage resources and applications hosted on Google Cloud
 cask "google-cloud-sdk"
 # Tools to protect your emails and files
@@ -544,24 +545,27 @@ cask "wireshark-chmodbpf"
 mas "Actions", id: 1586435171
 mas "Actions For Obsidian", id: 1659667937
 mas "Animoog Z", id: 1586841361
+mas "Apple Configurator", id: 1037126344
 mas "Audiobook Builder", id: 1437681957
 mas "Developer", id: 640199958
 mas "GarageBand", id: 682658836
 mas "Health Auto Export", id: 1115567069
 mas "Keynote", id: 409183694
 mas "Mastonaut", id: 1450757574
-mas "Microsoft OneNote", id: 784801555
+mas "Newsify", id: 510153374
 mas "Numbers", id: 409203825
 mas "Omnivore", id: 1564031042
 mas "Pages", id: 409201541
 mas "Paprika Recipe Manager 3", id: 1303222628
 mas "Peek", id: 1554235898
+mas "Playgrounds", id: 1496833156
 mas "Prime Video", id: 545519333
+mas "Save to Raindrop.io", id: 1549370672
 mas "Save to Reader", id: 1640236961
 mas "Silicio", id: 933627574
 mas "Steam Link", id: 1246969117
-mas "Surfed", id: 1591590700
 mas "TestFlight", id: 899247664
 mas "Twitter", id: 1482454543
 mas "Vimari", id: 1480933944
+mas "WireGuard", id: 1451685025
 mas "Xcode", id: 497799835

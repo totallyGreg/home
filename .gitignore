@@ -52,3 +52,4 @@ node_modules
 .home
 ## User settings
 xcuserdata/
+*.old
