@@ -18,7 +18,6 @@ return {
   --     }
   --   end,
   -- },
-
   {
     "epwalsh/obsidian.nvim",
     version = "*", -- recommended, use latest release instead of latest commit
@@ -49,9 +48,13 @@ return {
     },
     opts = {
       workspaces = {
+        -- {
+        --   name = "personal-iCloud",
+        --   path = "/Users/totally/Library/Mobile Documents/iCloud~md~obsidian/Documents/Notes",
+        -- },
         {
-          name = "personal",
-          path = "/Users/totally/Library/Mobile Documents/iCloud~md~obsidian/Documents/Notes",
+          name = "personal-local",
+          path = "/Users/totally/Notes",
         },
       },
       -- Optional, completion.
