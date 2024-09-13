@@ -50,7 +50,7 @@ export LS_COLORS
 # # Homebrew path is now set in ~/.zshenv so non-interactive shells can use tools
 
 # Java
-export PATH=/opt/homebrew/opt/openjdk/bin:$PATH
+path=(/opt/homebrew/opt/openjdk/bin $path)
 
 # Python globally managed by pyenv
 # https://opensource.com/article/19/5/python-3-default-mac#what-to-do
@@ -66,14 +66,14 @@ fi
 
 # Apple Xcode Path
 if [ -d /Library/Developer/CommandLineTools/usr/bin ] ; then
-  export PATH=/Library/Developer/CommandLineTools/usr/bin:$PATH
+  path=(/Library/Developer/CommandLineTools/usr/bin $path)
   export CC=$(xcrun --find clang)
   export CXX=$(xcrun --find clang++)
 fi
 
 # OpenSSL that generates valid
 if [ -d /usr/local/opt/openssl@3/bin ] ; then
-  export PATH="/usr/local/opt/openssl@3/bin:$PATH"
+  path=(/usr/local/opt/openssl@3/bin $path)
 fi
 
 # Setup Go environment
@@ -85,13 +85,13 @@ export CGO_CFLAGS="-g -O2 -isysroot /Library/Developer/CommandLineTools/SDKs/Mac
 # export PATH="$PATH:${GOROOT}/bin" # Not needed with brew install go
 
 # Cargo
-PATH=${HOME}/.cargo/bin:$PATH
+path=(${HOME}/.cargo/bin $path)
 # From https://braindetour.com/article/20220213 but still getting linker errors
 # export PATH=$PATH:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib # Needed for Rust compilation and linking
 # export LIBRARY_PATH=$LIBRARY_PATH:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib # Needed for Rust compilation and linking
 
 # Rancher-Desktop
-PATH=${HOME}/.rd/bin:$PATH
+path=(${HOME}/.rd/bin $path)
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc' ]; then . '/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc'; fi
@@ -126,7 +126,7 @@ set_kubeconfig () {
 }
 
 export KUBECTL_EXTERNAL_DIFF="dyff between --omit-header --set-exit-code"
-export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+path=(${KREW_ROOT:-$HOME/.krew}/bin $path)
 export HELM_EXPERIMENTAL_OCI=1
 export K9SCONFIG=$XDG_CONFIG_HOME/k9s
 
