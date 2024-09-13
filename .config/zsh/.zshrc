@@ -124,14 +124,6 @@ set_kubeconfig () {
   # This appears necessary to join it back into a PATH type variable
   # KUBECONFIG=${(j.:.)kubeconfig}
 }
-set_kubeconfig
-
-set_kubeconfig_shell() {
-  # Create a unique KUBECONFIG for the shell
-  export KUBECONFIG="$HOME/.kube/config-$(uuidgen)"
-  cp $HOME/.kube/config "$KUBECONFIG"
-  trap "rm $KUBECONFIG" EXIT
-}
 
 export KUBECTL_EXTERNAL_DIFF="dyff between --omit-header --set-exit-code"
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
@@ -181,14 +173,6 @@ fi
 # Source zcomet.zsh
 source ${ZDOTDIR:-${HOME}}/.zcomet/bin/zcomet.zsh
 
-# Install Fzf
-zcomet load junegunn/fzf shell completion.zsh key-bindings.zsh
-# Install if it doesn't exist, but it doesn't update it if it does...
-# May need to consider moving to zim in order to execute install script post update
-( (( ${+commands[fzf]} )) || ~[fzf]/install --bin )
-# My personal options I don't want overwritten
-source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf_env.zsh
-
 ## Load some plugins
 zcomet load zsh-users/zsh-completions
 zcomet load mattmc3/zephyr plugins/completion
@@ -196,9 +180,23 @@ zcomet load asdf-vm/asdf
 zcomet load mattmc3/zephyr plugins/homebrew
 zcomet load mattmc3/zephyr plugins/macos
 zcomet load mattmc3/zephyr plugins/zfunctions
+zcomet load mattmc3/zman
+
+# Run compinit and compile its cache
+zcomet compinit
+
+# Install Fzf
+zcomet load junegunn/fzf shell completion.zsh key-bindings.zsh
+# Install if it doesn't exist, but it doesn't update it if it does...
+# May need to consider moving to zim in order to execute install script post update
+( (( ${+commands[fzf]} )) || ~[fzf]/install --bin )
+# My personal options I don't want overwritten
+source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf_env.zsh
 zcomet load Aloxaf/fzf-tab
-zcomet load Freed-Wu/fzf-tab-source # ⚙️ a collection of fzf-tab completion sources.
+# zcomet load Freed-Wu/fzf-tab-source # ⚙️ a collection of fzf-tab completion sources.
 zcomet load reegnz/jq-zsh-plugin  # Interactive jq explorer
+# zcomet load jeffreytse/zsh-vi-mode # Better Vim mode https://github.com/jeffreytse/zsh-vi-mode
+# I suspect this needs to be loaded in a different order
 
 #
 # zcomet load xPMo/zsh-toggle-command-prefix # keeps throwing sudo errors 
@@ -238,8 +236,21 @@ if [ -f "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc" ];
 fi
 export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 
-# Run compinit and compile its cache
-zcomet compinit
+## Setup Kubeconfigs
+set_kubeconfig
+
+set_kubeconfig_shell() {
+  # Create a unique KUBECONFIG for the shell
+  export KUBECONFIG="$HOME/.kube/config-$(uuidgen)"
+  cp $HOME/.kube/config "$KUBECONFIG"
+  trap "rm $KUBECONFIG" EXIT
+}
+source <(switcher init zsh)
+# optionally use alias `s` instead of `switch`
+# echo 'source <(alias s=switch)' >> ~/.zshrc
+#
+# # optionally use command completion
+source <(switch completion zsh)
 
 ### Starship prompt
 eval "$(starship init zsh)"

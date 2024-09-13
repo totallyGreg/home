@@ -88,8 +88,8 @@
 [safe]
   directory = /Users/totally/Repositories/vde_vmnet
   directory = /Users/totally/Repositories/vde_vmnet/vde-2
-[gpg]
-  program = /usr/local/bin/gpg
+; [gpg]
+;   program = /usr/local/bin/gpg
 [difftool "sourcetree"]
   cmd = opendiff \"$LOCAL\" \"$REMOTE\"
   path = 

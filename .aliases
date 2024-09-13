@@ -65,13 +65,18 @@ alias kc='keychainctl'
 alias netshoot='open https://github.com/nicolaka/netshoot ; kubectl run tmp-shell --rm -i --tty --image nicolaka/netshoot -- /bin/zsh'
 alias busybox='kubectl run -i --tty --rm debug --image=busybox --restart=Never -- zsh'
 
-alias k='kubectl'
+if (( $+commands[kubecolor] )); then
+  alias k='kubecolor'
+else
+  alias k='kubectl'
+fi
 alias kaf='kubectl apply -f '
-alias kctx='kubectx'
-alias kns='kubens'
-alias kedp='kubectl get endpoints --all-namespaces '
-alias kvu="kubectl view-utilization "
+alias kdr='kubectl --dry-run=client -o yaml'
+alias kedp='k get endpoints --all-namespaces '
+alias kvu="k view-utilization "
 alias qapla='pbpaste | kubectl apply -f -'    # I hope I'm not the only one on this planet who finds this hilarious
+if (( $+commands[kubectx] )); then alias kctx='kubectx'; fi
+if (( $+commands[kubens] )); then alias kns='kubens'; fi
 
 ## OpenSSL
 # can be used with pbpaste | viewCert

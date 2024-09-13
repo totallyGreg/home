@@ -15,18 +15,23 @@ export FZF_DEFAULT_COMMAND='command fd -H --no-ignore-vcs -E .git -td -tf'
 # export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
 
 export FZF_DEFAULT_OPTS="
---header 'Press CTRL-Y to copy command into clipboard' \
+--header 'Press CTRL-Y to copy into clipboard | ? to toggle preview' \
+--height ~90% \
+--tmux 80% \
 --color header:underline \
+--color gutter:-1 \
 --border sharp \
+--preview-window=50%,hidden \
 --bind '?:toggle-preview' \
 --bind 'alt-a:select-all' \
 --bind 'ctrl-y:execute-silent(echo {+} | pbcopy)+abort' \
---bind 'ctrl-e:execute(echo {+} | xargs -o nvim)' \
---bind 'ctrl-v:execute(code {+})' \
+--bind 'ctrl-e:become(echo {+} | xargs -o nvim)' \
+--bind 'ctrl-v:become(code {+})' \
 --layout reverse \
 --prompt '∷ ' \
 --pointer ▶ \
 --marker ⇒"
+
 
 ## Fuzzy Directory completion
 export FZF_ALT_C_COMMAND='command fd -H --no-ignore-vcs -E .git -td'
@@ -34,7 +39,7 @@ export FZF_COMPLETION_DIR_COMMANDS="cd pushd rmdir tree zoxide"
 # Print tree structure in the preview window
 export FZF_ALT_C_OPTS="
   --color header:bold \
-  --header 'Press CTRL-/ to toggle preview' \
+  --header 'Press ? to toggle preview' \
   --walker-skip .git,node_modules,target \
   --preview 'tree -C {}'"
 
@@ -60,12 +65,17 @@ _fzf_compgen_dir() {
 # --pointer ▶ \
 # --marker ⇒"
 
+# Preview file content using bat (https://github.com/sharkdp/bat)
+export FZF_CTRL_T_OPTS="
+  --walker-skip .git,node_modules,target
+  --preview 'bat -n --color=always {}'
+  --bind 'ctrl-/:change-preview-window(down|hidden|)'"
 
 ## Popup windows when using TMUX
-if [[ -n $TMUX ]] ; then
-  export FZF_TMUX=1
-  export FZF_TMUX_OPTS="-p 80%"
-fi
+# if [[ -n $TMUX ]] ; then
+#   export FZF_TMUX=1
+#   export FZF_TMUX_OPTS="-p 80%"
+# fi
 
 
 ## Some Color experiments
@@ -85,11 +95,13 @@ fi
 # CTRL-R - Paste the selected command from history into the command line
 # ? to toggle small preview window to see the full command
 # CTRL-Y to copy the command into clipboard using pbcopy
+  # --preview 'echo {}' 
 export FZF_CTRL_R_OPTS="
-  --preview 'echo {}' --preview-window up:3:hidden:wrap
+  --preview 'bat --color=always {}'
+  --preview-window down:25%:hidden:wrap
   --bind 'ctrl-y:execute-silent(echo -n {2..} | pbcopy)+abort'
   --color header:underline
-  --header 'Press CTRL-Y to copy command into clipboard'"
+  --header 'Press CTRL-Y to copy history into clipboard'"
 
 # My override that provides date and lag to the history ( `fc -rliD 1` )
 fzf-history-widget() {
@@ -117,14 +129,14 @@ bindkey -M viins '^R' fzf-history-widget
 # Advanced customization of fzf options via _fzf_comprun function
 # - The first argument to the function is the name of the command.
 # - You should make sure to pass the rest of the arguments to fzf.
-_fzf_comprun() {
-  local command=$1
-  shift
-
-  case "$command" in
-    cd)           fzf --preview 'tree -C {} | head -200'   "$@" ;;
-    export|unset) fzf --preview "eval 'echo \$'{}"         "$@" ;;
-    ssh)          fzf --preview 'dig {}'                   "$@" ;;
-    *)            fzf --preview 'bat -n --color=always {}' "$@" ;;
-  esac
-}
+# _fzf_comprun() {
+#   local command=$1
+#   shift
+#
+#   case "$command" in
+#     cd)           fzf --preview 'tree -C {} | head -200'   "$@" ;;
+#     export|unset) fzf --preview "eval 'echo \$'{}"         "$@" ;;
+#     ssh)          fzf --preview 'dig {}' --preview-window up,border-horizontal "$@" ;;
+#     *)            fzf --preview 'bat -n --color=always {}' "$@" ;;
+#   esac
+# }

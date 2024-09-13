@@ -1,5 +1,6 @@
 local POD=$1
-kubectl get pods --all-namespaces | fzf \
+kubectl get pods --all-namespaces --field-selector status.phase=Running | fzf \
+--header-lines=1 \
 --query=$POD \
 --nth=2 --info=inline \
 --bind 'enter:become(kubectl exec -it --namespace=${1} {2} -- /bin/bash)'
