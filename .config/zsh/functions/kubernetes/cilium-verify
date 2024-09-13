@@ -1,0 +1,9 @@
+#autoload
+
+run_cilium_test() {
+  kubectl create ns cilium-test
+  kubectl label namespace cilium-test pod-security.kubernetes.io/enforce=privileged
+  kubectl apply --namespace=cilium-test -f https://raw.githubusercontent.com/cilium/cilium/1.16.0/examples/kubernetes/connectivity-check/connectivity-check.yaml
+}
+
+"${@}"

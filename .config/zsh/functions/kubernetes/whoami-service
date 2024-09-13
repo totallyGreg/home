@@ -1,0 +1,106 @@
+#autoload
+# This should create a whoam namespace
+# Install the gateway, service, deployment and httproute
+# Echo the path that can be used to test it
+# a separate destroy function to remove these things
+
+setup() {
+  kubectl apply -f- <<<EOF
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations:
+    kubernetes.io/enforce-mountable-secrets: "true"
+  name: whoami
+  namespace: default
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: default-gateway
+  namespace: default
+spec:
+  gatewayClassName: cilium
+  listeners:
+  - allowedRoutes:
+      namespaces:
+        from: All
+    name: default-http
+    port: 80
+    protocol: HTTP
+---
+    apiVersion: v1
+kind: Service
+metadata:       ame: whoami-route-service
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: whoami
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: whoami
+      port: 80
+  name: whoami
+  labels:
+    app: whoami
+spec:
+  ports:
+    - name: http
+      targetPort: 80
+      port: 80
+  selector:
+    app: whoami
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: whoami-v1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: whoami
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: whoami
+        version: v1
+    spec:
+      serviceAccountName: whoami
+   containers:
+        - image: traefik/whoami
+          imagePullPolicy: IfNotPresent
+          name: whoami
+          ports:
+            - containerPort: 80
+          env:
+            - name: WHOAMI_NAME
+              value: "v1"
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: whoami-route-service
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: whoami
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: whoami
+      port: 80
+EOF
+}
+
+"${@}"

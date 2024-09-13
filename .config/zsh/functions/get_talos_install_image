@@ -1,0 +1,7 @@
+#\!/bin/zsh
+#function get_install_image {
+schematicID=$(get_talos_schematic_id)
+local version=${TALOS_VERSION:-v1.7.5}
+echo "factory.talos.dev/installer/${schematicID}:${version}"
+#}
+#get_install_image "$@"

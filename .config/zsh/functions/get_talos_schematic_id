@@ -1,0 +1,19 @@
+#\!/bin/zsh
+
+###? get_talos_schematic_id - given a Talos cluster patch file retrieve image id
+##?
+##? usage: get_talos_schematic_id [-h|--help]
+##?        get_talos_schematic_id BASE_CONFIG
+#function get_schematic_id {
+# Use argument if given otherwise use BASE_CONFIG
+base_config="${1:-${BASE_CONFIG:-Must specify Talos configuration}}"
+# we can upload the schematic to the Talos Image Factory to retrieve its ID:
+if [[ $base_config = "Must specify Talos configuration" ]]; then
+  echo "$base_config"
+  return 1
+else
+  echo $(curl -sX POST --data-binary @${base_config} https://factory.talos.dev/schematics | jq -r .id)
+fi
+# e.g. {"id":"b8e8fbbe1b520989e6c52c8dc8303070cb42095997e76e812fa8892393e1d176"}
+#}
+#get_talos_schematic_id "$@"

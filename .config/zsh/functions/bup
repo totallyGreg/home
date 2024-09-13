@@ -1,0 +1,9 @@
+local preview='brew info --json=v1 {} | jq -r ".[] | \"Name: \(.name)\nDescription: \(.desc)\nVersion: \(.versions.stable)\nHomepage: \(.homepage)\nDependencies: \(.dependencies | join(\", \"))\n\""' 
+updates=($(brew outdated -q| fzf -m --ansi --min-height=20 --preview "${preview}" ))
+if [[ -n $updates ]]
+then
+  brew upgrade $updates
+  brew bundle dump --all --describe --force
+else
+  echo "No updates found: $updates"
+fi

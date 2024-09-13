@@ -1,0 +1,22 @@
+##? merge_yaml - TODO: Given a glob pattern or list merge yaml
+##?
+##? usage: merge_yaml [-h|--help]
+##?        merge_yaml [<options>] <arguments>
+
+#function merge_yaml {
+
+# local -a o_help
+# zmodload zsh/zutil
+# zparseopts -D -F -K --   {h,-help}=o_help ||
+#   return 1
+#
+# if (( $#o_help )); then
+#   funchelp "merge_yaml"
+#   return
+# fi
+
+# TODO: write your function here
+yq eval-all '. as $item ireduce ({}; . * $item )'  "$@"
+
+#}
+

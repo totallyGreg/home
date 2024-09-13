@@ -1,17 +1,17 @@
 ##############################################################################
 # TODO: Remove this header block
-# Do NOT include function definition block (ie: omit 'function yaml_cat() { }').
+# Do NOT include function definition block (ie: omit 'function cat_yaml() { }').
 # See: https://zsh.sourceforge.io/Doc/Release/Functions.html#Autoloading-Functions
 #
 # Use ##? comments for help/usage docs.
 ##############################################################################
 
-##? yaml_cat - take arbitrary file arguments and simply cat them together with a "---" seperator
-##?
-##? usage: yaml_cat [-h|--help]
-##?        yaml_cat [<options>] <arguments>
+##? cat_yaml - take arbitrary file arguments and simply cat them together with a "---" seperator
+##?           DOES NOT CURRENTLY WORK
+##? usage: cat_yaml [-h|--help]
+##?        cat_yaml [<options>] <arguments>
 
-#function yaml_cat {
+#function cat_yaml {
 
 local -a o_help
 zmodload zsh/zutil
@@ -19,13 +19,17 @@ zparseopts -D -F -K --   {h,-help}=o_help ||
   return 1
 
 if (( $#o_help )); then
-  funchelp "yaml_cat"
+  funchelp "cat_yaml"
   return
 fi
 
 # take arbitrary file arguments and simply cat them together with a "---" seperator
 # output should be entire file cat'd which can than be redirected to a new file or applied directly via kubectl
 #
+local yaml_files="$@"
+for file in $yaml_files
+  yq eval
+  echo "---"
 
 #}
 

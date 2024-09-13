@@ -1,0 +1,8 @@
+#autoload
+
+install() {
+  helm
+}
+
+"${@}"
+

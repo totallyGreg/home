@@ -1,0 +1,131 @@
+#autoload
+#!/usr/bin/env zsh
+# zsh required for nested parameter expansion
+# Given a yaml config
+#
+# --- bare-metal.yaml
+# customization:
+#   systemExtensions:
+#     officialExtensions:
+#       # Needed for Longhorn
+#       - siderolabs/iscsi-tools
+#       - siderolabs/util-linux-tools
+#       # for my Intel machines
+#       - siderolabs/i915-ucode
+
+
+# Typically set per project in an .envrc file
+CLUSTER_NAME="talos-test-cluster"
+CLUSTER_ENDPOINT="https://talos-test.infra.falcone.us:6443"
+secrets=${SECRETS:-must define the secrets file to use}
+# secure_config_dir=$(mktemp -p secure_config_dir)
+cluster_patch_dir=${CLUSTER_PATCHES}
+node_patch_dir=${NODE_PATCHES}
+
+get_schematic_id() {
+  # base_config=${CLUSTER_PATCHES}/bare-metal.yaml
+  # we can upload the schematic to the Image Factory to retrieve its ID:
+  result=$(curl -sX POST --data-binary @${CLUSTER_PATCHES}/bare-metal.yaml https://factory.talos.dev/schematics | jq -r .id)
+  logger -p user.debug -t talos "Acquired schematic Id: $result"
+  echo $result
+  # e.g. {"id":"b8e8fbbe1b520989e6c52c8dc8303070cb42095997e76e812fa8892393e1d176"}
+}
+
+get_install_image() {
+  schematicID=$(get_schematic_id)
+  local version=${TALOS_VERSION:-v1.7.5}
+  echo "factory.talos.dev/installer/${schematicID}:${version}"
+}
+
+generate_config() {
+  node=${1:-${node:-Must provide node name}}
+  node_ip=${node_ip:-$(dig +short "${node}")}
+  secure_config=$(mktemp -t ${node})
+  # secure_config="${secure_config_dir}/${node}-config.yaml"
+  # install_image=$(get_install_image)
+
+  ## apply-config does not accept --with-secrets
+  ## so it is neccessary to generate a config file and then apply it
+
+  # force is necessary since tempfile was alread created
+  talosctl gen config $CLUSTER_NAME $CLUSTER_ENDPOINT \
+    --with-secrets "${secrets}" \
+    --install-image $(get_install_image) \
+    --config-patch @"${cluster_patch_dir}/cluster-config.yaml" \
+    --config-patch @"${cluster_patch_dir}/network-patch.yaml" \
+    --config-patch @"${cluster_patch_dir}/metrics-patch.yaml" \
+    --config-patch @"${node_patch_dir}/${node}-patch.yaml" \
+    --output-types "controlplane" \
+    --nodes "$node_ip" \
+    --output "${secure_config}" \
+    --force
+
+    echo "${secure_config}" # has been generated
+}
+
+get_config() {
+  node=${1:-${node:-Must provide node name}}
+  generate_config
+  yq '.' $secure_config
+}
+
+scale_up() {
+  set -x
+  node=${1:-${node:-Must provide node name}}
+  node_ip=$(dig @10.0.0.1 +short "${node}.infra.falcone.us")
+  generate_config
+  echo "Apply config $secure_config to node: $node_ip"
+  talosctl apply-config --insecure -f ${secure_config} -n ${node_ip}
+  trap "rm -rf ${secure_config}" EXIT
+}
+
+scale_down() {
+  node=${1}
+  echo "Removing ${node} from Talos Cluster, but keep it controllable"
+  talosctl reset --system-labels-to-wipe STATE --system-labels-to-wipe EPHEMERAL --reboot --timeout=10m --graceful=true -n "${node}"
+  kubectl delete node "${node}"
+}
+
+update_node_config() {
+  node=${1}
+  talosctl apply-config -f $(generate_config $node) -n $node
+}
+
+update_all_config() {
+  nodes=${NODES:-define a list of nodes}
+  echo ${nodes} | tr ',' '\n' | xargs -n 1 -- ${(%):-%x} update_node_config
+}
+
+upgrade_node() {
+  node=${1:-"node or node1,node2 list required to update"}
+  # to new image
+  version=${TALOS_VERSION:-v1.7.5}
+  image=$(get_install_image)
+
+  echo "Apply upgrade with image $image to Node: $nodes"
+  # talosctl etcd forfeit-leadership -n $nodes
+  talosctl upgrade --nodes "${node}" --image "${image}" --wait
+
+  [[ "$?" == 0 ]] && talosctl get extensionstatuses.runtime.talos.dev
+}
+
+upgrade_all_nodes() {
+  nodes=${NODES:-define a list of nodes}
+  # macos does not have -d delimter so tr is used to convert comment to new lines
+  echo "Applying update to all nodes: ${nodes}"
+  # echo ${nodes} | tr ',' '\n' | xargs -n 1 -- ${(%):-%x} upgrade_node
+  echo ${nodes} | tr ',' '\n' | xargs -n 1 -- ${0} upgrade_node
+}
+
+reset_cluster() {
+  # Single cluster simple reset for testing.
+  talosctl reset --system-labels-to-wipe STATE --system-labels-to-wipe EPHEMERAL --reboot --graceful=false
+
+  #Then reapply the configuration
+  ktalosctl apply-config --insecure -n "$CONTROL_PLANE_IP" --file controlplane-no_CNI.yaml
+
+  # Then boostrap kubernetes
+  talosctl bootstrap --nodes "$CONTROL_PLANE_IP" .0.0.91 --endpoints "$CONTROL_PLANE_IP" --talosconfig=./talosconfig
+}
+
+"${@:-upgrade_all_nodes}"

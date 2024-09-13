@@ -1,0 +1,14 @@
+#!/usr/bin/env zsh
+PODS="${*:-}"
+GET_PODS="kubectl get pods -A --field-selector "
+(kubectl get pods --all-namespaces --field-selector status.phase=Running) \
+  | fzf \
+    --query="$PODS" \
+    --header-lines=1 \
+    --prompt='Running> ' \
+    --bind 'ctrl-t:transform:[[ ! $FZF_PROMPT =~ Running ]] &&
+              echo "change-prompt(Running> )+reload:kubectl get pods -A --field-selector status.phase=Running)" ||
+              echo "change-prompt(Not Running> )+reload:kubectl get pods -A --field-selector status.phase!=Running)"' \
+    --nth=2 --info=inline \
+
+#    --bind 'enter:execute(namespace=${1} pod={2})'

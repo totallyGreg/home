@@ -1,0 +1,1 @@
+kubectl -n $1 get pods $2 -o json | jq '.spec.nodeName'

@@ -1,4 +1,5 @@
-#!/usr/bin/env bash
+#autoload
+#!/usr/bin/env zsh
 #
 # Sample code for xargs blog post.
 
@@ -23,7 +24,7 @@ hello() {
 do_one() {
    # Rather than xargs -I {}, it's more flexible to
    # use a function with $1
-   echo "Do something with $1"  
+   echo "Do something with $1"
    cp -v $1 /tmp
 
    sleep 0.5  # to show parallelization
@@ -32,7 +33,11 @@ do_one() {
 do_all() {
   # Call the do_one function for each item.
   # Also add -P to make it parallel
-  cat tasks.txt | tr '\n' '\0' | xargs -n 1 -0 -- $0 do_one
+  # cat tasks.txt | tr '\n' '\0' | xargs -n 1 -0 -- $0 do_one
+  tasks=(test1 test2 test3)
+  touch $tasks
+  echo $tasks | tr '\n' '\0' | xargs -n 1 -0 -- ${(%):-%x} do_one  # Zsh needs this instead of $0
+  rm $tasks
 }
 
 preview() {
@@ -45,4 +50,4 @@ do_all_parallel() {
   cat tasks.txt | tr '\n' '\0' | xargs -n 1 -0 -P 2 -- $0 do_one
 }
 
-"$@"  # dispatch on $0; or use 'runproc' in Oil
+"$@"  # dispatch on $0; or ue 'runproc' in Oil

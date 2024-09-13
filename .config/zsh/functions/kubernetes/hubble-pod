@@ -1,0 +1,1 @@
+kubectl -n kube-system get pods -l k8s-app=hubble-relay -o json | jq -r ".items[] | select(.spec.nodeName==$(node-of-pod $1 $2)) | .metadata.name"

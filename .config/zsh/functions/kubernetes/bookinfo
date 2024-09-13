@@ -1,0 +1,602 @@
+#autoload
+#!/usr/bin/env zsh
+# export MGMT_CLUSTER=mgmt
+# export REMOTE_CLUSTER1=cluster1
+# export REMOTE_CLUSTER2=cluster2
+# export MGMT_CONTEXT=mgmt
+# export REMOTE_CONTEXT1=cluster1
+# export REMOTE_CONTEXT2=cluster2
+
+test_bookinfo() {
+  echo "Running Test"
+  cilium_test
+}
+
+install_sample_apps() {
+  # from https://docs.solo.io/gloo-mesh-enterprise/latest/setup/demo-setup/#step-5-install-istio-and-sample-apps
+  # multitenancy_workspaces_for_bookinfo
+  multicluster_federation_and_isolation_bookinfo_demo
+  deploy_bookinfo_across_clusters
+  setup_multitenancy_workspaces_for_bookinfo
+  # install_httpbin
+}
+
+deploy_bookinfo() {
+  kubectl create ns bookinfo
+  kubectl label ns bookinfo istio-injection=enabled
+  # https://raw.githubusercontent.com/istio/istio/release-1.20/samples/bookinfo/platform/kube/bookinfo.yaml
+  local BOOKINFO_URL="https://raw.githubusercontent.com/istio/istio/release-1.20/samples/bookinfo/platform/kube/bookinfo.yaml"
+  # deploy bookinfo application components for all versions less than v3
+  kubectl -n bookinfo apply -f "$BOOKINFO_URL" -l 'app,version notin (v3)'
+  # deploy an updated product page with extra container utilities such as 'curl' and 'netcat'
+  kubectl -n bookinfo apply -f https://raw.githubusercontent.com/solo-io/gloo-mesh-use-cases/main/policy-demo/productpage-with-curl.yaml
+  # deploy all bookinfo service accounts
+  kubectl -n bookinfo apply -f "$BOOKINFO_URL" -l 'account'
+
+  # Wait for services to be deployed
+  kubectl rollout status deployment -n bookinfo
+  kubectl get pods,svc -n bookinfo
+
+  # Test connection from within namespace
+  kubectl -n bookinfo exec "$(kubectl get pod -n bookinfo -l app=ratings -o jsonpath='{.items[0].metadata.name}')" -c ratings -- curl -sS productpage:9080/productpage | grep -o "<title>.*</title>"
+  echo "Run test_bookinfo_ingress to check connections externally"
+
+}
+
+test_bookinfo_ingress() {
+  kubens bookinfo
+  # Install Bookinfo Gateway and VirtualService
+  kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.20/samples/bookinfo/networking/bookinfo-gateway.yaml
+
+  # Determine the Ingress Gateway
+  # from https://istio.io/latest/docs/tasks/traffic-management/ingress/ingress-control/#determining-the-ingress-ip-and-ports
+  local INGRESS_NAME=$(kubectl get svc -A -l app=istio-ingressgateway -o json | jq -r '.items[].metadata.name')
+  local INGRESS_NS=$(kubectl get svc -A -l app=istio-ingressgateway -o json | jq -r '.items[].metadata.namespace')
+  local INGRESS_HOST
+  INGRESS_HOST=$(kubectl -n "$INGRESS_NS" get service "$INGRESS_NAME" -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+  if [ -z $INGRESS_HOST ]; then
+    # AWS reports hostnames instead of host IP's
+    INGRESS_HOST=$(kubectl get svc -A -l app=istio-ingressgateway -o json | jq -r '.items[].status.loadBalancer.ingress[].hostname')
+  fi
+
+  local INGRESS_PORT=$(kubectl -n "$INGRESS_NS" get service "$INGRESS_NAME" -o jsonpath='{.spec.ports[?(@.name=="http2")].port}')
+  local SECURE_INGRESS_PORT=$(kubectl -n "$INGRESS_NS" get service "$INGRESS_NAME" -o jsonpath='{.spec.ports[?(@.name=="https")].port}')
+  local TCP_INGRESS_PORT=$(kubectl -n "$INGRESS_NS" get service "$INGRESS_NAME" -o jsonpath='{.spec.ports[?(@.name=="tcp")].port}')
+
+  # echo "$INGRESS_NAME $INGRESS_NS $INGRESS_HOST $INGRESS_PORT $SECURE_INGRESS_PORT $TCP_INGRESS_PORT"
+  local GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
+  echo "export GATEWAY_URL=$GATEWAY_URL" >>.envrc
+  curl -s "http://${GATEWAY_URL}/productpage" | grep -o "<title>.*</title>"
+}
+
+install_httpbin() {
+  # WARNING: No namespace defined.It will install to your current context!
+  # ISTIO_LABEL=${ISTIO_LABEL:-istio-injection=enabled}
+  ISTIO_LABEL=${ISTIO_LABEL:-istio.io/rev=1-17}
+  local REMOTE_CONTEXT=${REMOTE_CONTEXT1:-${1}}
+
+  kubectl --context "$REMOTE_CONTEXT" create ns httpbin
+  # kubectl --context "$REMOTE_CONTEXT1" label namespace httpbin "$ISTIO_LABEL"
+  kns httpbin
+
+  # In mesh
+  kubectl --context $REMOTE_CONTEXT -n httpbin apply -f https://raw.githubusercontent.com/solo-io/gloo-mesh-use-cases/main/policy-demo/httpbin-in-mesh.yaml
+  # not in mesh
+  kubectl --context $REMOTE_CONTEXT -n httpbin apply -f https://raw.githubusercontent.com/solo-io/gloo-mesh-use-cases/main/policy-demo/httpbin-not-in-mesh.yaml
+}
+
+setup_route_to_external_service() {
+
+  local INGRESS_GW_IP
+  INGRESS_GW_IP=$(kubectl get svc -n gloo-mesh-gateways istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+
+  ## Endpoint
+  local CLUSTER_NAME=
+  kubectl apply -f- <<EOF
+apiVersion: networking.gloo.solo.io/v2
+kind: ExternalEndpoint
+metadata:
+  name: httpbin-external-endpoint
+  namespace: global
+  labels:
+    # Label that the external service will select
+    external-endpoint: httpbin
+spec:
+  # Registered URL for external service
+  address: httpbin.org
+  ports:
+    - name: http
+      number: 80
+    - name: https
+      number: 443
+EOF
+
+  ## ExternalService
+  kubectl apply -f- <<EOF
+apiVersion: networking.gloo.solo.io/v2
+kind: ExternalService
+metadata:
+  name: httpbin-external-service
+  namespace: global
+spec:
+  hosts:
+  # Arbitrary, internal-only hostname assigned to the endpoint
+  - "my-remote-svc.com"
+  ports:
+  - name: http
+    number: 80
+    protocol: HTTP
+  selector:
+    # Selects the endpoint label
+    external-endpoint: httpbin
+EOF
+
+  ## Route Table
+  kubectl apply -n global -f- <<EOF
+apiVersion: networking.gloo.solo.io/v2
+kind: RouteTable
+metadata:
+  name: httpbin-routes
+  namespace: global
+spec:
+  hosts:
+    - '*'
+  # Selects the virtual gateway you previously created
+  virtualGateways:
+    - name: istio-ingressgateway
+      namespace: bookinfo
+      cluster: ${CLUSTER_NAME}
+  http:
+    # Route for the httpbin-external-service
+    - name: httpbin-app
+      # Prefix matching
+      matchers:
+      - uri:
+          prefix: /httpbin/
+      # Forwarding directive
+      forwardTo:
+        destinations:
+        # Reference to the external service resource exposing your external endpoints
+        - ref:
+            name: httpbin-external-service
+            cluster: $CLUSTER_NAME
+          kind: EXTERNAL_SERVICE
+        pathRewrite: /
+EOF
+
+  echo curl http://$INGRESS_GW_IP/httpbin
+}
+
+setup-default-workspace() {
+  # from: https://docs.solo.io/gloo-mesh-enterprise/2.1.x/getting_started/managed_kubernetes/#gloo-workspace
+  # Create a workspace that selects all clusters and namespaces by default.
+  kubectl apply --context $MGMT_CONTEXT -f- <<EOF
+apiVersion: admin.gloo.solo.io/v2
+kind: Workspace
+metadata:
+  name: $MGMT_CLUSTER
+  namespace: gloo-mesh
+spec:
+  workloadClusters:
+    - name: '*'
+      namespaces:
+        - name: 'gloo-mesh'
+EOF
+
+  # Create a workspace settings for the workspace that enables federation across clusters and selects the Istio east-west gateway.
+  kubectl apply --context $MGMT_CONTEXT -f- <<EOF
+apiVersion: admin.gloo.solo.io/v2
+kind: WorkspaceSettings
+metadata:
+  name: $MGMT_CLUSTER
+  namespace: gloo-mesh
+spec:
+  options:
+    serviceIsolation:
+      enabled: false
+    federation:
+      enabled: true
+      serviceSelector:
+      - {}
+    eastWestGateways:
+    - selector:
+        labels:
+          istio: eastwestgateway
+EOF
+  ## Global workspace settings
+  # https://docs.solo.io/gloo-mesh-enterprise/2.1.x/setup/workspace_setup/#create-a-workspace
+  # Optionally, you can configure global workspace settings. These settings apply by default to each workspace in your Gloo environment. Later, the app owner for each workspace can override the defaults in their own workspace settings.
+
+  kubectl apply --context $MGMT_CONTEXT -n gloo-mesh -f- <<EOF
+apiVersion: admin.gloo.solo.io/v2
+kind: WorkspaceSettings
+metadata:
+ name: global
+ namespace: gloo-mesh
+spec:
+ options:
+   serviceIsolation:
+     enabled: true
+   federation:
+     enabled: false
+     # enabled: true
+     # hostSuffix: gloo.test.io
+EOF
+  # You must create the global workspace settings resource in the gloo-mesh namespace of the management cluster, and name the resource global. Keep in mind that each workspace still needs its own unique workspace settings resource, which your app owner configures in the next section.
+  #
+  kubectl edit workspace gloo --context $MGMT_CONTEXT
+  apiVersion: admin.gloo.solo.io/v2
+  kind: Workspace
+  metadata:
+  name: gloo
+  namespace: gloo-mesh
+  spec:
+  workloadClusters:
+  - name: '$MGMT_CLUSTER'
+  namespaces:
+  - name: 'gloo-mesh'
+
+}
+
+setup_ops_workspace() {
+  kubectl create namespace --context "$MGMT_CONTEXT" ops-team
+  kubectl apply --context "$MGMT_CONTEXT" -f- <<EOF
+apiVersion: admin.gloo.solo.io/v2
+kind: Workspace
+metadata:
+  name: ops-team
+  namespace: gloo-mesh
+  labels:
+    gloo.solo.io/team: 'ops'
+spec:
+  workloadClusters:
+  - name: 'mgmt'
+    namespaces:
+    - name: ops-team
+  - name: '*'
+    namespaces:
+    - name: istio-gateways
+    - name: gloo-mesh-addons
+EOF
+
+  kubectl apply --context "$MGMT_CONTEXT" -f- <<EOF
+apiVersion: admin.gloo.solo.io/v2
+kind: WorkspaceSettings
+metadata:
+  name: ops-team
+  namespace: ops-team
+spec:
+  importFrom:
+  - workspaces:
+    - name: web-team
+  exportTo:
+  - workspaces:
+    - name: "*"
+    resources:
+    - kind: SERVICE
+      namespace: gloo-mesh-addons
+    - kind: VIRTUAL_DESTINATION
+      namespace: gloo-mesh-addons
+  options:
+    federation:
+      enabled: false
+      serviceSelector:
+      - namespace: gloo-mesh-addons
+    eastWestGateways:
+    - selector:
+        labels:
+          istio: eastwestgateway
+    serviceIsolation:
+      enabled: true
+      trimProxyConfig: true
+EOF
+}
+
+setup_web_workspace() {
+  kubectl create namespace --context "$MGMT_CONTEXT" web-team
+  kubectl apply --context "$MGMT_CONTEXT" -f- <<EOF
+apiVersion: admin.gloo.solo.io/v2
+kind: Workspace
+metadata:
+  name: web-team
+  namespace: gloo-mesh
+  labels:
+    gloo.solo.io/team: 'web'
+spec:
+  workloadClusters:
+  - name: 'mgmt'
+    namespaces:
+    - name: web-team
+  - name: '*'
+    namespaces:
+    - name: web-ui
+EOF
+
+  kubectl apply --context "$MGMT_CONTEXT" -f- <<EOF
+apiVersion: admin.gloo.solo.io/v2
+kind: WorkspaceSettings
+metadata:
+  name: web-team
+  namespace: web-team
+spec:
+  importFrom:
+  - workspaces:
+    - name: backend-apis-team
+  - workspaces:
+    - name: ops-team
+  exportTo:
+  - workspaces:
+    - name: ops-team
+  options:
+    eastWestGateways:
+    - selector:
+        labels:
+          istio: eastwestgateway
+    federation:
+      enabled: false
+      serviceSelector:
+      - namespace: web-ui
+    serviceIsolation:
+      enabled: true
+      trimProxyConfig: true
+EOF
+}
+
+setup_backend_workspace() {
+  kubectl create namespace --context "$MGMT_CONTEXT" backend-apis-team
+  kubectl apply --context "$MGMT_CONTEXT" -f- <<EOF
+apiVersion: admin.gloo.solo.io/v2
+kind: Workspace
+metadata:
+  name: backend-apis-team
+  namespace: gloo-mesh
+  labels:
+    gloo.solo.io/team: 'backend-apis'
+spec:
+  workloadClusters:
+  - name: 'mgmt'
+    namespaces:
+    - name: backend-apis-team
+  - name: '*'
+    namespaces:
+    - name: backend-apis
+EOF
+
+  kubectl apply --context "$MGMT_CONTEXT" -f- <<EOF
+apiVersion: admin.gloo.solo.io/v2
+kind: WorkspaceSettings
+metadata:
+  name: backend-apis-team
+  namespace: backend-apis-team
+spec:
+  exportTo:
+  - workspaces:
+    - name: web-team
+  importFrom:
+  - workspaces:
+    - name: ops-team
+  options:
+    eastWestGateways:
+    - selector:
+        labels:
+          istio: eastwestgateway
+    federation:
+      enabled: false
+      serviceSelector:
+      - namespace: backend-apis
+    serviceIsolation:
+      enabled: true
+      trimProxyConfig: true
+EOF
+}
+
+configure_global_workspace() {
+  kubectl apply --context $MGMT_CONTEXT -n gloo-mesh -f- <<EOF
+apiVersion: admin.gloo.solo.io/v2
+kind: WorkspaceSettings
+metadata:
+ name: global
+ namespace: gloo-mesh
+spec:
+ options:
+   serviceIsolation:
+     enabled: true
+   federation:
+     enabled: false
+EOF
+
+  # This assumes the default workspace is called gloo instead of mgmt
+  # Remove the mgmt workspace and workspacesettings
+  kubectl apply --context "$MGMT_CONTEXT" -f- <<EOF
+apiVersion: admin.gloo.solo.io/v2
+kind: Workspace
+metadata:
+  name: gloo
+  namespace: gloo-mesh
+spec:
+  workloadClusters:
+    - name: '$MGMT_CLUSTER'
+      namespaces:
+        - name: 'gloo-mesh'
+EOF
+}
+
+setup_multitenancy_workspaces_for_bookinfo() {
+  MGMT_CLUSTER=${MGMT_CLUSTER:-mgmt}
+  MGMT_CONTEXT=${MGMT_CONTEXT:-mgmt}
+
+  # https://docs.solo.io/gloo-mesh-enterprise/latest/setup/workspace_setup/
+  #
+  # Optionally, you can configure global workspace settings. These settings apply by default to each workspace in your Gloo environment. Later, the app owner for each workspace can override the defaults in their own workspace settings. For more information, see [Workspace configuration](https://docs.solo.io/gloo-mesh-enterprise/latest/concepts/multi-tenancy/workspace-configuration/)
+  configure_global_workspace
+
+  # Create the workspace with the information that you just gathered. Note that you must create the workspace resource in the gloo-mesh namespace of the management cluster. For an example of three workspaces for the Ops, Web, and Backend API teams, see [Example workspace YAML configuration.](https://docs.solo.io/gloo-mesh-enterprise/latest/concepts/multi-tenancy/workspace-configuration/#gist)
+  setup_ops_workspace
+  setup_web_workspace
+  setup_backend_workspace
+}
+
+multicluster_federation_and_isolation_bookinfo_demo() {
+  # Variables needed with defaults
+  REMOTE_CONTEXT1=${REMOTE_CONTEXT1:-cluster1}
+  REMOTE_CONTEXT2=${REMOTE_CONTEXT2:-cluster2}
+  ISTIO_VERSION=${ISTIO_VERSION:-1.16.2}
+  ISTIO_REVISION=$(echo $ISTIO_VERSION | tr '.' '-')
+  ISTIO_LABEL="istio.io/rev=$ISTIO_REVISION"
+
+  # This assumes 2 remote clusters have been configured with Istio control & data planes
+  # See Complete Step 2: Deploy Bookinfo across Clusters in the [Multicluster federation and isolation with Bookinfo guide.](https://docs.solo.io/gloo-mesh-enterprise/latest/getting_started/gs_bookinfo/#step-2-deploy-bookinfo-across-clusters)
+
+  # kubectl create ns bookinfo --context $REMOTE_CONTEXT1
+  # kubectl create ns bookinfo --context $REMOTE_CONTEXT2
+
+  #Setup the workspaces
+  setup_multitenancy_workspaces_for_bookinfo
+  deploy_bookinfo_across_clusters
+
+  ## Deploy httpbin
+  kubectl --context $REMOTE_CONTEXT1 create ns httpbin
+  kubectl --context $REMOTE_CONTEXT1 label namespace httpbin $ISTIO_LABEL --overwrite
+  kubectl --context $REMOTE_CONTEXT1 -n httpbin apply -f https://raw.githubusercontent.com/solo-io/gloo-mesh-use-cases/main/policy-demo/httpbin-in-mesh.yaml
+  kubectl --context $REMOTE_CONTEXT1 -n httpbin apply -f https://raw.githubusercontent.com/solo-io/gloo-mesh-use-cases/main/policy-demo/httpbin-not-in-mesh.yaml
+}
+
+deploy_bookinfo_across_clusters() {
+  # Currently failing Because:
+  # message: 'pods "details-v1-7d88846999-" is forbidden: error looking up service account bookinfo/bookinfo-details: serviceaccount "bookinfo-details" not found'
+
+  # https://docs.solo.io/gloo-mesh-enterprise/latest/setup/sample-apps/#bookinfo
+  local ISTIO_VERSION=${ISTIO_VERSION:-1.16.2}
+  local ISTIO_LABEL=${ISTIO_LABEL:-istio-injection=enabled}
+
+  ## Cluster1
+  kubectl create ns bookinfo --context "$REMOTE_CONTEXT1"
+  # prepare the bookinfo namespace for Istio sidecar injection
+  # kubectl --context $REMOTE_CONTEXT1 label namespace bookinfo istio-injection=enabled
+  kubectl --context "$REMOTE_CONTEXT1" label namespace bookinfo "$ISTIO_LABEL" --overwrite
+  # deploy bookinfo application components for all versions less than v3
+  kubectl --context "$REMOTE_CONTEXT1" -n bookinfo apply -f https://raw.githubusercontent.com/istio/istio/$ISTIO_VERSION/samples/bookinfo/platform/kube/bookinfo.yaml -l 'app,version notin (v3)'
+  # deploy all bookinfo service accounts
+  kubectl --context $REMOTE_CONTEXT1 -n bookinfo apply -f https://raw.githubusercontent.com/istio/istio/$ISTIO_VERSION/samples/bookinfo/platform/kube/bookinfo.yaml -l 'account'
+
+  ## Cluster2
+  kubectl create ns bookinfo --context "$REMOTE_CONTEXT2"
+  # prepare the bookinfo namespace for Istio sidecar injection
+  # kubectl --context $REMOTE_CONTEXT2 label namespace bookinfo istio-injection=enabled
+  kubectl --context $REMOTE_CONTEXT2 label namespace bookinfo $ISTIO_LABEL --overwrite
+  # deploy reviews and ratings services
+  kubectl --context $REMOTE_CONTEXT2 -n bookinfo apply -f https://raw.githubusercontent.com/istio/istio/$ISTIO_VERSION/samples/bookinfo/platform/kube/bookinfo.yaml -l 'service in (reviews)'
+  # deploy reviews-v3
+  kubectl --context $REMOTE_CONTEXT2 -n bookinfo apply -f https://raw.githubusercontent.com/istio/istio/$ISTIO_VERSION/samples/bookinfo/platform/kube/bookinfo.yaml -l 'app in (reviews),version in (v3)'
+  # deploy ratings
+  kubectl --context $REMOTE_CONTEXT2 -n bookinfo apply -f https://raw.githubusercontent.com/istio/istio/$ISTIO_VERSION/samples/bookinfo/platform/kube/bookinfo.yaml -l 'app in (ratings)'
+  # deploy reviews and ratings service accounts
+  kubectl --context $REMOTE_CONTEXT2 -n bookinfo apply -f https://raw.githubusercontent.com/istio/istio/$ISTIO_VERSION/samples/bookinfo/platform/kube/bookinfo.yaml -l 'account in (reviews, ratings)'
+}
+
+setup_routing_for_sample_apps() {
+
+  local REMOTE_CONTEXT=${1:-Pass in a context}
+  local REMOTE_CLUSTER=${1:-Pass in Cluster}
+  local NAMESPACE=${2:-Pass in namespace}
+
+  # https://docs.solo.io/gloo-mesh-enterprise/latest/getting_started/gs_bookinfo/#step-3-expose-the-ingress-gateway
+  kubectl apply --context $REMOTE_CONTEXT -f- <<EOF
+apiVersion: networking.gloo.solo.io/v2
+kind: VirtualGateway
+metadata:
+  name: istio-ingressgateway
+  namespace: $NAMESPACE
+spec:
+  workloads:
+    - selector:
+        labels:
+          istio: ingressgateway
+        cluster: ${REMOTE_CLUSTER}
+  listeners:
+    - port:
+        number: 80
+      http: {}
+EOF
+
+  ## Add RouteTable
+  kubectl apply --context $REMOTE_CONTEXT1 -n bookinfo -f- <<EOF
+apiVersion: networking.gloo.solo.io/v2
+kind: RouteTable
+metadata:
+  name: bookinfo-north-south
+  namespace: bookinfo
+  labels:
+    workspace.solo.io/exported: 'true'
+spec:
+  hosts:
+    - '*'
+  # Selects the virtual gateway you previously created
+  virtualGateways:
+    - name: north-south-gw
+      namespace: istio-system
+      cluster: ${REMOTE_CLUSTER}
+  http:
+    # Route for the main productpage app
+    - name: productpage
+      matchers:
+      - uri:
+          prefix: /productpage
+      - uri:
+          prefix: /static
+      forwardTo:
+        destinations:
+          - ref:
+              name: productpage
+              namespace: bookinfo
+              cluster: ${REMOTE_CLUSTER1}
+            port:
+              number: 9080
+    # Routes all /reviews requests to the reviews-v1 or reviews-v2 apps in cluster-1
+    - name: reviews
+      labels:
+        route: reviews
+      matchers:
+      - uri:
+          prefix: /reviews
+      forwardTo:
+        destinations:
+          - ref:
+              name: reviews
+              namespace: bookinfo
+              cluster: ${REMOTE_CLUSTER1}
+            port:
+              number: 9080
+EOF
+
+  export CLUSTER_1_INGRESS_ADDRESS=$(kubectl --context $REMOTE_CONTEXT1 get svc -n istio-system istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+  echo http://$CLUSTER_1_INGRESS_ADDRESS/productpage
+}
+
+cilium_test() {
+
+  run() {
+    kubectl apply -n default -f https://raw.githubusercontent.com/istio/istio/release-1.11/samples/bookinfo/platform/kube/bookinfo.yaml
+
+    # Deploy Gateway named my-gateway that listens on port 80
+    # Two routes are defined, one for /details to the details service, and one for / to the productpage service.
+    kubectl apply -n default -f https://raw.githubusercontent.com/cilium/cilium/1.16.0/examples/kubernetes/gateway/basic-http.yaml
+
+    kubectl -n default rollout status deployment
+    local GATEWAY=$(kubectl -n default get gateway my-gateway -o jsonpath='{.status.addresses[0].value}')
+    curl --fail -s http://"$GATEWAY"/details/1 | jq
+  }
+
+  destroy_test() {
+
+    kubectl delete -n default -f https://raw.githubusercontent.com/cilium/cilium/1.16.0/examples/kubernetes/gateway/basic-http.yaml
+    kubectl delete -n default -f https://raw.githubusercontent.com/istio/istio/release-1.11/samples/bookinfo/platform/kube/bookinfo.yaml
+
+  }
+  "${@:-run}"
+}
+
+# setup_multitenancy_workspaces_for_bookinfo
+# deploy_bookinfo_across_clusters
+# multicluster_federation_and_isolation_bookinfo_demo
+"${@}"

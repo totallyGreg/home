@@ -1,0 +1,7 @@
+local preview="brew info --json=v1 {} | jq -C '.[] | {name,desc,homepage,dependencies}'" 
+local uninst=($(brew leaves | fzf -m --ansi --preview $preview)) 
+if [[ -n $uninst ]]
+then
+  brew uninstall $uninst
+  brew bundle dump --all --describe --force
+fi

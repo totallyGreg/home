@@ -5,7 +5,7 @@
 ##?        kdebug [-t|--tool] <Image to mount>  Defaults to 'nicolaka/netshoot'
 
 #function kdebug {
-
+set -x
 local -a o_help o_pod o_tool 
 local IMAGE
 zmodload zsh/zutil
@@ -36,8 +36,10 @@ fi
 kubectl get pods --all-namespaces | fzf \
 --query=$POD \
 --nth=2 --info=inline \
---bind 'enter:become(echo kubectl debug -it --image=$IMAGE --namespace=${1} {2})'
-# --bind 'enter:become(kubectl debug -it --image=nicolaka/netshoot --namespace=${1} {2})'
+--bind 'enter:become(kubectl netshoot debug -it --image=nicolaka/netshoot --namespace=${1} {2})'
+
+# --bind 'enter:become(kubectl netshoot debug -namespace=${1} {2})'
+# --bind 'enter:become(echo kubectl debug -it --image=$IMAGE --n {1} {2})'
 
 # Create an interactive debugging session on a node and immediately attach to it.
 # The container will run in the host namespaces and the host's filesystem will be mounted at /host

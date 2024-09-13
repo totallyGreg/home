@@ -1,0 +1,105 @@
+#autoload
+# account=$(aws sts get-caller-identity | jq --raw-output '.Account')
+
+# # Set profile to username with underscores
+# profile="$(aws sts get-caller-identity --query UserId)"
+# profile="${profile#*:}"
+# profile="${profile%@*}"
+# profile="${profile/./_}"
+
+install_AWS_LBC() {
+  # This installs the AWS Load Balanacer Controller
+  # https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/
+  # Using the existing OIDC identity provider
+  # `aws eks describe-cluster --name jgw-eks --query "cluster.identity.oidc.issuer" --output text`
+  # https://oidc.eks.us-east-2.amazonaws.com/id/707A787DEC1E902ED2939363AC553C1E
+
+  # If defined use it, otherwise set it to first passed in variabled
+  CLUSTER_NAME=${CLUSTER_NAME:-$1}
+  # oidc_id=$(aws eks describe-cluster --name $cluster_name --query "cluster.identity.oidc.issuer" --output text | cut -d '/' -f 5)
+
+
+  eksctl create iamserviceaccount \
+    --cluster="$CLUSTER_NAME" \
+    --namespace=kube-system \
+    --name=aws-load-balancer-controller \
+    --attach-policy-arn=arn:aws:iam::"$account":policy/AWSLoadBalancerControllerIAMPolicy \
+    --approve
+    # --override-existing-serviceaccounts \
+
+  helm upgrade --install aws-load-balancer-controller \
+    --repo https://aws.github.io/eks-charts aws-load-balancer-controller   \
+    -n kube-system \
+    --set clusterName="$CLUSTER_NAME" \
+    --set replicaCount=3 \
+    --set serviceAccount.create=false \
+    --set serviceAccount.name=aws-load-balancer-controller
+    # --atomic \
+}
+
+install_AWS_EBS_CSI() {
+  cluster_name=${CLUSTER_NAME:-$1}
+  eksctl create addon --name aws-ebs-csi-driver \
+    --cluster $CLUSTER_NAME \
+    --service-account-role-arn arn:aws:iam::"$account":role/AmazonEKS_EBS_CSI_DriverRole \
+    --force
+}
+
+
+eks_create() {
+  cluster_name=${CLUSTER_NAME:-$1}
+  region=${AWS_REGION:-us-east-2}
+  TEAM="customer-success"
+
+  # echo "[INFO] Creating ${MGMT_CLUSTER} in ${MGMT_CLUSTER_REGION} using eksctl"
+# eksctl create cluster --name "${MGMT_CLUSTER}" --region "${MGMT_CLUSTER_REGION}" --tags "created-by=${USER},team=${TEAM},purpose=customer-support" --vpc-cidr=192.168.0.0/21
+#
+  # kubectl config rename-context \
+  # "${USER}@${cluster_name}.${region}.eksctl.io" \
+  # "${MGMT_CONTEXT}"
+}
+eks_create_old() {
+  eval "$(aws-vault export --format=export-env Solo-CS)"
+
+  cluster_name=${cluster_name:-$1}
+  region=${AWS_REGION:-us-east-2}
+  # determine instances with spot pricing
+  instances=$(ec2-instance-selector --vcpus=2 --memory=8 --cpu-architecture=x86_64 --gpus=0 --burst-support=false | paste -d, -s - );
+
+  eksctl create cluster \
+        --name "$cluster_name" \
+        --region "$region" \
+        --managed \
+        --spot \
+        --instance-types="$instances" \
+        --with-oidc \
+        --ssh-access \
+        --ssh-public-key ~/.ssh/Solo_id_ed25519.pub \
+        --tags "created-by=$profile, team=customer-success"
+        --auto-kubeconfig
+
+  install_AWS_LBC
+  install_AWS_EBS_CSI
+}
+
+eks_destroy() {
+  cluster_name=${CLUSTER_NAME:-$1}
+  region=${AWS_REGION:-us-east-2}
+  eksctl delete cluster --name "$cluster_name" -r "$region" --wait
+}
+
+eks_up() {
+  # Scale up the cluster
+  NODEGROUP_NAME=$(aws eks list-nodegroups --cluster-name "$CLUSTER_NAME" | jq -r '.nodegroups[]')
+  eksctl scale nodegroup --cluster="$CLUSTER_NAME" --nodes=2 --name="$NODEGROUP_NAME" --nodes-min=1 --nodes-max=4
+  kubectl wait nodes --all --for=condition=ready --timeout=300s
+}
+
+eks_down() {
+  # Scale down the cluster
+  set -x
+  NODEGROUP_NAME=$(aws eks list-nodegroups --cluster-name $CLUSTER_NAME | jq -r '.nodegroups[]')
+  eksctl scale nodegroup --cluster=${CLUSTER_NAME} --nodes=0 --name=$NODEGROUP_NAME --nodes-min=0 --nodes-max=4
+}
+"${@}"
+
