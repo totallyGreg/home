@@ -4,9 +4,15 @@ return {
     "nvim-lua/plenary.nvim",
     {
       "seanbreckenridge/gitsigns-yadm.nvim",
-      config = function()
-        require("gitsigns-yadm").setup({ yadm_repo_git = "~/.config/yadm/repo.git " })
-      end,
+      opts = {
+        shell_timeout_ms = 1000,
+      },
     },
+  },
+  opts = {
+    _on_attach_pre = function(_, callback)
+      require("gitsigns-yadm").yadm_signs(callback)
+    end,
+    -- other configuration for gitsigns...
   },
 }

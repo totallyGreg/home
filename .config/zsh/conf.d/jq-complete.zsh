@@ -1,1 +1,1 @@
-bindkey '\ey' jq-complete  # default is j
+bindkey '\ey' jq-complete  # alt-y to activate. default alt-j resizes window
