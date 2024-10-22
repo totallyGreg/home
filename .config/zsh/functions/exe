@@ -1,0 +1,4 @@
+#!/usr/bin/env zsh
+# Echo and execute
+echo "\$ $@"
+"$@"

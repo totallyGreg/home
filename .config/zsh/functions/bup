@@ -1,5 +1,19 @@
-local preview='brew info --json=v1 {} | jq -r ".[] | \"Name: \(.name)\nDescription: \(.desc)\nVersion: \(.versions.stable)\nHomepage: \(.homepage)\nDependencies: \(.dependencies | join(\", \"))\n\""' 
-updates=($(brew outdated -q| fzf -m --ansi --min-height=20 --preview "${preview}" ))
+#!/bin/zsh
+## Preview is tough and requires lots of escaping
+# local preview='brew info --json=v1 {} | jq -r ".[] | \"Name: \(.name)\nDescription: \(.desc)\nVersion: \(.versions.stable)\nHomepage: \(.homepage)\nDependencies: \(.dependencies | join(\", \"))\n\""' 
+
+local preview='brew info --json=v1 {} | jq -r ".[] | \"
+Name: \(.name)
+Tap: \(.tap)
+Description: \(.desc)
+License: \(.license)
+Homepage: \(.homepage)
+Version: \(.versions.stable)
+Dependencies: \(.dependencies | join(\", \"))\n\""'
+
+updates=$(brew outdated -q| fzf -m --ansi --min-height=20 --preview "${preview}" )
+
+# Batch update and dump new Brewfile bundle
 if [[ -n $updates ]]
 then
   brew upgrade $updates
@@ -7,3 +21,4 @@ then
 else
   echo "No updates found: $updates"
 fi
+

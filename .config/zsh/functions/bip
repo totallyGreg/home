@@ -1,35 +1,19 @@
-##############################################################################
-# TODO: Remove this header block
-# Do NOT include function definition block (ie: omit 'function bip() { }').
-# See: https://zsh.sourceforge.io/Doc/Release/Functions.html#Autoloading-Functions
-#
-# Use ##? comments for help/usage docs.
-##############################################################################
+#!/bin/zsh
+## Preview is tough and requires lots of escaping
+local preview='brew info --json=v1 {} | jq -r ".[] | \"
+Name: \(.name)
+Tap: \(.tap)
+Description: \(.desc)
+License: \(.license)
+Homepage: \(.homepage)
+Version: \(.versions.stable)
+Dependencies: \(.dependencies | join(\", \"))\n\""'
 
-##? bip - TODO: Brew Install Prompt
-##?
-##? usage: bip [-h|--help]
-##?        bip [<options>] <arguments>
-
-#function bip {
-
-local -a o_help
-zmodload zsh/zutil
-zparseopts -D -F -K --   {h,-help}=o_help ||
-  return 1
-
-if (( $#o_help )); then
-  funchelp "bip"
-  return
-fi
-
-# TODO: write your function here
-
-# local preview="brew info --json=v1 {} | jq -C '.[] | {name,desc,homepage,dependencies}'"
-# local preview="brew info --json=v1 {} | jq -r '.[] | \"Name: \\(.name)\\nDescription: \\(.desc)\\nHomepage: \\(.homepage)\\nDependencies: \\(.dependencies | join(\", \"))\\n\"'"
-local preview='brew info --json=v1 {} | jq -r ".[] | \"Name: \(.name)\nDescription: \(.desc)\nHomepage: \(.homepage)\nDependencies: \(.dependencies | join(\", \"))\n\""'
-
-installs=($(brew formulae | fzf -m --ansi --preview "${preview}" --preview-window=:wrap --min-height=17))
+local installs=$(brew formulae | fzf -m \
+  --ansi                 \
+  --preview "${preview}" \
+  --preview-window=:wrap \
+  --min-height=17)
 # If nothing selected just exit
 
 # Batch install and dump new Brewfile bundle
@@ -37,5 +21,4 @@ if [[ $installs ]]; then
   brew install $installs;
   brew bundle dump --all --describe --force;
 fi
-#}
 
