@@ -11,11 +11,23 @@
 # This needs to be loaded AFTER compinit and thus here.
 compdef kubecolor=kubectl
 
+# Work-around for 2nd file completion not working
+# from https://github.com/nbaronov/oh-my-zsh/commit/2aa14ac52f23052b2f4a2672dbff8cbee634bf51#diff-ad8ebb220e4464324d2c6753505d279846bc607d6ee9f664a3fd666748e57a87R44
+# Apple diff supports `--color` but does it silently and the default completion seems to be confused
+function color-diff {
+    diff --color $@
+  }
+alias diff="color-diff"
+compdef _diff color-diff
+
 # setting consistent cache
 zstyle ':completion:*' use-cache on
-zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zsh/.zcompcache"
+zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zsh/zcompcache"
 
-zstyle ':completion:*' file-list all
+# display the list of files and folder matched with more details
+zstyle ':completion:*' file-list all # WARNING: this seems to be the culprit in breaking fzf-tab
+
+# zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}' 'r:|=*' 'l:|=* r:|=*'
 
 zstyle ':completion::complete:cd::paths' accept-exact-dirs true
 
@@ -49,3 +61,8 @@ zstyle ':completion:*' verbose yes
 
 # Skip setting stupid aliases
 zstyle ':zephyr:plugin:color:alias' skip true
+
+# Ignored-patterns https://unix.stackexchange.com/questions/693084/how-can-i-make-zsh-globbing-ignore-files-like-ds-store
+zstyle ':completion::complete:*:*:files' ignored-patterns '.DS_Store' 'Icon?'
+zstyle ':completion::complete:*:*:globbed-files' ignored-patterns '.DS_Store' 'Icon?'
+zstyle ':completion::complete:rm:*:globbed-files' ignored-patterns
