@@ -3,6 +3,7 @@ tap "aws/tap"
 tap "buildpacks/tap"
 tap "cloudfoundry/tap"
 tap "danielfoehrkn/switch"
+tap "defenseunicorns/tap"
 tap "derailed/k9s"
 tap "fabianishere/personal"
 tap "federico-terzi/espanso"
@@ -16,6 +17,7 @@ tap "homebrew/command-not-found"
 tap "homebrew/services"
 tap "homebrew/test-bot"
 tap "homeport/tap"
+tap "jahvon/tap"
 tap "joshmedeski/sesh"
 tap "k14s/tap"
 tap "knative/client"
@@ -113,16 +115,6 @@ brew "cilium-cli"
 brew "cmake"
 # Command-line tool to manage cert-manager
 brew "cmctl"
-# Validating, recursive, caching DNS resolver
-brew "unbound"
-# GNU Transport Layer Security (TLS) Library
-brew "gnutls"
-# General purpose TCP-IP emulator
-brew "libslirp"
-# Compression/decompression library aiming for high speed
-brew "snappy"
-# Generic machine emulator and virtualizer
-brew "qemu"
 # Linux virtual machines
 brew "lima"
 # Container runtimes on MacOS (and Linux) with minimal setup
@@ -139,6 +131,10 @@ brew "dagger"
 brew "dasel"
 # Tools to manipulate dates with a focus on financial data
 brew "dateutils"
+# Validating, recursive, caching DNS resolver
+brew "unbound"
+# GNU Transport Layer Security (TLS) Library
+brew "gnutls"
 # GNU Pretty Good Privacy (PGP) package
 brew "gnupg"
 # Library access to GnuPG
@@ -327,6 +323,8 @@ brew "libass"
 brew "libiconv"
 # Shared library for mediainfo
 brew "libmediainfo"
+# General purpose TCP-IP emulator
+brew "libslirp"
 # MP3 player for Linux and UNIX
 brew "mpg123"
 # Audio codec
@@ -415,6 +413,10 @@ brew "python-markdown"
 brew "python@3.10"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.9"
+# Compression/decompression library aiming for high speed
+brew "snappy"
+# Generic machine emulator and virtualizer
+brew "qemu"
 # Unified tool to manage your Rancher server
 brew "rancher-cli"
 # Ruby version manager
@@ -532,6 +534,8 @@ brew "cloudfoundry/tap/credhub-cli"
 brew "cloudfoundry/tap/uaa-cli"
 # The kubectx for operators.
 brew "danielfoehrkn/switch/switch"
+# CLI for Unicorn Delivery Service
+brew "defenseunicorns/tap/uds"
 # PAM module for reattaching to the user's GUI (Aqua) session
 brew "fabianishere/personal/pam_reattach"
 # Turns macOS input fields into real vim buffers
@@ -544,6 +548,7 @@ brew "glasskube/tap/glasskube"
 brew "homebrew-ffmpeg/ffmpeg/ffmpeg", args: ["with-fdk-aac"]
 # δyƒƒ /ˈdʏf/ - A diff tool for YAML files, and sometimes JSON
 brew "homeport/tap/dyff"
+brew "jahvon/tap/flow"
 # Smart terminal session manager
 brew "joshmedeski/sesh/sesh"
 brew "knative/client/kn"
@@ -558,8 +563,12 @@ brew "saltbo/bin/seenvoy"
 brew "siderolabs/tap/talosctl"
 # Regal is a linter for Rego, with the goal of making your Rego magnificent!
 brew "styrainc/packages/regal"
+# Automatic tiling window manager similar to xmonad
+cask "amethyst", args: { appdir: "~/Applications/Ops/Administration/Window Management" }
 # Inspect application bundles
 cask "apparency", args: { appdir: "~/Applications/Ops/Administration/Package Management" }
+# Task and project management software
+cask "flow"
 cask "font-fira-mono-nerd-font"
 cask "font-jetbrains-mono"
 cask "font-jetbrains-mono-nerd-font"
@@ -585,10 +594,14 @@ cask "powershell"
 cask "qlmarkdown"
 # Thumbnails, static previews, cover art and metadata for video files
 cask "qlvideo", args: { appdir: "~/Applications/Comm/Visual" }
+# Productivity application
+cask "quicksilver", args: { appdir: "~/Applications/Ops/Administration" }
 # Control your tools with a few keystrokes
-cask "raycast"
+cask "raycast", args: { appdir: "~/Applications/Ops/Administration" }
 # Comic viewer/reader
 cask "simple-comic", args: { appdir: "~/Applications/Comm/Visual" }
+# Launcher & command palette
+cask "sol", args: { appdir: "~/Applications/Ops/Administration" }
 # Application for inspecting installer packages
 cask "suspicious-package", args: { appdir: "~/Applications/Ops/Administration/Package Management" }
 # Development environment
@@ -607,18 +620,16 @@ mas "Audiobook Builder", id: 1437681957
 mas "Developer", id: 640199958
 mas "GarageBand", id: 682658836
 mas "Health Auto Export", id: 1115567069
+mas "Ice Cubes", id: 6444915884
 mas "Keynote", id: 409183694
 mas "Mastodon Air", id: 1661639557
 mas "Mastonaut", id: 1450757574
-mas "Newsify", id: 510153374
 mas "Numbers", id: 409203825
-mas "Omnivore", id: 1564031042
 mas "Pages", id: 409201541
 mas "Paprika Recipe Manager 3", id: 1303222628
 mas "Peek", id: 1554235898
 mas "Playgrounds", id: 1496833156
 mas "Prime Video", id: 545519333
-mas "Save to Raindrop.io", id: 1549370672
 mas "Save to Reader", id: 1640236961
 mas "Silicio", id: 933627574
 mas "Steam Link", id: 1246969117
