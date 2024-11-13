@@ -107,7 +107,6 @@ disabled = false
 "Music" = " "
 "Pictures" = " "
 "Library/Mobile Documents/com~apple~CloudDocs" = "☁️  "
-"greg.williams@solo.io - Google Drive" = "🦉 "
 "totallygreg@gmail.com - Google Drive" = ""
 
 [direnv]
@@ -175,10 +174,11 @@ disabled = false
 # symbol = ' '
 style = 'blue'
 disabled = false
+detect_env_vars = [ "KUBECONFIG" ]
 
 [[kubernetes.contexts]]
-context_pattern = "greg.williams@solo.io@jgw-xff.us-east-2.eksctl.io"
-context_alias = "🦉 EKS"
+# context_pattern = "greg.williams@solo.io@jgw-xff.us-east-2.eksctl.io"
+# context_alias = "🦉 EKS"
 # user_pattern = 'greg'
 # user_alias = "🦉"
 

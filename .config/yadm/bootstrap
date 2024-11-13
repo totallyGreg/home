@@ -14,17 +14,17 @@ function confirm() {
   while true; do
     read -r -p "$_prompt " _response
     case "$_response" in
-      [Yy][Ee][Ss]|[Yy]) # Yes or Y (case-insensitive).
-        "$@"
-        return 0
-        ;;
-      [Nn][Oo]|[Nn])  # No or N.
-        return 1
-        ;;
-      *) # Anything else (including a blank) is invalid.
-        ;;
+    [Yy][Ee][Ss] | [Yy]) # Yes or Y (case-insensitive).
+      "$@"
+      return 0
+      ;;
+    [Nn][Oo] | [Nn]) # No or N.
+      return 1
+      ;;
+    *) # Anything else (including a blank) is invalid.
+      ;;
     esac
-  # else
+    # else
     # echo "[❌] Failed to enable TouchID Sudo"
   done
 }
@@ -74,7 +74,6 @@ function macos_defaults {
   defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
   defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 
-
   # Use scroll gesture with the Ctrl (^) modifier key to zoom
   # Requires Terminal.app full disk access: System Preferences -> Privacy -> Full Disk Access
   defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
@@ -83,7 +82,7 @@ function macos_defaults {
   defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool true
 
   # Enable three finger tap for data lookups
-  # disabled: This does not work.. 
+  # disabled: This does not work..
   # defaults -currentHost write -g com.apple.AppleMultitouchTrackpad TrackpadThreeFingerTapGesture -int 2
 
   ###############################################################################
@@ -259,9 +258,9 @@ function enable_touchid2 {
   fi
 
   if sudo ex -s -c '2i|auth       sufficient     pam_tid.so' -c x! -c x! /etc/pam.d/sudo; then
-auth       optional       pam_reattach.so ignore_ssh
-auth       sufficient     pam_tid.so
-EOF
+    auth optional pam_reattach.so ignore_ssh
+    auth sufficient pam_tid.so
+    EOF
 
     # Invoke Vim in ex mode
     # Select line 2, enter insert mode, insert that text write changes and exit
@@ -269,6 +268,19 @@ EOF
     echo "[✅] TouchID Sudo Enabled"
   else
     echo "[❌] Failed to enable TouchID Sudo"
+  fi
+}
+
+function enable_touchid3 {
+  if grep '^auth       sufficient     pam_tid.so' /etc/pam.d/sudo_local; then
+    echo "[✅] TouchID Sudo Already Enabled"
+    return 0
+  else
+    if sed "s/^#auth/auth/" /etc/pam.d/sudo_local.template | sudo tee /etc/pam.d/sudo_local; then
+      echo "[✅] TouchID Sudo Enabled"
+    else
+      echo "[❌] Failed to enable TouchID Sudo"
+    fi
   fi
 }
 
@@ -298,12 +310,21 @@ function nvim {
 }
 
 function macos {
-  function_list=(\
-    macos_defaults \
-    TerminalApp_profiles \
-    install_gpg \
-    install_brewfile)
-  # enable_touchid
+  os_version=$(sw_vers -productVersion)
+  echo "Setting up configuration for MacoOS: $os_version"
+  # zsh has built in is-at-least function for semver comparison
+  # autoload is-at-least
+  # if is-at-least 10.9 $(sw_vers -productVersion); then
+  #   echo "can run Catalina installer"
+  # else
+  #   echo "cannot run Catalina installer"
+  # fi
+  function_list=(
+    macos_defaults
+    TerminalApp_profiles
+    install_gpg
+    install_brewfile
+    enable_touchid3)
   # setup_python
   for function in "${function_list[@]}"; do
     confirm "${function}"
@@ -320,12 +341,15 @@ function linux {
 function system {
   system_type=$(uname -s)
   case "$system_type" in
-    "Darwin") macos
-              ;;
-    "Linux") linux
-              ;;
-    *) echo "Good Luck with that!"
-              ;;
+  "Darwin")
+    macos
+    ;;
+  "Linux")
+    linux
+    ;;
+  *)
+    echo "Good Luck with that!"
+    ;;
   esac
 }
 
@@ -334,4 +358,3 @@ function system {
 # macos should call most of the functions
 
 "${@:-system}"
-

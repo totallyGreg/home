@@ -1,3 +1,5 @@
+HOMEBREW_NO_ENV_HINTS=true
+
 local preview="brew info --json=v1 {} | jq -C '.[] | {name,desc,homepage,dependencies}'" 
 local uninst=($(brew leaves | fzf -m --ansi --preview $preview)) 
 if [[ -n $uninst ]]

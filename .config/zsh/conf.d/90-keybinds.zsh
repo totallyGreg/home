@@ -30,8 +30,13 @@ bindkey '^[[Z' reverse-menu-complete  # enable shift-tab
 function _watch-command {
   # if buffer is empty, load previous command
   [[ -z $BUFFER ]] && zle up-history
+  # zle _expand_alias
+  # zle expand-word
+  # zle end-of-buffer-or-history
   # if buffer doesn't already contain watch, prepend the watch command to the buffer
-  [[ ! $BUFFER =~ '^watch.*' ]] && BUFFER="watch $BUFFER"
+  [[ ! $BUFFER =~ '^watch.*' ]] && BUFFER="watch -c $BUFFER"
+  # kubecolor needs to have --force-colors since it can't tell if watch supports it
+  [[ $BUFFER =~ 'kubecolor.*' ]] && BUFFER="$BUFFER --force-colors"
   zle end-of-line
 }
 zle -N _watch-command

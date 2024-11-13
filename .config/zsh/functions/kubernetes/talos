@@ -13,7 +13,6 @@
 #       # for my Intel machines
 #       - siderolabs/i915-ucode
 
-
 # Typically set per project in an .envrc file
 CLUSTER_NAME="talos-test-cluster"
 CLUSTER_ENDPOINT="https://talos-test.infra.falcone.us:6443"
@@ -23,6 +22,7 @@ cluster_patch_dir=${CLUSTER_PATCHES}
 node_patch_dir=${NODE_PATCHES}
 
 get_schematic_id() {
+  [[ -r ${CLUSTER_PATCHES/bare-metal.yaml} ]]  || echo "Image factory requires config file" # && return 1 )
   # base_config=${CLUSTER_PATCHES}/bare-metal.yaml
   # we can upload the schematic to the Image Factory to retrieve its ID:
   result=$(curl -sX POST --data-binary @${CLUSTER_PATCHES}/bare-metal.yaml https://factory.talos.dev/schematics | jq -r .id)
@@ -33,14 +33,21 @@ get_schematic_id() {
 
 get_install_image() {
   schematicID=$(get_schematic_id)
-  local version=${TALOS_VERSION:-v1.7.5}
+  local version=${TALOS_VERSION:-v1.8.0}
   echo "factory.talos.dev/installer/${schematicID}:${version}"
+}
+
+get_pxe_image() {
+  schematicID=$(get_schematic_id)
+  local version=${TALOS_VERSION:-v1.8.0}
+  echo "factory.talos.dev/pxe/${schematicID}:${version}"
 }
 
 generate_config() {
   node=${1:-${node:-Must provide node name}}
   node_ip=${node_ip:-$(dig +short "${node}")}
-  secure_config=$(mktemp -t ${node})
+  # for file in list_of_files ; do sha1sum file >> sums | sort | sha1sum
+  secure_config=$(mktemp -p . -t ${node})
   # secure_config="${secure_config_dir}/${node}-config.yaml"
   # install_image=$(get_install_image)
 
@@ -60,6 +67,8 @@ generate_config() {
     --output "${secure_config}" \
     --force
 
+    # No idea how to get this applied 
+    # --config-patch @"${node_patch_dir}/${node}-volumeConfig.yaml" \
     echo "${secure_config}" # has been generated
 }
 
@@ -70,7 +79,6 @@ get_config() {
 }
 
 scale_up() {
-  set -x
   node=${1:-${node:-Must provide node name}}
   node_ip=$(dig @10.0.0.1 +short "${node}.infra.falcone.us")
   generate_config
@@ -82,13 +90,15 @@ scale_up() {
 scale_down() {
   node=${1}
   echo "Removing ${node} from Talos Cluster, but keep it controllable"
-  talosctl reset --system-labels-to-wipe STATE --system-labels-to-wipe EPHEMERAL --reboot --timeout=10m --graceful=true -n "${node}"
+  talosctl reset --system-labels-to-wipe STATE --system-labels-to-wipe EPHEMERAL \
+    --reboot --timeout=10m --graceful=true -n "${node}"
   kubectl delete node "${node}"
 }
 
 update_node_config() {
   node=${1}
   talosctl apply-config -f $(generate_config $node) -n $node
+  trap "rm -rf ${secure_config}" EXIT
 }
 
 update_all_config() {
@@ -97,6 +107,7 @@ update_all_config() {
 }
 
 upgrade_node() {
+  # set -x
   node=${1:-"node or node1,node2 list required to update"}
   # to new image
   version=${TALOS_VERSION:-v1.7.5}
@@ -115,6 +126,12 @@ upgrade_all_nodes() {
   echo "Applying update to all nodes: ${nodes}"
   # echo ${nodes} | tr ',' '\n' | xargs -n 1 -- ${(%):-%x} upgrade_node
   echo ${nodes} | tr ',' '\n' | xargs -n 1 -- ${0} upgrade_node
+}
+
+reset_node() {
+  node=${1}
+  scale_down ${node}
+  scale_up ${node}
 }
 
 reset_cluster() {

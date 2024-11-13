@@ -1,5 +1,6 @@
 #!/bin/zsh
 ## Preview is tough and requires lots of escaping
+HOMEBREW_NO_ENV_HINTS=true
 local preview='brew info --json=v1 {} | jq -r ".[] | \"
 Name: \(.name)
 Tap: \(.tap)

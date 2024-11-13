@@ -8,7 +8,7 @@ set_kubeconfig () {
   local kube_dirs=(
   ${HOME}/.kube/config.d
   ${HOME}/.kube/eksctl/clusters
-  ${HOME}/.k3d
+  ${HOME}/.config/k3d
   ${HOME}/.kube/gke
 )
   # ${HOME}/.lima/*/copied-from-guest :this is ugly as default is everywhere
@@ -36,3 +36,6 @@ set_kubeconfig_shell() {
   kctx
   # trap "rm $KUBECONFIG" EXIT
 }
+
+# Store  the configs somewhere not uploaded
+export TALOSCONFIG=${XDG_STATE_HOME}/talos/config

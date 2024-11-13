@@ -2,6 +2,8 @@
 ## Preview is tough and requires lots of escaping
 # local preview='brew info --json=v1 {} | jq -r ".[] | \"Name: \(.name)\nDescription: \(.desc)\nVersion: \(.versions.stable)\nHomepage: \(.homepage)\nDependencies: \(.dependencies | join(\", \"))\n\""' 
 
+HOMEBREW_NO_ENV_HINTS=true
+
 local preview='brew info --json=v1 {} | jq -r ".[] | \"
 Name: \(.name)
 Tap: \(.tap)

@@ -8,6 +8,11 @@
 // from the command palette or from `Zed` application menu.
 {
   // "theme": "Solarized Dark",
+  "language_models": {
+    "ollama": {
+      "low_speed_timeout_in_seconds": 30
+    }
+  },
   "features": {
     "inline_completion_provider": "none"
   },
@@ -17,17 +22,12 @@
     "dark": "Solarized Dark"
   },
   "assistant": {
-    "version": "1",
-    "provider": {
-      "default_model": {
-        "name": "llama3:latest",
-        "max_tokens": 2048,
-        "keep_alive": -1
-      },
-      "name": "ollama",
-      // Recommended setting to allow for model startup
-      "low_speed_timeout_in_seconds": 30
-    }
+    "default_model": {
+      "provider": "ollama",
+      "model": "llama3:latest"
+    },
+    "version": "2",
+    "provider": null
   },
   "vim_mode": true,
   "ui_font_size": 14,

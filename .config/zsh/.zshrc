@@ -96,34 +96,34 @@ path=(${HOME}/.rd/bin $path)
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc' ]; then . '/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc'; fi
 
-# Kubernetes
-set_kubeconfig () {
-  typeset -xT KUBECONFIG kubeconfig       # tie scalar and array together making adding easier
-  KUBECONFIG="$HOME/.kube/config"         # many tools assume only this file or it is FIRST in path
-
-  # List of common directories that contain kubeconfig files to append to my KUBECONFIG
-  # It is necessary for these to have unique values for cluster and user so the context merging doesn't conflict
-  local kube_dirs=(
-  ${HOME}/.kube/config.d
-  ${HOME}/.kube/eksctl/clusters
-  ${HOME}/.k3d
-  ${HOME}/.kube/gke
-)
-  # This will create a list of config files located in $kube_dir
-  # while ignoring any errors (directories that don't exist)
-  kubeConfigFileList=$(find ${kube_dirs} -type f \( -name '*.yaml' -o -name '*.yml' \) 2>/dev/null)
-  # for file in $(ls -d -1 $HOME/.lima/*/conf/kubeconfig.yam)
-  #   do kubeConfigFileList+=$file
-  # done
-
-  # Combine all file paths into the single `KUBECONFIG` path variable.
-  while IFS= read -r kubeConfigFile; do
-    kubeconfig+="${kubeConfigFile}"
-  done <<< ${kubeConfigFileList}
-
-  # This appears necessary to join it back into a PATH type variable
-  # KUBECONFIG=${(j.:.)kubeconfig}
-}
+# # Kubernetes
+# set_kubeconfig () {
+#   typeset -xT KUBECONFIG kubeconfig       # tie scalar and array together making adding easier
+#   KUBECONFIG="$HOME/.kube/config"         # many tools assume only this file or it is FIRST in path
+#
+#   # List of common directories that contain kubeconfig files to append to my KUBECONFIG
+#   # It is necessary for these to have unique values for cluster and user so the context merging doesn't conflict
+#   local kube_dirs=(
+#   ${HOME}/.kube/config.d
+#   ${HOME}/.kube/eksctl/clusters
+#   ${HOME}/.k3d
+#   ${HOME}/.kube/gke
+# )
+#   # This will create a list of config files located in $kube_dir
+#   # while ignoring any errors (directories that don't exist)
+#   kubeConfigFileList=$(find ${kube_dirs} -type f \( -name '*.yaml' -o -name '*.yml' \) 2>/dev/null)
+#   # for file in $(ls -d -1 $HOME/.lima/*/conf/kubeconfig.yam)
+#   #   do kubeConfigFileList+=$file
+#   # done
+#
+#   # Combine all file paths into the single `KUBECONFIG` path variable.
+#   while IFS= read -r kubeConfigFile; do
+#     kubeconfig+="${kubeConfigFile}"
+#   done <<< ${kubeConfigFileList}
+#
+#   # This appears necessary to join it back into a PATH type variable
+#   # KUBECONFIG=${(j.:.)kubeconfig}
+# }
 
 export KUBECTL_EXTERNAL_DIFF="dyff between --omit-header --set-exit-code"
 path=(${KREW_ROOT:-$HOME/.krew}/bin $path)
@@ -172,8 +172,12 @@ fi
 
 # Source zcomet.zsh
 source ${ZDOTDIR:-${HOME}}/.zcomet/bin/zcomet.zsh
+zstyle ':zcomet:compinit' dump-file $XDG_CACHE_HOME/zsh/zcompdump
 
 ## Load some plugins
+# zcomet load jeffreytse/zsh-vi-mode            # Better vim support including surrounds and increments
+# ZVM_VI_HIGHLIGHT_BACKGROUND=yellow            # default is red, but zvm seems to break y)anking
+
 zcomet load zsh-users/zsh-completions
 zcomet load mattmc3/zephyr plugins/completion
 zcomet load asdf-vm/asdf
@@ -191,7 +195,7 @@ zcomet load junegunn/fzf shell completion.zsh key-bindings.zsh
 # May need to consider moving to zim in order to execute install script post update
 ( (( ${+commands[fzf]} )) || ~[fzf]/install --bin )
 # My personal options I don't want overwritten
-source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf_env.zsh
+# source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf_env.zsh (now loaded from conf.d)
 zcomet load Aloxaf/fzf-tab
 # zcomet load Freed-Wu/fzf-tab-source # ⚙️ a collection of fzf-tab completion sources.
 zcomet load reegnz/jq-zsh-plugin  # Interactive jq explorer
@@ -199,7 +203,7 @@ zcomet load reegnz/jq-zsh-plugin  # Interactive jq explorer
 # I suspect this needs to be loaded in a different order
 
 #
-# zcomet load xPMo/zsh-toggle-command-prefix # keeps throwing sudo errors 
+# zcomet load xPMo/zsh-toggle-command-prefix # keeps throwing sudo errors
 # zcomet load starship/starship
 # zcomet load kubermatic/fubectl # https://github.com/kubermatic/fubectl
 # zcomet load ChrisPenner/session-sauce
@@ -236,26 +240,21 @@ if [ -f "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc" ];
 fi
 export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 
-## Setup Kubeconfigs
-set_kubeconfig
-
-set_kubeconfig_shell() {
-  # Create a unique KUBECONFIG for the shell
-  export KUBECONFIG="$HOME/.kube/config-$(uuidgen)"
-  cp $HOME/.kube/config "$KUBECONFIG"
-  trap "rm $KUBECONFIG" EXIT
-}
-source <(switcher init zsh)
-# optionally use alias `s` instead of `switch`
-# echo 'source <(alias s=switch)' >> ~/.zshrc
-#
-# # optionally use command completion
-source <(switch completion zsh)
+# Testing Switcher as a per shell option
+if (hash switcher > /dev/null 2>&1 ) ; then
+  source <(switcher init zsh)
+  source <(switch completion zsh)
+  alias s=switch
+fi
 
 ### Starship prompt
 eval "$(starship init zsh)"
 ### Zoxide
-eval "$(zoxide init zsh)"
+if command -v zoxide 1>/dev/null 2>&1; then
+  eval "$(zoxide init zsh)"
+  alias cd=z #NOTE: Old habits die hard
+  # _ZO_FZF_OPTS=""
+fi
 ### direnv
 eval "$(direnv hook zsh)"
 
