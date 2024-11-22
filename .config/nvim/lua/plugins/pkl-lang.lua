@@ -27,4 +27,15 @@ return {
       table.insert(opts.sections.lualine_x, "😄")
     end,
   },
+  -- {
+  --   "neovim/nvim-lspconfig",
+  --   ---@class PluginLspOpts
+  --   opts = {
+  --     ---@type lspconfig.options
+  --     servers = {
+  --       -- pkl lsp maybe
+  --       pkl-lsp = {},
+  --     },
+  --   },
+  -- },
 }
