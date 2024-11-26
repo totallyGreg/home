@@ -14,12 +14,13 @@ local installs=$(brew formulae | fzf -m \
   --ansi                 \
   --preview "${preview}" \
   --preview-window=:wrap \
-  --min-height=17)
+  --min-height=17 | xargs )
 # If nothing selected just exit
 
 # Batch install and dump new Brewfile bundle
 if [[ $installs ]]; then
-  brew install $installs;
+  echo $installs | xargs brew install
+  echo "⚙️ Updating Bundlefile"
   brew bundle dump --all --describe --force;
 fi
 

@@ -13,12 +13,16 @@ Homepage: \(.homepage)
 Version: \(.versions.stable)
 Dependencies: \(.dependencies | join(\", \"))\n\""'
 
-updates=$(brew outdated -q| fzf -m --ansi --min-height=20 --preview "${preview}" )
+local updates=$(brew outdated -q| fzf -m \
+  --ansi \
+  --min-height=20 \
+  --preview "${preview}" | xargs)
 
 # Batch update and dump new Brewfile bundle
 if [[ -n $updates ]]
 then
-  brew upgrade $updates
+  echo $updates | xargs brew upgrade
+  echo "⚙️  Updating Bundlefile"
   brew bundle dump --all --describe --force
 else
   echo "No updates found: $updates"
