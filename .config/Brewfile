@@ -26,6 +26,7 @@ tap "martido/brew-graph"
 tap "mczachurski/wallpapper"
 tap "minio/stable"
 tap "nativeos/i386-elf-toolchain"
+tap "nikitabobko/tap"
 tap "saltbo/bin"
 tap "siderolabs/tap"
 tap "solo-io/tap"
@@ -39,8 +40,6 @@ tap "zdcthomas/tools"
 brew "amazon-ecs-cli"
 # C library SSHv1/SSHv2 client and server protocols
 brew "libssh"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.12"
 # Automate deployment, configuration, and upgrading
 brew "ansible"
 # Checks ansible playbooks for practices and behaviour
@@ -61,6 +60,8 @@ brew "aom"
 brew "argocd"
 # Collection of portable C++ source libraries
 brew "boost"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.12"
 # Source-code syntax highlighter
 brew "source-highlight"
 # Formatter/translator for text files to numerous formats
@@ -83,8 +84,6 @@ brew "aws-vault"
 brew "awscli"
 # Azure Storage data transfer utility
 brew "azcopy"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.11"
 # Microsoft Azure CLI 2.0
 brew "azure-cli"
 # Programmable completion for Bash 4.2+
@@ -123,8 +122,6 @@ brew "colima", args: ["HEAD"]
 brew "coreutils"
 # Tool for interacting with remote images and registries
 brew "crane"
-# Get a file from an HTTP, HTTPS or FTP server
-brew "curl"
 # Portable devkit for CI/CD pipelines
 brew "dagger"
 # JSON, YAML, TOML, XML, and CSV query and modification tool
@@ -259,6 +256,8 @@ brew "gum"
 brew "hadolint"
 # Kubernetes package manager
 brew "helm"
+# Create Helm chart from Kubernetes yaml
+brew "helmify"
 # HTTP load generator, ApacheBench (ab) replacement
 brew "hey"
 # Convert source code to formatted text with syntax highlighting
@@ -412,6 +411,8 @@ brew "python-markdown"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.10"
 # Interpreted, interactive, object-oriented programming language
+brew "python@3.11"
+# Interpreted, interactive, object-oriented programming language
 brew "python@3.9"
 # Compression/decompression library aiming for high speed
 brew "snappy"
@@ -475,8 +476,6 @@ brew "texinfo"
 brew "tflint"
 # Code-search similar to ack
 brew "the_silver_searcher"
-# Programmatically correct mistyped console commands
-brew "thefuck"
 # Terminal multiplexer
 brew "tmux"
 # Display directories as trees (with optional color/HTML output)
@@ -497,8 +496,12 @@ brew "w3m"
 brew "watch"
 # Command-line client for WebSockets
 brew "websocat"
+# Consistent delivery tool for Kubernetes
+brew "werf"
 # Internet file retriever
 brew "wget"
+# Swift native on-device speech recognition with Whisper for Apple Silicon
+brew "whisperkit-cli"
 # Automatic workarounds for problems in Wine
 brew "winetricks"
 # H.265/HEVC encoder
@@ -578,6 +581,10 @@ cask "google-cloud-sdk"
 cask "gpg-suite", args: { appdir: "~/Applications/Ops/Clandestine" }
 # Open Source Multimedia Framework
 cask "gstreamer-runtime"
+# Open-source keystroke visualiser
+cask "keycastr", args: { appdir: "~/Applications/Ops/Administration" }
+# Window manager
+cask "loop", args: { appdir: "~/Applications/Ops/Administration/Window Management" }
 # Knowledge base that works on top of a local folder of plain text Markdown files
 cask "obsidian"
 # ZFS driver and utilities
@@ -625,6 +632,7 @@ mas "Keynote", id: 409183694
 mas "Mastodon Air", id: 1661639557
 mas "Mastonaut", id: 1450757574
 mas "Numbers", id: 409203825
+mas "Obsidian Web Clipper", id: 6720708363
 mas "Pages", id: 409201541
 mas "Paprika Recipe Manager 3", id: 1303222628
 mas "Peek", id: 1554235898
