@@ -92,7 +92,7 @@ alias -g tctl=talosctl
 alias tf=terraform
 
 ## Tmux stuff
-alias t="tmux "
+# alias t="tmux "
 # alias ta="t a -t"  # replaced with ~/bin/ta
 alias tls="t ls"
 alias takeover="tmux detach -a"
@@ -104,8 +104,6 @@ alias v='vagrant'
 
 ## Vim stuff
 alias -g vim=nvim
-alias view='nvim -R'  # Globally aliasing this broke `gh gist view`
-alias -g vimdiff='nvim -d'
 alias zdot="yavim ~/.config/tmux/tmux.conf"
 alias tedit='GIT_DIR=$HOME/.local/share/yadm/repo.git GIT_WORK_TREE=$HOME vim ~/.config/tmux/tmux.conf'
 alias zedit='GIT_DIR=$HOME/.local/share/yadm/repo.git GIT_WORK_TREE=$HOME vim ~/.config/zsh/.zshrc'
