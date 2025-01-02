@@ -1,4 +1,5 @@
 # # FZF
+source <(fzf --zsh)
 FZF_FD_OPTS="--hidden --follow --no-ignore-vcs -E .git"
 FZF_DEFAULT_COMMAND="command fd --type f $FZF_FD_OPTS"
 
@@ -15,10 +16,11 @@ FZF_DEFAULT_OPTS="
 --bind 'ctrl-y:execute-silent(echo {+} | pbcopy)+abort' \
 --bind 'ctrl-e:become(echo {+} | xargs -o nvim)' \
 --bind 'ctrl-v:become(code {+})' \
---layout reverse \
 --prompt '∷ ' \
 --pointer ▶ \
 --marker ⇒"
+
+# --layout reverse \
 
 FZF_PREVIEW_FILE_COMMAND="bat --color=always --paging=never --style=plain"
 FZF_PREVIEW_DIR_COMMAND="tree -C {}"
