@@ -11,8 +11,9 @@
 # This needs to be loaded AFTER compinit and thus here.
 compdef kubecolor=kubectl
 
-# Work-around for 2nd file completion not working
-# from https://github.com/nbaronov/oh-my-zsh/commit/2aa14ac52f23052b2f4a2672dbff8cbee634bf51#diff-ad8ebb220e4464324d2c6753505d279846bc607d6ee9f664a3fd666748e57a87R44
+# Work-around for 2nd file completion not working when using zephyr color
+# similar issue https://github.com/ohmyzsh/ohmyzsh/issues/11454
+# fixed in https://github.com/nbaronov/oh-my-zsh/commit/2aa14ac52f23052b2f4a2672dbff8cbee634bf51#diff-ad8ebb220e4464324d2c6753505d279846bc607d6ee9f664a3fd666748e57a87R44
 # Apple diff supports `--color` but does it silently and the default completion seems to be confused
 function color-diff {
     diff --color $@
