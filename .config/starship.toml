@@ -208,11 +208,11 @@ disabled = false
 disabled = true
 
 [time]
-format = ' [\[$time\]]($style) '
+format = ' [\[$time\]]($style)'
 # format = '🕙[\[$time\]]($style) '
 disabled = false
 time_format = "%R"           # Hour:Minute Format
-style = "fg:base0 bg:base03"
+# style = "fg:base0 bg:base03"
 # format = '[\[ $time\](fg:yellow bg:base03)]($style)'
 
 [username]
