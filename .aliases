@@ -98,11 +98,8 @@ alias tls="t ls"
 alias takeover="tmux detach -a"
 alias tkill="for s in \$(tmux list-sessions | awk '{print \$1}' | rg ':' -r '' | fzf); do tmux kill-session -t \$s; done;"
 
-## Vagrant Stuff
-alias vgs='vagrant global-status'
-alias v='vagrant'
-
 ## Vim stuff
+alias -g v=nvim
 alias -g vim=nvim
 alias zdot="yavim ~/.config/tmux/tmux.conf"
 alias tedit='GIT_DIR=$HOME/.local/share/yadm/repo.git GIT_WORK_TREE=$HOME vim ~/.config/tmux/tmux.conf'
@@ -179,4 +176,4 @@ alias restart_dns='ssh portcullis sudo /etc/init.d/dnsmasq force-reload'
 # alias mp4tags='docker run -it --rm -u $(id -u):$(id -g) -v "$(pwd)":/mnt --entrypoint mp4tags m4b-tool'
 # alias mp4info='docker run -it --rm -u $(id -u):$(id -g) -v "$(pwd)":/mnt --entrypoint mp4info m4b-tool'
 
-alias merge_yaml="yq eval-all '. as $item ireduce ({}; . * $item )' "
+alias yaml_cat="cat_yaml"
