@@ -27,9 +27,7 @@ fi
 # output should be entire file cat'd which can than be redirected to a new file or applied directly via kubectl
 #
 local yaml_files="$@"
-for file in $yaml_files
-  yq eval
-  echo "---"
+yq eval "$@"
 
 #}
 
