@@ -114,6 +114,10 @@ brew "cilium-cli"
 brew "cmake"
 # Command-line tool to manage cert-manager
 brew "cmctl"
+# Open source programming language to build simple/reliable/efficient software
+brew "go"
+# Tool to generate cobra applications and commands
+brew "cobra-cli"
 # Linux virtual machines
 brew "lima"
 # Container runtimes on MacOS (and Linux) with minimal setup
@@ -214,8 +218,6 @@ brew "glooctl"
 brew "gnu-getopt"
 # GNU implementation of the famous stream editor
 brew "gnu-sed"
-# Open source programming language to build simple/reliable/efficient software
-brew "go"
 # Task is a task runner/build tool that aims to be simpler and easier to use
 brew "go-task"
 # Generate introspection data for GObject libraries
@@ -352,6 +354,8 @@ brew "mercurial"
 brew "mint"
 # Cross platform, open source .NET development framework
 brew "mono"
+# Collection of tools that nobody wrote when UNIX was young
+brew "moreutils"
 # MP3 technical info viewer and ID3 1.x tag editor
 brew "mp3info"
 # Read, create, and modify MP4 files
@@ -360,6 +364,8 @@ brew "mp4v2"
 brew "msgpack"
 # 'traceroute' and 'ping' in a single tool
 brew "mtr"
+# Interactive cheatsheet tool for the command-line
+brew "navi"
 # Parser generator tool and incremental parsing library
 brew "tree-sitter"
 # Ambitious Vim-fork focused on extensibility and agility
@@ -378,6 +384,8 @@ brew "ollama"
 brew "opentofu"
 # API for decoding and seeking in .opus files
 brew "opusfile"
+# OCI Registry As Storage
+brew "oras"
 # Command-line tool to generate, analyze, convert and manipulate colors
 brew "pastel"
 # Highly capable, feature-rich programming language
@@ -420,8 +428,6 @@ brew "snappy"
 brew "qemu"
 # Unified tool to manage your Rancher server
 brew "rancher-cli"
-# Ruby version manager
-brew "rbenv"
 # Docker and OCI Registry Client in Go and tooling using those libraries
 brew "regclient"
 # Search tool like grep and The Silver Searcher
@@ -551,7 +557,7 @@ brew "glasskube/tap/glasskube"
 brew "homebrew-ffmpeg/ffmpeg/ffmpeg", args: ["with-fdk-aac"]
 # δyƒƒ /ˈdʏf/ - A diff tool for YAML files, and sometimes JSON
 brew "homeport/tap/dyff"
-brew "jahvon/tap/flow"
+brew "jahvon/tap/flow", link: false
 # Smart terminal session manager
 brew "joshmedeski/sesh/sesh"
 brew "knative/client/kn"
