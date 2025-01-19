@@ -1,0 +1,18 @@
+# theme = Builtin Solarized Dark
+# theme = dark:Builtin Solarized Dark,light:catppuccin-latte
+theme = dark:Builtin Solarized Dark,light:Builtin Solarized Light
+
+#  "native", "transparent", "tabs", and "hidden".
+# macos-titlebar-style = "hidden"
+
+# font-family = "FiraMono Nerd Font Mono"
+font-family = "FiraCode Nerd Font Mono"
+font-style = "Retina"
+#font-family = "Bitstream Vera Sans Mono"
+#font-style-italic = "Oblique"
+font-family = "Menlo"
+font-style-italic = "Italic"
+
+#font-codepoint-map = "Symbols Nerd Font Mono"
+
+keybind = global:ctrl+shift+1=toggle_quick_terminal
