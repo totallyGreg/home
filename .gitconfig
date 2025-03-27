@@ -69,7 +69,7 @@
 [github]
   user = totallyGreg@gmail.com
 [diff]
-  tool = vimdiff
+  tool = nvimdiff
   colorMoved = default
 [merge]
   tool = vimdiff

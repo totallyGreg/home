@@ -1,13 +1,37 @@
 return {
-  { -- Add indentation guides even on blank lines
-    "lukas-reineke/indent-blankline.nvim",
-    enabled = false,
-    -- Enable `lukas-reineke/indent-blankline.nvim`
-    -- See `:help ibl`
-    event = "LazyFile",
+  -- { -- Add indentation guides even on blank lines
+  --   "lukas-reineke/indent-blankline.nvim",
+  --   enabled = false,
+  --   -- Enable `lukas-reineke/indent-blankline.nvim`
+  --   -- See `:help ibl`
+  --   event = "LazyFile",
+  --   opts = {
+  --     indent = { char = "¦" },
+  --   },
+  --   main = "ibl",
+  -- },
+  {
+    "folke/snacks.nvim",
+    priority = 1000,
+    lazy = false,
+    ---@type snacks.Config
     opts = {
-      indent = { char = "¦" },
+      -- your configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
+      bigfile = { enabled = true },
+      dashboard = { enabled = true },
+      indent = {
+        enabled = true,
+        char = "¦",
+        only_current = true, -- only show indent guides in the current window
+      },
+      input = { enabled = true },
+      notifier = { enabled = true },
+      quickfile = { enabled = true },
+      scroll = { enabled = true },
+      statuscolumn = { enabled = true },
+      words = { enabled = true },
     },
-    main = "ibl",
   },
 }

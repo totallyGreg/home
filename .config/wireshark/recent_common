@@ -1,50 +1,116 @@
-# Recent settings file for Wireshark 3.0.1.
+# Common recent settings file for Wireshark 4.4.5.
 #
-# This file is regenerated each time Wireshark is quit.
+# This file is regenerated each time Wireshark is quit
+# and when changing configuration profile.
 # So be careful, if you want to make manual changes here.
 
 ######## Recent capture files (latest last), cannot be altered through command line ########
 
 
-######## Recent capture filters (latest last), cannot be altered through command line ########
+######## Recent capture filters (latest first), cannot be altered through command line ########
 
 
 ######## Recent display filters (latest last), cannot be altered through command line ########
 
+recent.display_filter: ipv6.addr eq 2603:9000:9600:3000:1c2a:1202:d762:dc86 and ipv6.addr eq 2603:9000:9600:3001:b4a6:6738:cba8:d9fd
 
 # Main window geometry.
 # Decimal numbers.
-gui.geometry_main_x: 0
-gui.geometry_main_y: 25
-gui.geometry_main_width: 1920
-gui.geometry_main_height: 2107
+gui.geometry_main_x: 251
+gui.geometry_main_y: 77
+gui.geometry_main_width: 1459
+gui.geometry_main_height: 1007
 
 # Main window maximized.
-# TRUE or FALSE (case-insensitive).
-gui.geometry_main_maximized: FALSE
+# true or false (case-insensitive).
+gui.geometry_main_maximized: false
 
-# Statusbar left pane size.
-# Decimal number.
-gui.geometry_status_pane: 250
-
-# Statusbar middle pane size.
-# Decimal number.
-gui.geometry_status_pane_right: 250
+# Leftalign Action Buttons.
+# true or false (case-insensitive).
+gui.geometry_leftalign_actions: false
 
 # Last used Configuration Profile.
 gui.last_used_profile: Default
 
-# WLAN statistics upper pane size.
-# Decimal number.
-gui.geometry_status_wlan_stats_pane: 200
+# Number of packets or events to check for automatic profile switching.
+# Decimal number. Zero disables switching.
+#gui.profile_switch_check_count: 1000
 
 # Warn if running with elevated permissions (e.g. as root).
-# TRUE or FALSE (case-insensitive).
-privs.warn_if_elevated: TRUE
+# true or false (case-insensitive).
+privs.warn_if_elevated: true
 
-# Warn if npf.sys isn't loaded on Windows >= 6.0.
-# TRUE or FALSE (case-insensitive).
-privs.warn_if_no_npf: TRUE
+# Warn if Wireshark is unable to capture.
+# true or false (case-insensitive).
+sys.warn_if_no_capture: true
+
+# Find packet search in.
+# One of: PACKET_LIST, PACKET_DETAILS, PACKET_BYTES
+gui.search_in: PACKET_LIST
+
+# Find packet character set.
+# One of: NARROW_AND_WIDE, NARROW, WIDE
+gui.search_char_set: NARROW_AND_WIDE
+
+# Find packet case sensitive search.
+# true or false (case-insensitive).
+gui.search_case_sensitive: false
+
+# Find packet search reverse direction.
+# true or false (case-insensitive).
+gui.search_reverse_dir: false
+
+# Find packet search multiple occurrences.
+# true or false (case-insensitive).
+gui.search_multiple_occurs: false
+
+# Find packet search type.
+# One of: DISPLAY_FILTER, HEX_VALUE, STRING, REGEX
+gui.search_type: DISPLAY_FILTER
+
+# Geometry and maximized state of ipv6_hosts window.
+# Decimal integers.
+gui.geom.ipv6_hosts.x: 570
+gui.geom.ipv6_hosts.y: 339
+gui.geom.ipv6_hosts.width: 800
+gui.geom.ipv6_hosts.height: 459
+# true or false (case-insensitive).
+gui.geom.ipv6_hosts.maximized: false
+# Qt Geometry State (hex byte string).
+gui.geom.ipv6_hosts.qt_geometry: (null)
+
+# Geometry and maximized state of FilterDialog window.
+# Decimal integers.
+gui.geom.FilterDialog.x: 484
+gui.geom.FilterDialog.y: 233
+gui.geom.FilterDialog.width: 972
+gui.geom.FilterDialog.height: 671
+# true or false (case-insensitive).
+gui.geom.FilterDialog.maximized: false
+# Qt Geometry State (hex byte string).
+gui.geom.FilterDialog.qt_geometry: 01d9d0cb00030000000001e4000000e9000005af000003a3000001e400000105000005af000003a3000000000000000006ae000001e400000105000005af000003a3
+
+# Geometry and maximized state of ColoringRulesDialog window.
+# Decimal integers.
+gui.geom.ColoringRulesDialog.x: 495
+gui.geom.ColoringRulesDialog.y: 178
+gui.geom.ColoringRulesDialog.width: 972
+gui.geom.ColoringRulesDialog.height: 805
+# true or false (case-insensitive).
+gui.geom.ColoringRulesDialog.maximized: false
+# Qt Geometry State (hex byte string).
+gui.geom.ColoringRulesDialog.qt_geometry: (null)
+
+# Geometry and maximized state of dns window.
+# Decimal integers.
+gui.geom.dns.x: 570
+gui.geom.dns.y: 339
+gui.geom.dns.width: 820
+gui.geom.dns.height: 502
+# true or false (case-insensitive).
+gui.geom.dns.maximized: false
+# Qt Geometry State (hex byte string).
+gui.geom.dns.qt_geometry: (null)
 
 # Custom colors.
 # List of custom colors selected in Qt color picker.

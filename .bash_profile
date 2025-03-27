@@ -15,3 +15,4 @@ fi
 [[ -s "$HOME/.bashrc" ]] && source "$HOME/.bashrc"    # Load the default .bashrc
 
 complete -C /Users/totally/.asdf/installs/terraform/1.5.2/bin/terraform terraform
+. "$HOME/.cargo/env"

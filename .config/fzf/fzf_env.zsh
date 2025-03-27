@@ -5,8 +5,6 @@
 # Contemplating moving these to $ZDOTDIR/functions for autoload goodness
 source "$XDG_CONFIG_HOME/fzf/GITheartFZF.sh"
 source "$XDG_CONFIG_HOME/fzf/Docker.sh"
-# source "$XDG_CONFIG_HOME/fzf/Homebrew.sh"
-source "$XDG_CONFIG_HOME/fzf/Azure.sh"
 
 export FZF_DEFAULT_COMMAND='command fd -H --no-ignore-vcs -E .git -td -tf'
 # export FZF_DEFAULT_COMMAND='ag -l -t -g ""'
@@ -19,7 +17,6 @@ export FZF_DEFAULT_OPTS="
 --height ~90% \
 --tmux 80% \
 --color header:underline \
---color gutter:-1 \
 --border sharp \
 --preview-window=50%,hidden \
 --bind '?:toggle-preview' \
@@ -31,6 +28,8 @@ export FZF_DEFAULT_OPTS="
 --prompt '∷ ' \
 --pointer ▶ \
 --marker ⇒"
+# --preview 'bat --color=always {}' \
+# --color gutter:-1 \
 
 
 ## Fuzzy Directory completion
@@ -43,8 +42,6 @@ export FZF_ALT_C_OPTS="
   --walker-skip .git,node_modules,target \
   --preview 'tree -C {}'"
 
-# --bind ctrl-/:toggle-preview \
-
 _fzf_compgen_path() {
   command fd -H --no-ignore-vcs -E .git -td -tf . ${1}
 }
@@ -53,18 +50,7 @@ _fzf_compgen_dir() {
   command fd -H --no-ignore-vcs -E .git -td . ${1}
 }
 
-# export FZF_ALT_C_COMMAND="fd --hidden -t d . /Users/totally"
-# export FZF_ALT_C_OPTS="--bind ctrl-/:toggle-preview --preview 'command ${ls_cmd} -CF {}' ${FZF_ALT_C_OPTS}"
-
-
-## Fuzzy File Completion
-# export FZF_CTRL_T_OPTS="--height 60% \
-# --border sharp \
-# --layout reverse \
-# --prompt '∷ ' \
-# --pointer ▶ \
-# --marker ⇒"
-
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 # Preview file content using bat (https://github.com/sharkdp/bat)
 export FZF_CTRL_T_OPTS="
   --walker-skip .git,node_modules,target

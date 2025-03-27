@@ -1,12 +1,12 @@
 # Setup for most environments a lot of old solaris craft in here
 unameOut="$(uname -s)"
 case "${unameOut}" in
-    Linux*)     machine=Linux;;
-    Darwin*)    machine=Mac;;
-    CYGWIN*)    machine=Cygwin;;
-    MINGW*)     machine=MinGw;;
-    FreeBSD*)   machine=FreeBSD;;
-    *)          machine="UNKNOWN:${unameOut}"
+  Linux*) machine=Linux ;;
+  Darwin*) machine=Mac ;;
+  CYGWIN*) machine=Cygwin ;;
+  MINGW*) machine=MinGw ;;
+  FreeBSD*) machine=FreeBSD ;;
+  *) machine="UNKNOWN:${unameOut}" ;;
 esac
 echo "Running on ${machine}"
 
@@ -14,10 +14,9 @@ echo "Running on ${machine}"
 export LC_CTYPE=en_US.UTF-8
 
 pathappend() {
-  for ARG in "$@"
-  do
+  for ARG in "$@"; do
     if [ -d "$ARG" ] && [[ ":$PATH:" != *":$ARG:"* ]]; then
-        PATH="${PATH:+"$PATH:"}$ARG"
+      PATH="${PATH:+"$PATH:"}$ARG"
     fi
   done
 }
@@ -81,7 +80,7 @@ export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
 export KUBECONFIG=$KUBECONFIG:$HOME/.kube/config
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 # Need for the tmux-exec plugin to kubectl
-if command -v brew >/dev/null 2>&1 ; then
+if command -v brew >/dev/null 2>&1; then
   export GNU_GETOPT_PREFIX="$(brew --prefix gnu-getopt)"
 fi
 
@@ -92,3 +91,6 @@ export GOPATH="${HOME}/.go"
 export PATH="$PATH:${GOPATH}/bin:${GOROOT}/bin"
 
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
+r                                                                    # Needed for nix
+ulimit -Sn 1024
+. "$HOME/.cargo/env"

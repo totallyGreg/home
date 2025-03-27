@@ -1,5 +1,4 @@
-return 
-{
+return {
   "echasnovski/mini.align",
   version = false,
   mappings = {

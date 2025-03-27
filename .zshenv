@@ -36,6 +36,7 @@ path=(
   $HOME/brew/{,s}bin(N)
   /opt/{homebrew,local}/{,s}bin(N)
   /usr/local/{,s}bin(N)
+  $HOME/.local/share/nvim/mason/bin
   $path
 )
 if (hash brew > /dev/null 2>&1 ) ; then
@@ -46,8 +47,13 @@ if (hash brew > /dev/null 2>&1 ) ; then
   export GNU_GETOPT_PREFIX="$(brew --prefix gnu-getopt)"
 fi
 
+# ASDF
+export ASDF_DATA_DIR="${HOME}/.asdf"
+export PATH="$ASDF_DATA_DIR/shims:$PATH"
+
 # personal bin directory
 export PATH=${HOME}/bin:$PATH
 
 [[ -d $ZDOTDIR ]] || echo Error: ZDOTDIR=${(q)ZDOTDIR} does not exist. >&2
 
+. "$HOME/.cargo/env"

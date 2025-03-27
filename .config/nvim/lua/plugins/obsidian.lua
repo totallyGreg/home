@@ -1,23 +1,52 @@
 return {
   -- I'd like to incorporate markdown-oxide landguage server https://github.com/Feel-ix-343/markdown-oxide?tab=readme-ov-file
   -- I have no idea if the mason install configures lsp correctly or not
-  -- {
-  --   "neovim/nvim-lspconfig",
-  --   ---@class PluginLspOpts
-  --   opts = function()
-  --     return {
-  --       -- Ensure that dynamicRegistration is enabled! This allows the LS to take into account actions like the
-  --       -- Create Unresolved File code action, resolving completions for unindexed code blocks, ...
-  --       capabilities = {
-  --         workspace = {
-  --           didChangeWatchedFiles = {
-  --             dynamicRegistration = true,
-  --           },
-  --         },
-  --       },
-  --     }
-  --   end,
-  -- },
+  {
+    "neovim/nvim-lspconfig",
+    -- dependencies = { "williamboman/mason-lspconfig.nvim", "hrsh7th/cmp-nvim-lsp" },
+    opts = {
+      inlay_hints = { enabled = true },
+      autoformat = false,
+      capabilities = {
+        textDocument = {
+          documentFormattingProvider = false,
+          codelens = { enable = true },
+          completion = {
+            completionItem = {
+              snippetSupport = true,
+              resolveSupport = { properties = { "documentation", "detail", "additionalTextEdits" } },
+            },
+          },
+        },
+      },
+      setup = {
+        markdown_oxide = function(_, opts)
+          opts.capabilities.workspace = { didChangeWatchedFiles = { dynamicRegistration = true } }
+        end,
+      },
+      servers = {
+        markdown_oxide = {},
+        marksman = {},
+      },
+    },
+  },
+  -- opts.root_dir = lspconfig.util.root_pattern(".git", ".obsidian", ".moxide.toml", "*.md"),
+  --
+  -- Enable opening daily notes with natural langauge
+  -- Modify your lsp on_attach function to support opening daily notes with, for example, :Daily two days ago or :Daily next monday.
+  -- -- setup Markdown Oxide daily note commands
+  -- opts.on_attach = function(client, _)
+  --   vim.api.nvim_create_user_command(
+  --     "Daily",
+  --     function(args)
+  --       local input = args.args
+  --
+  --       vim.lsp.buf.execute_command({command="jump", arguments={input}})
+  --
+  --     end,
+  --     {desc = 'Open daily note', nargs = "*"}
+  --   )
+  -- end
   {
     "epwalsh/obsidian.nvim",
     version = "*", -- recommended, use latest release instead of latest commit
@@ -32,8 +61,8 @@ return {
     },
     dependencies = {
       -- Required.
+      -- "hrsh7th/nvim-cmp",
       "nvim-lua/plenary.nvim",
-      "hrsh7th/nvim-cmp",
       "nvim-telescope/telescope.nvim",
       "nvim-treesitter",
 
@@ -47,6 +76,9 @@ return {
       { "<leader>os", "<cmd>ObsidianQuickSwitch<cr>", desc = "Open Obsidian Quick Switch" },
     },
     opts = {
+      -- If you're using MacOS and your 'Obsidian.app' happens to be in a non-standard location,
+      -- (i.e. not '/Applications/Obsidian.app') you can set the path here.
+      obsidian_app = "~/Applications/Comm/Written/Obsidian.app",
       workspaces = {
         -- {
         --   name = "personal-iCloud",
@@ -81,7 +113,7 @@ return {
         -- Optional, if you keep daily notes in a separate directory.
         folder = "500 ♽ Cycles/520 🌄 Days",
         -- Optional, if you want to change the date format for the ID of daily notes.
-        date_format = "%Y-%m-%d",
+        date_format = "%Y/%Y-%m-%d",
         -- Optional, if you want to change the date format of the default alias of daily notes.
         alias_format = "%B %-d, %Y",
         -- Optional, if you want to automatically insert a template from your template directory like 'daily.md'
@@ -133,10 +165,10 @@ return {
 
       -- Optional, set to true if you use the Obsidian Advanced URI plugin.
       -- https://github.com/Vinzent03/obsidian-advanced-uri
-      use_advanced_uri = false,
+      use_advanced_uri = true,
 
       -- Optional, set to true to force ':ObsidianOpen' to bring the app to the foreground.
-      open_app_foreground = false,
+      open_app_foreground = true,
 
       picker = {
         -- Set your preferred picker. Can be one of 'telescope.nvim', 'fzf-lua', or 'mini.pick'.

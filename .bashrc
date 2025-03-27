@@ -128,7 +128,7 @@ fi
 ## Source Functions
 [ -f ~/.functions ] && source ~/.functions
 ## Source Aliases
-[ -f ~/.aliases ] && source ~/.aliases
+# [ -f ~/.aliases ] && source ~/.aliases
 ## Source Terraform variables
 # include ~/.oci/env-vars
 [ -f "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.bash ] && source "${XDG_CONFIG_HOME:-$HOME/.config}"/fzf/fzf.bash
@@ -140,3 +140,4 @@ if hash direnv 2>/dev/null; then
   eval "$(direnv hook bash)"
 fi
 
+. "$HOME/.cargo/env"

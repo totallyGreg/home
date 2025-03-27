@@ -180,7 +180,7 @@ zstyle ':zcomet:compinit' dump-file $XDG_CACHE_HOME/zsh/zcompdump
 
 zcomet load zsh-users/zsh-completions
 zcomet load mattmc3/zephyr plugins/completion
-zcomet load asdf-vm/asdf
+# zcomet load asdf-vm/asdf
 zcomet load mattmc3/zephyr plugins/homebrew
 zcomet load mattmc3/zephyr plugins/macos
 zcomet load mattmc3/zephyr plugins/zfunctions
@@ -250,7 +250,10 @@ if command -v zoxide 1>/dev/null 2>&1; then
   # _ZO_FZF_OPTS=""
 fi
 ### direnv
-eval "$(direnv hook zsh)"
+# whence -w $1 >/dev/null
+if command -v direnv 1>/dev/null 2>&1; then
+  eval "$(direnv hook zsh)"
+fi
 
 # source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc"
 

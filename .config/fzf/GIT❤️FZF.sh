@@ -1,1 +1,0 @@
-GITheartFZF.sh

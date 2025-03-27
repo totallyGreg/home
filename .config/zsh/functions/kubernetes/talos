@@ -22,7 +22,7 @@ cluster_patch_dir=${CLUSTER_PATCHES}
 node_patch_dir=${NODE_PATCHES}
 
 get_schematic_id() {
-  [[ -r ${CLUSTER_PATCHES/bare-metal.yaml} ]]  || echo "Image factory requires config file" # && return 1 )
+  [[ -r ${CLUSTER_PATCHES/bare-metal.yaml} ]]  || (echo "Error: config file path not defined" && return 1 )
   # base_config=${CLUSTER_PATCHES}/bare-metal.yaml
   # we can upload the schematic to the Image Factory to retrieve its ID:
   result=$(curl -sX POST --data-binary @${CLUSTER_PATCHES}/bare-metal.yaml https://factory.talos.dev/schematics | jq -r .id)
@@ -61,6 +61,7 @@ generate_config() {
     --config-patch @"${cluster_patch_dir}/cluster-config.yaml" \
     --config-patch @"${cluster_patch_dir}/network-patch.yaml" \
     --config-patch @"${cluster_patch_dir}/metrics-patch.yaml" \
+    --config-patch @"${cluster_patch_dir}/spegel.yaml" \
     --config-patch @"${node_patch_dir}/${node}-patch.yaml" \
     --output-types "controlplane" \
     --nodes "$node_ip" \
@@ -139,7 +140,7 @@ reset_cluster() {
   talosctl reset --system-labels-to-wipe STATE --system-labels-to-wipe EPHEMERAL --reboot --graceful=false
 
   #Then reapply the configuration
-  ktalosctl apply-config --insecure -n "$CONTROL_PLANE_IP" --file controlplane-no_CNI.yaml
+  talosctl apply-config --insecure -n "$CONTROL_PLANE_IP" --file controlplane-no_CNI.yaml
 
   # Then boostrap kubernetes
   talosctl bootstrap --nodes "$CONTROL_PLANE_IP" .0.0.91 --endpoints "$CONTROL_PLANE_IP" --talosconfig=./talosconfig

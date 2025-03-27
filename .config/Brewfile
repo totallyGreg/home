@@ -36,6 +36,8 @@ tap "ubuntu/microk8s"
 tap "universal-ctags/universal-ctags"
 tap "watsonbox/cmu-sphinx"
 tap "zdcthomas/tools"
+# Any-to-PostScript filter
+brew "a2ps"
 # CLI for Amazon ECS to manage clusters and tasks for development
 brew "amazon-ecs-cli"
 # C library SSHv1/SSHv2 client and server protocols
@@ -70,6 +72,8 @@ brew "asciidoc"
 brew "asciidoctor"
 # Record and share terminal sessions
 brew "asciinema"
+# Extendable version manager with support for Ruby, Node.js, Erlang & more
+brew "asdf"
 # Automatic configure script builder
 brew "autoconf"
 # Tool for generating GNU Standards-compliant Makefiles
@@ -627,6 +631,8 @@ cask "simple-comic", args: { appdir: "~/Applications/Comm/Visual" }
 cask "sol", args: { appdir: "~/Applications/Ops/Administration" }
 # Application for inspecting installer packages
 cask "suspicious-package", args: { appdir: "~/Applications/Ops/Administration/Package Management" }
+# Virtual machines UI using QEMU
+cask "utm", args: { appdir: "~/Applications/Holodeck" }
 # Development environment
 cask "vagrant", args: { appdir: "~/Applications/Ops/Engineering" }
 # Rust-based terminal
@@ -652,6 +658,7 @@ mas "Obsidian Web Clipper", id: 6720708363
 mas "Ooooo", id: 1482773008
 mas "Pages", id: 409201541
 mas "Paprika Recipe Manager 3", id: 1303222628
+mas "Parallels Desktop", id: 1085114709
 mas "Peek", id: 1554235898
 mas "Prime Video", id: 545519333
 mas "Save to Reader", id: 1640236961
