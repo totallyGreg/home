@@ -274,6 +274,8 @@ brew "hugo"
 brew "hyperfine"
 # Get events and tasks from the macOS calendar database
 brew "ical-buddy"
+# Convert Kubernetes Ingress resources to Kubernetes Gateway API resources
+brew "ingress2gateway"
 # Utility for IPMI control with kernel driver or LAN interface
 brew "ipmitool"
 # Interactive computing in Python
@@ -316,6 +318,8 @@ brew "kubevious"
 brew "kubie"
 # Template-free customization of Kubernetes YAML manifests
 brew "kustomize"
+# High quality MPEG Audio Layer III (MP3) encoder
+brew "lame"
 # Simple terminal UI for git commands
 brew "lazygit"
 # Subtitle renderer for the ASS/SSA subtitle format
@@ -408,6 +412,8 @@ brew "popeye"
 brew "prettier"
 # Linter for prose
 brew "proselint"
+# Monitor data's progress through a pipe
+brew "pv"
 # Python version management
 brew "pyenv"
 # Pyenv plugin to manage virtualenv
@@ -490,6 +496,8 @@ brew "tree"
 brew "universal-ctags", args: ["HEAD"]
 # URL extractor/launcher
 brew "urlview"
+# Extremely fast Python package installer and resolver, written in Rust
+brew "uv"
 # Creates fully functional virtual k8s cluster inside host k8s cluster's namespace
 brew "vcluster"
 # HTTP load testing tool and library
@@ -576,6 +584,8 @@ brew "styrainc/packages/regal"
 cask "amethyst", args: { appdir: "~/Applications/Ops/Administration/Window Management" }
 # Inspect application bundles
 cask "apparency", args: { appdir: "~/Applications/Ops/Administration/Package Management" }
+# Quick Look Plugin for AVIF images
+cask "avifquicklook"
 # Task and project management software
 cask "flow"
 cask "font-fira-mono-nerd-font"
@@ -639,14 +649,16 @@ mas "Mastodon Air", id: 1661639557
 mas "Mastonaut", id: 1450757574
 mas "Numbers", id: 409203825
 mas "Obsidian Web Clipper", id: 6720708363
+mas "Ooooo", id: 1482773008
 mas "Pages", id: 409201541
 mas "Paprika Recipe Manager 3", id: 1303222628
 mas "Peek", id: 1554235898
-mas "Playgrounds", id: 1496833156
 mas "Prime Video", id: 545519333
 mas "Save to Reader", id: 1640236961
 mas "Silicio", id: 933627574
 mas "Steam Link", id: 1246969117
+mas "Surfed", id: 1591590700
+mas "Swift Playground", id: 1496833156
 mas "TestFlight", id: 899247664
 mas "Vimari", id: 1480933944
 mas "WireGuard", id: 1451685025
