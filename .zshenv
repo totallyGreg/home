@@ -56,4 +56,7 @@ export PATH=${HOME}/bin:$PATH
 
 [[ -d $ZDOTDIR ]] || echo Error: ZDOTDIR=${(q)ZDOTDIR} does not exist. >&2
 
-. "$HOME/.cargo/env"
+export CARGO_HOME="$HOME/.cargo/env"
+[[ -f $CARGO_HOME ]] && . $CARGO_HOME
+
+
