@@ -9,7 +9,23 @@
 {
   // "theme": "Solarized Dark",
   "auto_update_extensions": {
+    "swift": false,
     "markdown-oxide": false
+  },
+  //from https://creativewithin.medium.com/how-i-got-zed-editor-working-with-swift-projects-60ea78d4165e
+  "languages": {
+    "Swift": {
+      "enable_language_server": true,
+      "language_servers": ["sourcekit-lsp"],
+      "formatter": "language_server",
+      "format_on_save": "on"
+    }
+  },
+  "inlay_hints": {
+    "enabled": true,
+    "show_type_hints": true,
+    "show_parameter_hints": true,
+    "show_other_hints": true
   },
   "language_models": {
     "ollama": {
@@ -17,18 +33,18 @@
     }
   },
   "features": {
-    "inline_completion_provider": "none"
+    "edit_prediction_provider": "none"
   },
   "theme": {
     "mode": "system",
     // "light": "Catppuccin Latte",
-    "light": "Solarized Light",
+    "light": "Solarized",
     "dark": "Solarized Dark"
   },
   "assistant": {
     "default_model": {
       "provider": "ollama",
-      "model": "qwen2.5-coder:latest"
+      "model": "codegemma:latest"
     },
     "version": "2",
     "provider": null

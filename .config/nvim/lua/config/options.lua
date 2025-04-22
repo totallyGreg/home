@@ -10,3 +10,6 @@ vim.opt.listchars = {
   tab = "▸ ", -- tab requires a string of two characters
   trail = "▫",
 }
+-- finally found out to disable this shit
+-- when enabled all scrolling navigation is broke including going to line numbers!
+vim.g.snacks_animate_scroll = false
