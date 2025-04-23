@@ -138,6 +138,10 @@ if type gpg &>/dev/null; then
   export GPG_TTY=$(tty)
   export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
   gpgconf --launch gpg-agent
+  # Switch does not actually seem to work on pinentry-mac
+  if [[ -n "$SSH_CONNECTION" ]] ;then
+      export PINENTRY_USER_DATA="USE_CURSES=1"
+  fi
 else
   # echo "GPG not found using ssh-agent"
 fi

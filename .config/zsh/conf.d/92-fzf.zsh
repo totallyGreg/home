@@ -35,6 +35,14 @@ FZF_ALT_C_OPTS="
   "
 FZF_ALT_C_COMMAND="fd --type d . $FZF_FD_OPTS"
 
+FZF_CTRL_R_OPTS="
+  --color header:italic
+  --header 'Press <CTRL-Y> to copy history into clipboard | <CTRL-S> (pet new)'
+  --preview 'echo {}' --preview-window down:3:hidden:wrap 
+  --bind '?:toggle-preview'
+  --bind 'ctrl-s:execute(pet new --tag {5..})+abort'
+  --bind 'ctrl-y:execute-silent(echo -n {2..} | pbcopy)+abort'"
+
 # FZF_CTRL_T_OPTS="--ansi --bind \"ctrl-w:execute(\${EDITOR:-nano} {1} >/dev/tty </dev/tty)+refresh-preview\" --preview \"$FZF_PREVIEW_FILE_COMMAND {} 2>/dev/null\""
 FZF_CTRL_T_OPTS="
   --walker-skip '.git,node_modules,target'
