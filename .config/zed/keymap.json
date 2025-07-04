@@ -11,10 +11,10 @@
       // put key-bindings here if you want them to work only in normal mode
       // "down": ["workspace::SendKeystrokes", "4 j"]
       // "up": ["workspace::SendKeystrokes", "4 k"]
-      "ctrl-h": ["workspace::ActivatePaneInDirection", "Left"],
-      "ctrl-l": ["workspace::ActivatePaneInDirection", "Right"],
-      "ctrl-k": ["workspace::ActivatePaneInDirection", "Up"],
-      "ctrl-j": ["workspace::ActivatePaneInDirection", "Down"]
+      "ctrl-h": "workspace::ActivatePaneLeft",
+      "ctrl-l": "workspace::ActivatePaneRight",
+      "ctrl-k": "workspace::ActivatePaneUp",
+      "ctrl-j": "workspace::ActivatePaneDown"
     }
   },
   {
@@ -29,18 +29,25 @@
       // put key-bindings here if you want them to work in insert mode
       // e.g.
       // "j j": "vim::NormalBefore" // remap jj in insert mode to escape.
-      "cmd-.": ["vim::SwitchMode", "Normal"] // old school mac escape/cancel.
+      "cmd-.": "vim::SwitchToNormalMode" // old school mac escape/cancel.
     }
   },
   {
     "context": "Dock",
     "bindings": {
       // These also need to be in Editor
-      "ctrl-h": ["workspace::ActivatePaneInDirection", "Left"],
-      "ctrl-l": ["workspace::ActivatePaneInDirection", "Right"],
-      "ctrl-k": ["workspace::ActivatePaneInDirection", "Up"],
-      "ctrl-j": ["workspace::ActivatePaneInDirection", "Down"]
+      "ctrl-h": "workspace::ActivatePaneLeft",
+      "ctrl-l": "workspace::ActivatePaneRight",
+      "ctrl-k": "workspace::ActivatePaneUp",
+      "ctrl-j": "workspace::ActivatePaneDown"
       // ... or other keybindings
+    }
+  },
+  {
+    "context": "Editor && vim_mode == normal && vim_operator == none && !VimWaiting",
+    "bindings": {
+      // put key-bindings here if you want them to work only in normal mode
+      "space g g": ["task::Spawn", { "task_name": "Lazygit" }]
     }
   }
 ]
