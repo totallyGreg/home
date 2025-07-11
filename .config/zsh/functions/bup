@@ -22,8 +22,7 @@ local updates=$(brew outdated -q| fzf -m \
 if [[ -n $updates ]]
 then
   echo $updates | xargs brew upgrade
-  echo "⚙️  Updating Bundlefile"
-  brew bundle dump --all --describe --force
+  bupdate
 else
   echo "No updates found: $updates"
 fi

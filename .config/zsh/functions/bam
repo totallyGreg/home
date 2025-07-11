@@ -8,6 +8,5 @@ local uninst=($(brew leaves | fzf -m \
 if [[ -n $uninst ]]
 then
   brew uninstall $uninst
-  echo "⚙️ Updating Bundlefile"
-  brew bundle dump --all --describe --force
+  bupdate
 fi

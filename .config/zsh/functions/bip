@@ -20,7 +20,6 @@ local installs=$(brew formulae | fzf -m \
 # Batch install and dump new Brewfile bundle
 if [[ $installs ]]; then
   echo $installs | xargs brew install
-  echo "⚙️ Updating Bundlefile"
-  brew bundle dump --all --describe --force;
+  bupdate
 fi
 

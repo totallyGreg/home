@@ -41,7 +41,6 @@ path=(
 )
 if (hash brew > /dev/null 2>&1 ) ; then
   export HOMEBREW_PREFIX=$(brew --prefix)
-  export HOMEBREW_BUNDLE_FILE=${XDG_CONFIG_HOME}/Brewfile
   export HOMEBREW_CASK_OPTS="--appdir=~/Applications"
   # Need for the tmux-exec plugin to kubectl
   export GNU_GETOPT_PREFIX="$(brew --prefix gnu-getopt)"

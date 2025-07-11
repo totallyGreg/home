@@ -14,15 +14,15 @@ function confirm() {
   while true; do
     read -r -p "$_prompt " _response
     case "$_response" in
-    [Yy][Ee][Ss] | [Yy]) # Yes or Y (case-insensitive).
-      "$@"
-      return 0
-      ;;
-    [Nn][Oo] | [Nn]) # No or N.
-      return 1
-      ;;
-    *) # Anything else (including a blank) is invalid.
-      ;;
+      [Yy][Ee][Ss] | [Yy]) # Yes or Y (case-insensitive).
+        "$@"
+        return 0
+        ;;
+      [Nn][Oo] | [Nn]) # No or N.
+        return 1
+        ;;
+      *) # Anything else (including a blank) is invalid.
+        ;;
     esac
     # else
     # echo "[❌] Failed to enable TouchID Sudo"
@@ -285,7 +285,14 @@ function enable_touchid3 {
 }
 
 function install_brewfile() {
-  brew bundle install
+  local bundle_file=$(ls $XDG_CONFIG_HOME/homebrew/* | fzf)
+  # HOMEBREW_BUNDLE_FILE=""
+  if [[ -n $bundle_file ]]; then
+    brew bundle install --file $bundle_file
+  else
+    echo "No bundle_file selected"
+  fi
+
 }
 
 function install_gpg() {
@@ -341,15 +348,15 @@ function linux {
 function system {
   system_type=$(uname -s)
   case "$system_type" in
-  "Darwin")
-    macos
-    ;;
-  "Linux")
-    linux
-    ;;
-  *)
-    echo "Good Luck with that!"
-    ;;
+    "Darwin")
+      macos
+      ;;
+    "Linux")
+      linux
+      ;;
+    *)
+      echo "Good Luck with that!"
+      ;;
   esac
 }
 

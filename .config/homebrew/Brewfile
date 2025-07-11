@@ -8,6 +8,7 @@ tap "derailed/k9s"
 tap "fabianishere/personal"
 tap "federico-terzi/espanso"
 tap "felixkratz/formulae"
+tap "finnvoor/tools"
 tap "fluxcd/tap"
 tap "glasskube/tap"
 tap "homebrew-ffmpeg/ffmpeg"
@@ -30,8 +31,10 @@ tap "nikitabobko/tap"
 tap "saltbo/bin"
 tap "siderolabs/tap"
 tap "solo-io/tap"
+tap "stewartlynch/tap"
 tap "sttz/tap", "https://github.com/sttz/homebrew-tap.git"
 tap "styrainc/packages"
+tap "trknhr/tap"
 tap "ubuntu/microk8s"
 tap "universal-ctags/universal-ctags"
 tap "watsonbox/cmu-sphinx"
@@ -72,6 +75,10 @@ brew "asciidoc"
 brew "asciidoctor"
 # Record and share terminal sessions
 brew "asciinema"
+# Perl compatible regular expressions library with a new API
+brew "pcre2"
+# Distributed revision control system
+brew "git"
 # Extendable version manager with support for Ruby, Node.js, Erlang & more
 brew "asdf"
 # Automatic configure script builder
@@ -98,8 +105,6 @@ brew "bat"
 brew "berkeley-db", link: true
 # Python code formatter
 brew "black"
-# Perl compatible regular expressions library with a new API
-brew "pcre2"
 # Core application library for C
 brew "glib"
 # X.Org: Interface to the X Window System protocol
@@ -108,8 +113,6 @@ brew "libxcb"
 brew "cairo"
 # CD/DVD/Blu-ray premastering and recording software
 brew "cdrtools"
-# Display user-friendly message boxes from shell scripts
-brew "dialog"
 # Tool to obtain certs from Let's Encrypt and autoenable HTTPS
 brew "certbot"
 # CLI to install, manage & troubleshoot Kubernetes clusters running Cilium
@@ -118,10 +121,6 @@ brew "cilium-cli"
 brew "cmake"
 # Command-line tool to manage cert-manager
 brew "cmctl"
-# Open source programming language to build simple/reliable/efficient software
-brew "go"
-# Tool to generate cobra applications and commands
-brew "cobra-cli"
 # Linux virtual machines
 brew "lima"
 # Container runtimes on MacOS (and Linux) with minimal setup
@@ -136,6 +135,8 @@ brew "dagger"
 brew "dasel"
 # Tools to manipulate dates with a focus on financial data
 brew "dateutils"
+# Display user-friendly message boxes from shell scripts
+brew "dialog"
 # Validating, recursive, caching DNS resolver
 brew "unbound"
 # GNU Transport Layer Security (TLS) Library
@@ -166,6 +167,8 @@ brew "duf"
 brew "dust"
 # Simple command-line tool for creating clusters on Amazon EKS
 brew "eksctl"
+# Open-source framework for augmenting humans using AI
+brew "fabric-ai"
 # Simple, fast and user-friendly alternative to find
 brew "fd"
 # Command-line encoder frontend for libfdk-aac
@@ -190,8 +193,6 @@ brew "freetds"
 brew "fzf"
 # GNU awk utility
 brew "gawk"
-# Easily access your Google Calendar(s) from a command-line
-brew "gcalcli"
 # Library for encoding and decoding .avif files
 brew "libavif"
 # Toolkit for image loading and pixel buffer manipulation
@@ -206,8 +207,6 @@ brew "pango"
 brew "ghostscript"
 # GIF image/animation creator/editor
 brew "gifsicle"
-# Distributed revision control system
-brew "git"
 # Syntax-highlighting pager for git and diff output
 brew "git-delta"
 # Extensions to follow Vincent Driessen's branching model
@@ -222,6 +221,8 @@ brew "glooctl"
 brew "gnu-getopt"
 # GNU implementation of the famous stream editor
 brew "gnu-sed"
+# Open source programming language to build simple/reliable/efficient software
+brew "go"
 # Task is a task runner/build tool that aims to be simpler and easier to use
 brew "go-task"
 # Generate introspection data for GObject libraries
@@ -278,6 +279,10 @@ brew "hugo"
 brew "hyperfine"
 # Get events and tasks from the macOS calendar database
 brew "ical-buddy"
+# H.265/HEVC encoder
+brew "x265"
+# Tools and libraries to manipulate images in many formats
+brew "imagemagick"
 # Convert Kubernetes Ingress resources to Kubernetes Gateway API resources
 brew "ingress2gateway"
 # Utility for IPMI control with kernel driver or LAN interface
@@ -286,6 +291,8 @@ brew "ipmitool"
 brew "ipython"
 # Json incremental digger
 brew "jid"
+# Git-compatible distributed version control system
+brew "jj"
 # Interactive JSON filter using jq
 brew "jnv"
 # Lightweight and flexible command-line JSON processor
@@ -320,8 +327,6 @@ brew "kubectx"
 brew "kubevious"
 # Much more powerful alternative to kubectx and kubens
 brew "kubie"
-# Template-free customization of Kubernetes YAML manifests
-brew "kustomize"
 # High quality MPEG Audio Layer III (MP3) encoder
 brew "lame"
 # Simple terminal UI for git commands
@@ -478,8 +483,6 @@ brew "talhelper"
 brew "tcl-tk"
 # Very fast implementation of tldr in Rust
 brew "tealdeer"
-# Network analyzer and capture tool - without graphical user interface
-brew "wireshark"
 # Terminal UI for tshark, inspired by Wireshark
 brew "termshark"
 # Tool to build, change, and version infrastructure
@@ -522,8 +525,6 @@ brew "wget"
 brew "whisperkit-cli"
 # Automatic workarounds for problems in Wine
 brew "winetricks"
-# H.265/HEVC encoder
-brew "x265"
 # Fast CSV toolkit written in Rust
 brew "xsv"
 # Yet Another Dotfiles Manager
@@ -582,8 +583,12 @@ brew "minio/stable/mc"
 brew "saltbo/bin/seenvoy"
 # CLI for out-of-band management of Kubernetes nodes created by Talos
 brew "siderolabs/tap/talosctl"
+# Rename an Xcode project throughout a directory
+brew "stewartlynch/tap/xprename"
 # Regal is a linter for Rego, with the goal of making your Rego magnificent!
 brew "styrainc/packages/regal"
+# AI-generated memory files manager for Git
+brew "trknhr/tap/ai-docs"
 # Automatic tiling window manager similar to xmonad
 cask "amethyst", args: { appdir: "~/Applications/Ops/Administration/Window Management" }
 # Inspect application bundles
@@ -591,7 +596,7 @@ cask "apparency", args: { appdir: "~/Applications/Ops/Administration/Package Man
 # Quick Look Plugin for AVIF images
 cask "avifquicklook"
 # Task and project management software
-cask "flow"
+cask "flow-desktop"
 cask "font-fira-mono-nerd-font"
 cask "font-jetbrains-mono"
 cask "font-jetbrains-mono-nerd-font"
@@ -635,12 +640,10 @@ cask "suspicious-package", args: { appdir: "~/Applications/Ops/Administration/Pa
 cask "utm", args: { appdir: "~/Applications/Holodeck" }
 # Development environment
 cask "vagrant", args: { appdir: "~/Applications/Ops/Engineering" }
-# Rust-based terminal
-cask "warp", args: { appdir: "~/Applications/Comm/Terminals" }
 # Compatibility layer to run Windows applications
 cask "wine-stable"
 # Network protocol analyzer
-cask "wireshark-chmodbpf"
+cask "wireshark-app", args: { appdir: "~/Applications/Astrometrics/Scanners" }
 mas "Actions", id: 1586435171
 mas "Actions For Obsidian", id: 1659667937
 mas "Animoog Z", id: 1586841361
