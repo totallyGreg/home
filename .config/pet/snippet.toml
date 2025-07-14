@@ -1,0 +1,186 @@
+
+[[Snippets]]
+  Description = "Get the cilium pod running on a node"
+  Output = ""
+  Tag = ["kubernetes", "cilium"]
+  command = "CILIUM_POD=$(kubectl -n kube-system get po -l k8s-app=cilium --field-selector spec.nodeName=<NODE Name> -o name); echo $CILIUM_POD"
+
+[[Snippets]]
+  Description = "Change a default k3s KUBECONFIG files context to something more descriptive"
+  Output = ""
+  Tag = ["kubernetes"]
+  command = "CLUSTER=\"<cluster name>\" NAME=\"<user name>\" CONTEXT=\"<context name>\" yq -i '.clusters[0].name = strenv(CLUSTER) | .users[0].name = strenv(NAME) | .contexts[0].name = strenv(CONTEXT) | .contexts[0].context.cluster = strenv(CLUSTER) | .contexts[0].context.user = strenv(NAME)' $KUBECONFIG"
+
+[[Snippets]]
+  Description = "Find where zsh alias is defined"
+  Output = ""
+  Tag = ["zsh"]
+  command = "PS4='+%x:%I>' zsh -i -x -c '' |& grep <alias name>"
+
+[[Snippets]]
+  Description = "Install Cask in specific directory"
+  Output = ""
+  Tag = ["homebrew"]
+  command = "brew install --appdir ~/Applications/<local app directory path> --cask <cask name>"
+
+[[Snippets]]
+  Description = "Verify secret works with HE TXT record"
+  Output = ""
+  Tag = []
+  command = "curl \"https://dyn.dns.he.net/nic/update?hostname=_acme-challenge.<Domain Name>&password=$(k get secret he-credentials -n cert-manager -oyaml | yq .data.apiKey | base64 -d)&txt=test99\""
+
+[[Snippets]]
+  Description = "JSON dump of all of the DNS names the proxy knows about from within the pod in question"
+  Output = ""
+  Tag = ["dns", "istio"]
+  command = "curl localhost:15020/debug/ndsz"
+
+[[Snippets]]
+  Description = "Set PET_GITHUB_ACCESS_TOKEN for Gist Syncing"
+  Output = ""
+  Tag = ["snippets"]
+  command = "export PET_GITHUB_ACCESS_TOKEN=$(keychainctl get PET_GITHUB_ACCESS_TOKEN Personal.keychain)"
+
+[[Snippets]]
+  Description = "Find all files with extension and move them into a folder with the same name"
+  Output = ""
+  Tag = []
+  command = "find . -maxdepth 1 -type f -iname \"*.<file extension>\" -exec sh -c 'mkdir \"${1%.*}\" ; mv \"${1%}\" \"${1%.*}\" ' _ {} \\;"
+
+[[Snippets]]
+  Description = "Show dropped packets with hubble"
+  Output = ""
+  Tag = ["kubernetes", "cilium", "packets"]
+  command = "hubble observe --verdict DROPPED"
+
+[[Snippets]]
+  Description = "List the taints on all nodes"
+  Output = ""
+  Tag = ["kubernetes"]
+  command = "kubecolor get nodes -o=\"custom-columns=NodeName:.metadata.name,TaintKey:.spec.taints[*].key,TaintValue:.spec.taints[*].value,TaintEffect:.spec.taints[*].effect\"\\n"
+
+[[Snippets]]
+  Description = "list cilium lb configuration"
+  Output = ""
+  Tag = ["cilium", "kubernetes"]
+  command = "kubectl -n kube-system exec -q $CILIUM_POD -- cilium bpf lb list"
+
+[[Snippets]]
+  Description = "execute cilium command on pod in daemonset"
+  Output = ""
+  Tag = ["cilium", "kubernetes"]
+  command = "kubectl -n kube-system exec -q <Cilium Pod=|ds/cilim||$CILIUM_POD|> -- cilium bpf lb list"
+
+[[Snippets]]
+  Description = "Verify each pod is aware of the other nodes in the cluster"
+  Output = ""
+  Tag = []
+  command = "kubectl -n kube-system get pods -l k8s-app=cilium -o name | xargs -I{} -n 1 kubectl -n kube-system exec -q {} -- cilium bpf tunnel list\\n"
+
+[[Snippets]]
+  Description = "Remove all CRDS for a given search"
+  Output = ""
+  Tag = ["kubernetes"]
+  command = "kubectl api-resources --verbs=list --namespaced -o name | grep <target search> | xargs -I{} -n 1 kubectl delete crd {}"
+
+[[Snippets]]
+  Description = "Find all resources that still exist in a namespace stuck in a terminating state"
+  Output = ""
+  Tag = ["kubernetes"]
+  command = "kubectl api-resources --verbs=list --namespaced -o name | xargs -n 1 kubectl get -n <namespace to delete>"
+
+[[Snippets]]
+  Description = "Update kubernetes secret from file by using dry-run piped to apply"
+  Output = ""
+  Tag = []
+  command = "kubectl create secret generic <secret name> --save-config --dry-run=client --from-file=<filename> -o yaml | kubectl apply -f -"
+
+[[Snippets]]
+  Description = "Verify IPv6 Connectivity"
+  Output = ""
+  Tag = []
+  command = "kubectl exec -i -t <source-pod> -- curl -6 'http://<destination-service>.default.svc' | jq"
+
+[[Snippets]]
+  Description = "Check spegel registry mirror metrics"
+  Output = ""
+  Tag = ["kubernetes"]
+  command = "kubectl get --raw /api/v1/nodes/<node name>/proxy/metrics | grep -F 'spegel'"
+
+[[Snippets]]
+  Description = "Nuclear option: Force destroy namespace finalizers"
+  Output = ""
+  Tag = ["kubernetes"]
+  command = "kubectl get ns <Namespace> -o json > <Namespace>-ns.json\njq 'del(.spec)' <Namespace>-ns.json > <Namespace>-ns-fixed.json\nkubectl proxy --port=8080 &\nsleep 2\ncurl -k -H \"Content-Type:application/json\" -X PUT --data-binary @<Namespace>-ns-fixed.json http://localhost:8080/api/v1/namespaces/<Namespace>/finalize\n"
+
+[[Snippets]]
+  Description = "Copy secret from one cluster to another"
+  Output = ""
+  Tag = ["kubernetes"]
+  command = "kubectl get secret <secret name> --context <source context> -n <source namespace> -o yaml | sed 's/namespace: .*/namespace: <destination namespace>/' | kubectl apply --context <destination context> -f -"
+
+[[Snippets]]
+  Description = "Copy secret from one namespace to another"
+  Output = ""
+  Tag = ["kubernetes"]
+  command = "kubectl get secret <secret-name> --namespace=<source-namespace> -o yaml | sed 's/namespace: .*/namespace: <destination-namespace>/' | kubectl apply -f -"
+
+[[Snippets]]
+  Description = "Add pod security label to namespace for privilieged pods"
+  Output = ""
+  Tag = ["kubernetes"]
+  command = "kubectl label namespace <target namespace> pod-security.kubernetes.io/enforce=privileged"
+
+[[Snippets]]
+  Description = "Which brew package installed this executable?"
+  Output = ""
+  Tag = []
+  command = "ls -l $(which <executable>)"
+
+[[Snippets]]
+  Description = "Use docc to build and preview documentation"
+  Output = ""
+  Tag = ["swift", "documentation"]
+  command = "mkdir -p .build/symbol-graphs && swift build --target <package name> -Xswiftc -emit-symbol-graph -Xswiftc -emit-symbol-graph-dir -Xswiftc .build/symbol-graphs"
+
+[[Snippets]]
+  Description = "Verify Certificate of https service"
+  Output = ""
+  Tag = ["security"]
+  command = "openssl s_client -connect <FQDN>:443 2>/dev/null | openssl x509 -noout -dates\\n"
+
+[[Snippets]]
+  Description = "MacOS JXA REPL"
+  Output = ""
+  Tag = []
+  command = "osascript -l JavaScript -i"
+
+[[Snippets]]
+  Description = "Display Notification"
+  Output = ""
+  Tag = []
+  command = "osascript display notification \"<message>\" with title \"<title>\""
+
+[[Snippets]]
+  Description = "Check Rancher system agent status"
+  Output = ""
+  Tag = ["kubernetes", "rancher"]
+  command = "ssh <node name> journalctl -eu rancher-system-agent -f"
+
+[[Snippets]]
+  Description = "Get k3s KUBECONFIG"
+  Output = ""
+  Tag = ["kubernetes"]
+  command = "ssh <user@host> sudo cat /etc/rancher/k3s/k3s.yaml"
+
+[[Snippets]]
+  Description = "Create separate zsh history file for project"
+  Output = ""
+  Tag = []
+  command = "touch .project_history"
+
+[[Snippets]]
+  Description = "Quick Ollama test"
+  Output = ""
+  Tag = []
+  command = "curl -sv \"ollama.infra.falcone.us\" -H \"Content-Type: application/json\" -d '{\\n        \"model\": \"qwen3:latest\",\\n        \"messages\": [\\n            {\\n                \"role\": \"system\",\\n                \"content\": \"You are a helpful assistant.\"\\n            },\\n            {\\n                \"role\": \"user\",\\n                \"content\": \"Hello!\"\\n            }\\n        ]\\n    }' | jq\\n"

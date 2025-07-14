@@ -21,6 +21,7 @@ venv
 node_modules
 .sass-cache
 *.swp
+.tmp*
 
 .zshhistory
 .ssh

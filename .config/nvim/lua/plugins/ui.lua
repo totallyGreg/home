@@ -26,6 +26,7 @@ return {
         char = "¦",
         only_current = true, -- only show indent guides in the current window
       },
+      image = { enabled = true },
       input = { enabled = true },
       notifier = { enabled = true },
       quickfile = { enabled = true },

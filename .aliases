@@ -74,7 +74,7 @@ alias kaf='kubectl apply -f '
 alias kdr='kubectl --dry-run=client -o yaml'
 alias kedp='k get endpoints --all-namespaces '
 alias kvu="k view-utilization "
-alias qapla='pbpaste | kubectl apply -f -'    # I hope I'm not the only one on this planet who finds this hilarious
+alias qapla='pbpaste | kubectl apply -f - && echo "today, is a good day to die"'    # I hope I'm not the only one on this planet who finds this hilarious
 if (( $+commands[kubectx] )); then alias kctx='kubectx'; fi
 if (( $+commands[kubens] )); then alias kns='kubens'; fi
 

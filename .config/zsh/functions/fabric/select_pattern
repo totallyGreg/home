@@ -1,0 +1,12 @@
+#!/bin/zsh
+fabric -l | fzf --prompt='Select Fabric Pattern: ' \
+  --tmux 80% \
+  --header '(Ctrl+X to select context)' \
+  --preview 'bat --style=plain --language=markdown --color=always ~/.config/fabric/patterns/{}/system.md' \
+  --preview-window=right:75% \
+  --bind 'ctrl-x:execute(echo {} > /tmp/selected_pattern)+abort' || echo ""
+
+  # --preview-window 'right,60%,,+{2}+3/3,~2' \
+  # --header 'CTRL-D: Directories / CTRL-F: Files' \
+  #            --bind 'ctrl-d:change-prompt(Patterns> )+reload(find * -type d)' \
+  #            --bind 'ctrl-f:change-prompt(Context> )+reload(find * -type f)'

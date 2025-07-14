@@ -1,0 +1,34 @@
+[General]
+  Backend = "gist"
+  Column = 40
+  # Cmd = ["zsh", "-c"]  # This does not add to history and spawns a shell where PET_GITHUB_ACCESS_TOKEN is not available
+  Editor = "nvim"
+  SelectCmd = "fzf --ansi --layout=reverse --border --height=90% --pointer=▶  --cycle --prompt='Snippet: '"
+  SnippetFile = "/Users/totally/.config/pet/snippet.toml"
+  SortBy = "-command"
+  color = true
+
+[Gist]
+  Public = false
+  access_token = "" # export PET_GITHUB_ACCESS_TOKEN=$(keychainctl get PET_GITHUB_ACCESS_TOKEN Personal.keychain)
+  auto_sync = true
+  file_name = "pet-snippet.toml"
+  gist_id = "99f7a9e790a27cef1be4274d53e9e3dd"
+
+[GHEGist]
+  Public = false
+  access_token = ""
+  auto_sync = false
+  base_url = ""
+  file_name = ""
+  gist_id = ""
+  upload_url = ""
+
+[GitLab]
+  ID = ""
+  Url = ""
+  Visibility = "private"
+  access_token = ""
+  auto_sync = false
+  file_name = "pet-snippet.toml"
+  skip_ssl = false

@@ -1,0 +1,25 @@
+#!/bin/zsh
+# local preview='brew info {} '
+local preview='brew info --json=v2 {} | jq -r ".casks[] | \"
+Name: \(.name)
+Tap: \(.tap)
+Description: \(.desc)
+Caveats: \(.caveats)
+Homepage: \(.homepage)
+Version: \(.version)\""'
+# Dependencies: \(.depends_on | join(\", \"))\n\""'
+
+# local preview='brew info --json=v1 {} | jq -r ".[] | \"Name: \(.name)\nDescription: \(.desc)\nHomepage: \(.homepage)\nDependencies: \(.dependencies | join(\", \"))\n\""'
+
+local installs=$(brew casks | fzf -m --ansi --preview "${preview}" --preview-window=:wrap --min-height=17)
+# If nothing selected just exit
+
+# Batch install and dump new Brewfile bundle
+if [[ $installs ]]; then
+  # TODO: It would be interesting to set the appdir based on an fzf directory query
+  brew install --cask $installs;  # --appdir ~/Applications/<app-path>
+  # brew bundle dump --all --describe --force;
+  bupdate
+fi
+#}
+

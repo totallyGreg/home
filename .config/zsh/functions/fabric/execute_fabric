@@ -1,0 +1,13 @@
+#!/bin/zsh
+local pattern="$1" input="$2" session="$3" context="${4:-}"
+local cmd=("fabric" "-p" "$pattern" "--session=$session")
+local cmd_display="fabric -p \"$pattern\" --session=\"$session\""
+
+if [[ -n "$context" ]]; then
+  cmd+=("--context=$context")
+  cmd_display+=" --context=\"$context\""
+fi
+
+echo "Executing: $cmd_display" >&2
+
+echo "$input" | "${cmd[@]}" | grep -v "Creating new session:" || true

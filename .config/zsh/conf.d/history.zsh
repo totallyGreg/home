@@ -29,3 +29,17 @@ setopt hist_verify             # don't execute immediately upon history expansio
 setopt inc_append_history      # write to the history file immediately, not when the shell exits
 setopt interactive_comments    # allow #style comments to be added on commandline
 setopt share_history           # don't share history between all sessions
+
+PROJECT_HISTORY_FILE=".project_history"
+
+precmd() {
+  if [[ -f "$PROJECT_HISTORY_FILE" ]]; then
+    # Get the last command from history
+    last_command=$(fc -ln -1)
+    # Append to project history if not a duplicate
+    if [[ "$(tail -n 1 "$PROJECT_HISTORY_FILE" 2>/dev/null)" != "$last_command" ]]; then
+      echo "$last_command" >> "$PROJECT_HISTORY_FILE"
+    fi
+  fi
+}
+

@@ -1,0 +1,39 @@
+#autoload
+#!/usr/bin/env zsh
+# zsh required for nested parameter expansion
+# Adding fzf features to my old ~/bin/repairTM.sh script
+
+SPARSEBUNDLE="$(mdfind "kMDItemContentType = com.apple.disk-image-sparse-bundle" | fzf)"
+
+repair_sparsebundle() {
+  echo "🧲🔼Attaching sparse bundle: $SPARSEBUNDLE"
+  local DISK=`hdiutil attach -nomount -readwrite -noverify -noautofsck "${SPARSEBUNDLE}" | grep Apple_HFS | cut -f 1`
+
+  echo "🛠️Repairing volume: $DISK"
+  # The letters “drfy” tell the filecheck utility different things.
+  # - d for ‘Show Debug’ 
+  # – r for ‘Rebuild Catalog Tree’ 
+  # – f for ‘Force’ 
+  # and y for assume ‘yes’ to any prompts.
+  /sbin/fsck_hfs -drfy "${DISK}"
+
+  # Check to make sure it was repaired sucessfully
+  echo "🔎Checking logs for errors"
+  tail -7 /var/log/fsck_hfs.log
+  # result=‘The Volume was repaired successfully’
+
+  echo "⏏️Detaching ${DISK}"
+  hdiutil detach "${DISK}"
+}
+
+imageinfo() {
+  hdiutil imageinfo "${SPARSEBUNDLE}"
+}
+
+resize() {
+  SIZE=$1
+  hdiutil resize -size ${SiZE} "${SPARSEBUNDLE}"
+}
+
+"${@:-imageinfo}"
+

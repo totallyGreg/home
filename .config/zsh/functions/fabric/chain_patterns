@@ -1,0 +1,92 @@
+#!/bin/zsh
+# modified from https://www.youtube.com/watch?v=_oKv8uV0Sz4
+local patterns=() current_output=""
+local session_name
+session_name=$(uuidgen | tr -d '-')
+local pattern="" context="" user_input choice
+
+while true; do
+  if [[ -z "$pattern" ]]; then
+    echo "🧩 Selecting pattern..."
+    pattern=$(select_pattern)
+    if [[ -z "$pattern" ]]; then
+      if [[ -f /tmp/selected_pattern ]]; then
+        pattern=$(cat /tmp/selected_pattern)
+        echo "Pattern selected: $pattern"
+        rm /tmp/selected_pattern
+        echo "Selecting context..."
+        context=$(select_context)
+      else
+        echo "No pattern selected, exiting..." >&2
+        break
+      fi
+    fi
+    patterns+=("$pattern")
+    echo "Pattern 🧩 '$pattern' added to the chain."
+    if [[ ${#patterns[@]} -eq 1 ]]; then
+      session_name="${pattern}_${session_name}"
+    fi
+  fi
+
+  echo "Enter or edit input (press Ctrl-D when finished):"
+  user_input=$(echo "${current_output:-}" | vipe --suffix=md)
+  echo "🎲 Executing fabric..."
+  current_output=$(execute_fabric "$pattern" "$user_input" "$session_name" "$context")
+  echo "Output from '$pattern':"
+  echo "$current_output" | bat -
+
+  echo ""
+  echo "What would you like to do next?"
+  echo "1) Run with the same pattern"
+  echo "2) Select a new pattern"
+  echo "3) Finish and exit"
+  read "choice?Enter your choice (1/2/3): "
+
+  # choices=(
+  #   'Run with the same pattern'
+  #   'Select a new pattern'
+  #   'Finish and exit'
+  # )
+  #
+  # PS3="What would you like to do next? "
+  # # COLUMNS=1
+  # select choice in $choices; do
+    # case $REPLY in
+    case $choice in
+      1)
+        echo "Running with the same pattern: $pattern"
+        # continue
+        ;;
+      2)
+        pattern=""
+        context=""
+        # continue
+        ;;
+      3)
+        echo "Completing"
+        break
+        ;;
+      *)
+        echo "Invalid choice. Please enter 1, 2, or 3."
+        pattern=""
+        context=""
+        ;;
+    esac
+  # done
+done
+
+if [[ -n "$current_output" ]]; then
+  echo "Opening final output in Neovim..."
+  echo "$current_output" | nvim -c "setlocal buftype=nofile bufhidden=wipe" \
+    -c "set ft=markdown" -c "nnoremap <buffer> q :q!<CR>" -
+else
+  echo "No output to display." >&2
+fi
+
+if [[ -n "$session_name" ]]; then
+  if ! fabric --wipesession="$session_name"; then
+    echo "Failed to wipe session $session_name" >&2
+  else
+    echo "Session $session_name has been processed."
+  fi
+fi

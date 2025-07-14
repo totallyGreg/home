@@ -1,41 +1,32 @@
 return {
   {
-    "nvim-treesitter/nvim-treesitter",
-    build = function(_)
-      vim.cmd("TSUpdate")
-    end,
-  },
-  {
-    "https://github.com/apple/pkl-neovim",
+    "apple/pkl-neovim",
     lazy = true,
-    event = {
-      "BufReadPre *.pkl",
-      "BufReadPre *.pcf",
-      "BufReadPre PklProject",
-    },
+    ft = "pkl",
     dependencies = {
-      "nvim-treesitter/nvim-treesitter",
+      {
+        "nvim-treesitter/nvim-treesitter",
+        build = function(_)
+          vim.cmd("TSUpdate")
+        end,
+      },
+      "L3MON4D3/LuaSnip",
     },
-  },
-  build = function()
-    vim.cmd("TSInstall! pkl")
-  end,
-  {
-    "nvim-lualine/lualine.nvim",
-    event = "VeryLazy",
-    opts = function(_, opts)
-      table.insert(opts.sections.lualine_x, "😄")
+    build = function()
+      require("pkl-neovim").init()
+
+      -- Set up syntax highlighting.
+      vim.cmd("TSInstall pkl")
+    end,
+    config = function()
+      -- Set up snippets.
+      require("luasnip.loaders.from_snipmate").lazy_load()
+
+      -- Configure pkl-lsp
+      vim.g.pkl_neovim = {
+        start_command = { "java", "-jar", "/Users/totally/.local/share/nvim/mason/packages/pkl-lsp/pkl-lsp-0.3.1.jar" },
+        pkl_cli_path = "/Users/totally/.local/share/nvim/mason/bin/pkl-lsp",
+      }
     end,
   },
-  -- {
-  --   "neovim/nvim-lspconfig",
-  --   ---@class PluginLspOpts
-  --   opts = {
-  --     ---@type lspconfig.options
-  --     servers = {
-  --       -- pkl lsp maybe
-  --       pkl-lsp = {},
-  --     },
-  --   },
-  -- },
 }

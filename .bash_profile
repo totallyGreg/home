@@ -16,3 +16,8 @@ fi
 
 complete -C /Users/totally/.asdf/installs/terraform/1.5.2/bin/terraform terraform
 . "$HOME/.cargo/env"
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/totally/.cache/lm-studio/bin"
+# End of LM Studio CLI section
+

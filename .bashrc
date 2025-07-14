@@ -141,3 +141,8 @@ if hash direnv 2>/dev/null; then
 fi
 
 . "$HOME/.cargo/env"
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/totally/.cache/lm-studio/bin"
+# End of LM Studio CLI section
+

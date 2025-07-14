@@ -20,6 +20,7 @@ readonly neovim_apps=(
   "zulu      | Traap/nvim              | v0.6.8-packer"
   "void      | nvoid-lua/nvoid         | default"
   "boiler    | tokiory/newovim-boilerplate | default"
+  "hackmin   | h4ckm1n-dev/h4ckm1n-lazyvim-template | default"
 )
 
 # File name that is overwritten with nvim appname aliases.
@@ -211,8 +212,8 @@ writeAliasesFile() {
 
 selectNeovimApp() {
   config=$(
-    printf "%s\n" "${nvapps[@]}" |
-      fzf --prompt=" Neovim Config  " \
+    printf "%s\n" "${nvapps[@]}" \
+      | fzf --prompt=" Neovim Config  " \
         --height=35% --layout=reverse --border --exit-0
   )
 

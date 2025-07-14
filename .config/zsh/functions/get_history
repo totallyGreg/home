@@ -1,0 +1,4 @@
+#!/usr/bin/env zsh
+# this will get the last 16 lines of history in DateTime format
+# e.g. 2024-11-30T14:58:45
+fc -lnt'%Y-%m-%dT%T' | tee >(pbcopy)

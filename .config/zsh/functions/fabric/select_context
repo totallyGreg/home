@@ -1,0 +1,19 @@
+#!/bin/zsh
+CONTEXT_DIR="$XDG_CONFIG_HOME/fabric/contexts"
+local context_files
+context_files=$(find -L "$CONTEXT_DIR" -type f -name "*.md" -print)
+if [[ -z "$context_files" ]]; then
+  echo "No context files found." >&2
+  return
+fi
+
+local selected_context
+selected_context=$(echo "$context_files" | fzf --prompt='Select Context: ' \
+  --preview 'bat --style=plain --language=markdown --color=always {}' \
+  --preview-window=right:70%) || return
+
+if [[ -n "$selected_context" ]]; then
+  basename "$selected_context"
+else
+  echo ""
+fi

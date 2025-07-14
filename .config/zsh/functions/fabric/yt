@@ -1,0 +1,5 @@
+#!/bin/zsh
+# Youtube Transcript
+local video_link="$1"
+fabric -y "$video_link" --transcript
+

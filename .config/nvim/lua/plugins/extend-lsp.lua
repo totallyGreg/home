@@ -1,14 +1,18 @@
 return {
+  -- https://github.com/LazyVim/LazyVim/issues/6039
+  { "mason-org/mason.nvim", version = "^1.0.0" },
+  { "mason-org/mason-lspconfig.nvim", version = "^1.0.0" },
+
   {
     "neovim/nvim-lspconfig",
     -- dependencies = { "williamboman/mason-lspconfig.nvim", "hrsh7th/cmp-nvim-lsp" },
     opts = {
       inlay_hints = { enabled = true },
       autoformat = false,
+      codelens = { enable = true },
       capabilities = {
         textDocument = {
           documentFormattingProvider = false,
-          codelens = { enable = true },
           completion = {
             completionItem = {
               snippetSupport = true,
@@ -17,16 +21,83 @@ return {
           },
         },
       },
+      format = {
+        formatting_options = nil,
+        timeout_ms = nil,
+      },
+      servers = {
+        markdown_oxide = {},
+        sourcekit = {
+          mason = false,
+          cmd = { "xcrun", "sourcekit-lsp" },
+          filetypes = { "swift", "c", "cpp", "objective-c", "objective-cpp" },
+          settings = {},
+        },
+        yamlls = {
+          -- Have to add this for yamlls to understand that we support line folding
+          capabilities = {
+            textDocument = {
+              foldingRange = {
+                dynamicRegistration = false,
+                lineFoldingOnly = true,
+              },
+            },
+          },
+          -- lazy-load schemastore when needed
+          on_new_config = function(new_config)
+            new_config.settings.yaml.schemas = vim.tbl_deep_extend(
+              "force",
+              new_config.settings.yaml.schemas or {},
+              require("schemastore").yaml.schemas()
+            )
+          end,
+          settings = {
+            redhat = { telemetry = { enabled = false } },
+            yaml = {
+              keyOrdering = false,
+              format = {
+                enable = true,
+              },
+              validate = true,
+              schemaStore = {
+                -- Must disable built-in schemaStore support to use
+                -- schemas from SchemaStore.nvim plugin
+                enable = false,
+                -- Avoid TypeError: Cannot read properties of undefined (reading 'length')
+                url = "",
+              },
+            },
+          },
+        },
+        -- pkl-lang = {},
+
+        -- marksman = {},
+      },
       setup = {
         markdown_oxide = function(_, opts)
           opts.capabilities.workspace = { didChangeWatchedFiles = { dynamicRegistration = true } }
         end,
-      },
-      servers = {
-        markdown_oxide = {},
-        sourcekit = { cmd = { "xcrun", "sourcekit-lsp" } },
-        -- marksman = {},
+        -- stupid    Error  21:33:16 notify.error sourcekit: -32001: sourcekitd request timed out
+        -- https://github.com/neovim/nvim-lspconfig/issues/3445
+        sourcekit = function(_, opts)
+          opts.capabilities.workspace = { didChangeWatchedFiles = { dynamicRegistration = true } }
+        end,
+        -- pkg-lang = function(_, opts)
+        --   opts.capabilities.workspace = { didChangeWatchedFiles = { dynamicRegistration = true } }
+        -- end,
+        -- yamlls = function()
+        --   -- Neovim < 0.10 does not have dynamic registration for formatting
+        --   if vim.fn.has("nvim-0.10") == 0 then
+        --     LazyVim.lsp.on_attach(function(client, _)
+        --       client.server_capabilities.documentFormattingProvider = true
+        --     end, "yamlls")
+        --   end
+        -- end,
       },
     },
   },
+  -- -- Helm LSP setup
+  -- require("lspconfig").helm_ls.setup({
+  --   filetypes = { "helm" },
+  -- }),
 }
