@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# Author: totallyGreg
+# jump_gist.sh - Quickly set up a new macOS or Linux environment with yadm.
+# Usage: curl -sL https://git.io/JsMgi | bash
 
 # Exit on error and fail on pipe errors
 set -e -o pipefail
@@ -155,7 +158,7 @@ function macos_defaults {
   defaults write com.apple.dock "scroll-to-open" -bool true
 
   # Remove Apps from Dock
-  defaults delete com.apple.dock persistent-apps
+  # defaults delete com.apple.dock persistent-apps
 
   # Force Command Tab focus on All screens
   # defaults write com.apple.Dock appswitcher-all-displays -bool true
@@ -212,7 +215,7 @@ function macos_defaults {
   # Don't load remote content
   # defaults write com.apple.mail-shared DisableURLLoading -bool true
 
-  killall dock
+  killall Dock
 }
 
 function install_xcode() {
@@ -376,7 +379,7 @@ function nvim {
 function macos {
   os_version=$(sw_vers -productVersion)
   info "Setting up configuration for MacoOS: $os_version"
-  export brew_path="/opt/homebrew/bin/brew"
+  brew_path="/opt/homebrew/bin/brew"
   # zsh has built in is-at-least function for semver comparison
   # autoload is-at-least
   # if is-at-least 10.9 $(sw_vers -productVersion); then
@@ -385,11 +388,11 @@ function macos {
   #   echo "cannot run Catalina installer"
   # fi
   macos_defaults
-  TerminalApp_profiles
-  install_gpg
-  install_brewfile
   enable_touchid
+  install_brewfile
+  install_gpg
   macos_update
+  TerminalApp_profiles
 }
 
 function linux {
