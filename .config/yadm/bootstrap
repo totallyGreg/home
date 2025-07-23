@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Exit on error and fail on pipe errors
+set -e -o pipefail
+
 # COLOR
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -296,29 +299,20 @@ function install_homebrew() {
   info "Installing Homebrew..."
   NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
+  eval "$("$brew_path" shellenv)"
   info "Installing core packages with Homebrew..."
   brew install fzf yadm tmux starship font-fira-mono-nerd-font
 
   # Add Homebrew to the PATH for this script and future shell sessions
-  confirm "Modify profile and paths?" || return 0
-  local brew_path
-  local profile_file
-  if [[ "$(uname -s)" == "Darwin" ]]; then
-    brew_path="/opt/homebrew/bin/brew"
-    profile_file="$HOME/.zprofile"
-  else
-    brew_path="/home/linuxbrew/.linuxbrew/bin/brew"
-    profile_file="$HOME/.profile" # More generic than .bashrc
-  fi
-
-  if [[ -x "$brew_path" ]]; then
-    info "Adding Homebrew to your shell environment..."
-    eval "$("$brew_path" shellenv)"
-    echo "eval \"$(\"$brew_path\" shellenv)\"" >>"$profile_file"
-  else
-    echo "[ERROR] Homebrew executable not found at $brew_path" >&2
-    exit 1
-  fi
+  # confirm "Modify profile and paths?" || return 0
+  # if [[ -x "$brew_path" ]]; then
+  #   info "Adding Homebrew to your shell environment..."
+  #   eval "$("$brew_path" shellenv)"
+  #   echo "eval \"$(\"$brew_path\" shellenv)\"" >>"$profile_file"
+  # else
+  #   echo "[ERROR] Homebrew executable not found at $brew_path" >&2
+  #   exit 1
+  # fi
 }
 
 bootstrap_dotfiles() {
@@ -382,6 +376,7 @@ function nvim {
 function macos {
   os_version=$(sw_vers -productVersion)
   info "Setting up configuration for MacoOS: $os_version"
+  export brew_path="/opt/homebrew/bin/brew"
   # zsh has built in is-at-least function for semver comparison
   # autoload is-at-least
   # if is-at-least 10.9 $(sw_vers -productVersion); then
@@ -398,6 +393,7 @@ function macos {
 }
 
 function linux {
+  export brew_path="/home/linuxbrew/.linuxbrew/bin/brew"
   install_brewfile
 }
 
