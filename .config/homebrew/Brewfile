@@ -1,3 +1,4 @@
+tap "apple/apple"
 tap "aquasecurity/trivy"
 tap "aws/tap"
 tap "buildpacks/tap"
@@ -12,10 +13,7 @@ tap "finnvoor/tools"
 tap "fluxcd/tap"
 tap "glasskube/tap"
 tap "homebrew-ffmpeg/ffmpeg"
-tap "homebrew/aliases"
-tap "homebrew/bundle"
 tap "homebrew/command-not-found"
-tap "homebrew/services"
 tap "homebrew/test-bot"
 tap "homeport/tap"
 tap "jahvon/tap"
@@ -601,7 +599,7 @@ cask "font-fira-mono-nerd-font"
 cask "font-jetbrains-mono"
 cask "font-jetbrains-mono-nerd-font"
 # Set of tools to manage resources and applications hosted on Google Cloud
-cask "google-cloud-sdk"
+cask "gcloud-cli"
 # Tools to protect your emails and files
 cask "gpg-suite", args: { appdir: "~/Applications/Ops/Clandestine" }
 # Open Source Multimedia Framework

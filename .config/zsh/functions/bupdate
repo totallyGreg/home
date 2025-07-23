@@ -1,10 +1,10 @@
 #!/bin/zsh
 ## Preview is tough and requires lots of escaping
 # HOMEBREW_NO_ENV_HINTS=true
-HOMEBREW_BUNDLE_FILE_GLOBAL=${XDG_CONFIG_HOME}/homebrew/Brewfile
+export HOMEBREW_BUNDLE_FILE_GLOBAL=${XDG_CONFIG_HOME}/homebrew/Brewfile
 echo "⚙️ Updating Bundlefile in $HOMEBREW_BUNDLE_FILE_GLOBAL"
 brew bundle dump --all --describe --force --file  $XDG_CONFIG_HOME/homebrew/Brewfile
-brew bundle dump --brews --describe --force --file $XDG_CONFIG_HOME/Brewfile-brews
-brew bundle dump --casks --describe --force --file $XDG_CONFIG_HOME/Brewfile-casks
-brew bundle dump --mas --describe --force --file $XDG_CONFIG_HOME/Brewfile-mas
-brew bundle dump --taps --describe --force --file $XDG_CONFIG_HOME/Brewfile-taps
+brew bundle dump --brews --describe --force --file $XDG_CONFIG_HOME/homebrew/Brewfile-brews
+brew bundle dump --casks --describe --force --file $XDG_CONFIG_HOME/homebrew/Brewfile-casks
+brew bundle dump --mas --describe --force --file $XDG_CONFIG_HOME/homebrew/Brewfile-mas
+brew bundle dump --taps --describe --force --file $XDG_CONFIG_HOME/homebrew/Brewfile-taps

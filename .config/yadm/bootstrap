@@ -1,35 +1,43 @@
 #!/usr/bin/env bash
 
-# helpers
-function echo_ok() { echo -e '\033[1;32m'"$1"'\033[0m'; }
-function echo_warn() { echo -e '\033[1;33m'"$1"'\033[0m'; }
-function echo_error() { echo -e '\033[1;31mERROR: '"$1"'\033[0m'; }
-function confirm() {
-  local _prompt _default _response
+# COLOR
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
 
-  if [ "$@" ]; then _prompt="$@"; else _prompt="Are you sure"; fi
+# helpers
+function info() { echo -e "$GREEN $1 $NC" >&2; }
+function warn() { echo -e "$YELLOW [WARN] $1 $NC" >&2; }
+function error() { echo -e "$RED [ERROR] $1 $NC" >&2; }
+function command_exists() {
+  command -v "$1" >/dev/null 2>&1
+}
+function confirm() {
+  local _prompt _response
+
+  # Use provided prompt or default
+  _prompt="${1:-Continue?}"
   _prompt="$_prompt [y/n] ?"
 
-  # Loop forever until the user enters a valid response (Y/N or Yes/No).
+  # Loop until valid response
   while true; do
     read -r -p "$_prompt " _response
     case "$_response" in
-      [Yy][Ee][Ss] | [Yy]) # Yes or Y (case-insensitive).
-        "$@"
+      [Yy][Ee][Ss] | [Yy])
         return 0
         ;;
-      [Nn][Oo] | [Nn]) # No or N.
+      [Nn][Oo] | [Nn])
         return 1
         ;;
-      *) # Anything else (including a blank) is invalid.
-        ;;
+      *) ;;
     esac
-    # else
-    # echo "[❌] Failed to enable TouchID Sudo"
   done
 }
 
 function macos_defaults {
+  confirm "Define MacOS defaults?" || return 0
+
   # Useful inspiration
   # - https://github.com/mathiasbynens/dotfiles/blob/master/.macos
   # - https://ss64.com/osx/syntax-defaults.html
@@ -143,6 +151,9 @@ function macos_defaults {
   # Scroll up on a Dock icon to show all Space's opened windows for an app, or open stack.
   defaults write com.apple.dock "scroll-to-open" -bool true
 
+  # Remove Apps from Dock
+  defaults delete com.apple.dock persistent-apps
+
   # Force Command Tab focus on All screens
   # defaults write com.apple.Dock appswitcher-all-displays -bool true
 
@@ -198,108 +209,160 @@ function macos_defaults {
   # Don't load remote content
   # defaults write com.apple.mail-shared DisableURLLoading -bool true
 
-  echo_ok 'Running OSX Software Updates...'
-  sudo softwareupdate -i -a
+  killall dock
+}
+
+function install_xcode() {
+  xcode-select -p &>/dev/null && {
+    info "[✅] Xcode is already isntalled"
+    return 0
+  }
+
+  confirm "Install Xcode?"
+  info "Installing Xcode Command Line Tools (this may require interaction)..."
+  xcode-selectkj --install
+  info "Waiting for installation to complete..."
+  until xcode-select -p &>/dev/null; do
+    sleep 10
+  done
+
+}
+
+function macos_update() {
+  softwareupdate --list --os-only && return 0
+
+  confirm "Run software updates?" || return 0
+
+  if [[ "$(uname -m)" == "arm64" ]]; then
+    info "Apple Silicon detected. Installing Rosetta..."
+    sudo softwareupdate -i -a --install-rosetta --agree-to-license
+  else
+    info 'Running OSX Software Updates...'
+    sudo softwareupdate -i -a
+  fi
 }
 
 function TerminalApp_profiles {
+  default_window=$(defaults read com.apple.terminal "Default Window Settings")
+  if [ "$default_window" = 'Totally Dark' ]; then
+    info "[✅] Profiles are already installed"
+    return 0
+  fi
+
+  confirm "Install Terminal Light/Dark Profiles?"
   # This installs my favorite light and dark profiles and set the dark one as default
   # Change default to something else in order to get it to rerun/test install
-  default_window=$(defaults read com.apple.terminal "Default Window Settings")
-  if [ "$default_window" != 'Totally Dark' ]; then
-    # This may help programatically https://apple.stackexchange.com/questions/344401/how-to-programatically-set-terminal-theme-profile
-    themes=("${HOME}/.config/Themes/Totally Dark.terminal" "${HOME}/.config/Themes/Totally Light.terminal")
-    echo "Installing Terminal Profiles"
-    for theme in $themes; do
-      echo "Installing $theme"
-      theme_xml=$(<"${theme}")
-      name=$(basename "$theme" .terminal)
-      echo "Installing $name"
-      plutil -replace "Window Settings.$name" -xml "$theme_xml" ~/Library/Preferences/com.apple.Terminal.plist
-    done
-    defaults write com.apple.terminal "Default Window Settings" "Totally Dark"
-    defaults write com.apple.terminal "Startup Window Settings" "Totally Dark"
-    echo "[✅] Profiles are installed"
-    echo "    📓: You must restart Terminal.app to see new profiles"
-  else
-    echo "[✅] Profiles are already installed"
-  fi
+  # This may help programatically https://apple.stackexchange.com/questions/344401/how-to-programatically-set-terminal-theme-profile
+  themes=("${HOME}/.config/Themes/Totally Dark.terminal" "${HOME}/.config/Themes/Totally Light.terminal")
+  info "Installing Terminal Profiles"
+  for theme in "${themes[@]}"; do
+    info "Installing $theme"
+    theme_xml=$(<"${theme}")
+    name=$(basename "$theme" .terminal)
+    info "Installing $name"
+    plutil -replace "Window Settings.$name" -xml "$theme_xml" ~/Library/Preferences/com.apple.Terminal.plist
+  done
+  defaults write com.apple.terminal "Default Window Settings" "Totally Dark"
+  defaults write com.apple.terminal "Startup Window Settings" "Totally Dark"
+  info "[✅] Profiles are installed"
+  warn "    📓: You must restart Terminal.app to see new profiles"
   # I was hoping this would cause it to reload its new settings, it doesn't
   # defaults read ~/Library/Preferences/com.apple.Terminal.plist
 }
 
 function enable_touchid {
-  # enable_touchid_sudo
-  #   Check if already enabled in /etc pam.d/sudo
-  #   Use vim to insert required text to sudo
-  if grep -q 'pam_tid.so' /etc/pam.d/sudo; then
-    echo "[✅] TouchID Sudo Already Enabled"
+  [[ -f /etc/pam.d/sudo_local ]] && {
+    info "[✅] TouchID Sudo Already Enabled"
     return 0
-  fi
+  }
 
-  if sudo ex -s -c '2i|auth       sufficient     pam_tid.so' -c x! -c x! /etc/pam.d/sudo; then
-    # Invoke Vim in ex mode
-    # Select line 2, enter insert mode, insert that text write changes and exit
-    # Need to exit twice to get passed the read only file warning
-    echo "[✅] TouchID Sudo Enabled"
+  confirm "Enable touchID for Sudo?" || return 0
+
+  if sed "s/^#auth/auth/" /etc/pam.d/sudo_local.template | sudo tee -a /etc/pam.d/sudo_local; then
+    info "[✅] TouchID Sudo Enabled"
   else
-    echo "[❌] Failed to enable TouchID Sudo"
-  fi
-}
-function enable_touchid2 {
-  # enable_touchid_sudo
-  # NEEDS FIXING
-  # Extra pam_reattach.so is needed when using tmux
-  #   Check if already enabled in /etc pam.d/sudo
-  #   Use vim to insert required text to sudo
-  if grep -q 'pam_tid.so' /etc/pam.d/sudo; then
-    echo "[✅] TouchID Sudo Already Enabled"
-    return 0
-  fi
-
-  if sudo ex -s -c '2i|auth       sufficient     pam_tid.so' -c x! -c x! /etc/pam.d/sudo; then
-    auth optional pam_reattach.so ignore_ssh
-    auth sufficient pam_tid.so
-    EOF
-
-    # Invoke Vim in ex mode
-    # Select line 2, enter insert mode, insert that text write changes and exit
-    # Need to exit twice to get passed the read only file warning
-    echo "[✅] TouchID Sudo Enabled"
-  else
-    echo "[❌] Failed to enable TouchID Sudo"
+    error "[❌] Failed to enable TouchID Sudo"
   fi
 }
 
-function enable_touchid3 {
-  if grep '^auth       sufficient     pam_tid.so' /etc/pam.d/sudo_local; then
-    echo "[✅] TouchID Sudo Already Enabled"
+function install_homebrew() {
+  command_exists brew && {
+    info "[✅] Homebrew is Already Installed."
     return 0
+  }
+
+  confirm "Install Homebrew?" || return 0
+
+  info "Installing Homebrew..."
+  NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+  info "Installing core packages with Homebrew..."
+  brew install fzf yadm tmux starship font-fira-mono-nerd-font
+
+  # Add Homebrew to the PATH for this script and future shell sessions
+  confirm "Modify profile and paths?" || return 0
+  local brew_path
+  local profile_file
+  if [[ "$(uname -s)" == "Darwin" ]]; then
+    brew_path="/opt/homebrew/bin/brew"
+    profile_file="$HOME/.zprofile"
   else
-    if sed "s/^#auth/auth/" /etc/pam.d/sudo_local.template | sudo tee /etc/pam.d/sudo_local; then
-      echo "[✅] TouchID Sudo Enabled"
-    else
-      echo "[❌] Failed to enable TouchID Sudo"
-    fi
+    brew_path="/home/linuxbrew/.linuxbrew/bin/brew"
+    profile_file="$HOME/.profile" # More generic than .bashrc
   fi
+
+  if [[ -x "$brew_path" ]]; then
+    info "Adding Homebrew to your shell environment..."
+    eval "$("$brew_path" shellenv)"
+    echo "eval \"$(\"$brew_path\" shellenv)\"" >>"$profile_file"
+  else
+    echo "[ERROR] Homebrew executable not found at $brew_path" >&2
+    exit 1
+  fi
+}
+
+bootstrap_dotfiles() {
+  command_exists yadm && yadm rev-parse --git-dir >/dev/null 2>&1 && {
+    info "[✅] Dotfiles already cloned"
+    return 0
+  }
+
+  confirm "Clone dotfiles from github?"
+  info "Cloning dotfiles repository..."
+  # Use HTTPS for the initial clone as SSH keys may not be configured yet.
+  yadm clone https://github.com/totallyGreg/home.git
+  info "Changing yadm remote URL to SSH for future use..."
+  # yadm pull --rebase --autostash
+  yadm remote set-url origin git@github.com:totallyGreg/home.git
 }
 
 function install_brewfile() {
-  local bundle_file=$(ls $XDG_CONFIG_HOME/homebrew/* | fzf)
-  # HOMEBREW_BUNDLE_FILE=""
-  if [[ -n $bundle_file ]]; then
-    brew bundle install --file $bundle_file
-  else
-    echo "No bundle_file selected"
-  fi
+  command_exists brew || install_homebrew
 
+  # how to know if brewfile has been installed?
+  # Or just ask everytime you run bootstrap?
+  # [[ ! -d $XDG_CONFIG_HOME/homebrew ]] && { warn "No Brewfiles found" ; return 0 }
+  confirm "Proceed with Brewfile install?" || return 0
+  export HOMEBREW_BUNDLE_FILE=$(ls $XDG_CONFIG_HOME/homebrew/* | fzf)
+  # HOMEBREW_BUNDLE_FILE=""
+  if [[ -n $HOMEBREW_BUNDLE_FILE ]]; then
+    brew bundle install
+  else
+    error "No bundle_file selected"
+  fi
 }
 
 function install_gpg() {
+  brew list -q pinentry-mac &>/dev/null && {
+    info "[✅] Pinentry-mac is already installed"
+    return 0
+  }
+  confirm "install gpg pinentry-mac?"
   brew install pinentry-mac
 }
 
 function setup_python {
+  confirm "Setup Python environment?" || return 0
   # from https://opensource.com/article/19/5/python-3-default-mac#what-to-do
   brew install pyenv
   # determine python_version
@@ -311,14 +374,14 @@ function setup_python {
 function nvim {
   # This seg faults currently when running through script
   if command -v nvim >/dev/null 2>&1; then
-    echo "Bootstraping Vim"
+    info "Bootstraping Vim"
     nvim '+PlugUpdate' '+PlugClean!' '+PlugUpdate' '+qall'
   fi
 }
 
 function macos {
   os_version=$(sw_vers -productVersion)
-  echo "Setting up configuration for MacoOS: $os_version"
+  info "Setting up configuration for MacoOS: $os_version"
   # zsh has built in is-at-least function for semver comparison
   # autoload is-at-least
   # if is-at-least 10.9 $(sw_vers -productVersion); then
@@ -326,23 +389,16 @@ function macos {
   # else
   #   echo "cannot run Catalina installer"
   # fi
-  function_list=(
-    macos_defaults
-    TerminalApp_profiles
-    install_gpg
-    install_brewfile
-    enable_touchid3)
-  # setup_python
-  for function in "${function_list[@]}"; do
-    confirm "${function}"
-  done
+  macos_defaults
+  TerminalApp_profiles
+  install_gpg
+  install_brewfile
+  enable_touchid
+  macos_update
 }
 
 function linux {
-  function_list=(install_brewfile)
-  for function in "${function_list[@]}"; do
-    confirm "${function}"
-  done
+  install_brewfile
 }
 
 function system {
@@ -355,7 +411,8 @@ function system {
       linux
       ;;
     *)
-      echo "Good Luck with that!"
+      warn "Unsupported system type: $system_type"
+      warn "Good Luck with that!"
       ;;
   esac
 }
