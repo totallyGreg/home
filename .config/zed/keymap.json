@@ -49,5 +49,17 @@
       // put key-bindings here if you want them to work only in normal mode
       "space g g": ["task::Spawn", { "task_name": "Lazygit" }]
     }
+  },
+  {
+    "context": "(VimControl && !menu)",
+    "bindings": {
+      "alt-k": "editor::MoveLineUp"
+    }
+  },
+  {
+    "context": "(VimControl && !menu)",
+    "bindings": {
+      "alt-j": "editor::MoveLineDown"
+    }
   }
 ]
