@@ -58,12 +58,13 @@
   submoduleSummary = true
 [commit]
   gpgsign = true
+	template = /Users/totally/.stCommitMsg
   ; template = \"$HOME\"/.stCommitMsg
 [push]
   default = current
 	autoSetupRemote = true
 [core]
-  excludesfile = /Users/totally/.gitignore_global
+	excludesfile = /Users/totally/.gitignore_global
   autocrlf = input
   pager = delta
 [github]
@@ -85,14 +86,8 @@
   light = false   # set to true if you're in a terminal w/ a light background color
 [tag]
   sort = version:refname
-[safe]
-  directory = /Users/totally/Repositories/vde_vmnet
-  directory = /Users/totally/Repositories/vde_vmnet/vde-2
-; [gpg]
-;   program = /usr/local/bin/gpg
 [difftool "sourcetree"]
-  cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-  path = 
-[mergetool "sourcetree"]
-  cmd = /Users/totally/Applications/Ops/Organization/Source Control/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
-  trustExitCode = true
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path = 
+[gpg]
+	program = /usr/local/MacGPG2/bin/gpg2
