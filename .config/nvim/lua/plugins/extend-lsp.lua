@@ -1,11 +1,7 @@
 return {
-  -- https://github.com/LazyVim/LazyVim/issues/6039
-  { "mason-org/mason.nvim", version = "^1.0.0" },
-  { "mason-org/mason-lspconfig.nvim", version = "^1.0.0" },
-
   {
     "neovim/nvim-lspconfig",
-    -- dependencies = { "williamboman/mason-lspconfig.nvim", "hrsh7th/cmp-nvim-lsp" },
+    -- dependencies = { "mason-org/mason-lspconfig.nvim", "hrsh7th/cmp-nvim-lsp" },
     opts = {
       inlay_hints = { enabled = true },
       autoformat = false,
@@ -26,12 +22,23 @@ return {
         timeout_ms = nil,
       },
       servers = {
-        markdown_oxide = {},
+        markdown_oxide = {
+          capabilities = {
+            workspace = {
+              didChangeWatchedFiles = { dynamicRegistration = true },
+            },
+          },
+        },
         sourcekit = {
           mason = false,
           cmd = { "xcrun", "sourcekit-lsp" },
           filetypes = { "swift", "c", "cpp", "objective-c", "objective-cpp" },
           settings = {},
+          capabilities = {
+            workspace = {
+              didChangeWatchedFiles = { dynamicRegistration = true },
+            },
+          },
         },
         yamlls = {
           -- Have to add this for yamlls to understand that we support line folding
@@ -74,14 +81,8 @@ return {
         -- marksman = {},
       },
       setup = {
-        markdown_oxide = function(_, opts)
-          opts.capabilities.workspace = { didChangeWatchedFiles = { dynamicRegistration = true } }
-        end,
         -- stupid    Error  21:33:16 notify.error sourcekit: -32001: sourcekitd request timed out
         -- https://github.com/neovim/nvim-lspconfig/issues/3445
-        sourcekit = function(_, opts)
-          opts.capabilities.workspace = { didChangeWatchedFiles = { dynamicRegistration = true } }
-        end,
         -- pkg-lang = function(_, opts)
         --   opts.capabilities.workspace = { didChangeWatchedFiles = { dynamicRegistration = true } }
         -- end,
