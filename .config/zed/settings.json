@@ -9,25 +9,22 @@
 {
   "context_servers": {
     "Homebrew": {
-      "command": {
-        "path": "brew",
-        "args": ["mcp-server"]
-      }
+      "source": "custom",
+      "command": "brew",
+      "args": ["mcp-server"]
     },
     "Docker MCP Toolkit": {
       "source": "custom",
-      "command": {
-        "path": "docker",
-        "args": [
-          "run",
-          "-i",
-          "--rm",
-          "alpine/socat",
-          "STDIO",
-          "TCP:host.docker.internal:8811"
-        ],
-        "env": null
-      },
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "alpine/socat",
+        "STDIO",
+        "TCP:host.docker.internal:8811"
+      ],
+      "env": null,
       "settings": {}
     }
   },
@@ -68,48 +65,8 @@
     "show_other_hints": true
   },
   "language_models": {
-    "ollama": {
-      "api_url": "http://10.0.0.5:10000",
-      // "api_url": "ollama.infra.falcone.us:80",
-      "low_speed_timeout_in_seconds": 30,
-      "available_models": [
-        {
-          "name": "qwen3:latest",
-          "display_name": "ds5:qwen3:latest",
-          "max_tokens": 16384,
-          "supports_tools": true,
-          "supports_thinking": true
-        },
-        {
-          "name": "qwen2.5-coder-3b-instruct-q8_0-1748618562041:latest",
-          "display_name": "ds5:qwen2.5-coder",
-          "max_tokens": 16384,
-          "supports_tools": false,
-          "supports_thinking": true
-        },
-        {
-          "name": "deepseek-coder-v2",
-          "display_name": "deepseek-coder-v2:latest ",
-          "max_tokens": 32768,
-          "supports_tools": false
-        }
-      ]
-    },
-    "openai": {
-      "api_url": "http://10.0.0.5:1234/v1",
-      "available_models": [
-        {
-          "name": "deepseek-r1-0528-qwen3-8b",
-          "display_name": "ds5 deepseek-r1-0528-qwen3-8b",
-          "max_tokens": 17760
-        },
-        {
-          "name": "qwen/qwen3-14b",
-          "display_name": "ds5 qwen3",
-          "max_tokens": 16384
-        }
-      ],
-      "version": "1"
+    "lmstudio": {
+      "api_url": "http://10.0.0.5:1234/api/v0"
     }
   },
   "features": {
@@ -121,6 +78,7 @@
     "dark": "Solarized Dark"
   },
   "agent": {
+    "use_modifier_to_send": true,
     "play_sound_when_agent_done": true,
     "model_parameters": [
       {
@@ -170,13 +128,12 @@
         "context_servers": {}
       }
     },
-    "default_profile": "write",
+    "default_profile": "ask",
     "always_allow_tool_actions": true,
     "default_model": {
-      "provider": "zed.dev",
-      "model": "claude-sonnet-4"
+      "provider": "ollama",
+      "model": "gpt-oss:20b"
     },
-    "version": "2",
     "provider": null
   },
   "vim_mode": true,

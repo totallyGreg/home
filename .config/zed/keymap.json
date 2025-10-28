@@ -61,5 +61,17 @@
     "bindings": {
       "alt-j": "editor::MoveLineDown"
     }
+  },
+  {
+    "context": "Workspace",
+    "bindings": {
+      "cmd-[": "workspace::ToggleLeftDock"
+    }
+  },
+  {
+    "context": "Workspace",
+    "bindings": {
+      "cmd-]": "workspace::ToggleRightDock"
+    }
   }
 ]

@@ -64,9 +64,13 @@ style = 'bold blue'
 
 [aws.profile_aliases]
 'customer-success:AdministratorAccess' = 'CSE'
+'Protect-AI-Playground.AdministratorAccess' = 'PAI🛝Admin'
+'Protect-AI-Production.GTMSecretsReadOnlyAccess' = 'PAI-prod.GTMSecRO'
+# 'Protect-AI-Production.GTMSecretsReadOnlyAccess' = 'PAI-.GTMSecRO'
 [aws.region_aliases]
 us-east-1 = 'us-e1'
 us-east-2 = 'us-e2'
+us-west-2 = 'us-w2'
 
 [battery]
 # charging_symbol = "󰂄"
@@ -177,6 +181,8 @@ disabled = false
 detect_env_vars = [ "KUBECONFIG" ]
 
 [[kubernetes.contexts]]
+context_pattern = "arn:aws:eks:us-west-2:002690075511:cluster/aws-sbx-usw2-penne-ekswrk-01"
+context_alias = "🏖️Sandbox"
 # context_pattern = "greg.williams@solo.io@jgw-xff.us-east-2.eksctl.io"
 # context_alias = "🦉 EKS"
 # user_pattern = 'greg'

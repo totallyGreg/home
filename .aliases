@@ -89,7 +89,8 @@ alias crd_parser="python ~/Work/solo-cop/tools/crd_parser/crd_parser.py "
 alias -g tctl=talosctl
 
 ## Terraform
-alias tf=terraform
+# alias tf=terraform
+alias tf=tofu
 
 ## Tmux stuff
 # alias t="tmux "

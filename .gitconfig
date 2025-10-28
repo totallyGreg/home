@@ -1,6 +1,8 @@
 [user]
   email = 283704+totallyGreg@users.noreply.github.com
   name = J. Greg Williams
+[includeIf "gitdir:~/Documents/PAN Projects/"]
+  path = ~/.gitconfig-work
 [alias]
   alias = config --get-regexp ^alias.
   br = branch --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(contents:subject) %(color:green)(%(committerdate:relative)) [%(authorname)]' --sort=-committerdate

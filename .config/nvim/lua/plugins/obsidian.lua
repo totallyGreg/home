@@ -20,17 +20,24 @@ return {
   --   )
   -- end
   {
-    "epwalsh/obsidian.nvim",
+    "obsidian-nvim/obsidian.nvim",
     version = "*", -- recommended, use latest release instead of latest commit
-    lazy = false,
     -- ft = "markdown",
     -- Replace the above line with this if you only want to load obsidian.nvim for markdown files in your vault:
     event = {
       -- If you want to use the home shortcut '~' here you need to call 'vim.fn.expand'.
-      -- E.g. "BufReadPre " .. vim.fn.expand "~" .. "/my-vault/**.md"
-      "BufReadPre /Users/totally/Library/Mobile Documents/iCloud~md~obsidian/Documents/**.md",
-      "BufNewFile /Users/totally/Library/Mobile Documents/iCloud~md~obsidian/Documents/**.md",
+      -- E.g. "BufReadPre " .. vim.fn.expand "~" .. "/my-vault/*.md"
+      -- refer to `:h file-pattern` for more examples
+      "BufReadPre "
+        .. vim.fn.expand("~")
+        .. "/Notes/**.md",
+      "BufNewFile " .. vim.fn.expand("~") .. "/Notes/**.md",
     },
+    ---@module 'obsidian'
+    ---@type obsidian.config
+    -- ft = "markdown",
+    -- Replace the above line with this if you only want to load obsidian.nvim for markdown files in your vault:
+
     dependencies = {
       -- Required.
       -- "hrsh7th/nvim-cmp",
@@ -58,7 +65,7 @@ return {
         -- },
         {
           name = "personal-local",
-          path = "/Users/totally/Notes",
+          path = "/Users/gregwilliams/Notes",
         },
       },
       -- Optional, completion.
@@ -89,7 +96,7 @@ return {
         -- Optional, if you want to change the date format of the default alias of daily notes.
         alias_format = "%B %-d, %Y",
         -- Optional, if you want to automatically insert a template from your template directory like 'daily.md'
-        template = "900 Templates/910 File Templates/🌄 New Day.md",
+        template = "900 📐Templates/🌄 New Day.md",
       },
       -- Optional, configure key mappings. These are the defaults. If you don't want to set any keymappings this
       -- way then set 'mappings = {}'.

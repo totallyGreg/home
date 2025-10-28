@@ -37,6 +37,7 @@ path=(
   /opt/{homebrew,local}/{,s}bin(N)
   /usr/local/{,s}bin(N)
   $HOME/.local/share/nvim/mason/bin
+  $HOME/.local/bin/
   $path
 )
 if (hash brew > /dev/null 2>&1 ) ; then
