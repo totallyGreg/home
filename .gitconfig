@@ -1,7 +1,7 @@
 [user]
   email = 283704+totallyGreg@users.noreply.github.com
   name = J. Greg Williams
-[includeIf "gitdir:~/Documents/PAN Projects/"]
+[includeIf "gitdir:~/Documents/PAN_Projects/"]
   path = ~/.gitconfig-work
 [alias]
   alias = config --get-regexp ^alias.
@@ -92,4 +92,4 @@
 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
 	path = 
 [gpg]
-	program = /usr/local/MacGPG2/bin/gpg2
+	program = /opt/homebrew/bin/gpg

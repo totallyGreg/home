@@ -56,6 +56,30 @@
       "language_servers": ["sourcekit-lsp"],
       "formatter": "language_server",
       "format_on_save": "on"
+    },
+    "YAML": {
+      "formatter": "language_server",
+      "prettier": {
+        "bracketSpacing": false
+      },
+      "format_on_save": "on"
+    }
+  },
+  "lsp": {
+    "yaml-language-server": {
+      "settings": {
+        "yaml": {
+          "keyOrdering": true,
+          "format": {
+            "singleQuote": true,
+            "bracketSpacing": false
+          },
+          "schemas": {
+            "http://json.schemastore.org/composer": ["/*"],
+            "../relative/path/schema.json": ["/config*.yaml"]
+          }
+        }
+      }
     }
   },
   "inlay_hints": {
@@ -128,7 +152,7 @@
         "context_servers": {}
       }
     },
-    "default_profile": "ask",
+    "default_profile": "write",
     "always_allow_tool_actions": true,
     "default_model": {
       "provider": "ollama",
