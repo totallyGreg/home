@@ -14,91 +14,145 @@
 #       - siderolabs/i915-ucode
 
 # Typically set per project in an .envrc file
-CLUSTER_NAME="talos-test-cluster"
-CLUSTER_ENDPOINT="https://talos-test.infra.falcone.us:6443"
+CLUSTER_NAME=${CLUSTER_NAME:-talos-cluster}
+CONTROL_PLANE_IP=${CONTROL_PLANE_IP}  # Ideally an an Array of ip addresses defined in .envrc but bash to zsh sucks
+control_plane_ip_array=(${(s: :)CONTROL_PLANE_IP}) # so take the string and split into array based on spaces
+WORKER_IP=(${(s: :)WORKER_IP})   # An array of work IP's  see above
+CLUSTER_ENDPOINT=${CLUSTER_ENDPOINT:-You must define an endpoint}
 secrets=${SECRETS:-must define the secrets file to use}
 # secure_config_dir=$(mktemp -p secure_config_dir)
 cluster_patch_dir=${CLUSTER_PATCHES}
 node_patch_dir=${NODE_PATCHES}
+local version=${TALOS_VERSION:-v1.10.7}
 
-get_schematic_id() {
-  [[ -r ${CLUSTER_PATCHES/bare-metal.yaml} ]]  || (echo "Error: config file path not defined" && return 1 )
+# WARN: --nodes appear to always want an IP address
+
+_get_schematic_id() {
+  [[ -r ${cluster_patch_dir/bare-metal.yaml} ]]  || (echo "Error: config file path not defined" && return 1 )
   # base_config=${CLUSTER_PATCHES}/bare-metal.yaml
   # we can upload the schematic to the Image Factory to retrieve its ID:
-  result=$(curl -sX POST --data-binary @${CLUSTER_PATCHES}/bare-metal.yaml https://factory.talos.dev/schematics | jq -r .id)
+  result=$(curl -sX POST --data-binary @${cluster_patch_dir}/bare-metal.yaml https://factory.talos.dev/schematics | jq -r .id)
   logger -p user.debug -t talos "Acquired schematic Id: $result"
   echo $result
   # e.g. {"id":"b8e8fbbe1b520989e6c52c8dc8303070cb42095997e76e812fa8892393e1d176"}
 }
 
 get_install_image() {
-  schematicID=$(get_schematic_id)
-  local version=${TALOS_VERSION:-v1.8.0}
+  schematicID=$(_get_schematic_id)
   echo "factory.talos.dev/installer/${schematicID}:${version}"
 }
 
-get_pxe_image() {
-  schematicID=$(get_schematic_id)
-  local version=${TALOS_VERSION:-v1.8.0}
+_get_pxe_image() {
+  schematicID=$(_get_schematic_id)
   echo "factory.talos.dev/pxe/${schematicID}:${version}"
 }
 
-generate_config() {
+_generate_secret() {
+  talosctl gen secrets -o secrets.yaml
+}
+
+_generate_machine_config() {
+  # NOTE:
+  # Generate the Machine Configuration file
+  # apply-config does not accept --with-secrets so it is neccessary to generate a config file and then apply it
+  # force is necessary since tempfile was already created
   node=${1:-${node:-Must provide node name}}
+  # WARN: the -n --nodes flag appears to want a single IP address
   node_ip=${node_ip:-$(dig +short "${node}")}
   # for file in list_of_files ; do sha1sum file >> sums | sort | sha1sum
-  secure_config=$(mktemp -p . -t ${node})
+  secure_config=$(mktemp -d -p . "${node}")
+  # secure_config=$(mktemp -p . -t "${node}")
   # secure_config="${secure_config_dir}/${node}-config.yaml"
   # install_image=$(get_install_image)
 
-  ## apply-config does not accept --with-secrets
-  ## so it is neccessary to generate a config file and then apply it
-
-  # force is necessary since tempfile was alread created
-  talosctl gen config $CLUSTER_NAME $CLUSTER_ENDPOINT \
+  talosctl gen config  \
     --with-secrets "${secrets}" \
-    --install-image $(get_install_image) \
+    --install-image "$(get_install_image)" \
     --config-patch @"${cluster_patch_dir}/cluster-config.yaml" \
+    --config-patch @"${cluster_patch_dir}/longhorn-patch.yaml" \
     --config-patch @"${cluster_patch_dir}/network-patch.yaml" \
     --config-patch @"${cluster_patch_dir}/metrics-patch.yaml" \
     --config-patch @"${cluster_patch_dir}/spegel.yaml" \
     --config-patch @"${node_patch_dir}/${node}-patch.yaml" \
-    --output-types "controlplane" \
     --nodes "$node_ip" \
     --output "${secure_config}" \
-    --force
+    --force $CLUSTER_NAME $CLUSTER_ENDPOINT
 
-    # No idea how to get this applied 
+  # --output-types "controlplane" \
+    # No idea how to get this applied
     # --config-patch @"${node_patch_dir}/${node}-volumeConfig.yaml" \
     echo "${secure_config}" # has been generated
 }
 
 get_config() {
   node=${1:-${node:-Must provide node name}}
-  generate_config
+  _generate_machine_config
   yq '.' $secure_config
+}
+
+apply_machine_config_to_all_control_planes() {
+  for ip in "${control_plane_ip_array[@]}"; do
+    echo "=== Applying configuration to node $ip ==="
+    talosctl apply-config --insecure \
+      --nodes "$ip" \
+      --file controlplane.yaml
+    echo "Configuration applied to $ip"
+    echo ""
+  done
+}
+
+_set_control_plane_endpoints() {
+  node="${1:-${control_plane_ip_array[1]}}"
+  echo "Setting config endpoint to $(echo ${control_plane_ip_array[@]})"
+  talosctl config endpoint $(echo ${control_plane_ip_array[@]})
+}
+
+bootstrap_cluster() {
+  node="${1:-${control_plane_ip_array[1]}}"
+  cluster_kubeconfig="$HOME/.kube/config.d/${CLUSTER_NAME}.yaml"
+  # NOTE: zsh arrays start at index 1
+  # Then boostrap kubernetes with ONE CONTROL_PLANE_IP
+  talosctl bootstrap -n "$node"
+  # WARN: Each time you download the kubeconfig file from a Talos Linux cluster, the client certificate is regenerated \
+  # giving you a kubeconfig which is valid for a year.
+  # Download and write the kubeconfig file
+  echo "Writing kubeconfig file: $cluster_kubeconfig"
+  talosctl -n "$node" kubeconfig "$cluster_kubeconfig"
+}
+
+check_cluster_health() {
+  # Check specified node or default to first control plane ip
+  # command "health" is not supported with multiple nodes
+  node="${1:-${control_plane_ip_array[1]}}"
+  echo "Checking the health of: $node"
+  # talosctl --nodes "${node}" --talosconfig=${talosconfig} health
+  talosctl --nodes "${node}" health
 }
 
 scale_up() {
   node=${1:-${node:-Must provide node name}}
   node_ip=$(dig @10.0.0.1 +short "${node}.infra.falcone.us")
-  generate_config
+  # the node_ip should be added to $CONTROL_PLANE_IP or WORKER_IP
+  _generate_machine_config
   echo "Apply config $secure_config to node: $node_ip"
   talosctl apply-config --insecure -f ${secure_config} -n ${node_ip}
   trap "rm -rf ${secure_config}" EXIT
+  #The add or merge TALSOCONFIG file
 }
 
 scale_down() {
-  node=${1}
+  node=${1:-${node:-Must provide node name}}
   echo "Removing ${node} from Talos Cluster, but keep it controllable"
   talosctl reset --system-labels-to-wipe STATE --system-labels-to-wipe EPHEMERAL \
     --reboot --timeout=10m --graceful=true -n "${node}"
   kubectl delete node "${node}"
 }
 
-update_node_config() {
-  node=${1}
-  talosctl apply-config -f $(generate_config $node) -n $node
+update_machine_config() {
+  set -x
+  node=${1:-${node:-Must provide node name}}
+  _generate_machine_config "$node"
+  talosctl apply-config -f "$secure_config" -n "$node_ip"
   trap "rm -rf ${secure_config}" EXIT
 }
 
@@ -111,12 +165,11 @@ upgrade_node() {
   # set -x
   node=${1:-"node or node1,node2 list required to update"}
   # to new image
-  version=${TALOS_VERSION:-v1.7.5}
   image=$(get_install_image)
 
   echo "Apply upgrade with image $image to Node: $nodes"
   # talosctl etcd forfeit-leadership -n $nodes
-  talosctl upgrade --nodes "${node}" --image "${image}" --wait
+  talosctl upgrade -n "${node}" --image "${image}" --wait
 
   [[ "$?" == 0 ]] && talosctl get extensionstatuses.runtime.talos.dev
 }
@@ -135,15 +188,32 @@ reset_node() {
   scale_up ${node}
 }
 
-reset_cluster() {
-  # Single cluster simple reset for testing.
-  talosctl reset --system-labels-to-wipe STATE --system-labels-to-wipe EPHEMERAL --reboot --graceful=false
+# reset_cluster() {
+#   # Single cluster simple reset for testing.
+#   talosctl reset --system-labels-to-wipe STATE --system-labels-to-wipe EPHEMERAL --reboot --graceful=false
+#
+#   #Then reapply the configuration
+#   talosctl apply-config --insecure -n "$CONTROL_PLANE_IP" --file controlplane-no_CNI.yaml
+#
+#   # Then boostrap kubernetes
+#   talosctl bootstrap --nodes "${CONTROL_PLANE_IP[0]}" .0.0.91 --endpoints "$CONTROL_PLANE_IP" --talosconfig=./talosconfig
+# }
 
-  #Then reapply the configuration
-  talosctl apply-config --insecure -n "$CONTROL_PLANE_IP" --file controlplane-no_CNI.yaml
+_usage() {
+  echo "Usage: ${(%):-%x} <command>"
+  echo
+  echo "Available commands:"
 
-  # Then boostrap kubernetes
-  talosctl bootstrap --nodes "$CONTROL_PLANE_IP" .0.0.91 --endpoints "$CONTROL_PLANE_IP" --talosconfig=./talosconfig
+  # Grep for function definitions in this file, extract the name,
+  # filter out private functions (starting with _), sort, and indent.
+  grep -E '^[a-zA-Z0-9_]+[[:space:]]*\(\)[[:space:]]*\{' "${(%):-%x}" |
+    sed -E 's/[[:space:]]*\(\)[[:space:]]*\{//' |
+    grep -v '^_' |
+    sort |
+    sed 's/^/  /'
 }
 
-"${@:-upgrade_all_nodes}"
+"$@" # <- execute the task
+
+# This grabs the functions without _ and displays them as options
+[ "$#" -gt 0 ] || _usage

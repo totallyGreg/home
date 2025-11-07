@@ -43,6 +43,9 @@ alias dkps="docker ps --format '{{.ID}} - {{.Names}} - {{.Status}} - {{.Image}}'
 
 alias envoy='docker run --net=host -v ${PWD}:${PWD}:ro -w $PWD -e ENVOY_UID=0 envoyproxy/envoy:v1.20.0'
 
+# Fabrica-ai
+alias fabric='fabric-ai'
+
 # Git
 alias gfa='git fetch --all '
 alias gpf='git pull --ff-only '
