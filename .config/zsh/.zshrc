@@ -266,3 +266,15 @@ if [[ "$PROFILE_STARTUP" == true ]]; then
   exec 2>&3 3>&-
   zprof >~/zshprofile$(date +'%s')
 fi
+
+# Fix emoji width calculation issues in autosuggestions
+# These settings help zsh-autosuggestions properly calculate character widths
+export ZSH_AUTOSUGGEST_USE_ASYNC=true
+export ZSH_AUTOSUGGEST_MANUAL_REBIND=1
+
+# Strategy for fetching suggestions
+# This helps with performance and reduces rendering issues
+export ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+
+# Buffer max size to avoid performance issues with long completions
+export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
