@@ -6,22 +6,23 @@ return {
       inlay_hints = { enabled = true },
       autoformat = false,
       codelens = { enable = true },
-      capabilities = {
-        textDocument = {
-          documentFormattingProvider = false,
-          completion = {
-            completionItem = {
-              snippetSupport = true,
-              resolveSupport = { properties = { "documentation", "detail", "additionalTextEdits" } },
-            },
-          },
-        },
-      },
+      -- capabilities = {
+      --   textDocument = {
+      --     documentFormattingProvider = false,
+      --     completion = {
+      --       completionItem = {
+      --         snippetSupport = true,
+      --         resolveSupport = { properties = { "documentation", "detail", "additionalTextEdits" } },
+      --       },
+      --     },
+      --   },
+      -- },
       format = {
         formatting_options = nil,
         timeout_ms = nil,
       },
       servers = {
+        ["*"] = {},
         markdown_oxide = {
           capabilities = {
             workspace = {
