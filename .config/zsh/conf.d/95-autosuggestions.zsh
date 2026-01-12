@@ -20,20 +20,22 @@ ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#586e75"   # base01 (Bright Green) for Solar
 # ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=244,bg=default,standout" # #808080 for both 
 # ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=60'
 
-
-ZSH_AUTOSUGGEST_HISTORY_IGNORE="?(#c50,)" # never suggest anything 50 characters or longer
+# ZSH_AUTOSUGGEST_HISTORY_IGNORE="?(#c50,)" # never suggest anything 50 characters or longer
+ZSH_AUTOSUGGEST_HISTORY_IGNORE="cd *" # never suggest anything 50 characters or longer
 
 ## Key Bindings
-
 # This plugin provides a few widgets that you can use with bindkey:
-
 bindkey '^ ' autosuggest-accept   # Control-space: Accepts the current suggestion.
-bindkey '^M' autosuggest-execute  # Accepts and executes the current suggestion.
-bindkey '\el' autosuggest-clear   # : Clears the current suggestion.
-bindkey '^N' autosuggest-fetch    # : Fetches a suggestion (works even when suggestions are disabled).
-# autosuggest-disable: Disables suggestions.
+
+# WARN: Tmux seems to steal both of these bindings!
+bindkey '^[M' autosuggest-execute  # Alt+Return: Accepts and executes the current suggestion.
+bindkey '^[[27;5;13~' autosuggest-execute # Control+Return: Accepts and executes (CSI u encoding)
+
+bindkey '\e\e' autosuggest-clear   # : Clears the current suggestion.
+bindkey '^b' autosuggest-fetch    # : Fetches a suggestion (works even when suggestions are disabled).
+# bindkey '^b' autosuggest-disable  # : Disables suggestions.
 # autosuggest-enable: Re-enables suggestions.
-# autosuggest-toggle: Toggles between enabled/disabled suggestions.
+bindkey '^x'  autosuggest-toggle  # : Toggles between enabled/disabled suggestions.
 # Should be called before compinit
 
 # Autosuggest bindings
