@@ -98,6 +98,11 @@ return {
       },
     },
   },
+  -- Example configuration for bashls using nvim-lspconfig
+  require("lspconfig").bashls.setup({
+    filetypes = { "sh", "bash", "zsh" },
+  }),
+
   -- -- Helm LSP setup
   -- require("lspconfig").helm_ls.setup({
   --   filetypes = { "helm" },

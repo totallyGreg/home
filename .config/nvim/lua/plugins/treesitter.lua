@@ -18,6 +18,9 @@ return {
         "vim",
         "yaml",
       },
+      filetype_to_parsername = {
+        zsh = "bash",
+      },
     },
   },
 }

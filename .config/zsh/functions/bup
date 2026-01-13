@@ -1,6 +1,6 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
 ## Preview is tough and requires lots of escaping
-# local preview='brew info --json=v1 {} | jq -r ".[] | \"Name: \(.name)\nDescription: \(.desc)\nVersion: \(.versions.stable)\nHomepage: \(.homepage)\nDependencies: \(.dependencies | join(\", \"))\n\""' 
+# local preview='brew info --json=v1 {} | jq -r ".[] | \"Name: \(.name)\nDescription: \(.desc)\nVersion: \(.versions.stable)\nHomepage: \(.homepage)\nDependencies: \(.dependencies | join(\", \"))\n\""'
 
 HOMEBREW_NO_ENV_HINTS=true
 
@@ -13,17 +13,15 @@ Homepage: \(.homepage)
 Version: \(.versions.stable)
 Dependencies: \(.dependencies | join(\", \"))\n\""'
 
-local updates=$(brew outdated -q| fzf -m \
+local updates=$(brew outdated -q | fzf -m \
   --ansi \
   --min-height=20 \
   --preview "${preview}" | xargs)
 
 # Batch update and dump new Brewfile bundle
-if [[ -n $updates ]]
-then
+if [[ -n $updates ]]; then
   echo $updates | xargs brew upgrade
   bupdate
 else
   echo "No updates found: $updates"
 fi
-

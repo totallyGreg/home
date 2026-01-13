@@ -15,10 +15,13 @@ return {
       -- },
     },
     formatters_by_ft = {
+      ["bash"] = { "shfmt" },
       ["toml"] = { "taplo" },
       ["markdown"] = { "prettier" },
+      ["sh"] = { "shfmt" },
       ["swift"] = { "swift" },
       ["yaml"] = { "prettier" },
+      ["zsh"] = { "shfmt" },
     },
   },
 }

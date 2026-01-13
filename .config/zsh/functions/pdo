@@ -1,0 +1,46 @@
+#autoload
+#\!/usr/bin/env zsh
+# Usage examples:
+
+# Basic usage (original behavior)
+# pdo docker pull
+
+# With prefix (your use case)
+# pdo --prefix="$PREFIX/" docker pull
+
+# With both prefix and suffix
+# pdo --prefix="myapp-" --suffix=":latest" docker pull
+
+# Another example
+# pdo --prefix="src/" --suffix=".ts" rm
+
+pdo() {
+  local prefix=""
+  local suffix=""
+
+  # Check for --prefix or --suffix flags
+  while [[ $1 == --* ]]; do
+    case $1 in
+      --prefix=*)
+        prefix="${1#--prefix=}"
+        shift
+        ;;
+      --suffix=*)
+        suffix="${1#--suffix=}"
+        shift
+        ;;
+      *)
+        shift
+        ;;
+    esac
+  done
+
+  # Get clipboard contents and process each line
+  pbpaste | while IFS= read -r line; do
+    [[ -z "$line" ]] && continue
+    # Construct the full argument with prefix/suffix
+    local arg="${prefix}${line}${suffix}"
+    # Execute the command with the constructed argument
+    "$@" "$arg"
+  done
+}
