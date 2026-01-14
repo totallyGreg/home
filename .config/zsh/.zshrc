@@ -139,11 +139,19 @@ if type gpg &>/dev/null; then
   export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
   gpgconf --launch gpg-agent
   # Switch does not actually seem to work on pinentry-mac
-  if [[ -n "$SSH_CONNECTION" ]] ;then
-      export PINENTRY_USER_DATA="USE_CURSES=1"
+  if [[ -n "$SSH_CONNECTION" ]]; then
+    export PINENTRY_USER_DATA="USE_CURSES=1"
   fi
 else
   # echo "GPG not found using ssh-agent"
+fi
+
+# Update tmux environment variables before each prompt
+if [[ -n "$TMUX" ]]; then
+  tmux_update_env() {
+    eval "$(tmux show-env -s)"
+  }
+  precmd_functions+=(tmux_update_env)
 fi
 
 # Unique the paths
@@ -266,4 +274,3 @@ if [[ "$PROFILE_STARTUP" == true ]]; then
   exec 2>&3 3>&-
   zprof >~/zshprofile$(date +'%s')
 fi
-
