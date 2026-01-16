@@ -52,13 +52,6 @@ export LS_COLORS
 # Java
 path=(/opt/homebrew/opt/openjdk/bin $path)
 
-# Python globally managed by pyenv
-# https://opensource.com/article/19/5/python-3-default-mac#what-to-do
-if command -v pyenv 1>/dev/null 2>&1; then
-  eval "$(pyenv init --path)"
-  eval "$(pyenv virtualenv-init -)"
-fi
-
 # Ruby setup
 if command -v rbenv 1>/dev/null 2>&1; then
   eval "$(rbenv init - zsh)"
