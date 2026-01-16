@@ -25,13 +25,12 @@ return {
     -- ft = "markdown",
     -- Replace the above line with this if you only want to load obsidian.nvim for markdown files in your vault:
     event = {
-      -- If you want to use the home shortcut '~' here you need to call 'vim.fn.expand'.
-      -- E.g. "BufReadPre " .. vim.fn.expand "~" .. "/my-vault/*.md"
-      -- refer to `:h file-pattern` for more examples
-      "BufReadPre "
-        .. vim.fn.expand("~")
-        .. "/Notes/**.md",
-      "BufNewFile " .. vim.fn.expand("~") .. "/Notes/**.md",
+      -- Personal laptop
+      "BufReadPre /Users/totally/Notes/**.md",
+      "BufNewFile /Users/totally/Notes/**.md",
+      -- Work laptop
+      "BufReadPre /Users/gregwilliams/Notes/**.md",
+      "BufNewFile /Users/gregwilliams/Notes/**.md",
     },
     ---@module 'obsidian'
     ---@type obsidian.config
@@ -50,28 +49,29 @@ return {
     keys = {
       { "<leader>o", "<cmd>ObsidianOpen<cr>", desc = "Obsidian" },
       { "<leader>oo", "<cmd>ObsidianOpen<cr>", desc = "Obsidian" },
-      { "<leader>od", "<cmd>ObsidianDailies<cr>", desc = "Open Obsidian Daiy Note" },
+      { "<leader>od", "<cmd>ObsidianDailies<cr>", desc = "Open Obsidian Daily Note" },
       { "<leader>or", "<cmd>ObsidianRename<cr>", desc = "Open Obsidian Rename" },
       { "<leader>os", "<cmd>ObsidianQuickSwitch<cr>", desc = "Open Obsidian Quick Switch" },
+      { "<leader>ch", "<cmd>ObsidianToggleCheckbox<cr>", desc = "Toggle Checkbox", ft = "markdown" },
+      { "gf", "<cmd>ObsidianFollowLink<cr>", desc = "Follow Link", ft = "markdown" },
+      { "<cr>", "<cmd>ObsidianFollowLink<cr>", desc = "Follow Link / Toggle Checkbox", ft = "markdown" },
     },
     opts = {
       -- If you're using MacOS and your 'Obsidian.app' happens to be in a non-standard location,
       -- (i.e. not '/Applications/Obsidian.app') you can set the path here.
-      obsidian_app = "~/Applications/Comm/Written/Obsidian.app",
+      app_path = "~/Applications/Comm/Written/Obsidian.app",
       workspaces = {
-        -- {
-        --   name = "personal-iCloud",
-        --   path = "/Users/totally/Library/Mobile Documents/iCloud~md~obsidian/Documents/Notes",
-        -- },
         {
-          name = "personal-local",
+          name = "personal",
+          path = "/Users/totally/Notes",
+        },
+        {
+          name = "work",
           path = "/Users/gregwilliams/Notes",
         },
       },
-      -- Optional, completion.
-      completion = {
-        nvim_cmp = false, -- if using nvim-cmp, otherwise set to false
-      },
+      -- Completion is now handled via native sources or blink.cmp
+      -- The old nvim_cmp option is deprecated
       config = function(_, opts)
         require("obsidian").setup(opts)
 
@@ -98,31 +98,8 @@ return {
         -- Optional, if you want to automatically insert a template from your template directory like 'daily.md'
         template = "900 📐Templates/🌄 New Day.md",
       },
-      -- Optional, configure key mappings. These are the defaults. If you don't want to set any keymappings this
-      -- way then set 'mappings = {}'.
-      mappings = {
-        -- Overrides the 'gf' mapping to work on markdown/wiki links within your vault.
-        ["gf"] = {
-          action = function()
-            return require("obsidian").util.gf_passthrough()
-          end,
-          opts = { noremap = false, expr = true, buffer = true },
-        },
-        -- Toggle check-boxes.
-        ["<leader>ch"] = {
-          action = function()
-            return require("obsidian").util.toggle_checkbox()
-          end,
-          opts = { buffer = true },
-        },
-        -- Smart action depending on context, either follow link or toggle checkbox.
-        ["<cr>"] = {
-          action = function()
-            return require("obsidian").util.smart_action()
-          end,
-          opts = { buffer = true, expr = true },
-        },
-      },
+      -- Keymaps are now configured via lazy.nvim keys or autocmds
+      -- See: https://github.com/obsidian-nvim/obsidian.nvim/wiki/Keymaps
       new_notes_location = "700 Vaults/Notes",
 
       -- Optional, by default when you use `:ObsidianFollowLink` on a link to an external
@@ -142,12 +119,12 @@ return {
         -- vim.cmd(':silent exec "!start ' .. url .. '"') -- Windows
       end,
 
-      -- Optional, set to true if you use the Obsidian Advanced URI plugin.
-      -- https://github.com/Vinzent03/obsidian-advanced-uri
-      use_advanced_uri = true,
-
-      -- Optional, set to true to force ':ObsidianOpen' to bring the app to the foreground.
-      open_app_foreground = true,
+      -- Configure how to open notes in Obsidian app
+      open = {
+        func = function(uri)
+          vim.ui.open(uri, { cmd = { "open", "-a", vim.fn.expand("~/Applications/Comm/Written/Obsidian.app") } })
+        end,
+      },
 
       picker = {
         -- Set your preferred picker. Can be one of 'telescope.nvim', 'fzf-lua', or 'mini.pick'.
@@ -268,45 +245,36 @@ return {
         date_format = "%Y-%m-%d-%a",
         time_format = "%H:%M",
       },
-      ui = {
-        enable = true, -- set to false to disable all additional syntax features
-        update_debounce = 200, -- update delay after a text change (in milliseconds)
-        -- Define how various check-boxes are displayed
-        checkboxes = {
-          -- NOTE: the 'char' value has to be a single character, and the highlight groups are defined below.
-          [" "] = { char = "󰄱", hl_group = "ObsidianTodo" },
-          ["x"] = { char = "", hl_group = "ObsidianDone" },
-          [">"] = { char = "", hl_group = "ObsidianRightArrow" },
-          ["~"] = { char = "󰰱", hl_group = "ObsidianTilde" },
-          ["!"] = { char = "", hl_group = "ObsidianImportant" },
-          -- Replace the above with this if you don't have a patched font:
-          -- [" "] = { char = "☐", hl_group = "ObsidianTodo" },
-          -- ["x"] = { char = "✔", hl_group = "ObsidianDone" },
+    },
+  },
 
-          -- You can also add more custom ones...
-        },
-        -- Use bullet marks for non-checkbox lists.
-        bullets = { char = "•", hl_group = "ObsidianBullet" },
-        external_link_icon = { char = "", hl_group = "ObsidianExtLinkIcon" },
-        -- Replace the above with this if you don't have a patched font:
-        -- external_link_icon = { char = "", hl_group = "ObsidianExtLinkIcon" },
-        reference_text = { hl_group = "ObsidianRefText" },
-        highlight_text = { hl_group = "ObsidianHighlightText" },
-        tags = { hl_group = "ObsidianTag" },
-        block_ids = { hl_group = "ObsidianBlockID" },
-        hl_groups = {
-          -- The options are passed directly to `vim.api.nvim_set_hl()`. See `:help nvim_set_hl`.
-          ObsidianTodo = { bold = true, fg = "#f78c6c" },
-          ObsidianDone = { bold = true, fg = "#89ddff" },
-          ObsidianRightArrow = { bold = true, fg = "#f78c6c" },
-          ObsidianTilde = { bold = true, fg = "#ff5370" },
-          ObsidianImportant = { bold = true, fg = "#d73128" },
-          ObsidianBullet = { bold = true, fg = "#89ddff" },
-          ObsidianRefText = { underline = true, fg = "#c792ea" },
-          ObsidianExtLinkIcon = { fg = "#c792ea" },
-          ObsidianTag = { italic = true, fg = "#89ddff" },
-          ObsidianBlockID = { italic = true, fg = "#89ddff" },
-          ObsidianHighlightText = { bg = "#75662e" },
+  -- Markdown rendering (headings, code blocks, tables, checkboxes, bullets, etc.)
+  -- Replaces the deprecated 'ui' option from obsidian.nvim v3.x
+  {
+    "MeanderingProgrammer/render-markdown.nvim",
+    ft = { "markdown" },
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "nvim-tree/nvim-web-devicons",
+    },
+    opts = {
+      heading = { enabled = true },
+      code = { enabled = true },
+      dash = { enabled = true },
+      link = { enabled = true },
+      sign = { enabled = false },
+      bullet = {
+        enabled = true,
+        icons = { "•", "◦", "▸", "▹" },
+      },
+      checkbox = {
+        enabled = true,
+        unchecked = { icon = "󰄱 " },
+        checked = { icon = " " },
+        custom = {
+          todo = { raw = "[>]", rendered = " ", highlight = "RenderMarkdownWarn" },
+          cancelled = { raw = "[~]", rendered = "󰰱 ", highlight = "RenderMarkdownError" },
+          important = { raw = "[!]", rendered = " ", highlight = "DiagnosticError" },
         },
       },
     },
