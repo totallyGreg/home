@@ -1,0 +1,25 @@
+#autoload
+#\!/usr/bin/env zsh
+# Mostly to document for my own edification
+# @file transcribe
+# @brief a function to transcribe audio using yap
+
+# @section Guardian Functions
+# @brief Get Guardian API authentication token with caching
+# @arg $1 Tenant name
+
+# @brief Transcribe audiofile
+transcribe() {
+  input_file="$1"
+  subtitles="${input_file%.*}.srt"
+  yap -l en_US "$input_file" --srt -o "$subtitles"
+}
+
+# @brief Embed Subtitles into m4b audiobook
+embed_srt_into_audiobook() {
+  local audiobook="${input_file:-$1}"
+  output=${audiobook%.m4b}
+  ffmpeg -i "$audiobook" -i "$subtitles" -map_metadata 0 -c copy -c:s mov_text -metadata:s:s:0 language=eng "$output"
+}
+
+"${@:-transcribe}"
