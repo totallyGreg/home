@@ -1,25 +1,23 @@
 #autoload
-#\!/usr/bin/env zsh
-# Usage examples:
-
-# Basic usage (original behavior)
-# pdo docker pull
-
-# With prefix (your use case)
-# pdo --prefix="$PREFIX/" docker pull
-
-# With both prefix and suffix
-# pdo --prefix="myapp-" --suffix=":latest" docker pull
-
-# Another example
-# pdo --prefix="src/" --suffix=".ts" rm
+# pdo - Execute command with each line from clipboard as an argument
+#
+# Usage: pdo [OPTIONS] COMMAND [ARGS...]
+#
+# Options:
+#   --prefix=PREFIX   Add prefix to each clipboard line
+#   --suffix=SUFFIX   Add suffix to each clipboard line
+#   --dry-run, -n     Preview commands without executing
+#   --parallel        Execute commands in parallel (4 jobs)
+#   --help            Show this help message
 
 pdo() {
   local prefix=""
   local suffix=""
+  local dry_run=false
+  local parallel=false
 
-  # Check for --prefix or --suffix flags
-  while [[ $1 == --* ]]; do
+  # Parse flags
+  while [[ $1 == --* || $1 == -* ]]; do
     case $1 in
       --prefix=*)
         prefix="${1#--prefix=}"
@@ -29,18 +27,140 @@ pdo() {
         suffix="${1#--suffix=}"
         shift
         ;;
-      *)
+      --dry-run|-n)
+        dry_run=true
         shift
+        ;;
+      --parallel)
+        parallel=true
+        shift
+        ;;
+      --help)
+        cat >&2 <<'EOF'
+Usage: pdo [OPTIONS] COMMAND [ARGS...]
+
+Execute COMMAND with each line from clipboard as an argument.
+
+Options:
+  --prefix=PREFIX   Add prefix to each clipboard line
+  --suffix=SUFFIX   Add suffix to each clipboard line
+  --dry-run, -n     Preview commands without executing
+  --parallel        Execute commands in parallel (4 jobs)
+  --help            Show this help message
+
+Examples:
+  # Basic usage
+  pdo docker pull
+
+  # With prefix
+  pdo --prefix="myapp/" docker pull
+
+  # With both prefix and suffix
+  pdo --prefix="src/" --suffix=".ts" rm
+
+  # Preview before executing
+  pdo --dry-run --prefix="v" git tag
+
+  # Parallel execution
+  pdo --parallel docker pull
+EOF
+        return 0
+        ;;
+      --)
+        shift
+        break
+        ;;
+      *)
+        echo "pdo: unknown option: $1" >&2
+        echo "Try 'pdo --help' for usage information." >&2
+        return 1
         ;;
     esac
   done
 
-  # Get clipboard contents and process each line
-  pbpaste | while IFS= read -r line; do
+  # Validate command provided
+  if [[ $# -eq 0 ]]; then
+    echo "pdo: no command specified" >&2
+    echo "Try 'pdo --help' for usage information." >&2
+    return 1
+  fi
+
+  # Check clipboard has content
+  local clipboard_content
+  clipboard_content=$(pbpaste 2>/dev/null)
+  if [[ $? -ne 0 ]]; then
+    echo "pdo: pbpaste command failed (macOS only)" >&2
+    return 1
+  fi
+
+  if [[ -z "$clipboard_content" ]]; then
+    echo "pdo: clipboard is empty" >&2
+    return 1
+  fi
+
+  # Execute in parallel mode
+  if [[ "$parallel" == true ]]; then
+    if [[ "$dry_run" == true ]]; then
+      echo "$clipboard_content" | while IFS= read -r line; do
+        [[ -z "$line" ]] && continue
+        echo "Would execute: $* ${prefix}${line}${suffix}"
+      done
+    else
+      echo "$clipboard_content" | xargs -P 4 -I {} "$@" "${prefix}{}${suffix}"
+    fi
+    return $?
+  fi
+
+  # Sequential execution with proper error handling
+  local exit_code=0
+
+  while IFS= read -r line; do
     [[ -z "$line" ]] && continue
-    # Construct the full argument with prefix/suffix
     local arg="${prefix}${line}${suffix}"
-    # Execute the command with the constructed argument
-    "$@" "$arg"
-  done
+
+    if [[ "$dry_run" == true ]]; then
+      echo "Would execute: $* $arg"
+    else
+      if ! "$@" "$arg"; then
+        exit_code=1
+      fi
+    fi
+  done < <(echo "$clipboard_content")
+
+  return $exit_code
 }
+
+# Completion function for pdo
+_pdo() {
+  local curcontext="$curcontext" state line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(--help)--help[Show help message]' \
+    '(--dry-run -n)'{--dry-run,-n}'[Preview commands without executing]' \
+    '--parallel[Execute commands in parallel]' \
+    '--prefix=[Add prefix to each clipboard line]:prefix:' \
+    '--suffix=[Add suffix to each clipboard line]:suffix:' \
+    '(- *)--[End of options]' \
+    '*::command:->command' \
+    && return 0
+
+  case $state in
+    command)
+      if ((CURRENT == 1)); then
+        _command_names -e
+      else
+        _normal
+      fi
+      ;;
+  esac
+
+  return 1
+}
+
+# Register completion if compdef is available
+if (( $+functions[compdef] )); then
+  compdef _pdo pdo
+fi
+
+pdo "$@"
