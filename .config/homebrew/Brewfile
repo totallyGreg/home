@@ -5,7 +5,6 @@ tap "buildpacks/tap"
 tap "cloudfoundry/tap"
 tap "danielfoehrkn/switch"
 tap "defenseunicorns/tap"
-tap "derailed/k9s"
 tap "fabianishere/personal"
 tap "federico-terzi/espanso"
 tap "felixkratz/formulae"
@@ -13,43 +12,27 @@ tap "finnvoor/tools"
 tap "fluxcd/tap"
 tap "glasskube/tap"
 tap "homebrew-ffmpeg/ffmpeg"
-tap "homebrew/command-not-found"
-tap "homebrew/test-bot"
 tap "homeport/tap"
 tap "jahvon/tap"
 tap "joshmedeski/sesh"
-tap "k14s/tap"
 tap "knative/client"
 tap "knqyf263/pet"
 tap "martido/brew-graph"
 tap "mczachurski/wallpapper"
 tap "minio/stable"
-tap "nativeos/i386-elf-toolchain"
 tap "nikitabobko/tap"
-tap "replicatedhq/replicated"
 tap "saltbo/bin"
 tap "siderolabs/tap"
-tap "solo-io/tap"
 tap "stewartlynch/tap"
 tap "sttz/tap", "https://github.com/sttz/homebrew-tap.git"
 tap "styrainc/packages"
 tap "trknhr/tap"
 tap "ubuntu/microk8s"
-tap "universal-ctags/universal-ctags"
-tap "watsonbox/cmu-sphinx"
 tap "zdcthomas/tools"
 # Any-to-PostScript filter
 brew "a2ps"
 # CLI for Amazon ECS to manage clusters and tasks for development
 brew "amazon-ecs-cli"
-# C library SSHv1/SSHv2 client and server protocols
-brew "libssh"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.13"
-# Display directories as trees (with optional color/HTML output)
-brew "tree"
-# Automate deployment, configuration, and upgrading
-brew "ansible"
 # Checks ansible playbooks for practices and behaviour
 brew "ansible-lint"
 # Strip or convert ANSI codes into HTML, (La)Tex, RTF, or BBCode
@@ -76,12 +59,16 @@ brew "asciidoc"
 brew "asciidoctor"
 # Record and share terminal sessions
 brew "asciinema"
+# Conversion library
+brew "libiconv"
 # Perl compatible regular expressions library with a new API
 brew "pcre2"
 # Distributed revision control system
 brew "git"
 # Extendable version manager with support for Ruby, Node.js, Erlang & more
 brew "asdf"
+# Modern, easy to use download automation for torrents and usenet
+brew "autobrr"
 # Automatic configure script builder
 brew "autoconf"
 # Tool for generating GNU Standards-compliant Makefiles
@@ -90,8 +77,6 @@ brew "automake"
 brew "aws-iam-authenticator"
 # Securely manage AWS API credentials using AWS SSO
 brew "aws-sso-cli"
-# Smooth out the rough edges of AWS SSO (temporarily, until AWS makes it better)
-brew "aws-sso-util"
 # Securely store and access AWS credentials in development environments
 brew "aws-vault"
 # Official Amazon AWS command-line interface
@@ -144,7 +129,7 @@ brew "dialog"
 brew "unbound"
 # GNU Transport Layer Security (TLS) Library
 brew "gnutls"
-# GNU Pretty Good Privacy (PGP) package
+# GNU Privacy Guard (OpenPGP)
 brew "gnupg"
 # Library access to GnuPG
 brew "gpgme"
@@ -200,12 +185,18 @@ brew "gawk"
 brew "libavif"
 # Toolkit for image loading and pixel buffer manipulation
 brew "gdk-pixbuf"
-# Platform built on V8 to build network applications
+# Open-source, cross-platform JavaScript runtime environment
 brew "node"
 # Interact with Google Gemini AI models from the command-line
 brew "gemini-cli"
 # GitHub command-line tool
 brew "gh"
+# OpenType text shaping engine
+brew "harfbuzz"
+# Framework for layout and rendering of i18n text
+brew "pango"
+# Interpreter for PostScript and PDF
+brew "ghostscript"
 # GIF image/animation creator/editor
 brew "gifsicle"
 # Syntax-highlighting pager for git and diff output
@@ -230,18 +221,18 @@ brew "go-task"
 brew "gobject-introspection"
 # Deliver Go binaries as fast and easily as possible
 brew "goreleaser"
-# OpenType text shaping engine
-brew "harfbuzz"
+# Development kit for the Java programming language
+brew "openjdk"
 # Open-source build automation tool based on the Groovy and Kotlin DSL
 brew "gradle"
 # Library for manipulating JPEG-2000 images
 brew "jasper"
 # Image manipulation
 brew "netpbm"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.12"
 # GNU triangulated surface library
 brew "gts"
-# Framework for layout and rendering of i18n text
-brew "pango"
 # Library to render SVG files using Cairo
 brew "librsvg"
 # Graph visualization software from AT&T and Bell Labs
@@ -250,6 +241,10 @@ brew "graphviz"
 brew "grep"
 # GitHub Markdown previewer
 brew "grip"
+# Utilities for manipulating PostScript documents
+brew "psutils"
+# GNU troff text-formatting system
+brew "groff"
 # Make JSON greppable
 brew "gron"
 # Like cURL, but for gRPC
@@ -272,8 +267,6 @@ brew "highlight"
 brew "htop"
 # Network, Service & Security Observability for Kubernetes using eBPF
 brew "hubble"
-# Client library for huggingface.co hub
-brew "huggingface-cli"
 # Configurable static site generator
 brew "hugo"
 # Command-line benchmarking tool
@@ -282,10 +275,12 @@ brew "hyperfine"
 brew "ical-buddy"
 # H.265/HEVC encoder
 brew "x265"
-# Tools and libraries to manipulate images in many formats
+# Tools and libraries to manipulate images in select formats
 brew "imagemagick"
 # Convert Kubernetes Ingress resources to Kubernetes Gateway API resources
 brew "ingress2gateway"
+# Update of iperf: measures TCP, UDP, and SCTP bandwidth
+brew "iperf3"
 # Utility for IPMI control with kernel driver or LAN interface
 brew "ipmitool"
 # Interactive computing in Python
@@ -328,24 +323,24 @@ brew "kubectx"
 brew "kubevious"
 # Much more powerful alternative to kubectx and kubens
 brew "kubie"
-# Template-free customization of Kubernetes YAML manifests
-brew "kustomize"
 # High quality MPEG Audio Layer III (MP3) encoder
 brew "lame"
 # Simple terminal UI for git commands
 brew "lazygit"
 # Subtitle renderer for the ASS/SSA subtitle format
 brew "libass"
-# Conversion library
-brew "libiconv"
 # Shared library for mediainfo
 brew "libmediainfo"
+# LLVM's OpenMP runtime library
+brew "libomp"
 # General purpose TCP-IP emulator
 brew "libslirp"
 # MP3 player for Linux and UNIX
 brew "mpg123"
 # Audio codec
 brew "opus"
+# C library SSHv1/SSHv2 client and server protocols
+brew "libssh"
 # C virtualization API
 brew "libvirt"
 # Rainbows and unicorns in your console!
@@ -360,8 +355,6 @@ brew "lynx"
 brew "make"
 # Mac App Store command-line interface
 brew "mas"
-# Development kit for the Java programming language
-brew "openjdk"
 # Java-based project management
 brew "maven"
 # Unified display of technical and tag data for audio/video
@@ -384,8 +377,6 @@ brew "msgpack"
 brew "mtr"
 # Interactive cheatsheet tool for the command-line
 brew "navi"
-# Incremental parsing library
-brew "tree-sitter"
 # Ambitious Vim-fork focused on extensibility and agility
 brew "neovim"
 # Utility for managing network connections
@@ -422,22 +413,12 @@ brew "pngpaste"
 brew "podman"
 # Kubernetes cluster resource sanitizer
 brew "popeye"
-# Object-relational database system
-brew "postgresql@14"
 # Code formatter for JavaScript, CSS, JSON, GraphQL, Markdown, YAML
 brew "prettier"
-# Test your LLM app locally
-brew "promptfoo"
 # Linter for prose
 brew "proselint"
-# Utilities for manipulating PostScript documents
-brew "psutils"
 # Monitor data's progress through a pipe
 brew "pv"
-# Python version management
-brew "pyenv"
-# Pyenv plugin to manage virtualenv
-brew "pyenv-virtualenv"
 # Python Language Server for the Language Server Protocol
 brew "python-lsp-server"
 # Python implementation of Markdown
@@ -446,10 +427,6 @@ brew "python-markdown"
 brew "python@3.10"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.11"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.12"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.9"
 # Compression/decompression library aiming for high speed
 brew "snappy"
 # Generic machine emulator and virtualizer
@@ -496,10 +473,10 @@ brew "talhelper"
 brew "tcl-tk"
 # Very fast implementation of tldr in Rust
 brew "tealdeer"
+# Send macOS User Notifications from the command-line
+brew "terminal-notifier"
 # Terminal UI for tshark, inspired by Wireshark
 brew "termshark"
-# Tool to build, change, and version infrastructure
-brew "terraform"
 # Terraform Language Server
 brew "terraform-ls"
 # Official documentation format of the GNU project
@@ -510,6 +487,16 @@ brew "tflint"
 brew "the_silver_searcher"
 # Terminal multiplexer
 brew "tmux"
+# AI-powered, non-intrusive terminal assistant
+brew "tmuxai"
+# OpenTofu Language Server
+brew "tofu-ls"
+# Display directories as trees (with optional color/HTML output)
+brew "tree"
+# Incremental parsing library
+brew "tree-sitter"
+# Parser generator tool
+brew "tree-sitter-cli"
 # Maintained ctags implementation
 brew "universal-ctags", args: ["HEAD"]
 # URL extractor/launcher
@@ -542,8 +529,6 @@ brew "xsv"
 brew "yadm"
 # Linter for YAML files
 brew "yamllint"
-# JavaScript package manager
-brew "yarn"
 # Process YAML, JSON, XML, CSV and properties documents from the CLI
 brew "yq"
 # Pluggable terminal workspace, with terminal multiplexer as the base feature
@@ -575,13 +560,16 @@ brew "defenseunicorns/tap/uds"
 brew "fabianishere/personal/pam_reattach"
 # Turns macOS input fields into real vim buffers
 brew "felixkratz/formulae/svim"
+# CLI for on-device speech transcription using Speech.framework
+brew "finnvoor/tools/yap"
 # Flux CLI
 brew "fluxcd/tap/flux"
+# Glasskube is a cloud native package manager for Kubernetes. It includes an UI and CLI, is dependency aware and GitOps ready.
+brew "glasskube/tap/glasskube"
 # Play, record, convert, and stream audio and video
 brew "homebrew-ffmpeg/ffmpeg/ffmpeg", args: ["with-fdk-aac"]
 # δyƒƒ /ˈdʏf/ - A diff tool for YAML files, and sometimes JSON
 brew "homeport/tap/dyff"
-brew "jahvon/tap/flow"
 # Smart terminal session manager
 brew "joshmedeski/sesh/sesh"
 brew "knative/client/kn"
@@ -590,8 +578,6 @@ brew "knqyf263/pet/pet"
 brew "martido/brew-graph/brew-graph"
 # MinIO Client for object storage and filesystems
 brew "minio/stable/mc"
-# Package Replicated applications and manage releases, channels, customers and entitlements using a command-line interface.
-brew "replicatedhq/replicated/cli"
 # Let's see the configs of the Envoy
 brew "saltbo/bin/seenvoy"
 # CLI for out-of-band management of Kubernetes nodes created by Talos
@@ -602,31 +588,35 @@ brew "stewartlynch/tap/xprename"
 brew "styrainc/packages/regal"
 # AI-generated memory files manager for Git
 brew "trknhr/tap/ai-docs"
+# Create and modify subtitles
+cask "aegisub", args: { appdir: "~/Applications/Ops/Engineering/Transmogrify/Video Conversion/Subtitles" }
 # Automatic tiling window manager similar to xmonad
 cask "amethyst", args: { appdir: "~/Applications/Ops/Administration/Window Management" }
-# Distribution of the Python and R programming languages for scientific computing
-cask "anaconda", args: { appdir: "~/Applications" }
-# Quick Look Plugin for AVIF images
-cask "avifquicklook"
+# Inspect application bundles
+cask "apparency", args: { appdir: "~/Applications/Ops/Administration/Package Management" }
+# Terminal-based AI coding assistant
+cask "claude-code"
 cask "font-fira-mono-nerd-font"
 cask "font-jetbrains-mono"
 cask "font-jetbrains-mono-nerd-font"
 # Set of tools to manage resources and applications hosted on Google Cloud
 cask "gcloud-cli"
-# Terminal emulator that uses platform-native UI and GPU acceleration
-cask "ghostty", args: { appdir: "~/Applications/Comm/Terminal" }
+# Tools to protect your emails and files
+cask "gpg-suite", args: { appdir: "~/Applications/Ops/Clandestine" }
 # Open-source keystroke visualiser
 cask "keycastr", args: { appdir: "~/Applications/Ops/Administration" }
 # Window manager
 cask "loop", args: { appdir: "~/Applications/Ops/Administration/Window Management" }
 # Knowledge base that works on top of a local folder of plain text Markdown files
 cask "obsidian"
+# ZFS driver and utilities
+cask "openzfs"
 # Replacement for Docker Desktop
 cask "orbstack", args: { appdir: "~/Applications/Ops/Engineering" }
 # Run macOS virtual machines locally and build images for use with Orka
 cask "orka-desktop", args: { appdir: "~/Applications/Ops/Engineering" }
-# Quick Look generator for Markdown files
-cask "qlmarkdown"
+# Orchestration with Kubernetes on Apple
+cask "orka3", args: { appdir: "~/Applications/~/Applications/Ops/Engineering" }
 # Thumbnails, static previews, cover art and metadata for video files
 cask "qlvideo", args: { appdir: "~/Applications/Comm/Visual" }
 # Productivity application
@@ -634,21 +624,49 @@ cask "quicksilver", args: { appdir: "~/Applications/Ops/Administration" }
 # Control your tools with a few keystrokes
 cask "raycast", args: { appdir: "~/Applications/Ops/Administration" }
 # Store SSH keys in the Secure Enclave
-cask "secretive"
+cask "secretive", args: { appdir: "~/Applications/Ops/Clandestine" }
 # Comic viewer/reader
 cask "simple-comic", args: { appdir: "~/Applications/Comm/Visual" }
 # Launcher & command palette
 cask "sol", args: { appdir: "~/Applications/Ops/Administration" }
+# Mux and tag mp4 files
+cask "subler", args: { appdir: "~/Applications/Ops/Engineering/Transmogrify/Video Conversion" }
+# Application for inspecting installer packages
+cask "suspicious-package", args: { appdir: "~/Applications/Ops/Administration/Package Management" }
 # Virtual machines UI using QEMU
 cask "utm", args: { appdir: "~/Applications/Holodeck" }
-# Multiplayer code editor
-cask "zed", args: { appdir: "~/Applications/Comm/Written" }
+# Development environment
+cask "vagrant", args: { appdir: "~/Applications/Ops/Engineering" }
+# Network protocol analyzer
+cask "wireshark-app", args: { appdir: "~/Applications/Astrometrics/Scanners" }
+mas "Actions", id: 1586435171
+mas "Actions For Obsidian", id: 1659667937
+mas "Animoog Z", id: 1586841361
+mas "Apple Configurator", id: 1037126344
+mas "Audiobook Builder", id: 1437681957
+mas "Developer", id: 640199958
 mas "GarageBand", id: 682658836
-mas "iMovie", id: 408981434
+mas "Health Auto Export", id: 1115567069
+mas "Ice Cubes", id: 6444915884
 mas "Keynote", id: 409183694
+mas "Mastodon Air", id: 1661639557
+mas "Mastonaut", id: 1450757574
 mas "Numbers", id: 409203825
 mas "Obsidian Web Clipper", id: 6720708363
-mas "Okta Verify", id: 490179405
+mas "Ooooo", id: 1482773008
 mas "Pages", id: 409201541
+mas "Paprika Recipe Manager 3", id: 1303222628
+mas "Parallels Desktop", id: 1085114709
 mas "Peek", id: 1554235898
-mas "Slack", id: 803453959
+mas "Prime Video", id: 545519333
+mas "Silicio", id: 933627574
+mas "Steam Link", id: 1246969117
+mas "Surfed", id: 1591590700
+mas "Swift Playground", id: 1496833156
+mas "TestFlight", id: 899247664
+mas "Vidzik", id: 6467666216
+mas "Vimari", id: 1480933944
+mas "WireGuard", id: 1451685025
+mas "Xcode", id: 497799835
+go "github.com/spf13/cobra-cli"
+go "github.com/golangci/golangci-lint/cmd/golangci-lint"

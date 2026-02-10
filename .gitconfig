@@ -72,11 +72,14 @@
 [github]
   user = totallyGreg@gmail.com
 [diff]
-  tool = nvimdiff
+  tool = vimdiff
   colorMoved = default
 [merge]
   tool = vimdiff
   conflictstyle = diff3
+[mergetool "vimdiff"]
+  cmd = nvim -d $LOCAL $BASE $REMOTE $MERGED \
+        -c '$wincmd w' -c 'wincmd J'
 [init]
   defaultBranch = main
 [interactive]

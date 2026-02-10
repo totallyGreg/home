@@ -182,6 +182,9 @@ zstyle ':zcomet:compinit' dump-file $XDG_CACHE_HOME/zsh/zcompdump
 ## Load some plugins
 # zcomet load jeffreytse/zsh-vi-mode            # Better vim support including surrounds and increments
 # ZVM_VI_HIGHLIGHT_BACKGROUND=yellow            # default is red, but zvm seems to break y)anking
+#
+# Testing out the auto appearance
+zcomet load alberti42/zsh-appearance-control
 
 zcomet load zsh-users/zsh-completions
 zcomet load mattmc3/zephyr plugins/completion

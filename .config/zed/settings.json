@@ -8,13 +8,15 @@
 // from the command palette or from `Zed` application menu.
 {
   "context_servers": {
+    "mcp-server-github": {
+      "enabled": true,
+      "settings": {},
+    },
     "Homebrew": {
-      "source": "custom",
       "command": "brew",
-      "args": ["mcp-server"]
+      "args": ["mcp-server"],
     },
     "Docker MCP Toolkit": {
-      "source": "custom",
       "command": "docker",
       "args": [
         "run",
@@ -22,32 +24,32 @@
         "--rm",
         "alpine/socat",
         "STDIO",
-        "TCP:host.docker.internal:8811"
+        "TCP:host.docker.internal:8811",
       ],
       "env": null,
-      "settings": {}
-    }
+      "settings": {},
+    },
   },
   "ssh_connections": [
     {
       "host": "ds5",
       "projects": [
         {
-          "paths": ["/Users/totally/Notes"]
+          "paths": ["/Users/totally/Notes"],
         },
         {
-          "paths": ["/Users/totally/Projects"]
+          "paths": ["/Users/totally/Projects"],
         },
         {
-          "paths": ["/Users/totally/Projects/merge_audiobook"]
-        }
-      ]
-    }
+          "paths": ["/Users/totally/Projects/merge_audiobook"],
+        },
+      ],
+    },
   ],
   "icon_theme": "Colored Zed Icons Theme Light",
   "auto_update_extensions": {
     "swift": false,
-    "markdown-oxide": false
+    "markdown-oxide": false,
   },
   //from https://creativewithin.medium.com/how-i-got-zed-editor-working-with-swift-projects-60ea78d4165e
   "languages": {
@@ -55,15 +57,15 @@
       "enable_language_server": true,
       "language_servers": ["sourcekit-lsp"],
       "formatter": "language_server",
-      "format_on_save": "on"
+      "format_on_save": "on",
     },
     "YAML": {
       "formatter": "language_server",
       "prettier": {
-        "bracketSpacing": false
+        "bracketSpacing": false,
       },
-      "format_on_save": "on"
-    }
+      "format_on_save": "on",
+    },
   },
   "lsp": {
     "yaml-language-server": {
@@ -72,42 +74,137 @@
           "keyOrdering": true,
           "format": {
             "singleQuote": true,
-            "bracketSpacing": false
+            "bracketSpacing": false,
           },
           "schemas": {
             "http://json.schemastore.org/composer": ["/*"],
-            "../relative/path/schema.json": ["/config*.yaml"]
-          }
-        }
-      }
-    }
+            "../relative/path/schema.json": ["/config*.yaml"],
+          },
+        },
+      },
+    },
   },
   "inlay_hints": {
     "enabled": true,
     "show_type_hints": true,
     "show_parameter_hints": true,
-    "show_other_hints": true
+    "show_other_hints": true,
   },
   "language_models": {
     "lmstudio": {
-      "api_url": "http://10.0.0.5:1234/api/v0"
-    }
+      "api_url": "http://10.0.0.5:1234/api/v0",
+    },
+    "ollama": {
+      "api_url": "http://10.0.0.5:10000",
+      // "api_url": "ollama.infra.falcone.us:80",
+      "low_speed_timeout_in_seconds": 30,
+      "available_models": [
+        {
+          "name": "qwen3:latest",
+          "display_name": "ds5:qwen3:latest",
+          "max_tokens": 16384,
+          "supports_tools": true,
+          "supports_thinking": true,
+        },
+        {
+          "name": "qwen2.5-coder-3b-instruct-q8_0-1748618562041:latest",
+          "display_name": "ds5:qwen2.5-coder",
+          "max_tokens": 16384,
+          "supports_tools": false,
+          "supports_thinking": true,
+        },
+        {
+          "name": "deepseek-coder-v2",
+          "display_name": "deepseek-coder-v2:latest ",
+          "max_tokens": 32768,
+          "supports_tools": false,
+        },
+      ],
+    },
+    "openai": {
+      "api_url": "http://10.0.0.5:1234/v1",
+      "available_models": [
+        {
+          "name": "deepseek-r1-0528-qwen3-8b",
+          "display_name": "ds5 deepseek-r1-0528-qwen3-8b",
+          "max_tokens": 17760,
+        },
+        {
+          "name": "qwen/qwen3-14b",
+          "display_name": "ds5 qwen3",
+          "max_tokens": 16384,
+        },
+      ],
+    },
+    "openai_compatible": {
+      "ds5 MLX": {
+        "api_url": "http://10.0.0.5:11973/v1",
+        "available_models": [
+          {
+            "name": "qwen3",
+            "max_tokens": 200000,
+            "max_output_tokens": 32000,
+            "max_completion_tokens": 200000,
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": false,
+              "prompt_cache_key": false,
+            },
+          },
+        ],
+      },
+      "agentgateway": {
+        "api_url": "http://localhost:8000/v1",
+        "available_models": [
+          {
+            "name": "qwen3:latest",
+            "max_tokens": 200000,
+            "max_output_tokens": 32000,
+            "max_completion_tokens": 200000,
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": false,
+              "prompt_cache_key": false,
+            },
+          },
+        ],
+      },
+      "ds5-ollama": {
+        "api_url": "http://10.0.0.5:11434/v1",
+        "available_models": [
+          {
+            "name": "qwen3:latest",
+            "max_tokens": 200000,
+            "max_output_tokens": 32000,
+            "max_completion_tokens": 200000,
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": false,
+              "prompt_cache_key": false,
+            },
+          },
+        ],
+      },
+    },
   },
   "features": {
-    "edit_prediction_provider": "none"
+    "edit_prediction_provider": "none",
   },
   "theme": {
     "mode": "system",
     "light": "Catppuccin Latte",
-    "dark": "Solarized Dark"
+    "dark": "Solarized Dark",
   },
   "agent": {
     "use_modifier_to_send": true,
     "play_sound_when_agent_done": true,
     "model_parameters": [
       {
-        "temperature": 0.2
-      }
+        "temperature": 0.2,
+      },
     ],
     "profiles": {
       "code-buddy": {
@@ -128,10 +225,10 @@
           "grep": true,
           "terminal": true,
           "thinking": true,
-          "web_search": true
+          "web_search": true,
         },
         "enable_all_context_servers": true,
-        "context_servers": {}
+        "context_servers": {},
       },
       "mother-may-i": {
         "name": "Mother May I",
@@ -146,19 +243,19 @@
           "open": true,
           "grep": true,
           "thinking": true,
-          "web_search": true
+          "web_search": true,
         },
         "enable_all_context_servers": false,
-        "context_servers": {}
-      }
+        "context_servers": {},
+      },
     },
     "default_profile": "write",
     "always_allow_tool_actions": true,
     "default_model": {
       "provider": "ollama",
-      "model": "gpt-oss:20b"
+      "model": "gpt-oss:20b",
     },
-    "provider": null
+    "provider": null,
   },
   "vim_mode": true,
   "ui_font_size": 14,
@@ -166,6 +263,6 @@
   "buffer_font_family": "FiraMono Nerd Font Mono",
   "tabs": {
     "close_position": "right",
-    "git_status": false
-  }
+    "git_status": false,
+  },
 }
