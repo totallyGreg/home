@@ -34,6 +34,7 @@ typeset -gU cdpath fpath mailpath path
 path=(
   $HOME/{,s}bin(N)
   $HOME/brew/{,s}bin(N)
+  $HOME/.orbstack/bin
   /opt/{homebrew,local}/{,s}bin(N)
   /usr/local/{,s}bin(N)
   $HOME/.local/share/nvim/mason/bin
@@ -47,12 +48,14 @@ if (hash brew > /dev/null 2>&1 ) ; then
   export GNU_GETOPT_PREFIX="$(brew --prefix gnu-getopt)"
 fi
 
+prepend_to_path() {
+  [[ -d "$1" ]] && path=("$1" $path)
+}
+
 # ASDF
 export ASDF_DATA_DIR="${HOME}/.asdf"
-export PATH="$ASDF_DATA_DIR/shims:$PATH"
+prepend_to_path "$ASDF_DATA_DIR/shims"
 
-# personal bin directory
-export PATH=${HOME}/bin:$PATH
 
 [[ -d $ZDOTDIR ]] || echo Error: ZDOTDIR=${(q)ZDOTDIR} does not exist. >&2
 

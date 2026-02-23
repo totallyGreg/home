@@ -49,6 +49,9 @@ export LS_COLORS
 
 # # Homebrew path is now set in ~/.zshenv so non-interactive shells can use tools
 
+# Orbstack
+# path=(~/.orbstack/bin $path)
+
 # Java
 path=(/opt/homebrew/opt/openjdk/bin $path)
 
@@ -84,10 +87,7 @@ path=(${HOME}/.cargo/bin $path)
 # export LIBRARY_PATH=$LIBRARY_PATH:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib # Needed for Rust compilation and linking
 
 # Rancher-Desktop
-path=(${HOME}/.rd/bin $path)
-
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc' ]; then . '/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc'; fi
+[[ -d "${HOME}/.rd/bin" ]] && path+="${HOME}/.rd/bin"
 
 # # Kubernetes
 # set_kubeconfig () {
@@ -184,6 +184,9 @@ zstyle ':zcomet:compinit' dump-file $XDG_CACHE_HOME/zsh/zcompdump
 # ZVM_VI_HIGHLIGHT_BACKGROUND=yellow            # default is red, but zvm seems to break y)anking
 #
 # Testing out the auto appearance
+# Export this variable before loading zsh-appearance-control
+export ZAC_CALLBACK_FNC=my_zac_callback
+export ZAC_CACHE_DIR=$XDG_CACHE_HOME/zsh/
 zcomet load alberti42/zsh-appearance-control
 
 zcomet load zsh-users/zsh-completions
