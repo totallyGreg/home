@@ -15,7 +15,7 @@ export XDG_CONFIG_HOME=$HOME/.config
 export XDG_DATA_HOME=$HOME/.local/share
 export XDG_STATE_HOME=$HOME/.local/state
 export XDG_CACHE_HOME=$HOME/Library/Caches
-export XDG_RUNTIME_HOME=$HOME/.tmp
+# export XDG_RUNTIME_DIR=$XDG_CACHE_HOME/Runtime
 
 ## Ahah! Finally! This fixes "can't find stdlib.h"
 export SDKROOT="`xcrun --show-sdk-path`"
