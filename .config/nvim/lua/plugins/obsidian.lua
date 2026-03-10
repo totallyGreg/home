@@ -46,9 +46,9 @@ return {
         folder = "500 ♽ Cycles/520 🌄 Days",
         date_format = "%Y/%Y-%m-%d",
         alias_format = "%B %-d, %Y",
-        template = "900 📐 Templates/🌄 New Day.md",
+        template = "900 📐Templates/🌄 New Day.md",
       },
-      new_notes_location = "700 Vaults/Notes",
+      new_notes_location = "700 Notes/Notes",
 
       ---@param url string
       follow_url_func = function(url)
@@ -113,7 +113,7 @@ return {
         return out
       end,
       templates = {
-        folder = "900 📐 Templates",
+        folder = "900 📐Templates",
         date_format = "%Y-%m-%d-%a",
         time_format = "%H:%M",
       },

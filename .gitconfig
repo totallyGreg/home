@@ -75,7 +75,7 @@
   tool = vimdiff
   colorMoved = default
 [merge]
-  tool = vimdiff
+  tool = nvimdiff
   conflictstyle = diff3
 [mergetool "vimdiff"]
   cmd = nvim -d $LOCAL $BASE $REMOTE $MERGED \

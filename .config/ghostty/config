@@ -1,7 +1,7 @@
-# theme = Builtin Solarized Dark
+# theme = Builtin Solarized
 # theme = dark:Builtin Solarized Dark,light:catppuccin-latte
-theme = dark:Builtin Solarized Dark,light:Builtin Solarized Light
-
+# theme = dark:Builtin Solarized Dark,light:Builtin Solarized Light
+theme = dark:Selenized Dark,light:Selenized Light
 #  "native", "transparent", "tabs", and "hidden".
 # macos-titlebar-style = "hidden"
 

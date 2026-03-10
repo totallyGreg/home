@@ -52,6 +52,10 @@ export LS_COLORS
 # Orbstack
 # path=(~/.orbstack/bin $path)
 
+# Obsidian
+
+path+=("$HOME/Applications/Comm/Written/Obsidian.app/Contents/MacOS")
+
 # Java
 path=(/opt/homebrew/opt/openjdk/bin $path)
 
@@ -186,7 +190,7 @@ zstyle ':zcomet:compinit' dump-file $XDG_CACHE_HOME/zsh/zcompdump
 # Testing out the auto appearance
 # Export this variable before loading zsh-appearance-control
 export ZAC_CALLBACK_FNC=my_zac_callback
-export ZAC_CACHE_DIR=$XDG_CACHE_HOME/zsh/
+export ZAC_CACHE_DIR=$XDG_CACHE_HOME/zsh
 zcomet load alberti42/zsh-appearance-control
 
 zcomet load zsh-users/zsh-completions

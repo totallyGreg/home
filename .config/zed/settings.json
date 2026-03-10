@@ -7,10 +7,30 @@
 // custom settings, run the `open default settings` command
 // from the command palette or from `Zed` application menu.
 {
+  "edit_predictions": {
+    "provider": "none"
+  },
+  "minimap": {
+    "show": "auto",
+  },
+  "relative_line_numbers": "disabled",
+  "which_key": {
+    "enabled": true,
+  },
+  "git_panel": {
+    "tree_view": true,
+  },
+  "agent_servers": {},
   "context_servers": {
     "mcp-server-github": {
       "enabled": true,
       "settings": {},
+    },
+    "jq-mcp-server": {
+      "enabled": true,
+      "command": "npx",
+      "args": ["@247arjun/mcp-jq"],
+      "env": {},
     },
     "Homebrew": {
       "command": "brew",
@@ -53,6 +73,21 @@
   },
   //from https://creativewithin.medium.com/how-i-got-zed-editor-working-with-swift-projects-60ea78d4165e
   "languages": {
+    // "Python": {
+    //   "language_servers": [
+    //     // Disable basedpyright and enable ty, and otherwise
+    //     // use the default configuration.
+    //     "ty",
+    //     "!basedpyright",
+    //     "...",
+    //   ],
+    // },
+    "Markdown": {
+      "indent_guides": {
+        "background_coloring": "indent_aware",
+        "coloring": "indent_aware"
+      }
+    },
     "Swift": {
       "enable_language_server": true,
       "language_servers": ["sourcekit-lsp"],
@@ -190,15 +225,19 @@
       },
     },
   },
-  "features": {
-    "edit_prediction_provider": "none",
-  },
-  "theme": {
-    "mode": "system",
-    "light": "Catppuccin Latte",
-    "dark": "Solarized Dark",
-  },
+  "theme": "macOS Classic Light",
   "agent": {
+    "tool_permissions": {
+      "default": "allow"
+    },
+    "default_model": {
+      "provider": "ollama",
+      "model": "qwen3:8b",
+    },
+    "commit_message_model": {
+      "provider": "anthropic",
+      "model": "claude-haiku-4-5-20251001",
+    },
     "use_modifier_to_send": true,
     "play_sound_when_agent_done": true,
     "model_parameters": [
@@ -250,11 +289,6 @@
       },
     },
     "default_profile": "write",
-    "always_allow_tool_actions": true,
-    "default_model": {
-      "provider": "ollama",
-      "model": "gpt-oss:20b",
-    },
     "provider": null,
   },
   "vim_mode": true,

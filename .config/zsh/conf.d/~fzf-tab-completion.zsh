@@ -1,3 +1,4 @@
+#!/usr/bin/env zsh
 # press ctrl-r to repeat completion *without* accepting i.e. reload the completion
 # press right to accept the completion and retrigger it
 # press alt-enter to accept the completion and run it
@@ -25,5 +26,5 @@ zstyle ':completion::*:git::git,add,*' fzf-completion-opts --preview='git -c col
 zstyle ':completion::*:git::*,[a-z]*' fzf-completion-opts --preview='
 eval set -- {+1}
 for arg in "$@"; do
-    { git diff --color=always -- "$arg" | git log --color=always "$arg" } 2>/dev/null
+    { git diff --color=always -- "$arg" || git log --color=always "$arg" } 2>/dev/null
 done'

@@ -59,8 +59,9 @@ format = '$all$directory$character'
 
 [aws]
 disabled = false
-format = '[$symbol($profile )(\($region\) )]($style)'
+format = 'on [$symbol($profile )(\($region\) )(\[$duration\] )]($style)'
 style = 'bold blue'
+# force_display = true
 
 [aws.profile_aliases]
 'customer-success:AdministratorAccess' = 'CSE'
@@ -116,6 +117,9 @@ disabled = false
 [direnv]
 disabled = false
 symbol = ' '
+style = 'bold orange'
+allowed_msg = ''
+unloaded_msg = ''
 
 [custom.ExpressVPN]
 # Adds significant time to starting a shell
