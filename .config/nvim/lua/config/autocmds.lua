@@ -38,3 +38,6 @@ autocmd("FileChangedShellPost", {
   end,
   desc = "Notify when buffer is reloaded due to external changes",
 })
+
+-- Start filesystem watcher for instant reload on external changes
+require("config.directory-watcher")

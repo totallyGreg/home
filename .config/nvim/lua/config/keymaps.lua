@@ -22,6 +22,35 @@ vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz")
 -- greatest remap ever
 vim.keymap.set("x", "<leader>p", [["_dP]])
 
+-- Yank visual selection with file path (for pasting into coding agents)
+vim.keymap.set("v", "<leader>yr", function()
+  local start_line = vim.fn.line("'<")
+  local end_line = vim.fn.line("'>")
+  local lines = vim.fn.getline(start_line, end_line)
+  local rel_path = vim.fn.fnamemodify(vim.fn.expand("%"), ":.")
+  local header = rel_path .. ":" .. start_line
+  if start_line ~= end_line then
+    header = header .. "-" .. end_line
+  end
+  local content = header .. "\n" .. table.concat(lines, "\n")
+  vim.fn.setreg("+", content)
+  vim.notify("Yanked with relative path", vim.log.levels.INFO)
+end, { desc = "Yank selection with relative file path" })
+
+vim.keymap.set("v", "<leader>ya", function()
+  local start_line = vim.fn.line("'<")
+  local end_line = vim.fn.line("'>")
+  local lines = vim.fn.getline(start_line, end_line)
+  local abs_path = vim.fn.expand("%:p")
+  local header = abs_path .. ":" .. start_line
+  if start_line ~= end_line then
+    header = header .. "-" .. end_line
+  end
+  local content = header .. "\n" .. table.concat(lines, "\n")
+  vim.fn.setreg("+", content)
+  vim.notify("Yanked with absolute path", vim.log.levels.INFO)
+end, { desc = "Yank selection with absolute file path" })
+
 -- local kube_utils_mappings = {
 --   { "<leader>k", group = "Kubernetes" }, -- Main title for all Kubernetes related commands
 --   -- Helm Commands
