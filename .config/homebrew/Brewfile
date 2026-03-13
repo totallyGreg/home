@@ -28,6 +28,7 @@ tap "nativeos/i386-elf-toolchain"
 tap "nikitabobko/tap"
 tap "replicatedhq/replicated"
 tap "saltbo/bin"
+tap "seunggabi/tap"
 tap "siderolabs/tap"
 tap "solo-io/tap"
 tap "stewartlynch/tap"
@@ -274,14 +275,14 @@ brew "helm"
 brew "helmify"
 # HTTP load generator, ApacheBench (ab) replacement
 brew "hey"
+# Client library for huggingface.co hub
+brew "hf"
 # Convert source code to formatted text with syntax highlighting
 brew "highlight"
 # Improved top (interactive process viewer)
 brew "htop"
 # Network, Service & Security Observability for Kubernetes using eBPF
 brew "hubble"
-# Client library for huggingface.co hub
-brew "huggingface-cli"
 # Configurable static site generator
 brew "hugo"
 # Command-line benchmarking tool
@@ -368,8 +369,6 @@ brew "lynx"
 brew "make"
 # Mac App Store command-line interface
 brew "mas"
-# Java-based project management
-brew "maven"
 # Unified display of technical and tag data for audio/video
 brew "media-info"
 # Scalable distributed version control system
@@ -600,6 +599,8 @@ brew "minio/stable/mc"
 brew "replicatedhq/replicated/cli"
 # Let's see the configs of the Envoy
 brew "saltbo/bin/seenvoy"
+# k9s-style TUI for managing Claude Code sessions
+brew "seunggabi/tap/claude-dashboard"
 # CLI for out-of-band management of Kubernetes nodes created by Talos
 brew "siderolabs/tap/talosctl"
 # Rename an Xcode project throughout a directory
@@ -608,8 +609,6 @@ brew "stewartlynch/tap/xprename"
 brew "styrainc/packages/regal"
 # AI-generated memory files manager for Git
 brew "trknhr/tap/ai-docs"
-# Automatic tiling window manager similar to xmonad
-cask "amethyst", args: { appdir: "~/Applications/Ops/Administration/Window Management" }
 # Quick Look Plugin for AVIF images
 cask "avifquicklook"
 # Terminal-based AI coding assistant
@@ -637,8 +636,6 @@ cask "qlmarkdown"
 cask "qlvideo", args: { appdir: "~/Applications/Comm/Visual" }
 # Productivity application
 cask "quicksilver", args: { appdir: "~/Applications/Ops/Administration" }
-# Control your tools with a few keystrokes
-cask "raycast", args: { appdir: "~/Applications/Ops/Administration" }
 # Store SSH keys in the Secure Enclave
 cask "secretive"
 # Comic viewer/reader
@@ -670,6 +667,7 @@ vscode "ms-toolsai.jupyter-keymap"
 vscode "ms-toolsai.jupyter-renderers"
 vscode "ms-toolsai.vscode-jupyter-cell-tags"
 vscode "ms-toolsai.vscode-jupyter-slideshow"
+vscode "ms-vscode-remote.remote-containers"
 uv "pai-tenant-credentials"
 uv "specify-cli"
 uv "upskill"
