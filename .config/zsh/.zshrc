@@ -85,7 +85,7 @@ export CGO_CFLAGS="-g -O2 -isysroot /Library/Developer/CommandLineTools/SDKs/Mac
 # export PATH="$PATH:${GOROOT}/bin" # Not needed with brew install go
 
 # Cargo
-path=(${HOME}/.cargo/bin $path)
+path=(${HOME}/.cargo/env/bin $path)
 # From https://braindetour.com/article/20220213 but still getting linker errors
 # export PATH=$PATH:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib # Needed for Rust compilation and linking
 # export LIBRARY_PATH=$LIBRARY_PATH:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib # Needed for Rust compilation and linking
