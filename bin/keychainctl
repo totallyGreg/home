@@ -42,30 +42,31 @@ cmd_get() {
   if [[ -z "$name" ]]; then
     # Interactive: browse secrets with fzf
     if has_fzf && is_tty; then
-      name=$(security dump-keychain "$keychain" \
+      name=$(security dump-keychain -- "$keychain" \
         | awk -F= '/0x00000007/ {print $2}' | tr -d '"' \
         | fzf --prompt="Secret> ") || die "No secret selected"
     else
       die "Usage: keychainctl get <name> [keychain]"
     fi
   fi
-  security find-generic-password -a "$USER" -s "$name" -w "$keychain" 2>/dev/null \
+  security find-generic-password -a "$USER" -s "$name" -w -- "$keychain" 2>/dev/null \
     || die "Secret '$name' not found in $keychain"
 }
 
 cmd_set() {
-  local name="${1:-}" value="${2:-}" keychain
+  local name="${1:-}" keychain value
   [[ -z "$name" ]] && die "Usage: keychainctl set <name> [value] [keychain]"
-  if [[ -z "$value" ]]; then
-    # Prompt for password securely
+  if [[ $# -lt 2 ]]; then
+    # No value arg at all — prompt for password securely
     read -rsp "Password for '$name': " value < /dev/tty
     echo >&2  # newline after hidden input
     [[ -z "$value" ]] && die "Password cannot be empty"
     keychain=$(resolve_keychain "${2:-}")
   else
+    value="$2"
     keychain=$(resolve_keychain "${3:-}")
   fi
-  security add-generic-password -U -a "$USER" -s "$name" -w "$value" "$keychain" \
+  security add-generic-password -U -a "$USER" -s "$name" -w "$value" -- "$keychain" \
     || die "Failed to store secret '$name' in $keychain"
   info "Secret '$name' stored in $keychain"
 }
@@ -74,7 +75,7 @@ cmd_rm() {
   local name="${1:-}" keychain
   [[ -z "$name" ]] && die "Usage: keychainctl rm <name> [keychain]"
   keychain=$(resolve_keychain "${2:-}")
-  security delete-generic-password -a "$USER" -s "$name" "$keychain" &>/dev/null \
+  security delete-generic-password -a "$USER" -s "$name" -- "$keychain" &>/dev/null \
     || die "Secret '$name' not found in $keychain"
   info "Secret '$name' deleted from $keychain"
 }
@@ -83,10 +84,14 @@ cmd_ls() {
   local keychain
   keychain=$(resolve_keychain "${1:-}")
   local secrets
-  secrets=$(security dump-keychain "$keychain" \
+  secrets=$(security dump-keychain -- "$keychain" \
     | awk -F= '/0x00000007/ {print $2}' | tr -d '"' | sort -u)
   if has_fzf && is_tty; then
-    echo "$secrets" | fzf --prompt="Secrets in $keychain> "
+    local selected
+    selected=$(echo "$secrets" | fzf --multi --prompt="Secrets in $keychain> " \
+      --header="TAB=multi-select, ENTER=confirm, ctrl-y=yank selected" \
+      --bind="ctrl-y:execute-silent(echo -n {+} | pbcopy)+abort") || true
+    [[ -n "$selected" ]] && echo "$selected"
   else
     echo "$secrets"
   fi
