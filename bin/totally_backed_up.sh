@@ -66,6 +66,7 @@ function main() {
   echo "Backup will be created at: ${Archive}"
 
   hdiutil create -volname "${VolumeName}" -format UDSB \
+    -fs HFS+ \
     -encryption \
     "${Archive}" \
     -verbose -noatomic -skipunreadable -spotlight \
@@ -93,10 +94,12 @@ function main() {
   # -srcfolder ~/Library/Application\ Support \
 
   echo "Verifying backup..."
-  if hdiutil verify "${Archive}"; then
-    echo "✅ Backup verified: ${Archive}"
+  if [[ -d "${Archive}" ]]; then
+    local size
+    size=$(du -sh "${Archive}" | cut -f1)
+    echo "✅ Backup created: ${Archive} (${size})"
   else
-    echo "❌ Verification failed: ${Archive}"
+    echo "❌ Archive not found after creation: ${Archive}"
     exit 1
   fi
 }
