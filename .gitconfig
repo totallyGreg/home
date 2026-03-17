@@ -4,7 +4,7 @@
 [includeIf "gitdir:~/Documents/PAN_Projects/"]
   path = ~/.gitconfig-work
 [alias]
-  alias = config --get-regexp ^alias.
+  alias = "!f() { sel=$(git config --get-regexp '^alias\\.' | sed 's/^alias\\.//;s/ /\\t/' | sort | column -t -s $'\\t' | fzf --preview 'git config alias.{1}' --preview-window=up:3:wrap); [ -n \"$sel\" ] && git $(echo \"$sel\" | awk '{print $1}'); }; f"
   br = branch --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(contents:subject) %(color:green)(%(committerdate:relative)) [%(authorname)]' --sort=-committerdate
   brs = br -avv
   branches = branch -avv
