@@ -20,7 +20,11 @@
   "git_panel": {
     "tree_view": true,
   },
-  "agent_servers": {},
+  "agent_servers": {
+    "claude-acp": {
+      "type": "registry"
+    }
+  },
   "context_servers": {
     "mcp-server-github": {
       "enabled": true,

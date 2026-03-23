@@ -59,6 +59,9 @@ prepend_to_path "$ASDF_DATA_DIR/shims"
 
 [[ -d $ZDOTDIR ]] || echo Error: ZDOTDIR=${(q)ZDOTDIR} does not exist. >&2
 
+[[ -f $ZDOTDIR/conf.d/claude ]] && source $ZDOTDIR/conf.d/claude.zsh
+
+
 export CARGO_HOME="$HOME/.cargo/env"
 [[ -f $CARGO_HOME ]] && . $CARGO_HOME
 
