@@ -229,7 +229,7 @@
       },
     },
   },
-  "theme": "macOS Classic Light",
+  "theme": "Solarized Dark",
   "agent": {
     "tool_permissions": {
       "default": "allow"

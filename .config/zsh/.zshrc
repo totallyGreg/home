@@ -140,7 +140,7 @@ if type gpg &>/dev/null; then
     export PINENTRY_USER_DATA="USE_CURSES=1"
   fi
 else
-  # echo "GPG not found using ssh-agent"
+
 fi
 
 # Update tmux environment variables before each prompt
@@ -189,7 +189,7 @@ zstyle ':zcomet:compinit' dump-file $XDG_CACHE_HOME/zsh/zcompdump
 #
 # Testing out the auto appearance
 # Export this variable before loading zsh-appearance-control
-export ZAC_CALLBACK_FNC=my_zac_callback
+# export ZAC_CALLBACK_FNC=my_zac_callback
 export ZAC_CACHE_DIR=$XDG_CACHE_HOME/zsh
 zcomet load alberti42/zsh-appearance-control
 
