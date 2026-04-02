@@ -47,7 +47,8 @@ zstyle ':fzf-tab:complete:ssh:hosts' fzf-preview 'dig $word'
 # zstyle ':fzf-tab:complete:cd:*:local-directories' fzf-preview 'tree -C $realpath'
 # preview directory's content with lsd when completing cd
 # zstyle ':fzf-tab:complete:cd:*' fzf-preview 'lsd -1 --color=always $realpath'
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'tree -C $realpath'
+# Use ls -1 instead of tree to avoid emoji rendering issues in preview
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls -1 "$realpath" 2>/dev/null'
 #
 # Disabled due to it constantly throwing directory drwxr-xr-x into the query
 # zstyle ':fzf-tab:complete:cd:*' disabled-on any  NOTE: turns off broken cd completion

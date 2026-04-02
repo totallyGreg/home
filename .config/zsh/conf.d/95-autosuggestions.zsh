@@ -8,6 +8,11 @@ ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(bracketed-paste up-line-or-search down-line-or-s
 export ZSH_AUTOSUGGEST_USE_ASYNC=true
 export ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 
+# Fix: Prevent autosuggest from interfering with cd directory completion
+# This stops the space-after-cd cursor repositioning issue
+ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(cd accept-line)
+ZSH_AUTOSUGGEST_IGNORE_WIDGETS+=(cd)
+
 # Strategy for fetching suggestions
 # This helps with performance and reduces rendering issues
 export ZSH_AUTOSUGGEST_STRATEGY=(history completion)
