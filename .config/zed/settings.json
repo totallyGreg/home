@@ -229,7 +229,11 @@
       },
     },
   },
-  "theme": "Solarized Dark",
+  "theme": {
+    "mode": "system",
+    "light": "Solarized Light",
+    "dark": "Solarized Dark"
+  },
   "agent": {
     "tool_permissions": {
       "default": "allow"

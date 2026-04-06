@@ -21,6 +21,7 @@ fi
 
 alias -g pbp='pbpaste'
 alias -g pbc='pbcopy'
+alias -g pwdc='pwd | pbcopy'
 
 # Python source venv
 alias sv='source venv/bin/activate'

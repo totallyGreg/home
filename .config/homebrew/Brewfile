@@ -59,6 +59,8 @@ brew "asciidoctor"
 brew "asciinema"
 # Extendable version manager with support for Ruby, Node.js, Erlang & more
 brew "asdf"
+# Improved shell history for zsh, bash, fish and nushell
+brew "atuin"
 # Modern, easy to use download automation for torrents and usenet
 brew "autobrr"
 # Automatic configure script builder
@@ -203,8 +205,6 @@ brew "pango"
 brew "ghostscript"
 # GIF image/animation creator/editor
 brew "gifsicle"
-# Conversion library
-brew "libiconv"
 # Distributed revision control system
 brew "git"
 # Syntax-highlighting pager for git and diff output
@@ -335,6 +335,8 @@ brew "lame"
 brew "lazygit"
 # Subtitle renderer for the ASS/SSA subtitle format
 brew "libass"
+# Conversion library
+brew "libiconv"
 # Shared library for mediainfo
 brew "libmediainfo"
 # LLVM's OpenMP runtime library
@@ -383,6 +385,8 @@ brew "msgpack"
 brew "mtr"
 # Interactive cheatsheet tool for the command-line
 brew "navi"
+# Incremental parsing library
+brew "tree-sitter"
 # Ambitious Vim-fork focused on extensibility and agility
 brew "neovim"
 # Utility for managing network connections
@@ -477,12 +481,16 @@ brew "step"
 brew "stern"
 # Generate scripting interfaces to C/C++ code
 brew "swig"
+# Easiest, most secure way to use WireGuard and 2FA
+brew "tailscale"
 # Configuration helper for talos clusters
 brew "talhelper"
 # Tool Command Language
 brew "tcl-tk"
 # Very fast implementation of tldr in Rust
 brew "tealdeer"
+# General purpose fuzzy finder TUI
+brew "television"
 # Send macOS User Notifications from the command-line
 brew "terminal-notifier"
 # Terminal UI for tshark, inspired by Wireshark
@@ -503,8 +511,6 @@ brew "tmuxai"
 brew "tofu-ls"
 # Display directories as trees (with optional color/HTML output)
 brew "tree"
-# Incremental parsing library
-brew "tree-sitter"
 # Parser generator tool
 brew "tree-sitter-cli"
 # Maintained ctags implementation
@@ -545,8 +551,6 @@ brew "zellij"
 brew "zoxide"
 # Additional completion definitions for zsh
 brew "zsh-completions"
-# Scanner for vulnerabilities in container images, file systems, and Git repositories, as well as for configuration issues
-brew "aquasecurity/trivy/trivy"
 # EC2 Instance Selector is a tool to filter EC2 instance types based on resource criteria
 brew "aws/tap/ec2-instance-selector"
 # CLI for managing EKS Anywhere Kubernetes clusters
@@ -604,6 +608,7 @@ cask "amethyst", args: { appdir: "~/Applications/Ops/Administration/Window Manag
 cask "apparency", args: { appdir: "~/Applications/Ops/Administration/Package Management" }
 # Terminal-based AI coding assistant
 cask "claude-code"
+cask "font-anka-coder"
 cask "font-fira-mono-nerd-font"
 cask "font-jetbrains-mono"
 cask "font-jetbrains-mono-nerd-font"
@@ -677,3 +682,13 @@ go "github.com/spf13/cobra-cli"
 go "github.com/golangci/golangci-lint/cmd/golangci-lint"
 uv "jupytext"
 uv "pynvim"
+krew "envsubst"
+krew "graph"
+krew "modify-secret"
+krew "neat"
+krew "netshoot/netshoot"
+krew "sniff"
+krew "stern"
+krew "tree"
+krew "view-secret"
+krew "view-utilization"

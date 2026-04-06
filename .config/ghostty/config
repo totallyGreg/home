@@ -6,12 +6,17 @@ theme = dark:solarized-dark,light:solarized-light
 # macos-titlebar-style = "hidden"
 
 # font-family = "FiraMono Nerd Font Mono"
-font-family = "FiraCode Nerd Font Mono"
+#font-family = "FiraCode Nerd Font Mono"
+font-family = "Anka/Coder" # Using the installed Anka/Coder font
 font-style = "Retina"
 #font-family = "Bitstream Vera Sans Mono"
 #font-style-italic = "Oblique"
 font-family = "Menlo"
 font-style-italic = "Italic"
+
+# Interesting but may drain battery more
+# background-opacity = 0.9
+# background-blur = true
 
 #font-codepoint-map = "Symbols Nerd Font Mono"
 
