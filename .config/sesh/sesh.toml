@@ -1,0 +1,60 @@
+#:schema https://github.com/joshmedeski/sesh/raw/main/sesh.schema.json
+dir_length = 2  # Uses last 2 directories: "projects/sesh" instead of just "sesh"
+sort_order = [
+    "config", # show first
+    "tmux",
+    "zoxide", # show last
+]
+
+
+[default_session]
+# startup_command = "nvim -c ':Telescope find_files'"
+preview_command = "lsd {}"
+
+[[wildcard]]
+pattern = "~/Projects/**"
+startup_command = "ls -l"
+
+[[session]]
+name = "⚙️ tmux"
+path = "~/.config/tmux"
+startup_command = "nvim -O tmux.conf ~/.config/sesh/sesh.toml"
+preview_command = "bat --color=always ~/.config/tmux/tmux.conf"
+
+[[session]]
+name = "Downloads 📥"
+path = "~/Downloads"
+startup_command = "ls"
+
+[[session]]
+name = "Claude🦀 Local"
+path = "~/projects"
+# windows = ["claude-gemma4"]
+windows = ["claude-qwen3.5"]
+# preview_command = "claude doctor"
+
+[[session]]
+name = "Claude🦀 Test"
+path = "~/projects"
+# windows = ["claude-gemma4"]
+windows = ["claude-lmstudio"]
+
+[[window]]
+name = "claude-qwen3.5"
+startup_script = "ollama launch claude --model qwen3.5:35b-a3b-coding-nvfp4"
+
+[[window]]
+name = "claude-gemma4"
+startup_script = "ollama launch claude --model gemma4:31B"
+
+[[window]]
+name = "claude-lmstudio"
+startup_script = 'export ANTHROPIC_BASE_URL="http://localhost:1234"  export ANTHROPIC_AUTH_TOKEN="lmstudio"  claude /model microsoft/phi-4-mini-reasoning'
+
+[[window]]
+name = "git"
+startup_script = "git pull"
+
+[[window]]
+name = "terminal"
+

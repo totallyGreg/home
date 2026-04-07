@@ -193,6 +193,8 @@ zstyle ':zcomet:compinit' dump-file $XDG_CACHE_HOME/zsh/zcompdump
 export ZAC_CACHE_DIR=$XDG_CACHE_HOME/zsh
 zcomet load alberti42/zsh-appearance-control
 
+# https://docs.atuin.sh/cli/guide/installation/
+zcomet load atuinsh/atuin
 zcomet load zsh-users/zsh-completions
 zcomet load mattmc3/zephyr plugins/completion
 # zcomet load asdf-vm/asdf
