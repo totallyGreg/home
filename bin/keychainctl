@@ -10,6 +10,8 @@ die()   { echo -e "${RED}error:${NC} $*" >&2; exit 1; }
 KEYCHAINCTL_KEYCHAIN="${KEYCHAINCTL_KEYCHAIN:-login.keychain}"
 
 has_fzf() { command -v fzf &>/dev/null; }
+has_jq()  { command -v jq  &>/dev/null; }
+has_qsv() { command -v qsv &>/dev/null; }
 is_tty()  { [[ -t 0 ]] && [[ -t 1 ]]; }
 
 # Normalize keychain name: auto-append .keychain if missing
@@ -97,26 +99,149 @@ cmd_ls() {
   fi
 }
 
+cmd_pair_set() {
+  local name="${1:-}"
+  [[ -z "$name" ]] && die "Usage: keychainctl pair set <name> [JSON | - | key=val ...] [keychain]"
+  has_jq || die "pair requires jq"
+  shift
+
+  local json keychain
+  local first="${1:-}"
+
+  if [[ -z "$first" || ( $# -eq 1 && "$first" != *"="* && "$first" != "{"* && "$first" != "-" && ! -f "$first" ) ]]; then
+    # Interactive (optional single arg is keychain)
+    local kc_arg=""; [[ $# -eq 1 ]] && kc_arg="$1"
+    is_tty || die "No key=val pairs provided and not a TTY"
+    keychain=$(resolve_keychain "$kc_arg")
+    local entries=()
+    warn "Enter fields for pair '$name' (empty field name to finish):"
+    while true; do
+      local key val
+      read -rp "  field name: " key < /dev/tty
+      [[ -z "$key" ]] && break
+      read -rsp "  value for '$key': " val < /dev/tty; echo >&2
+      entries+=("${key}=${val}")
+    done
+    [[ ${#entries[@]} -eq 0 ]] && die "No fields entered"
+    json=$(printf '%s\n' "${entries[@]}" \
+      | jq -Rn '[inputs | split("=") | {key: .[0], value: (.[1:] | join("="))}] | from_entries')
+
+  elif [[ "$first" == "-" ]]; then
+    json=$(jq -c . 2>/dev/null) || die "Invalid JSON on stdin"
+    keychain=$(resolve_keychain "${2:-}")
+
+  elif [[ "$first" == "{"* ]]; then
+    json=$(echo "$first" | jq -c .) || die "Invalid JSON: $first"
+    shift
+    keychain=$(resolve_keychain "${1:-}")
+
+  elif [[ -f "$first" ]]; then
+    [[ "$first" == *.csv ]] || die "Unsupported file type: $first (only .csv files are supported)"
+    has_qsv || die "CSV file input requires qsv (brew install qsv)"
+    has_jq  || die "pair requires jq"
+    json=$(qsv tojsonl "$first" 2>/dev/null | head -1 | jq -c .) \
+      || die "Failed to parse CSV: $first"
+    [[ -n "$json" ]] || die "No data rows found in $first"
+    shift
+    keychain=$(resolve_keychain "${1:-}")
+
+  else
+    # key=val pairs [keychain] — last arg is keychain if it has no '='
+    local last="${!#}"
+    if [[ "$last" != *"="* && $# -gt 1 ]]; then
+      keychain=$(resolve_keychain "$last")
+      set -- "${@:1:$(($#-1))}"
+    else
+      keychain=$(resolve_keychain "")
+    fi
+    json=$(printf '%s\n' "$@" \
+      | jq -Rn '[inputs | split("=") | {key: .[0], value: (.[1:] | join("="))}] | from_entries') \
+      || die "Failed to parse key=val pairs"
+  fi
+
+  security add-generic-password -U -a "$USER" -s "$name" -w "$json" -- "$keychain" \
+    || die "Failed to store pair '$name' in $keychain"
+  info "Pair '$name' stored in $keychain"
+}
+
+cmd_pair_get() {
+  local name="${1:-}"
+  [[ -z "$name" ]] && die "Usage: keychainctl pair get <name> [field] [keychain]"
+  has_jq || die "pair requires jq"
+  shift
+
+  # Optional field: next arg that doesn't look like a keychain name
+  local field="" keychain
+  if [[ $# -ge 1 && "$1" != *.keychain && "$1" != *.keychain-db ]]; then
+    field="$1"; shift
+  fi
+  keychain=$(resolve_keychain "${1:-}")
+
+  local json
+  json=$(security find-generic-password -a "$USER" -s "$name" -w -- "$keychain" 2>/dev/null) \
+    || die "Pair '$name' not found in $keychain"
+  echo "$json" | jq -e . &>/dev/null \
+    || die "'$name' is not a pair (stored value is not JSON)"
+
+  if [[ -n "$field" ]]; then
+    echo "$json" | jq -er ".\"${field}\"" \
+      || die "Field '$field' not found in pair '$name'"
+  else
+    echo "$json" | jq -r 'to_entries[] | "\(.key)=\(.value)"'
+  fi
+}
+
+cmd_pair() {
+  local sub="${1:-}"
+  [[ -n "$sub" ]] && shift
+  case "$sub" in
+    get)       cmd_pair_get "$@" ;;
+    set)       cmd_pair_set "$@" ;;
+    rm|delete) cmd_rm "$@" ;;
+    ls|list)   cmd_ls "$@" ;;
+    *) die "Unknown pair subcommand: '${sub}'. Use: get, set, rm, ls" ;;
+  esac
+}
+
 print_usage() {
   cat >&2 << EOF
 Usage: $(basename "$0") <command> [args]
 
 Commands:
-  get <name> [keychain]    Retrieve a secret (password only to stdout)
-  set <name> [value] [kc]  Store a secret (prompts if value omitted)
-  rm  <name> [keychain]    Delete a secret
-  ls  [keychain]           List secrets (interactive with fzf if available)
+  get <name> [keychain]              Retrieve a secret (password only to stdout)
+  set <name> [value] [keychain]      Store a secret (prompts if value omitted)
+  rm  <name> [keychain]              Delete a secret
+  ls  [keychain]                     List secrets (interactive with fzf if available)
+
+  pair set <name> [JSON|-|k=v ...] [keychain]
+                                     Store a credential pair as JSON
+                                       JSON string:  pair set NAME '{"K":"v"}'
+                                       From stdin:   pair set NAME -  < creds.json
+                                       CSV file:     pair set NAME creds.csv
+                                       key=val args: pair set NAME K1=v1 K2=v2
+                                       Interactive:  pair set NAME
+  pair get <name> [field] [keychain] Retrieve a pair (all as KEY=val, or one field raw)
+  pair rm  <name> [keychain]         Delete a pair
+  pair ls  [keychain]                List secrets (pairs share namespace with secrets)
 
 Environment:
   KEYCHAINCTL_KEYCHAIN     Default keychain (default: login.keychain)
 
 Keychain names are auto-suffixed: 'login' becomes 'login.keychain'.
+pair commands require jq.
 
 Examples:
   ASANA_TOKEN=\$(keychainctl get CLAUDE_ASANA)
-  keychainctl set CLAUDE_ASANA              # prompts for password
+  keychainctl set CLAUDE_ASANA                         # prompts for password
   keychainctl set CLAUDE_ASANA sk-12345
-  keychainctl ls work                       # lists secrets in work.keychain
+  keychainctl ls work                                  # lists secrets in work.keychain
+
+  keychainctl pair set MYAPP CLIENT_ID=abc CLIENT_SECRET=xyz
+  keychainctl pair set MYAPP '{"CLIENT_ID":"abc","CLIENT_SECRET":"xyz"}'
+  keychainctl pair set MYAPP - < creds.json
+  keychainctl pair set MYAPP creds.csv
+  eval "\$(keychainctl pair get MYAPP | sed 's/^/export /')"
+  keychainctl pair get MYAPP CLIENT_ID                 # raw value only
 EOF
   exit 0
 }
@@ -126,6 +251,7 @@ case "${1:-}" in
   set)        shift; cmd_set "$@" ;;
   rm|delete)  shift; cmd_rm "$@" ;;
   ls|list)    shift; cmd_ls "$@" ;;
+  pair)       shift; cmd_pair "$@" ;;
   -h|--help|"") print_usage ;;
   *)          die "Unknown command: $1. Run '$(basename "$0") --help' for usage." ;;
 esac
