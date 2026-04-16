@@ -7,9 +7,9 @@ sort_order = [
 ]
 
 
-[default_session]
+# [default_session]
 # startup_command = "nvim -c ':Telescope find_files'"
-preview_command = "lsd {}"
+# preview_command = "lsd {}"
 
 [[wildcard]]
 pattern = "~/Projects/**"
@@ -28,16 +28,16 @@ startup_command = "ls"
 
 [[session]]
 name = "Claude🦀 Local"
-path = "~/projects"
-# windows = ["claude-gemma4"]
-windows = ["claude-qwen3.5"]
-# preview_command = "claude doctor"
+path = "~/Projects"
+windows = ["claude-local"]
 
 [[session]]
 name = "Claude🦀 Test"
-path = "~/projects"
-# windows = ["claude-gemma4"]
-windows = ["claude-lmstudio"]
+windows = ["claude-local"]
+
+[[window]]
+name = "claude-local"
+startup_script = "ollama launch claude --model $(ollama list | fzf --popup --header-lines=1 --accept-nth=1)"
 
 [[window]]
 name = "claude-qwen3.5"
@@ -50,11 +50,4 @@ startup_script = "ollama launch claude --model gemma4:31B"
 [[window]]
 name = "claude-lmstudio"
 startup_script = 'export ANTHROPIC_BASE_URL="http://localhost:1234"  export ANTHROPIC_AUTH_TOKEN="lmstudio"  claude /model microsoft/phi-4-mini-reasoning'
-
-[[window]]
-name = "git"
-startup_script = "git pull"
-
-[[window]]
-name = "terminal"
 
