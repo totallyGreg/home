@@ -15,6 +15,9 @@ sort_order = [
 pattern = "~/Projects/**"
 startup_command = "ls -l"
 
+[[wildcard]]
+pattern = "~/Customers/**"
+
 [[session]]
 name = "⚙️ tmux"
 path = "~/.config/tmux"
