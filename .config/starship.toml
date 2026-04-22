@@ -99,6 +99,34 @@ min_time = 5000
 format = "lag [$duration]($style) "
 style = 'yellow'
 
+[profiles]
+claude-code = "$claude_model$git_branch$claude_context$claude_cost"
+
+[claude_model]
+format = "[$symbol$model]($style) "
+symbol = "🤖 "
+style = "bold blue"
+
+[claude_context]
+format = "[$gauge $percentage]($style) "
+gauge_width = 10
+
+[[claude_context.display]]
+threshold = 0
+hidden = true
+
+[[claude_context.display]]
+threshold = 30
+style = "bold green"
+
+[[claude_context.display]]
+threshold = 60
+style = "bold yellow"
+
+[[claude_context.display]]
+threshold = 80
+style = "bold red"
+
 [directory]
 format = "[$path]($style)[$read_only]($read_only_style) "
 truncation_length = 3
@@ -206,6 +234,13 @@ context_alias = "gke-$cluster"
 threshold = 90
 # separator = '/'
 disabled = true
+
+[mise]
+format = '[$symbol$health]($style) '
+symbol = '🧑🏽‍🍳'
+healthy_symbol = '💋'
+unhealthy_symbol = '👎🏼'
+disabled = false
 
 [python]
 pyenv_version_name = true
