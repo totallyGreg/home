@@ -194,10 +194,9 @@ export ZAC_CACHE_DIR=$XDG_CACHE_HOME/zsh
 zcomet load alberti42/zsh-appearance-control
 
 # https://docs.atuin.sh/cli/guide/installation/
-zcomet load atuinsh/atuin
+# zcomet load atuinsh/atuin
 zcomet load zsh-users/zsh-completions
 zcomet load mattmc3/zephyr plugins/completion
-# zcomet load asdf-vm/asdf
 zcomet load mattmc3/zephyr plugins/homebrew
 zcomet load mattmc3/zephyr plugins/macos
 zcomet load mattmc3/zephyr plugins/zfunctions
@@ -267,12 +266,14 @@ if command -v zoxide 1>/dev/null 2>&1; then
   # _ZO_FZF_OPTS=""
 fi
 ### direnv
-# whence -w $1 >/dev/null
 if command -v direnv 1>/dev/null 2>&1; then
   eval "$(direnv hook zsh)"
 fi
 
-# source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc"
+### MISE
+if command -v mise 1>/dev/null 2>&1; then
+  eval "$(mise activate zsh)"
+fi
 
 if [[ "$PROFILE_STARTUP" == true ]]; then
   unsetopt xtrace
