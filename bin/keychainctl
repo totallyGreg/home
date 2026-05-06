@@ -56,19 +56,23 @@ cmd_get() {
 }
 
 cmd_set() {
+  local label=""
+  while [[ "${1:-}" == -l ]]; do label="$2"; shift 2; done
+
   local name="${1:-}" keychain value
-  [[ -z "$name" ]] && die "Usage: keychainctl set <name> [value] [keychain]"
+  [[ -z "$name" ]] && die "Usage: keychainctl set [-l label] <name> [value] [keychain]"
   if [[ $# -lt 2 ]]; then
-    # No value arg at all — prompt for password securely
     read -rsp "Password for '$name': " value < /dev/tty
-    echo >&2  # newline after hidden input
+    echo >&2
     [[ -z "$value" ]] && die "Password cannot be empty"
     keychain=$(resolve_keychain "${2:-}")
   else
     value="$2"
     keychain=$(resolve_keychain "${3:-}")
   fi
-  security add-generic-password -U -a "$USER" -s "$name" -w "$value" -- "$keychain" \
+  local label_args=()
+  [[ -n "$label" ]] && label_args=(-l "$label")
+  security add-generic-password -U -a "$USER" -s "$name" "${label_args[@]}" -w "$value" -- "$keychain" \
     || die "Failed to store secret '$name' in $keychain"
   info "Secret '$name' stored in $keychain"
 }
@@ -100,8 +104,11 @@ cmd_ls() {
 }
 
 cmd_pair_set() {
+  local label=""
+  while [[ "${1:-}" == -l ]]; do label="$2"; shift 2; done
+
   local name="${1:-}"
-  [[ -z "$name" ]] && die "Usage: keychainctl pair set <name> [JSON | - | key=val ...] [keychain]"
+  [[ -z "$name" ]] && die "Usage: keychainctl pair set [-l label] <name> [JSON | - | key=val ...] [keychain]"
   has_jq || die "pair requires jq"
   shift
 
@@ -124,7 +131,7 @@ cmd_pair_set() {
     done
     [[ ${#entries[@]} -eq 0 ]] && die "No fields entered"
     json=$(printf '%s\n' "${entries[@]}" \
-      | jq -Rn '[inputs | split("=") | {key: .[0], value: (.[1:] | join("="))}] | from_entries')
+      | jq -Rnc '[inputs | split("=") | {key: .[0], value: (.[1:] | join("="))}] | from_entries')
 
   elif [[ "$first" == "-" ]]; then
     json=$(jq -c . 2>/dev/null) || die "Invalid JSON on stdin"
@@ -155,11 +162,13 @@ cmd_pair_set() {
       keychain=$(resolve_keychain "")
     fi
     json=$(printf '%s\n' "$@" \
-      | jq -Rn '[inputs | split("=") | {key: .[0], value: (.[1:] | join("="))}] | from_entries') \
+      | jq -Rnc '[inputs | split("=") | {key: .[0], value: (.[1:] | join("="))}] | from_entries') \
       || die "Failed to parse key=val pairs"
   fi
 
-  security add-generic-password -U -a "$USER" -s "$name" -w "$json" -- "$keychain" \
+  local label_args=()
+  [[ -n "$label" ]] && label_args=(-l "$label")
+  security add-generic-password -U -a "$USER" -s "$name" "${label_args[@]}" -w "$json" -- "$keychain" \
     || die "Failed to store pair '$name' in $keychain"
   info "Pair '$name' stored in $keychain"
 }
@@ -209,11 +218,12 @@ Usage: $(basename "$0") <command> [args]
 
 Commands:
   get <name> [keychain]              Retrieve a secret (password only to stdout)
-  set <name> [value] [keychain]      Store a secret (prompts if value omitted)
+  set [-l label] <name> [value] [keychain]
+                                     Store a secret (prompts if value omitted)
   rm  <name> [keychain]              Delete a secret
   ls  [keychain]                     List secrets (interactive with fzf if available)
 
-  pair set <name> [JSON|-|k=v ...] [keychain]
+  pair set [-l label] <name> [JSON|-|k=v ...] [keychain]
                                      Store a credential pair as JSON
                                        JSON string:  pair set NAME '{"K":"v"}'
                                        From stdin:   pair set NAME -  < creds.json

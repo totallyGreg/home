@@ -7,6 +7,15 @@
 // custom settings, run the `open default settings` command
 // from the command palette or from `Zed` application menu.
 {
+  "project_panel": {
+    "dock": "right"
+  },
+  "outline_panel": {
+    "dock": "right"
+  },
+  "collaboration_panel": {
+    "dock": "right"
+  },
   "base_keymap": "Emacs",
   "edit_predictions": {
     "provider": "none"
@@ -19,6 +28,7 @@
     "enabled": true
   },
   "git_panel": {
+    "dock": "right",
     "tree_view": true
   },
   "agent_servers": {
@@ -240,6 +250,7 @@
     "dark": "Solarized Dark"
   },
   "agent": {
+    "dock": "left",
     "tool_permissions": {
       "default": "allow"
     },
