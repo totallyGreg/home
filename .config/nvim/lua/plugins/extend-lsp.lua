@@ -23,6 +23,13 @@ return {
       },
       servers = {
         ["*"] = {},
+        taplo = {
+          settings = {
+            evenBetterToml = {
+              schema = { enabled = true },
+            },
+          },
+        },
         lua_ls = {
           settings = {
             Lua = {

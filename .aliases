@@ -182,3 +182,9 @@ alias restart_dns='ssh portcullis sudo /etc/init.d/dnsmasq force-reload'
 # alias mp4info='docker run -it --rm -u $(id -u):$(id -g) -v "$(pwd)":/mnt --entrypoint mp4info m4b-tool'
 
 alias yaml_cat="cat_yaml"
+
+alias m="mise"
+alias mr="mise run"
+alias mx="mise exec"
+# alias mu="mise use"
+# alias mi="mise install"

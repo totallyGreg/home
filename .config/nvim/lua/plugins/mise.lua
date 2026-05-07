@@ -1,40 +1,19 @@
 return {
   {
     "nvim-treesitter/nvim-treesitter",
-    init = function()
+    opts = function(_, opts)
+      -- Add the is-mise? predicate
       require("vim.treesitter.query").add_predicate("is-mise?", function(_, _, bufnr, _)
         local filepath = vim.api.nvim_buf_get_name(tonumber(bufnr) or 0)
         local filename = vim.fn.fnamemodify(filepath, ":t")
         return string.match(filename, ".*mise.*%.toml$") ~= nil
       end, { force = true, all = false })
     end,
-    opts = {
-      ensure_installed = {
-        "bash",
-        "html",
-        "javascript",
-        "json",
-        "lua",
-        "markdown",
-        "markdown_inline",
-        "pkl",
-        "python",
-        "query",
-        "regex",
-        "swift",
-        "vim",
-        "yaml",
-      },
-      filetype_to_parsername = {
-        zsh = "bash",
-      },
-    },
   },
   {
     "jmbuhr/otter.nvim",
-    dependencies = {
-      "nvim-treesitter/nvim-treesitter",
-    },
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    opts = {},
     config = function()
       vim.api.nvim_create_autocmd({ "FileType" }, {
         pattern = { "toml" },

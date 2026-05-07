@@ -258,18 +258,16 @@ if (hash switcher >/dev/null 2>&1); then
 fi
 
 ### Starship prompt
-eval "$(starship init zsh)"
+# Zsh configuration (.zshrc)
+if [[ -o interactive ]] && command -v starship &>/dev/null 2>&1 && [[ "$TERM" != "dumb" ]]; then
+  eval "$(starship init zsh)"
+fi
 ### Zoxide
 if command -v zoxide 1>/dev/null 2>&1; then
   eval "$(zoxide init zsh)"
   alias cd=z #NOTE: Old habits die hard
   # _ZO_FZF_OPTS=""
 fi
-### direnv
-if command -v direnv 1>/dev/null 2>&1; then
-  eval "$(direnv hook zsh)"
-fi
-
 ### MISE
 if command -v mise 1>/dev/null 2>&1; then
   eval "$(mise activate zsh)"
