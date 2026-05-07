@@ -1,9 +1,11 @@
 # theme = Builtin Solarized
 # theme = dark:Builtin Solarized Dark,light:catppuccin-latte
+shell-integration = zsh
 theme = dark:solarized-dark,light:solarized-light
 # theme = dark:Selenized Dark,light:Selenized Light
 #  "native", "transparent", "tabs", and "hidden".
 # macos-titlebar-style = "hidden"
+
 
 # font-family = "FiraMono Nerd Font Mono"
 #font-family = "FiraCode Nerd Font Mono"
