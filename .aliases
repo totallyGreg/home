@@ -99,7 +99,6 @@ alias tf=tofu
 ## Tmux stuff
 # alias t="tmux "
 # alias ta="t a -t"  # replaced with ~/bin/ta
-alias tls="t ls"
 alias takeover="tmux detach -a"
 alias tkill="for s in \$(tmux list-sessions | awk '{print \$1}' | rg ':' -r '' | fzf); do tmux kill-session -t \$s; done;"
 

@@ -238,6 +238,7 @@ disabled = true
 [mise]
 format = '[$symbol$health]($style) '
 symbol = '🧑🏽‍🍳'
+detect_files = ['mise.toml', 'mise.local.toml', '.mise.toml', '.mise.local.toml', '.miserc.toml']
 healthy_symbol = '💋'
 unhealthy_symbol = '👎🏼'
 disabled = false

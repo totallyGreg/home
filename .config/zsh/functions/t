@@ -1,0 +1,54 @@
+#!/usr/bin/env zsh
+# t: smart tmux session/window/command dispatcher.
+#
+# - t            connect to a session named after the current directory
+# - t <name>     connect to a named session (sesh resolves config/tmux/zoxide)
+# - t -p         interactive picker (tv `tmux-actions` channel); dispatches by entry type:
+#                  🪟  prefix → tmux select-window
+#                  ⚡  prefix → run curated tmux subcommand
+#                  else      → sesh connect (handles config/tmux/zoxide/fd paths)
+#
+# This file is autoloaded by zsh (see fpath setup in zfunctions plugin).
+# The body below IS the function body — no `t() { ... }` wrapper needed.
+
+emulate -L zsh
+
+if [[ "$1" == "-p" || "$1" == "--pick" ]]; then
+  local entry
+  # entry=$(tv tmux-actions) || return
+  entry=$(tv sesh) || return
+  [[ -z "$entry" ]] && return
+
+  case "$entry" in
+    *"🪟"*)
+      # Window entry: "🪟  session:idx  window_name  [cmd]"
+      # Extract "session:idx" — text between the leading "🪟  " and the next double-space.
+      local target="${${entry#*🪟  }%%  *}"
+      tmux select-window -t "$target"
+      ;;
+    *"⚡"*)
+      # Command entry: "⚡  name — description ‖ tmux-subcommand"
+      # Extract the tmux subcommand after the last "‖ " delimiter.
+      local cmd="${entry##*‖ }"
+      eval "tmux $cmd"
+      ;;
+    *)
+      # Sesh entry: strip leading icon+space; bare paths (fd) pass through.
+      local name
+      if [[ "$entry" == /* ]]; then
+        name="$entry"
+      else
+        name="${entry#* }"
+      fi
+      sesh connect "$name"
+      ;;
+  esac
+  return
+fi
+
+if [[ "$#" -gt 1 ]]; then
+  echo "Usage: t [name|-p]"
+  return 1
+fi
+
+sesh connect "${1:-$(basename "$PWD")}"

@@ -7,16 +7,11 @@ sort_order = [
 ]
 
 
-# [default_session]
-# startup_command = "nvim -c ':Telescope find_files'"
-# preview_command = "lsd {}"
-
-[[wildcard]]
-pattern = "~/Projects/**"
-startup_command = "ls -l"
-
-[[wildcard]]
-pattern = "~/Customers/**"
+[default_session]
+# Used for any session/zoxide entry that doesn't define its own preview_command.
+# Running tmux sessions get a live pane capture from sesh automatically.
+# NOTE: sesh runs preview_command via exec (no shell), so no pipes/&&/||/redirects.
+preview_command = "lsd --tree --depth 2 --color=always --icon=always {}"
 
 [[session]]
 name = "⚙️ tmux"
@@ -32,10 +27,6 @@ startup_command = "ls"
 [[session]]
 name = "Claude🦀 Local"
 path = "~/Projects"
-windows = ["claude-local"]
-
-[[session]]
-name = "Claude🦀 Test"
 windows = ["claude-local"]
 
 [[window]]
