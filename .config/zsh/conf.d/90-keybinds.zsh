@@ -71,3 +71,11 @@ bindkey -M vicmd 'y' vi-yank-xclip
 
 # Make Vi mode transitions faster (KEYTIMEOUT is in hundredths of a second)
 export KEYTIMEOUT=1
+
+# Command palette for zle + tmux bindings (see ~/.config/zsh/functions/keybindings)
+function _keybindings-palette {
+  BUFFER="keybindings"
+  zle accept-line
+}
+zle -N _keybindings-palette
+bindkey '\ep' _keybindings-palette    # Alt-P — command palette (single escape seq, KEYTIMEOUT-safe; multi-keypress chords like ^X^P time out at 10ms)
