@@ -1,0 +1,129 @@
+##? audiobook-chapters - Full audiobook chapter-labeling pipeline
+##?
+##? usage: audiobook-chapters [-r|--rebuild] [book_directory]
+##?
+##?   -r, --rebuild   Discover chapter breaks from SRT markers (use when
+##?                   existing timecodes are arbitrary or missing)
+##?   Default:        Probe existing timecodes and fix labels only
+##?
+##? Defaults to $PWD if no directory given. Steps (all idempotent):
+##?   1. Extract chapters from .m4b via mp4chaps -x
+##?   2. Generate SRT via yap (tmux split pane, or inline if not in tmux)
+##?   3a. [default]   Probe each timecode, fix labels via apfel → claude fallback
+##?   3b. [--rebuild] Discover real chapter markers in SRT, rebuild from scratch
+##?   4. Review and confirm, then import via mp4chaps -i
+
+local audiobook chapters srt tmpfile dir rebuild=0
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -r|--rebuild) rebuild=1; shift ;;
+    -*) echo "Unknown option: $1"; return 2 ;;
+    *) dir="$1"; shift ;;
+  esac
+done
+dir="${dir:-$PWD}"
+
+cd "$dir" || { echo "Cannot cd to $dir"; return 1; }
+
+audiobook=$(ls *.m4b 2>/dev/null | head -1)
+[[ -z "$audiobook" ]] && { echo "No .m4b found"; return 1; }
+
+[[ ! -f "${audiobook%.m4b}.chapters.txt" ]] && mp4chaps -x "$audiobook"
+
+if [[ ! -f "${audiobook%.m4b}.srt" ]]; then
+  local srt_out="${audiobook%.m4b}.srt"
+  if [[ -n "$TMUX" ]]; then
+    local yap_pane
+    yap_pane=$(tmux split-window -v -l 15 -P -F "#{pane_id}" \
+      "cd $(printf '%q' "$PWD") && yap -l en_US $(printf '%q' "$audiobook") --srt -o $(printf '%q' "$srt_out"); echo '✓ yap complete'")
+    tmux display-message "yap transcribing — watch the pane below"
+    while [[ ! -f "$srt_out" ]]; do sleep 3; done
+    sleep 2
+    tmux kill-pane -t "$yap_pane" 2>/dev/null || true
+  else
+    yap -l en_US "$audiobook" --srt -o "$srt_out"
+  fi
+fi
+
+chapters=$(ls *.chapters.txt 2>/dev/null | head -1)
+srt=$(ls *.srt 2>/dev/null | head -1)
+[[ -z "$chapters" || -z "$srt" ]] && { echo "Missing .chapters.txt or .srt"; return 1; }
+
+tmpfile=$(mktemp)
+trap "rm -f $tmpfile" EXIT
+
+local rules user_prompt
+
+if [[ $rebuild -eq 1 ]]; then
+  rules='Convert SRT chapter markers into a chapters.txt. Rules:
+- SRT timestamps use comma (HH:MM:SS,mmm) — convert to dot (HH:MM:SS.mmm)
+- Use the START timestamp of the subtitle containing the chapter announcement
+- Always include 00:00:00.000 as the first entry with the book title (from ## title:, strip narrator in braces)
+- Label chapters "Chapter 1", "Chapter 2" etc. (convert word numbers: "one"→1 etc.)
+- Use "Prologue", "Epilogue", "Bonus Content" where shown
+- Preserve the existing ## header lines exactly at the top
+- Output ONLY the complete chapters.txt — no explanation, no markdown fences'
+
+  {
+    echo "=== EXISTING ## HEADERS (preserve exactly) ==="
+    grep '^##' "$chapters"
+    echo ""
+    echo "=== SRT CHAPTER MARKER DISCOVERY ==="
+    ag -i -B3 -A4 "^(chapter|prologue?|epilogue?|preface|afterword|interlude|introduction|the end)" "$srt"
+  } > "$tmpfile"
+
+  user_prompt="Build a new chapters.txt from these SRT chapter markers per the rules."
+
+else
+  rules='Preserve ALL timecodes exactly as-is. 00:00:00.000 gets the book title from ## title: (strip narrator in braces). Label chapters "Chapter 1", "Chapter 2" etc. (convert word numbers: "one"→1 etc.). Use "Prologue", "Epilogue", "Bonus Content" where the SRT shows those. Output ONLY the updated chapters.txt — no explanation, no markdown fences.'
+
+  {
+    echo "=== CURRENT CHAPTERS.TXT ==="
+    cat "$chapters"
+    echo ""
+    echo "=== SRT CHAPTER PROBE ==="
+    grep -v '^##' "$chapters" | grep -v '^$' | while IFS=' ' read -r ts label; do
+      hms="${ts%.*}"
+      echo "--- $ts [$label] ---"
+      ag -B1 -A3 "^${hms:0:7}" "$srt"
+      echo
+    done
+  } > "$tmpfile"
+
+  user_prompt="Update the chapters.txt based on the SRT probe output."
+fi
+
+local system_prompt="You update audiobook chapters.txt files. $rules"
+local full_prompt="$system_prompt
+
+$user_prompt
+
+$(cat "$tmpfile")"
+
+if command -v apfel &>/dev/null; then
+  apfel -q --temperature 0 \
+    -s "$system_prompt" \
+    -f "$tmpfile" \
+    "$user_prompt" > "${chapters}.new"
+  local apfel_exit=$?
+  if [[ $apfel_exit -ne 0 ]]; then
+    echo "apfel exit $apfel_exit — falling back to claude..."
+    claude -p "$full_prompt" > "${chapters}.new"
+  fi
+else
+  claude -p "$full_prompt" > "${chapters}.new"
+fi
+
+mv "${chapters}.new" "$chapters"
+echo "Updated: $chapters"
+echo ""
+cat "$chapters"
+echo ""
+read "confirm?Import chapters into $audiobook? [y/N] "
+if [[ "$confirm" == [yY] ]]; then
+  mp4chaps -i "$audiobook"
+  echo "✓ Chapters imported into $audiobook"
+else
+  echo "Skipped import — run: mp4chaps -i $(printf '%q' "$audiobook")"
+fi
