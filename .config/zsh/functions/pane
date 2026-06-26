@@ -1,0 +1,117 @@
+#!/usr/bin/env zsh
+# Address tmux panes by @alias user-option (immune to OSC title rewrites).
+#
+# Subcommands:
+#   pane set <name>          set @alias on the current pane
+#   pane id  <name>          print pane_id (%NN) for the alias; error if 0 or 2+ matches
+#   pane to  <name> <words>  send words+Enter to the pane addressed by <name>
+#   pane ls                  list all panes with id, alias, location, current command
+#   pane                     show usage
+#
+# Exit codes: 0 ok | 1 not found | 2 usage error | 3 ambiguous
+
+_pane_usage() {
+  print -u2 "usage: pane <subcommand> [args]"
+  print -u2 "  pane set <name>             set @alias on current pane"
+  print -u2 "  pane id  <name>             print pane_id for alias"
+  print -u2 "  pane to  <name> <words...>  send words+Enter to alias"
+  print -u2 "  pane ls                     list all aliased panes"
+}
+
+_pane_lookup() {
+  # Resolve <name> -> pane_id, erroring on 0 or 2+ matches.
+  # On success: prints pane_id to stdout, returns 0.
+  local name=$1
+  local -a matches
+  matches=("${(@f)$(tmux list-panes -a \
+    -F '#{pane_id} #{@alias} #{session_name}:#{window_index}.#{pane_index}' 2>/dev/null \
+    | awk -v n="$name" '$2 == n { print }')}")
+  matches=(${matches:#})
+
+  case ${#matches} in
+    0)
+      print -u2 "pane: no pane with @alias '$name'"
+      return 1
+      ;;
+    1)
+      print -r -- "${matches[1]%% *}"
+      ;;
+    *)
+      print -u2 "pane: ambiguous alias '$name' (${#matches} matches):"
+      local m
+      for m in $matches; do
+        print -u2 "  $m"
+      done
+      return 3
+      ;;
+  esac
+}
+
+if (( $# == 0 )); then
+  _pane_usage
+  return 2
+fi
+
+local subcmd=$1; shift
+
+case $subcmd in
+  set)
+    if (( $# != 1 )); then
+      print -u2 "usage: pane set <name>"
+      return 2
+    fi
+    if [[ -z $TMUX ]]; then
+      print -u2 "pane set: not inside a tmux session"
+      return 1
+    fi
+    tmux set -p @alias "$1"
+    ;;
+
+  id)
+    if (( $# != 1 )); then
+      print -u2 "usage: pane id <name>"
+      return 2
+    fi
+    _pane_lookup "$1"
+    ;;
+
+  to)
+    if (( $# < 2 )); then
+      print -u2 "usage: pane to <name> <words...>"
+      return 2
+    fi
+    local name=$1; shift
+    local id
+    id=$(_pane_lookup "$name") || return $?
+    tmux send-keys -t "$id" -- "$*" Enter
+    ;;
+
+  ls)
+    # Collect only panes with @alias set, then either show a table or say "none".
+    local -a rows
+    rows=("${(@f)$(tmux list-panes -a \
+      -F '#{pane_id}	#{@alias}	#{session_name}:#{window_index}.#{pane_index}	#{pane_current_command}' 2>/dev/null \
+      | awk -F'\t' '$2 != ""')}")
+    rows=(${rows:#})
+
+    if (( ${#rows} == 0 )); then
+      print -u2 "pane: no aliased panes (use 'pane set <name>' to alias the current pane)"
+      return 1
+    fi
+
+    {
+      print "PANE	ALIAS	LOCATION	CMD"
+      for r in $rows; do print -r -- "$r"; done
+    } | column -t -s $'\t'
+    ;;
+
+  -h|--help|help)
+    _pane_usage
+    ;;
+
+  *)
+    print -u2 "pane: unknown subcommand '$subcmd'"
+    _pane_usage
+    return 2
+    ;;
+esac
