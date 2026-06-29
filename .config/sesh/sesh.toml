@@ -1,11 +1,10 @@
 #:schema https://github.com/joshmedeski/sesh/raw/main/sesh.schema.json
 dir_length = 2  # Uses last 2 directories: "projects/sesh" instead of just "sesh"
 sort_order = [
-    "config", # show first
-    "tmux",
+    "tmux",   # show first
+    "config",
     "zoxide", # show last
 ]
-
 
 [default_session]
 # Used for any session/zoxide entry that doesn't define its own preview_command.
