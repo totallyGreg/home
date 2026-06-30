@@ -1,0 +1,38 @@
+[metadata]
+name = "tmux-panes"
+description = "List, select, and manage tmux panes across all sessions"
+requirements = ["tmux"]
+
+[source]
+command = "tmux list-panes -a -F '#{session_name}:#{window_index}.#{pane_index}\t#{pane_current_command}\t#{pane_title}'"
+display = "{split:\t:0} - {split:\t:1} ({split:\t:2})"
+output = "{split:\t:0}"
+
+[preview]
+command = "tmux capture-pane -t '{split:\t:0}' -p 2>/dev/null || echo 'No preview available'"
+
+# Enter = select (cross-session focus jump). Other actions via Ctrl-X picker.
+[actions.select]
+description = "Switch to the selected pane (cross-session)"
+command = "~/.config/television/scripts/panes-select.sh '{split:\t:0}'"
+mode = "execute"
+
+[actions.kill]
+description = "Kill the selected pane"
+command = "tmux kill-pane -t '{split:\t:0}'"
+mode = "fork"
+
+[actions.break-pane]
+description = "Break the pane into its own window"
+command = "tmux break-pane -s '{split:\t:0}'"
+mode = "fork"
+
+[actions.join-out]
+description = "Move this pane into another window (prompts for target)"
+command = "tmux command-prompt -p 'join to window:' \"join-pane -s '{split:\t:0}' -t '%%'\""
+mode = "fork"
+
+[actions.paste-buffer]
+description = "Paste the most-recent tmux buffer into this pane"
+command = "tmux paste-buffer -t '{split:\t:0}'"
+mode = "fork"

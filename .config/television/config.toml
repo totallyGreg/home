@@ -53,6 +53,8 @@ orientation = "landscape"
 # A list of builtin themes can be found in the `themes` directory of the television
 # repository. You may also create your own theme by creating a new file in a `themes`
 # directory in your configuration directory (see the `config.toml` location above).
+# `default` uses ANSI 16-color slot names and omits a background, so the
+# picker inherits the terminal's palette/bg (Ghostty follows macOS dark/light).
 theme = "default"
 
 # Feature-specific configurations
@@ -114,6 +116,14 @@ sort_alphabetically = true
 # text_fg = "#ffffff"
 # selection_bg = "#444444"
 # match_fg = "#ff0000"
+
+# `default` theme bakes text_fg = '#cdcdcd' (light grey) which is too dim
+# against Ghostty's dark teal bg. "reset" is ratatui's sentinel for
+# "use terminal's default fg" — picker text follows Ghostty in both modes.
+[ui.theme_overrides]
+text_fg = "reset"
+selection_fg = "reset"
+selection_bg = "bright-black"
 
 # Keybindings and Events
 # ----------------------------------------------------------------------------

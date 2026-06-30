@@ -1,0 +1,39 @@
+# Unified picker — sesh sessions/dirs + tmux windows + curated tmux commands.
+# Invoked via the `t -p` zsh function (and the M-` tmux popup via `zsh -ic 't -p'`).
+#
+# This channel intentionally has NO [actions] block:
+#   - Enter falls back to tv's default behavior: emit the selection to stdout, exit.
+#   - The shell function `t` reads stdout and dispatches based on entry prefix.
+# Preview dispatch happens in picker-preview.sh because preview must run inside tv.
+
+[metadata]
+name = "tmux-actions"
+description = "Unified tmux picker: sesh sessions + tmux windows + curated tmux commands"
+requirements = ["sesh", "tmux"]
+
+[source]
+# Four-mode picker, cycled with Ctrl-S (tv's `cycle_sources` action):
+#   Mode 0 (default) - sessions: live tmux + sesh configs + top-N zoxide
+#                      (N=ZOXIDE_CAP, default 15). Coloring (scheme C) in
+#                      picker-sessions.sh:
+#                         bold bright green = live tmux session
+#                        (default)                     = sesh config
+#                         dim gray         = zoxide recent
+#   Mode 1 (Ctrl-S)  - windows: every window across all sessions (yellow-bold 🪟)
+#   Mode 2 (Ctrl-S)  - panes:   every pane across all windows (magenta-bold 🧊)
+#   Mode 3 (Ctrl-S)  - commands: the 29 curated tmux subcommands (cyan-bold ⚡)
+# The shell `t` dispatcher routes by prefix (🪟/🧊/⚡/else).
+# TOML basic strings reject raw 0x1B bytes, so the ANSI ESCs are written as \\u001b.
+command = [
+  "~/.config/television/scripts/picker-sessions.sh",
+  "tmux list-windows -a -F '\u001b[33;1m🪟\u001b[0m  #{session_name}:#{window_index}  #{window_name}  [#{pane_current_command}]'",
+  "tmux list-panes -a -F '\u001b[35;1m🧊\u001b[0m  #{session_name}:#{window_index}.#{pane_index}  #{pane_current_command}  [#{pane_title}]'",
+  "~/.config/television/scripts/picker-commands.sh formatted",
+]
+ansi = true
+output = "{strip_ansi}"
+[preview]
+command = "~/.config/television/scripts/picker-preview.sh '{strip_ansi}'"
+
+[ui.input_bar]
+header = "[ Ctrl-S cycles: 0 sessions · 1 windows · 2 panes · 3 commands ]"

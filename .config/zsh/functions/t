@@ -1,10 +1,11 @@
 #!/usr/bin/env zsh
-# t: smart tmux session/window/command dispatcher.
+# t: smart tmux session/window/pane/command dispatcher.
 #
 # - t            connect to a session named after the current directory
 # - t <name>     connect to a named session (sesh resolves config/tmux/zoxide)
 # - t -p         interactive picker (tv `tmux-actions` channel); dispatches by entry type:
-#                  🪟  prefix → tmux select-window
+#                  🪟  prefix → tmux select-window (cross-session)
+#                  🧊  prefix → switch-client + select-window + select-pane
 #                  ⚡  prefix → run curated tmux subcommand
 #                  else      → sesh connect (handles config/tmux/zoxide/fd paths)
 #
@@ -15,11 +16,20 @@ emulate -L zsh
 
 if [[ "$1" == "-p" || "$1" == "--pick" ]]; then
   local entry
-  # entry=$(tv tmux-actions) || return
-  entry=$(tv sesh) || return
+  entry=$(tv tmux-actions) || return
   [[ -z "$entry" ]] && return
 
   case "$entry" in
+    *"🧊"*)
+      # Pane entry: "🧊  session:win.pane  cmd  [title]"
+      # Extract "session:win.pane" — text between leading "🧊  " and next double-space.
+      local target="${${entry#*🧊  }%%  *}"
+      local sess="${target%%:*}"
+      local win="${${target#*:}%%.*}"
+      tmux switch-client -t "$sess" \; \
+           select-window -t "${sess}:${win}" \; \
+           select-pane   -t "$target"
+      ;;
     *"🪟"*)
       # Window entry: "🪟  session:idx  window_name  [cmd]"
       # Extract "session:idx" — text between the leading "🪟  " and the next double-space.
