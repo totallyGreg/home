@@ -146,3 +146,7 @@ fi
 export PATH="$PATH:/Users/totally/.cache/lm-studio/bin"
 # End of LM Studio CLI section
 
+
+
+# Added by Antigravity CLI installer
+export PATH="/Users/totally/.local/bin:$PATH"

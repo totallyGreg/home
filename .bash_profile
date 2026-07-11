@@ -21,3 +21,7 @@ complete -C /Users/totally/.asdf/installs/terraform/1.5.2/bin/terraform terrafor
 export PATH="$PATH:/Users/totally/.cache/lm-studio/bin"
 # End of LM Studio CLI section
 
+
+
+# Added by Antigravity CLI installer
+export PATH="/Users/totally/.local/bin:$PATH"
