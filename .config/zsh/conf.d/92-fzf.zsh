@@ -35,13 +35,13 @@ FZF_ALT_C_OPTS="
   "
 FZF_ALT_C_COMMAND="fd --type d . $FZF_FD_OPTS"
 
-FZF_CTRL_R_OPTS="
-  --color header:italic
-  --header 'Press <CTRL-Y> to copy history into clipboard | <CTRL-S> (pet new)'
-  --preview 'echo {}' --preview-window down:3:hidden:wrap 
-  --bind '?:toggle-preview'
-  --bind 'ctrl-s:execute(pet new --tag {5..})+abort'
-  --bind 'ctrl-y:execute-silent(echo -n {2..} | pbcopy)+abort'"
+# FZF_CTRL_R_OPTS="
+#   --color header:italic
+#   --header 'Press <CTRL-Y> to copy history into clipboard | <CTRL-S> (pet new)'
+#   --preview 'echo {}' --preview-window down:3:hidden:wrap
+#   --bind '?:toggle-preview'
+#   --bind 'ctrl-s:execute(pet new --tag {5..})+abort'
+#   --bind 'ctrl-y:execute-silent(echo -n {2..} | pbcopy)+abort'"
 
 # FZF_CTRL_T_OPTS="--ansi --bind \"ctrl-w:execute(\${EDITOR:-nano} {1} >/dev/tty </dev/tty)+refresh-preview\" --preview \"$FZF_PREVIEW_FILE_COMMAND {} 2>/dev/null\""
 FZF_CTRL_T_OPTS="
@@ -53,9 +53,9 @@ FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 # My override that provides date and lag to the history ( `fc -rliD 1` )
 fzf-history-widget() {
   local selected num
-  setopt localoptions noglobsubst noposixbuiltins pipefail no_aliases 2> /dev/null
-  selected=( $(fc -rliD 1 | awk '{ cmd=$0; sub(/^[ \t]*[0-9]+\**[ \t]+/, "", cmd); if (!seen[cmd]++) print $0 }' |
-    FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} ${FZF_DEFAULT_OPTS-} -n2..,.. --scheme=history --bind=ctrl-r:toggle-sort,ctrl-z:ignore ${FZF_CTRL_R_OPTS-} --query=${(qqq)LBUFFER} +m" $(__fzfcmd)) )
+  setopt localoptions noglobsubst noposixbuiltins pipefail no_aliases 2>/dev/null
+  selected=($(fc -rliD 1 | awk '{ cmd=$0; sub(/^[ \t]*[0-9]+\**[ \t]+/, "", cmd); if (!seen[cmd]++) print $0 }' \
+    | FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} ${FZF_DEFAULT_OPTS-} -n2..,.. --scheme=history --bind=ctrl-r:toggle-sort,ctrl-z:ignore ${FZF_CTRL_R_OPTS-} --query=${(qqq)LBUFFER} +m" $(__fzfcmd)))
   local ret=$?
   if [ -n "$selected" ]; then
     num=$selected[1]
@@ -67,7 +67,7 @@ fzf-history-widget() {
   return $ret
 }
 
-zle     -N            fzf-history-widget
-bindkey -M emacs '^R' fzf-history-widget
-bindkey -M vicmd '^R' fzf-history-widget
-bindkey -M viins '^R' fzf-history-widget
+# zle     -N            fzf-history-widget
+# bindkey -M emacs '^R' fzf-history-widget
+# bindkey -M vicmd '^R' fzf-history-widget
+# bindkey -M viins '^R' fzf-history-widget

@@ -18,7 +18,7 @@ export XDG_CACHE_HOME=$HOME/Library/Caches
 # export XDG_RUNTIME_DIR=$XDG_CACHE_HOME/Runtime
 
 ## Ahah! Finally! This fixes "can't find stdlib.h"
-export SDKROOT="`xcrun --show-sdk-path`"
+export SDKROOT="$(xcrun --show-sdk-path)"
 
 # zsh
 : ${ZDOTDIR:=$XDG_CONFIG_HOME/zsh}
@@ -28,20 +28,20 @@ ZDOTDIRS=({$ZDOTDIR,$LOCAL_ZDOTDIR}(-/N))
 declare -x 'ZDOTDIR'
 declare -xm 'ZSH_*'
 
-# zsh uses $path array along with $PATH 
-typeset -gU cdpath fpath mailpath path 
+# zsh uses $path array along with $PATH
+typeset -gU cdpath fpath mailpath path
 # path set here so non-interactive shells can use the tools
 path=(
+  /usr/local/{,s}bin(N)
   $HOME/{,s}bin(N)
   $HOME/brew/{,s}bin(N)
   $HOME/.orbstack/bin
   /opt/{homebrew,local}/{,s}bin(N)
-  /usr/local/{,s}bin(N)
   $HOME/.local/share/nvim/mason/bin
   $HOME/.local/bin/
   $path
 )
-if (hash brew > /dev/null 2>&1 ) ; then
+if (hash brew >/dev/null 2>&1); then
   export HOMEBREW_PREFIX=$(brew --prefix)
   export HOMEBREW_CASK_OPTS="--appdir=~/Applications --fontdir=~/Library/Fonts"
   # Need for the tmux-exec plugin to kubectl
@@ -56,13 +56,9 @@ prepend_to_path() {
 export ASDF_DATA_DIR="${HOME}/.asdf"
 prepend_to_path "$ASDF_DATA_DIR/shims"
 
-
 [[ -d $ZDOTDIR ]] || echo Error: ZDOTDIR=${(q)ZDOTDIR} does not exist. >&2
 
 [[ -f $ZDOTDIR/conf.d/claude ]] && source $ZDOTDIR/conf.d/claude.zsh
 
-
 export CARGO_HOME="$HOME/.cargo/env"
 [[ -f $CARGO_HOME ]] && . $CARGO_HOME
-
-

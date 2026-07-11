@@ -15,7 +15,7 @@ ZSH_AUTOSUGGEST_IGNORE_WIDGETS+=(cd)
 
 # Strategy for fetching suggestions
 # This helps with performance and reduces rendering issues
-export ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+export ZSH_AUTOSUGGEST_STRATEGY=(history)
 
 # Buffer max size to avoid performance issues with long completions
 export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
@@ -54,4 +54,14 @@ bindkey '^I^I'   fzf-tab-complete   # double tab  | complete
 #   bindkey -M viins "$key_info[Control]E" vi-add-eol
 # fi
 
-
+# Toggle autosuggestions from the command line without needing ZLE context.
+# Useful when ^x keybinding is unreachable due to emoji/wcwidth cursor corruption.
+autosuggest-toggle-cmd() {
+  if (( ${+_ZSH_AUTOSUGGEST_DISABLED} )); then
+    unset _ZSH_AUTOSUGGEST_DISABLED
+    echo "zsh-autosuggestions: enabled"
+  else
+    typeset -g _ZSH_AUTOSUGGEST_DISABLED=1
+    echo "zsh-autosuggestions: disabled"
+  fi
+}

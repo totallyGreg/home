@@ -50,6 +50,24 @@ chapters=$(ls *.chapters.txt 2>/dev/null | head -1)
 srt=$(ls *.srt 2>/dev/null | head -1)
 [[ -z "$chapters" || -z "$srt" ]] && { echo "Missing .chapters.txt or .srt"; return 1; }
 
+# Show current state and let the user decide — skips LLM if already accurate
+if [[ $rebuild -eq 0 ]]; then
+  echo "=== CURRENT CHAPTERS.TXT ==="
+  cat "$chapters"
+  echo ""
+  echo "  y = looks good, import as-is"
+  echo "  f = fix labels (probe existing timecodes)"
+  echo "  r = rebuild timecodes from SRT markers"
+  echo "  q = quit"
+  read "action?Action [y/f/r/q]: "
+  case "$action" in
+    y) mp4chaps -i "$audiobook" && echo "✓ Chapters imported into $audiobook"; return 0 ;;
+    f) rebuild=0 ;;
+    r) rebuild=1 ;;
+    q|*) echo "Aborted."; return 0 ;;
+  esac
+fi
+
 tmpfile=$(mktemp)
 trap "rm -f $tmpfile" EXIT
 

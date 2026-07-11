@@ -220,7 +220,7 @@ _keybindings_zle() {
     [[ -z "$output" ]] && { echo "No keybindings found."; return 1; }
 
     local tmpfile=$(mktemp) statefile=$(mktemp) executor=$(mktemp)
-    trap "rm -f $tmpfile $statefile $executor" EXIT RETURN
+    trap "rm -f $tmpfile $statefile $executor" EXIT
 
     print -r -- "$output" | column -t -s $'\t' > "$tmpfile"
     echo "0" > "$statefile"
@@ -287,7 +287,7 @@ _keybindings_tmux() {
     [[ -z "$output" ]] && { echo "No tmux keybindings found."; return 1; }
 
     local tmpfile=$(mktemp) statefile=$(mktemp) executor=$(mktemp) rawfile=$(mktemp)
-    trap "rm -f $tmpfile $statefile $executor $rawfile" EXIT RETURN
+    trap "rm -f $tmpfile $statefile $executor $rawfile" EXIT
 
     # Keep a raw (tab-separated) copy so the executor can recover the
     # un-column-aligned command body by (table, key) lookup.

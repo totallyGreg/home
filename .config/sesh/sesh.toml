@@ -12,11 +12,16 @@ sort_order = [
 # NOTE: sesh runs preview_command via exec (no shell), so no pipes/&&/||/redirects.
 preview_command = "lsd --tree --depth 2 --color=always --icon=always {}"
 
+[[wildcard]]
+pattern = "~/Library/Mobile Documents/iCloud~md~obsidian/Documents/*"
+startup_command = "omlx launch claude"
+
 [[session]]
 name = "⚙️ tmux"
 path = "~/.config/tmux"
 startup_command = "nvim -O tmux.conf ~/.config/sesh/sesh.toml"
 preview_command = "bat --color=always ~/.config/tmux/tmux.conf"
+# windows = [ "Claude🦀 Local", "Downloads 📥" ]
 
 [[session]]
 name = "Downloads 📥"
@@ -26,11 +31,35 @@ startup_command = "ls"
 [[session]]
 name = "Claude🦀 Local"
 path = "~/Projects"
-windows = ["claude-local"]
+startup_command = "ollama launch claude --model $(ollama list | fzf --popup=130,28 --layout=reverse --header-lines=1 --header-first --accept-nth=1 --preview 'ollama show {1}' --preview-window=right:44)"
+
+[[session]]
+name = "oMLX Claude🦀"
+path = "~/Projects"
+startup_command = "omlx launch claude"
+windows = [ "Agent 1", "oMLX Claude", "Documentation" ]
 
 [[window]]
-name = "claude-local"
-startup_script = "ollama launch claude --model $(ollama list | fzf --popup --header-lines=1 --accept-nth=1)"
+name = "Agent 1"
+
+[[window]]
+name = "Agent 2"
+
+[[window]]
+name = "Documentation"
+startup_script = "omlx launch claude --model Phi-4-mini-reasoning-MLX-4bit"
+
+[[window]]
+name = "oMLX Claude"
+startup_script = "omlx launch claude"
+
+[[window]]
+name = "ollama claude"
+startup_script = "ollama launch claude --model $(ollama list | fzf --popup=130,28 --layout=reverse --header-lines=1 --header-first --accept-nth=1 --preview 'ollama show {1}' --preview-window=right:44)"
+
+[[window]]
+name = "claude-television"
+startup_script = "ollama launch claude --model $(ollama list | fzf --popup=130,28 --layout=reverse --header-lines=1 --header-first --accept-nth=1 --preview 'ollama show {1}' --preview-window=right:44)"
 
 [[window]]
 name = "claude-qwen3.5"
