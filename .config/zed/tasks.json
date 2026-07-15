@@ -8,7 +8,12 @@
     "args": [],
     "env": {},
     "use_new_terminal": true,
-    "allow_concurrent_runs": false
+    "allow_concurrent_runs": false,
+  },
+  {
+    "label": "Open in Marked 2",
+    "command": "open",
+    "args": ["-a", "Marked 2", "$ZED_FILE"],
   },
   {
     "label": "Example task",
@@ -53,6 +58,6 @@
     //     }
     "shell": "system",
     // Represents the tags for inline runnable indicators, or spawning multiple tasks at once.
-    "tags": []
-  }
+    "tags": [],
+  },
 ]

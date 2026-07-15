@@ -106,6 +106,10 @@ brew "unbound"
 brew "gnutls"
 # Emacs dependency management
 brew "cask"
+# Open-source, cross-platform JavaScript runtime environment
+brew "node"
+# CLI tool for analyzing Claude Code usage from local JSONL files
+brew "ccusage"
 # CD/DVD/Blu-ray premastering and recording software
 brew "cdrtools"
 # Tool to obtain certs from Let's Encrypt and autoenable HTTPS
@@ -170,6 +174,8 @@ brew "figlet"
 brew "findutils"
 # I/O benchmark and stress test
 brew "fio"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.13"
 # Lint your Python code for style and logical errors
 brew "flake8"
 # HTTP and gRPC load testing and visualization tool and server
@@ -192,8 +198,6 @@ brew "libavif"
 brew "webp"
 # Toolkit for image loading and pixel buffer manipulation
 brew "gdk-pixbuf"
-# Open-source, cross-platform JavaScript runtime environment
-brew "node"
 # Interact with Google Gemini AI models from the command-line
 brew "gemini-cli"
 # GitHub command-line tool
@@ -422,6 +426,8 @@ brew "pinentry-mac"
 brew "pipx"
 # CLI for the Pkl programming language
 brew "pkl"
+# CLI for Playwright: record/generate code, inspect selectors, take screenshots
+brew "playwright-cli"
 # Paste PNG into files
 brew "pngpaste"
 # Tool for managing OCI containers and pods
@@ -442,6 +448,8 @@ brew "python-markdown"
 brew "python@3.10"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.11"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.12"
 # Compression/decompression library aiming for high speed
 brew "snappy"
 # Generic machine emulator and virtualizer
@@ -693,6 +701,24 @@ uv "pynvim"
 krew "envsubst"
 krew "graph"
 krew "modify-secret"
+mas "Slack", id: 803453959
+vscode "asvetliakov.vscode-neovim"
+vscode "felixzeller.markdown-oxide"
+vscode "google.colab"
+vscode "ms-azuretools.vscode-docker"
+vscode "ms-python.vscode-pylance"
+vscode "ms-python.vscode-python-envs"
+vscode "ms-toolsai.jupyter"
+vscode "ms-toolsai.jupyter-keymap"
+vscode "ms-toolsai.jupyter-renderers"
+vscode "ms-toolsai.vscode-jupyter-cell-tags"
+vscode "ms-toolsai.vscode-jupyter-slideshow"
+vscode "ms-vscode-remote.remote-containers"
+cargo "claude-tmux"
+uv "model-security-client"
+uv "pai-tenant-credentials"
+uv "specify-cli"
+uv "upskill"
 krew "neat"
 krew "netshoot/netshoot"
 krew "sniff"

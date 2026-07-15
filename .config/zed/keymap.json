@@ -3,7 +3,13 @@
     "context": "Editor && (vim_mode == normal || vim_mode == visual) && !VimWaiting && !menu",
     "bindings": {
       // put key-bindings here if you want them to work in normal & visual mode
-    }
+    },
+  },
+  {
+    "context": "Editor && extension == md",
+    "bindings": {
+      "cmd-shift-v": ["task::Spawn", { "task_name": "Open in Marked 2" }],
+    },
   },
   {
     "context": "Editor && vim_mode == normal && !VimWaiting && !menu",
@@ -14,14 +20,14 @@
       "ctrl-h": "workspace::ActivatePaneLeft",
       "ctrl-l": "workspace::ActivatePaneRight",
       "ctrl-k": "workspace::ActivatePaneUp",
-      "ctrl-j": "workspace::ActivatePaneDown"
-    }
+      "ctrl-j": "workspace::ActivatePaneDown",
+    },
   },
   {
     "context": "Editor && vim_mode == visual && !VimWaiting && !menu",
     "bindings": {
       // visual, visual line & visual block modes
-    }
+    },
   },
   {
     "context": "Editor && vim_mode == insert && !menu",
@@ -29,8 +35,8 @@
       // put key-bindings here if you want them to work in insert mode
       // e.g.
       // "j j": "vim::NormalBefore" // remap jj in insert mode to escape.
-      "cmd-.": "vim::SwitchToNormalMode" // old school mac escape/cancel.
-    }
+      "cmd-.": "vim::SwitchToNormalMode", // old school mac escape/cancel.
+    },
   },
   {
     "context": "Dock",
@@ -39,39 +45,39 @@
       "ctrl-h": "workspace::ActivatePaneLeft",
       "ctrl-l": "workspace::ActivatePaneRight",
       "ctrl-k": "workspace::ActivatePaneUp",
-      "ctrl-j": "workspace::ActivatePaneDown"
+      "ctrl-j": "workspace::ActivatePaneDown",
       // ... or other keybindings
-    }
+    },
   },
   {
     "context": "Editor && vim_mode == normal && vim_operator == none && !VimWaiting",
     "bindings": {
       // put key-bindings here if you want them to work only in normal mode
-      "space g g": ["task::Spawn", { "task_name": "Lazygit" }]
-    }
+      "space g g": ["task::Spawn", { "task_name": "Lazygit" }],
+    },
   },
   {
     "context": "(VimControl && !menu)",
     "bindings": {
-      "alt-k": "editor::MoveLineUp"
-    }
+      "alt-k": "editor::MoveLineUp",
+    },
   },
   {
     "context": "(VimControl && !menu)",
     "bindings": {
-      "alt-j": "editor::MoveLineDown"
-    }
+      "alt-j": "editor::MoveLineDown",
+    },
   },
   {
     "context": "Workspace",
     "bindings": {
-      "cmd-[": "workspace::ToggleLeftDock"
-    }
+      "cmd-[": "workspace::ToggleLeftDock",
+    },
   },
   {
     "context": "Workspace",
     "bindings": {
-      "cmd-]": "workspace::ToggleRightDock"
-    }
-  }
+      "cmd-]": "workspace::ToggleRightDock",
+    },
+  },
 ]
