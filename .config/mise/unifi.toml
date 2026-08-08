@@ -1,0 +1,645 @@
+# ── Home network and UniFi management tasks (global) ────────────────────────
+# Requires: keychainctl, dig, /usr/bin/curl, openssl, python3
+# Env vars defined in .mise.portcullis.toml (activate with MISE_ENV=portcullis).
+# None are defined here — this file is global, the values are site-specific.
+#
+#   Connection    UNIFI_HOST, UNIFI_SITE_ID
+#   Keychain      UNIFI_API_KEY_SECRET, UNIFI_ADMIN_KEY,
+#   entry names   UNIFI_ADMIN_PASSWORD_SECRET, WAN_DDNS_KEY_SECRET
+#   Accounts      UNIFI_ADMIN_USER, UNIFI_SSH_USER (defaults to root)
+#   DDNS          WAN_HOSTNAME
+#   VPN inputs    VPN_CLIENT_NAME, VPN_ROUTE_DESCRIPTION
+#   VPN derived   VPN_CLIENT_NW_ID, VPN_EGRESS_NW_ID, VPN_ROUTE_ID
+#                 — discovered and written by `mise run unifi:init`, not by hand
+#   Cert sync     TRUENAS_HOST (portcullis:cert:* only)
+#
+# Integration API:
+#   /usr/bin/curl -sk \
+#     -H "X-API-KEY: $(keychainctl get ${UNIFI_API_KEY_SECRET})" \
+#     -H "Accept: application/json" \
+#     "https://${UNIFI_HOST}/proxy/network/integration/v1/sites/${UNIFI_SITE_ID}/<endpoint>"
+#
+# unifi-core API (cert management — not in integration v1):
+#   session cookie via POST /api/auth/login; admin password in UNIFI_ADMIN_PASSWORD_SECRET
+
+# ── Gateway ────────────────────────────────────────────────────
+
+["unifi:sites"]
+description = "List all sites and IDs on UNIFI_HOST"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+API_KEY=$(keychainctl get "${UNIFI_API_KEY_SECRET}")
+/usr/bin/curl -sk \
+  -H "X-API-KEY: ${API_KEY}" -H "Accept: application/json" \
+  "https://${UNIFI_HOST}/proxy/network/integration/v1/sites" \
+  | python3 -c "
+import sys, json
+for s in json.load(sys.stdin)['data']:
+    print(f\"  {s['id']}  {s['name']}\")
+"
+'''
+
+["unifi:init"]
+description = "Discover and store UniFi site/network/route IDs for the active profile"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+ADMIN_KEY=$(keychainctl get "${UNIFI_ADMIN_KEY:?not set — define UNIFI_ADMIN_KEY in the profile env file (e.g. .mise.portcullis.toml) as the keychain entry name holding the UniFi admin API key}")
+BASE="https://${UNIFI_HOST}/proxy/network"
+
+# Use local vars throughout; mise set -E at the end so they persist across runs.
+# (mise set -E writes the file but does not update the current shell env.)
+SITE_ID="${UNIFI_SITE_ID:-}"
+if [ -z "${SITE_ID}" ]; then
+  SITE_ID=$(curl -s "${BASE}/api/self/sites" -H "X-Api-Key: ${ADMIN_KEY}" --insecure | \
+    python3 -c "import sys,json; print(json.load(sys.stdin)['data'][0]['name'])")
+fi
+
+networks=$(curl -s "${BASE}/api/s/${SITE_ID}/rest/networkconf" \
+  -H "X-Api-Key: ${ADMIN_KEY}" --insecure | \
+  python3 -c "import sys,json; print(json.dumps(json.load(sys.stdin)['data']))")
+
+VPN_CLIENT_NW_ID=$(echo "$networks" | VPN_CLIENT_NAME="${VPN_CLIENT_NAME:?set VPN_CLIENT_NAME in the profile env file}" python3 -c "
+import sys,json,os; nws=json.load(sys.stdin)
+print(next(n['_id'] for n in nws if n.get('name')==os.environ['VPN_CLIENT_NAME']))")
+
+EGRESS_ID=$(echo "$networks" | python3 -c "
+import sys,json; nws=json.load(sys.stdin)
+print(next(n['_id'] for n in nws if n.get('name')=='vpn-egress'))")
+
+VPN_ROUTE_ID=$(curl -s "${BASE}/v2/api/site/${SITE_ID}/trafficroutes" \
+  -H "X-Api-Key: ${ADMIN_KEY}" --insecure | VPN_ROUTE_DESCRIPTION="${VPN_ROUTE_DESCRIPTION:?set VPN_ROUTE_DESCRIPTION in the profile env file}" python3 -c "
+import sys,json,os
+print(next(r['_id'] for r in json.load(sys.stdin) if r.get('description')==os.environ['VPN_ROUTE_DESCRIPTION']))")
+
+mise set -E "${MISE_ENV}" UNIFI_SITE_ID="${SITE_ID}"
+mise set -E "${MISE_ENV}" VPN_CLIENT_NW_ID="${VPN_CLIENT_NW_ID}"
+mise set -E "${MISE_ENV}" VPN_EGRESS_NW_ID="${EGRESS_ID}"
+mise set -E "${MISE_ENV}" VPN_ROUTE_ID="${VPN_ROUTE_ID}"
+
+echo "UNIFI_SITE_ID=${SITE_ID}"
+echo "VPN_CLIENT_NW_ID=${VPN_CLIENT_NW_ID}"
+echo "VPN_EGRESS_NW_ID=${EGRESS_ID}"
+echo "VPN_ROUTE_ID=${VPN_ROUTE_ID}"
+"""
+
+# ── VPN traffic route ────────────────────────────────────────────
+# Requires UNIFI_SITE_ID, VPN_CLIENT_NW_ID, VPN_EGRESS_NW_ID, VPN_ROUTE_ID —
+# set via: mise run unifi:init
+
+["unifi:vpn:status"]
+description = "Show VPN traffic route state on the UniFi gateway"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+ADMIN_KEY=$(keychainctl get "${UNIFI_ADMIN_KEY:?not set — define UNIFI_ADMIN_KEY in the profile env file (e.g. .mise.portcullis.toml) as the keychain entry name holding the UniFi admin API key}")
+routes=$(curl -s "https://${UNIFI_HOST}/proxy/network/v2/api/site/${UNIFI_SITE_ID}/trafficroutes" \
+  -H "X-Api-Key: ${ADMIN_KEY}" --insecure)
+echo "$routes" | python3 -c '
+import sys, json, os
+route_id = os.environ["VPN_ROUTE_ID"]
+for r in json.load(sys.stdin):
+    if r.get("_id") == route_id:
+        state = "ENABLED" if r.get("enabled") else "DISABLED"
+        ks = r.get("kill_switch_enabled", False)
+        print(f"{r.get(\"description\", \"VPN route\")}: {state}  (kill_switch={ks})")
+        break
+'
+"""
+
+["unifi:vpn:enable"]
+description = "Enable the VPN traffic route — the egress network routes through the VPN client"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+ADMIN_KEY=$(keychainctl get "${UNIFI_ADMIN_KEY:?not set — define UNIFI_ADMIN_KEY in the profile env file (e.g. .mise.portcullis.toml) as the keychain entry name holding the UniFi admin API key}")
+PAYLOAD=$(python3 -c '
+import json, os
+print(json.dumps({"_id": os.environ["VPN_ROUTE_ID"], "description": os.environ.get("VPN_ROUTE_DESCRIPTION", ""),
+  "domains": [], "enabled": True, "ip_addresses": [], "ip_ranges": [],
+  "kill_switch_enabled": True, "matching_target": "INTERNET",
+  "network_id": os.environ["VPN_CLIENT_NW_ID"], "next_hop": "", "regions": [],
+  "target_devices": [{"network_id": os.environ["VPN_EGRESS_NW_ID"], "type": "NETWORK"}]}))')
+result=$(curl -s -X PUT \
+  "https://${UNIFI_HOST}/proxy/network/v2/api/site/${UNIFI_SITE_ID}/trafficroutes/${VPN_ROUTE_ID}" \
+  -H "X-Api-Key: ${ADMIN_KEY}" -H "Content-Type: application/json" --insecure \
+  -d "${PAYLOAD}")
+python3 -c 'import sys,json; d=json.load(sys.stdin); print("VPN route:", "ENABLED" if d.get("enabled") else "DISABLED")' <<< "${result}"
+"""
+
+# WARNING: routes with kill_switch_enabled fall back to WAN when disabled — don't
+# use this to `fix` connectivity for anything that must never touch WAN directly.
+# Use unifi:vpn:fix instead, which bounces the VPN client and never touches the
+# route's enabled/kill_switch state.
+["unifi:vpn:disable"]
+description = "Disable the VPN traffic route — the egress network falls back to main WAN"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+ADMIN_KEY=$(keychainctl get "${UNIFI_ADMIN_KEY:?not set — define UNIFI_ADMIN_KEY in the profile env file (e.g. .mise.portcullis.toml) as the keychain entry name holding the UniFi admin API key}")
+PAYLOAD=$(python3 -c '
+import json, os
+print(json.dumps({"_id": os.environ["VPN_ROUTE_ID"], "description": os.environ.get("VPN_ROUTE_DESCRIPTION", ""),
+  "domains": [], "enabled": False, "ip_addresses": [], "ip_ranges": [],
+  "kill_switch_enabled": True, "matching_target": "INTERNET",
+  "network_id": os.environ["VPN_CLIENT_NW_ID"], "next_hop": "", "regions": [],
+  "target_devices": [{"network_id": os.environ["VPN_EGRESS_NW_ID"], "type": "NETWORK"}]}))')
+result=$(curl -s -X PUT \
+  "https://${UNIFI_HOST}/proxy/network/v2/api/site/${UNIFI_SITE_ID}/trafficroutes/${VPN_ROUTE_ID}" \
+  -H "X-Api-Key: ${ADMIN_KEY}" -H "Content-Type: application/json" --insecure \
+  -d "${PAYLOAD}")
+python3 -c 'import sys,json; d=json.load(sys.stdin); print("VPN route:", "ENABLED" if d.get("enabled") else "DISABLED")' <<< "${result}"
+"""
+
+# Bounces the VPN client, never the traffic route. The route's enabled+kill_switch
+# state is left untouched throughout, so egress stays fail-closed (blackholed,
+# never falls back to WAN) during the bounce.
+["unifi:vpn:fix"]
+description = "Bounce the VPN client to recover a stuck tunnel, then re-verify"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+: "${UNIFI_HOST:?run mise run unifi:init first}" "${UNIFI_SITE_ID:?run mise run unifi:init first}" \
+  "${VPN_CLIENT_NW_ID:?run mise run unifi:init first}"
+ADMIN_KEY=$(keychainctl get "${UNIFI_ADMIN_KEY:?not set — define UNIFI_ADMIN_KEY in the profile env file (e.g. .mise.portcullis.toml) as the keychain entry name holding the UniFi admin API key}")
+BASE="https://${UNIFI_HOST}/proxy/network/api/s/${UNIFI_SITE_ID}/rest/networkconf/${VPN_CLIENT_NW_ID}"
+
+current=$(curl -s "${BASE}" -H "X-Api-Key: ${ADMIN_KEY}" --insecure | \
+  python3 -c "import sys,json; print(json.dumps(json.load(sys.stdin)['data'][0]))")
+
+echo "== Disabling VPN client =="
+echo "$current" | python3 -c "import sys,json; d=json.load(sys.stdin); d['enabled']=False; print(json.dumps(d))" | \
+  curl -s -X PUT "${BASE}" -H "X-Api-Key: ${ADMIN_KEY}" -H "Content-Type: application/json" \
+  --insecure -d @- > /dev/null
+
+sleep 5
+
+echo "== Re-enabling VPN client =="
+echo "$current" | python3 -c "import sys,json; d=json.load(sys.stdin); d['enabled']=True; print(json.dumps(d))" | \
+  curl -s -X PUT "${BASE}" -H "X-Api-Key: ${ADMIN_KEY}" -H "Content-Type: application/json" \
+  --insecure -d @- > /dev/null
+
+echo "== Waiting 15s for tunnel to re-establish =="
+sleep 15
+
+mise run unifi:vpn:status
+"""
+
+# ── DNS ────────────────────────────────────────────────────────
+
+["unifi:dns:check"]
+description = "Compare current WAN IP against WAN_HOSTNAME A record"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+CURRENT_IP=$(/usr/bin/curl -s https://api.ipify.org)
+DNS_A=$(dig +short "${WAN_HOSTNAME}" A | head -1)
+DNS_AAAA=$(dig +short "${WAN_HOSTNAME}" AAAA | head -1)
+echo "WAN IPv4:  ${CURRENT_IP}"
+echo "DNS A:     ${DNS_A:-<none>}"
+echo "DNS AAAA:  ${DNS_AAAA:-<none>}"
+if [[ "${CURRENT_IP}" == "${DNS_A}" ]]; then
+  echo "==> A record OK"
+else
+  echo "==> A record MISMATCH — run: mise run unifi:dns:update"
+  exit 1
+fi
+'''
+
+["unifi:dns:update"]
+description = "Force-update WAN_HOSTNAME A record to current WAN IP via HE.net DynDNS"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+HE_KEY=$(keychainctl get "${WAN_DDNS_KEY_SECRET}" 2>/dev/null) \
+  || { echo "ERROR: ${WAN_DDNS_KEY_SECRET} not in keychain"; exit 1; }
+CURRENT_IP=$(/usr/bin/curl -s https://api.ipify.org)
+echo "==> Updating ${WAN_HOSTNAME} → ${CURRENT_IP}..."
+RESP=$(/usr/bin/curl -s \
+  "https://dyn.dns.he.net/nic/update?hostname=${WAN_HOSTNAME}&password=${HE_KEY}&myip=${CURRENT_IP}")
+echo "==> HE.net: ${RESP}"
+case "${RESP}" in
+  good*|nochg*) echo "==> Done." ;;
+  *) echo "ERROR: unexpected response"; exit 1 ;;
+esac
+'''
+
+# ── Certificates ───────────────────────────────────────────────
+
+["unifi:cert:fetch"]
+description = "Fetch the newest valid *.<wildcard_domain> cert+key from the UniFi gateway via SSH, writing PEM files to the given paths. Validates: domain match, key/cert modulus match, not expired. Shared by host:cert and unifi:cert:pull."
+usage = '''
+arg "<wildcard_domain>" help="Wildcard domain to match, e.g. internal.snellarcade.org"
+arg "<cert_out>" help="Path to write the cert PEM"
+arg "<key_out>" help="Path to write the key PEM"
+'''
+run = '''
+#!/usr/bin/env bash
+set -uo pipefail
+WILDCARD_DOMAIN="${usage_wildcard_domain}"
+CERT_OUT="${usage_cert_out}"
+KEY_OUT="${usage_key_out}"
+UNIFI_HOST="${UNIFI_HOST:-portcullis.internal.snellarcade.org}"
+UNIFI_SSH_USER="${UNIFI_SSH_USER:-root}"
+CERT_DIR="/data/unifi-core/config"
+SSH="ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=5 ${UNIFI_SSH_USER}@${UNIFI_HOST}"
+
+# Find the newest non-expired *.WILDCARD_DOMAIN cert in the UniFi config dir.
+# UniFi ACME stores renewed certs as UUID-named files; unifi-core.crt may lag behind.
+cert_file=$(${SSH} "
+  best=''; best_ts=0
+  for f in ${CERT_DIR}/*.crt; do
+    subj=\$(openssl x509 -noout -subject -in \"\$f\" 2>/dev/null) || continue
+    case \"\$subj\" in *'*.${WILDCARD_DOMAIN}'*) ;; *) continue ;; esac
+    openssl x509 -checkend 0 -in \"\$f\" >/dev/null 2>&1 || continue
+    ts=\$(openssl x509 -noout -enddate -in \"\$f\" 2>/dev/null | cut -d= -f2)
+    epoch=\$(date -d \"\$ts\" +%s 2>/dev/null || date -j -f '%b %e %T %Y %Z' \"\$ts\" +%s 2>/dev/null)
+    if [ \"\$epoch\" -gt \"\$best_ts\" ]; then best_ts=\$epoch; best=\$f; fi
+  done
+  echo \"\$best\"
+")
+[[ -n "${cert_file}" ]] || { echo "ERROR: no valid *.${WILDCARD_DOMAIN} cert found on ${UNIFI_HOST}" >&2; exit 1; }
+key_file="${cert_file%.crt}.key"
+echo "==> Using cert: ${cert_file}" >&2
+
+crt=$(${SSH} "cat ${cert_file}")
+key=$(${SSH} "cat ${key_file}")
+[[ -n "${crt}" && -n "${key}" ]] || { echo "ERROR: empty cert/key from ${UNIFI_HOST}" >&2; exit 1; }
+
+# Validate before storing: right domain, key matches cert, not expired.
+subj=$(echo "${crt}" | openssl x509 -noout -subject 2>/dev/null)
+case "${subj}" in
+  *"*.${WILDCARD_DOMAIN}"*) ;;
+  *) echo "ERROR: gateway cert subject is not *.${WILDCARD_DOMAIN}: ${subj}" >&2; exit 1 ;;
+esac
+crt_mod=$(echo "${crt}" | openssl x509 -noout -modulus 2>/dev/null | openssl md5)
+key_mod=$(echo "${key}" | openssl rsa -noout -modulus 2>/dev/null | openssl md5)
+[[ "${crt_mod}" == "${key_mod}" ]] || { echo "ERROR: cert/key modulus mismatch" >&2; exit 1; }
+echo "${crt}" | openssl x509 -checkend 0 >/dev/null || { echo "ERROR: cert is already expired" >&2; exit 1; }
+
+echo "${crt}" > "${CERT_OUT}"
+echo "${key}" > "${KEY_OUT}"
+echo "==> Fetched *.${WILDCARD_DOMAIN} cert → ${CERT_OUT}, ${KEY_OUT}" >&2
+'''
+
+["unifi:cert:list"]
+description = "List all certs registered in UNIFI_HOST with id, name, and status"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+COOKIE_JAR="/tmp/unifi-$$-cookies.txt"
+HEADER_DUMP="/tmp/unifi-$$-headers.txt"
+trap 'rm -f "${COOKIE_JAR}" "${HEADER_DUMP}"' EXIT
+ADMIN_PASS=$(keychainctl get "${UNIFI_ADMIN_PASSWORD_SECRET}" 2>/dev/null) \
+  || { echo "ERROR: ${UNIFI_ADMIN_PASSWORD_SECRET} not in keychain"; exit 1; }
+/usr/bin/curl -sk -c "${COOKIE_JAR}" -D "${HEADER_DUMP}" -X POST \
+  -H "Content-Type: application/json" \
+  -d "{\"username\":\"${UNIFI_ADMIN_USER}\",\"password\":\"${ADMIN_PASS}\"}" \
+  "https://${UNIFI_HOST}/api/auth/login" > /dev/null
+TOKEN=$(awk '/TOKEN/{print $NF}' "${COOKIE_JAR}")
+CSRF=$(awk -F': ' '/x-csrf-token:/{print $2}' "${HEADER_DUMP}" | tr -d '\r')
+[[ -n "${TOKEN}" ]] || { echo "ERROR: login failed"; exit 1; }
+/usr/bin/curl -sk \
+  -H "Cookie: TOKEN=${TOKEN}" \
+  -H "X-Csrf-Token: ${CSRF}" \
+  "https://${UNIFI_HOST}/api/userCertificates" \
+  | python3 -c "
+import sys, json
+data = json.load(sys.stdin)
+certs = data if isinstance(data, list) else data.get('data', [])
+for c in certs:
+    print(f\"  {c['id']}  {c.get('name',''):<40}  {c.get('status','')}\")
+"
+'''
+
+["unifi:cert:delete"]
+description = "Delete a cert by UUID from UNIFI_HOST (set CERT_UUID)"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+CERT_UUID="${CERT_UUID:?set CERT_UUID=<uuid>}"
+COOKIE_JAR="/tmp/unifi-$$-cookies.txt"
+HEADER_DUMP="/tmp/unifi-$$-headers.txt"
+trap 'rm -f "${COOKIE_JAR}" "${HEADER_DUMP}"' EXIT
+ADMIN_PASS=$(keychainctl get "${UNIFI_ADMIN_PASSWORD_SECRET}" 2>/dev/null) \
+  || { echo "ERROR: ${UNIFI_ADMIN_PASSWORD_SECRET} not in keychain"; exit 1; }
+/usr/bin/curl -sk -c "${COOKIE_JAR}" -D "${HEADER_DUMP}" -X POST \
+  -H "Content-Type: application/json" \
+  -d "{\"username\":\"${UNIFI_ADMIN_USER}\",\"password\":\"${ADMIN_PASS}\"}" \
+  "https://${UNIFI_HOST}/api/auth/login" > /dev/null
+TOKEN=$(awk '/TOKEN/{print $NF}' "${COOKIE_JAR}")
+CSRF=$(awk -F': ' '/x-csrf-token:/{print $2}' "${HEADER_DUMP}" | tr -d '\r')
+[[ -n "${TOKEN}" ]] || { echo "ERROR: login failed"; exit 1; }
+echo "==> Deleting ${CERT_UUID}..."
+/usr/bin/curl -sk -X DELETE \
+  -H "Cookie: TOKEN=${TOKEN}" \
+  -H "X-Csrf-Token: ${CSRF}" \
+  "https://${UNIFI_HOST}/api/userCertificates/${CERT_UUID}" > /dev/null
+echo "==> Done."
+'''
+
+["unifi:cert:status"]
+description = "Show TLS cert currently served by UNIFI_HOST"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+echo "==> TLS cert on ${UNIFI_HOST}:443"
+echo | openssl s_client -connect "${UNIFI_HOST}:443" -servername "${UNIFI_HOST}" 2>/dev/null \
+  | openssl x509 -noout -subject -issuer -dates -ext subjectAltName
+'''
+
+["unifi:cert:upload"]
+description = "Upload, activate, and replace cert on UNIFI_HOST — removes previous certs (set CERT_FILE and KEY_FILE)"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+CERT_FILE="${CERT_FILE:?set CERT_FILE=/path/to/cert.pem}"
+KEY_FILE="${KEY_FILE:?set KEY_FILE=/path/to/key.pem}"
+COOKIE_JAR="/tmp/unifi-$$-cookies.txt"
+HEADER_DUMP="/tmp/unifi-$$-headers.txt"
+trap 'rm -f "${COOKIE_JAR}" "${HEADER_DUMP}"' EXIT
+
+ADMIN_PASS=$(keychainctl get "${UNIFI_ADMIN_PASSWORD_SECRET}" 2>/dev/null) \
+  || { echo "ERROR: ${UNIFI_ADMIN_PASSWORD_SECRET} not in keychain"; exit 1; }
+
+echo "==> Logging in to ${UNIFI_HOST}..."
+/usr/bin/curl -sk -c "${COOKIE_JAR}" -D "${HEADER_DUMP}" -X POST \
+  -H "Content-Type: application/json" \
+  -d "{\"username\":\"${UNIFI_ADMIN_USER:?set UNIFI_ADMIN_USER in .mise.portcullis.toml}\",\"password\":\"${ADMIN_PASS}\"}" \
+  "https://${UNIFI_HOST}/api/auth/login" > /dev/null
+TOKEN=$(awk '/TOKEN/{print $NF}' "${COOKIE_JAR}")
+CSRF=$(awk -F': ' '/x-csrf-token:/{print $2}' "${HEADER_DUMP}" | tr -d '\r')
+[[ -n "${TOKEN}" ]] || { echo "ERROR: login failed — check ${UNIFI_ADMIN_PASSWORD_SECRET}"; exit 1; }
+
+CERT_NAME=$(openssl x509 -noout -subject -in "${CERT_FILE}" \
+  | sed 's/.*CN=//' | sed 's/^\*\.//' | tr -d ' \r\n')
+
+echo "==> Fetching existing certs for ${CERT_NAME}..."
+OLD_IDS=$(/usr/bin/curl -sk \
+  -H "Cookie: TOKEN=${TOKEN}" \
+  -H "X-Csrf-Token: ${CSRF}" \
+  "https://${UNIFI_HOST}/api/userCertificates" \
+  | python3 -c "
+import sys, json
+data = json.load(sys.stdin)
+certs = data if isinstance(data, list) else data.get('data', [])
+for c in certs:
+    if c.get('name','') == '${CERT_NAME}':
+        print(c['id'])
+" 2>/dev/null || true)
+
+echo "==> Uploading cert for ${CERT_NAME}..."
+RESULT=$(/usr/bin/curl -sk -X POST \
+  -H "Content-Type: application/json" \
+  -H "Cookie: TOKEN=${TOKEN}" \
+  -H "X-Csrf-Token: ${CSRF}" \
+  -d "$(python3 -c "
+import json
+crt = open('${CERT_FILE}').read()
+key = open('${KEY_FILE}').read()
+print(json.dumps({'cert': crt, 'key': key, 'name': '${CERT_NAME}'}))
+")" \
+  "https://${UNIFI_HOST}/api/userCertificates")
+
+UUID=$(echo "${RESULT}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('id',''))" 2>/dev/null)
+[[ -n "${UUID}" ]] || { echo "ERROR: no cert ID — ${RESULT}"; exit 1; }
+
+echo "==> Activating ${UUID}..."
+/usr/bin/curl -sk -X PUT \
+  -H "Content-Type: application/json" \
+  -H "Cookie: TOKEN=${TOKEN}" \
+  -H "X-Csrf-Token: ${CSRF}" \
+  -d "{\"activeCertId\":\"${UUID}\"}" \
+  "https://${UNIFI_HOST}/api/system" > /dev/null
+
+if [[ -n "${OLD_IDS}" ]]; then
+  while IFS= read -r old_id; do
+    [[ "${old_id}" == "${UUID}" ]] && continue
+    echo "==> Removing old cert ${old_id}..."
+    /usr/bin/curl -sk -X DELETE \
+      -H "Cookie: TOKEN=${TOKEN}" \
+      -H "X-Csrf-Token: ${CSRF}" \
+      "https://${UNIFI_HOST}/api/userCertificates/${old_id}" > /dev/null
+  done <<< "${OLD_IDS}"
+fi
+
+echo "==> Done. Active cert: ${UUID}"
+'''
+
+# ── DNS Upsert (generic) ────────────────────────────────────────
+
+["unifi:dns:upsert"]
+description = "Idempotent portcullis DNS A-record upsert for any hostname → IP (shared by node:dns:register, gateway:dns:sync, host:identity, unifi:dns:cluster:add)"
+quiet = true
+usage = '''
+arg "<fqdn>" help="Fully-qualified hostname to register"
+arg "<ip>" help="IP address to point the A-record at"
+'''
+run = '''
+#!/usr/bin/env bash
+set -uo pipefail
+FQDN="${usage_fqdn}"
+IP="${usage_ip}"
+
+UNIFI_HOST="${UNIFI_HOST:-portcullis.internal.snellarcade.org}"
+UNIFI_API_KEY_SECRET="${UNIFI_API_KEY_SECRET:-PORTCUILLIS_INTERNAL_API}"
+API_KEY=$(keychainctl get "${UNIFI_API_KEY_SECRET}" 2>/dev/null) \
+  || { echo "ERROR: ${UNIFI_API_KEY_SECRET} not in keychain"; exit 1; }
+
+if [[ -z "${UNIFI_SITE_ID:-}" ]]; then
+  UNIFI_SITE_ID=$(/usr/bin/curl -sk \
+    -H "X-API-KEY: ${API_KEY}" -H "Accept: application/json" \
+    "https://${UNIFI_HOST}/proxy/network/integration/v1/sites" \
+    | python3 -c "import sys,json; print(json.load(sys.stdin)['data'][0]['id'])")
+fi
+BASE="https://${UNIFI_HOST}/proxy/network/integration/v1/sites/${UNIFI_SITE_ID}/dns/policies"
+
+EXISTING=$(
+  /usr/bin/curl -sk \
+    -H "X-API-KEY: ${API_KEY}" -H "Accept: application/json" \
+    "${BASE}?limit=200" \
+  | python3 -c "
+import sys, json
+for r in json.load(sys.stdin).get('data', []):
+    if r.get('domain') == '${FQDN}':
+        print(r['id'] + ' ' + r.get('ipv4Address',''))
+        break
+" 2>/dev/null || true)
+
+if [[ -n "${EXISTING}" ]]; then
+  EXISTING_ID="${EXISTING%% *}"; EXISTING_IP="${EXISTING##* }"
+  if [[ "${EXISTING_IP}" == "${IP}" ]]; then
+    echo "  ✓ ${FQDN} → ${IP} (already correct)"
+    exit 0
+  fi
+  echo "  ~ ${FQDN}: stale (${EXISTING_IP}) → ${IP} — replacing"
+  /usr/bin/curl -sk -X DELETE -H "X-API-KEY: ${API_KEY}" "${BASE}/${EXISTING_ID}" > /dev/null
+fi
+
+RESULT=$(/usr/bin/curl -sk -X POST \
+  -H "X-API-KEY: ${API_KEY}" -H "Accept: application/json" -H "Content-Type: application/json" \
+  -d "$(python3 -c "import json; print(json.dumps({'type':'A_RECORD','domain':'${FQDN}','ipv4Address':'${IP}','ttlSeconds':0,'enabled':True}))")" \
+  "${BASE}")
+ID=$(echo "${RESULT}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('id',''))" 2>/dev/null)
+if [[ -n "${ID}" ]]; then
+  echo "  ✓ ${FQDN} → ${IP} (registered)"
+else
+  echo "  ✗ ${FQDN}: ERROR — ${RESULT}"
+  exit 1
+fi
+'''
+
+# ── Cluster DNS ────────────────────────────────────────────────
+
+["unifi:dns:cluster:add"]
+description = "Add wildcard A record *.CLUSTER_DOMAIN → GATEWAY_LB_IP in portcullis DNS policies (idempotent)"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+DOMAIN="*.${CLUSTER_DOMAIN:?set MISE_ENV=<cluster-target> to activate a cluster profile}"
+LB_IP="${GATEWAY_LB_IP:?GATEWAY_LB_IP not set — run: mise run gateway:apply}"
+mise run unifi:dns:upsert "${DOMAIN}" "${LB_IP}"
+'''
+
+["unifi:dns:cluster:remove"]
+description = "Remove wildcard A record *.CLUSTER_DOMAIN from portcullis DNS policies"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+DOMAIN="*.${CLUSTER_DOMAIN:?set MISE_ENV=<cluster-target> to activate a cluster profile}"
+
+UNIFI_HOST="${UNIFI_HOST:-portcullis.internal.snellarcade.org}"
+UNIFI_API_KEY_SECRET="${UNIFI_API_KEY_SECRET:-PORTCUILLIS_INTERNAL_API}"
+API_KEY=$(keychainctl get "${UNIFI_API_KEY_SECRET}" 2>/dev/null) \
+  || { echo "ERROR: ${UNIFI_API_KEY_SECRET} not in keychain"; exit 1; }
+
+if [[ -z "${UNIFI_SITE_ID:-}" ]]; then
+  UNIFI_SITE_ID=$(/usr/bin/curl -sk \
+    -H "X-API-KEY: ${API_KEY}" -H "Accept: application/json" \
+    "https://${UNIFI_HOST}/proxy/network/integration/v1/sites" \
+    | python3 -c "import sys,json; print(json.load(sys.stdin)['data'][0]['id'])")
+fi
+BASE="https://${UNIFI_HOST}/proxy/network/integration/v1/sites/${UNIFI_SITE_ID}/dns/policies"
+
+IDS=$(
+  /usr/bin/curl -sk \
+    -H "X-API-KEY: ${API_KEY}" -H "Accept: application/json" \
+    "${BASE}?limit=200" \
+  | python3 -c "
+import sys, json
+data = json.load(sys.stdin).get('data', [])
+for r in data:
+    if r.get('domain') == '${DOMAIN}':
+        print(r['id'])
+" 2>/dev/null || true)
+
+if [[ -z "${IDS}" ]]; then
+  echo "==> No record for ${DOMAIN} — nothing to remove."
+  exit 0
+fi
+
+while IFS= read -r id; do
+  echo "==> Removing ${DOMAIN} (id=${id})..."
+  /usr/bin/curl -sk -X DELETE \
+    -H "X-API-KEY: ${API_KEY}" \
+    "${BASE}/${id}" > /dev/null
+done <<< "${IDS}"
+echo "==> Done."
+'''
+
+# ── Portcullis host cert ────────────────────────────────────────
+
+["portcullis:cert:sync"]
+description = "Push *.internal.snellarcade.org cert from TRUENAS_HOST to portcullis UI (secures gateway controller)"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+TRUENAS_HOST="${TRUENAS_HOST:?set MISE_ENV=<cluster-target> to activate a cluster profile}"
+UNIFI_HOST="${UNIFI_HOST:-portcullis.internal.snellarcade.org}"
+ADMIN_PASS=$(keychainctl get "${UNIFI_ADMIN_PASSWORD_SECRET:-PORTCULLIS_ADMIN_PASSWORD}" 2>/dev/null) \
+  || { echo "ERROR: ${UNIFI_ADMIN_PASSWORD_SECRET} not in keychain"; exit 1; }
+
+echo "==> Fetching *.internal.snellarcade.org cert from ${TRUENAS_HOST}..."
+CERT_JSON=$(ssh "${TRUENAS_HOST}" \
+  "midclt call certificate.query '[[\"common\",\"=\",\"*.internal.snellarcade.org\"]]'" 2>/dev/null)
+CRT=$(echo "${CERT_JSON}" | python3 -c "
+import sys, json
+data = json.load(sys.stdin)
+if not data:
+    sys.exit(1)
+print(data[0]['certificate'])
+" 2>/dev/null) || { echo "ERROR: cert not found on ${TRUENAS_HOST} — run TrueNAS ACME first"; exit 1; }
+KEY=$(echo "${CERT_JSON}" | python3 -c "import sys,json; print(json.load(sys.stdin)[0]['privatekey'])")
+
+CERT_FILE=$(mktemp /tmp/portcullis-cert-XXXXXX.pem)
+KEY_FILE=$(mktemp /tmp/portcullis-key-XXXXXX.pem)
+trap "rm -f ${CERT_FILE} ${KEY_FILE}" EXIT
+echo "${CRT}" > "${CERT_FILE}"
+echo "${KEY}" > "${KEY_FILE}"
+
+echo "==> Logging in to ${UNIFI_HOST}..."
+COOKIE_JAR=$(mktemp /tmp/unifi-cookies-XXXXXX.txt)
+HEADER_DUMP=$(mktemp /tmp/unifi-headers-XXXXXX.txt)
+trap "rm -f ${COOKIE_JAR} ${HEADER_DUMP} ${CERT_FILE} ${KEY_FILE}" EXIT
+/usr/bin/curl -sk -c "${COOKIE_JAR}" -D "${HEADER_DUMP}" -X POST \
+  -H "Content-Type: application/json" \
+  -d "{\"username\":\"${UNIFI_ADMIN_USER:-totally}\",\"password\":\"${ADMIN_PASS}\"}" \
+  "https://${UNIFI_HOST}/api/auth/login" > /dev/null
+TOKEN=$(awk '/TOKEN/{print $NF}' "${COOKIE_JAR}")
+CSRF=$(awk -F': ' '/x-csrf-token:/{print $2}' "${HEADER_DUMP}" | tr -d '\r')
+[[ -n "${TOKEN}" ]] || { echo "ERROR: portcullis login failed"; exit 1; }
+
+CERT_NAME=$(python3 -c "
+import ssl, subprocess
+out = subprocess.check_output(['openssl','x509','-noout','-subject','-in','${CERT_FILE}']).decode()
+print(out.split('CN=')[-1].strip().lstrip('*.').rstrip())
+" 2>/dev/null || echo "internal.snellarcade.org")
+
+echo "==> Uploading cert (${CERT_NAME})..."
+RESULT=$(/usr/bin/curl -sk -X POST \
+  -H "Content-Type: application/json" \
+  -H "Cookie: TOKEN=${TOKEN}" -H "X-Csrf-Token: ${CSRF}" \
+  -d "$(python3 -c "
+import json
+crt = open('${CERT_FILE}').read()
+key = open('${KEY_FILE}').read()
+print(json.dumps({'cert': crt, 'key': key, 'name': '${CERT_NAME}'}))
+")" \
+  "https://${UNIFI_HOST}/api/userCertificates")
+UUID=$(echo "${RESULT}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('id',''))" 2>/dev/null)
+[[ -n "${UUID}" ]] || { echo "ERROR: upload failed — ${RESULT}"; exit 1; }
+
+echo "==> Activating ${UUID}..."
+/usr/bin/curl -sk -X PUT \
+  -H "Content-Type: application/json" \
+  -H "Cookie: TOKEN=${TOKEN}" -H "X-Csrf-Token: ${CSRF}" \
+  -d "{\"activeCertId\":\"${UUID}\"}" \
+  "https://${UNIFI_HOST}/api/system" > /dev/null
+echo "==> Done. portcullis now using *.internal.snellarcade.org cert."
+'''
+
+["portcullis:cert:status"]
+description = "Show cert on portcullis UI and *.internal.snellarcade.org expiry on TRUENAS_HOST"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+TRUENAS_HOST="${TRUENAS_HOST:?set MISE_ENV=<cluster-target>}"
+echo "── portcullis TLS cert ───────────────────────────"
+echo | openssl s_client -connect "${UNIFI_HOST:-portcullis.internal.snellarcade.org}:443" \
+  -servername "${UNIFI_HOST:-portcullis.internal.snellarcade.org}" 2>/dev/null \
+  | openssl x509 -noout -subject -issuer -dates 2>/dev/null || echo "  (connection failed)"
+echo ""
+echo "── TrueNAS *.internal.snellarcade.org cert ──────"
+ssh "${TRUENAS_HOST}" \
+  "midclt call certificate.query '[[\"common\",\"=\",\"*.internal.snellarcade.org\"]]'" 2>/dev/null \
+  | python3 -c "
+import sys, json
+data = json.load(sys.stdin)
+if not data: print('  (not found)'); exit()
+c = data[0]
+print(f\"  name:    {c['name']}\")
+print(f\"  issuer:  {c.get('issuer','?')}\")
+print(f\"  until:   {c.get('until','?')}\")
+" 2>/dev/null || echo "  (SSH failed)"
+'''

@@ -1,0 +1,5 @@
+# Global mise configuration
+# Gateway/cluster-specific env vars live in project profile files:
+#   .mise.portcullis.toml  (MISE_ENV=portcullis)
+#   .mise.bee3.toml        (MISE_ENV=bee3)
+#   .mise.freenasty.toml   (MISE_ENV=freenasty)

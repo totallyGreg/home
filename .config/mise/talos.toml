@@ -1,0 +1,58 @@
+# ── Talos operations (global) ───────────────────────────────────
+# Reusable across projects. Requires TALOSCONFIG + TALOS_ENDPOINT set in the
+# project's [env]; talos:reset additionally requires CLUSTER_NAME (confirmation
+# prompt). Set TALOS_NODE to target a node other than TALOS_ENDPOINT.
+#
+# STOPGAP: these tasks pass --talosconfig/-e/-n explicitly because the generated
+# talosconfig contexts carry certs but an empty `endpoints: []`, so a bare
+# `talosctl ...` fails with "failed to determine endpoints". The durable fix is to
+# populate the context (talosctl config endpoint/node) from the node registry and
+# drop these flags — see the talos:context:sync design work.
+
+["talos:extensions"]
+description = "List Talos extensions installed on the target node"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+: "${TALOSCONFIG:?not set — activate a cluster profile with MISE_ENV=<target>}" \
+  "${TALOS_ENDPOINT:?not set — activate a cluster profile with MISE_ENV=<target>}"
+TARGET="${TALOS_NODE:-}"
+[[ -z "${TARGET}" ]] && TARGET="${TALOS_ENDPOINT}"
+talosctl --talosconfig "${TALOSCONFIG}" \
+  -e "${TALOS_ENDPOINT}" -n "${TARGET}" get extensions
+'''
+
+["talos:reset"]
+description = "Reset Talos node — wipes STATE + EPHEMERAL and reboots. Run bootstrap:apply after."
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+: "${TALOSCONFIG:?not set — activate a cluster profile with MISE_ENV=<target>}" \
+  "${TALOS_ENDPOINT:?not set — activate a cluster profile with MISE_ENV=<target>}" \
+  "${CLUSTER_NAME:?not set — activate a cluster profile with MISE_ENV=<target>}"
+TARGET="${TALOS_NODE:-}"
+[[ -z "${TARGET}" ]] && TARGET="${TALOS_ENDPOINT}"
+echo "WARNING: This wipes cluster state and reboots the node."
+echo "  cluster: ${CLUSTER_NAME}"
+echo "  node:    ${TARGET}"
+read -r -p "Type cluster name to confirm: " _confirm
+[[ "$_confirm" != "${CLUSTER_NAME}" ]] && { echo "Aborted."; exit 1; }
+talosctl --talosconfig "${TALOSCONFIG}" \
+  -e "${TALOS_ENDPOINT}" -n "${TARGET}" reset \
+  --system-labels-to-wipe STATE \
+  --system-labels-to-wipe EPHEMERAL \
+  --reboot --graceful=false
+'''
+
+["talos:patch"]
+description = "Apply a machine config patch. Usage: mise run talos:patch -- --patch '[{...}]'"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+: "${TALOSCONFIG:?not set — activate a cluster profile with MISE_ENV=<target>}" \
+  "${TALOS_ENDPOINT:?not set — activate a cluster profile with MISE_ENV=<target>}"
+TARGET="${TALOS_NODE:-}"
+[[ -z "${TARGET}" ]] && TARGET="${TALOS_ENDPOINT}"
+talosctl --talosconfig "${TALOSCONFIG}" \
+  -e "${TALOS_ENDPOINT}" -n "${TARGET}" patch mc "$@"
+'''
