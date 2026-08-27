@@ -26,6 +26,13 @@
 
 ["unifi:sites"]
 description = "List all sites and IDs on UNIFI_HOST"
+# Declared rather than documented: without these, `set -u` aborts on line 1 with
+# "UNIFI_API_KEY_SECRET: unbound variable", which says nothing about the actual
+# cause (no profile active). `required` is task-scoped, so it fails before the
+# script runs, names the fix, and shows up in `mise tasks info` — while leaving
+# unrelated tasks alone. Do NOT move this to a config-level [env]: that makes
+# every task in scope fail when the profile is inactive.
+env = { UNIFI_HOST = { required = "no UniFi gateway configured — run with MISE_ENV=portcullis (or add portcullis to env in .miserc.toml)" }, UNIFI_API_KEY_SECRET = { required = "no API-key keychain entry name — run with MISE_ENV=portcullis" } }
 run = '''
 #!/usr/bin/env bash
 set -euo pipefail
@@ -42,6 +49,12 @@ for s in json.load(sys.stdin)['data']:
 
 ["unifi:init"]
 description = "Discover and store UniFi site/network/route IDs for the active profile"
+# UNIFI_HOST is referenced bare below, so without this it fails as an unbound
+# variable. UNIFI_ADMIN_KEY, VPN_CLIENT_NAME and VPN_ROUTE_DESCRIPTION already
+# carry :? guards inside the body; those stay as the guard for anything reached
+# outside mise, while `required` is the declaration — introspectable and failing
+# before a single API call is made.
+env = { UNIFI_HOST = { required = "no UniFi gateway configured — run with MISE_ENV=portcullis (or add portcullis to env in .miserc.toml)" }, UNIFI_ADMIN_KEY = { required = "keychain entry name for the UniFi admin API key — defined in .mise.portcullis.toml" } }
 run = """
 #!/usr/bin/env bash
 set -euo pipefail
@@ -447,13 +460,19 @@ UNIFI_API_KEY_SECRET="${UNIFI_API_KEY_SECRET:-PORTCUILLIS_INTERNAL_API}"
 API_KEY=$(keychainctl get "${UNIFI_API_KEY_SECRET}" 2>/dev/null) \
   || { echo "ERROR: ${UNIFI_API_KEY_SECRET} not in keychain"; exit 1; }
 
-if [[ -z "${UNIFI_SITE_ID:-}" ]]; then
-  UNIFI_SITE_ID=$(/usr/bin/curl -sk \
+# UNIFI_SITE_ID is the *legacy* API's site name ("default") and is NOT valid
+# here: the integration v1 API addresses sites by UUID. Resolve our own rather
+# than reusing UNIFI_SITE_ID, which unifi:init and the trafficroutes/networkconf/
+# portforward tasks still need as the name. Override with UNIFI_SITE_UUID.
+SITE_UUID="${UNIFI_SITE_UUID:-}"
+if [[ -z "${SITE_UUID}" ]]; then
+  SITE_UUID=$(/usr/bin/curl -sk \
     -H "X-API-KEY: ${API_KEY}" -H "Accept: application/json" \
     "https://${UNIFI_HOST}/proxy/network/integration/v1/sites" \
     | python3 -c "import sys,json; print(json.load(sys.stdin)['data'][0]['id'])")
 fi
-BASE="https://${UNIFI_HOST}/proxy/network/integration/v1/sites/${UNIFI_SITE_ID}/dns/policies"
+[[ -n "${SITE_UUID}" ]] || { echo "ERROR: could not resolve UniFi site UUID from ${UNIFI_HOST}"; exit 1; }
+BASE="https://${UNIFI_HOST}/proxy/network/integration/v1/sites/${SITE_UUID}/dns/policies"
 
 EXISTING=$(
   /usr/bin/curl -sk \
@@ -514,13 +533,19 @@ UNIFI_API_KEY_SECRET="${UNIFI_API_KEY_SECRET:-PORTCUILLIS_INTERNAL_API}"
 API_KEY=$(keychainctl get "${UNIFI_API_KEY_SECRET}" 2>/dev/null) \
   || { echo "ERROR: ${UNIFI_API_KEY_SECRET} not in keychain"; exit 1; }
 
-if [[ -z "${UNIFI_SITE_ID:-}" ]]; then
-  UNIFI_SITE_ID=$(/usr/bin/curl -sk \
+# UNIFI_SITE_ID is the *legacy* API's site name ("default") and is NOT valid
+# here: the integration v1 API addresses sites by UUID. Resolve our own rather
+# than reusing UNIFI_SITE_ID, which unifi:init and the trafficroutes/networkconf/
+# portforward tasks still need as the name. Override with UNIFI_SITE_UUID.
+SITE_UUID="${UNIFI_SITE_UUID:-}"
+if [[ -z "${SITE_UUID}" ]]; then
+  SITE_UUID=$(/usr/bin/curl -sk \
     -H "X-API-KEY: ${API_KEY}" -H "Accept: application/json" \
     "https://${UNIFI_HOST}/proxy/network/integration/v1/sites" \
     | python3 -c "import sys,json; print(json.load(sys.stdin)['data'][0]['id'])")
 fi
-BASE="https://${UNIFI_HOST}/proxy/network/integration/v1/sites/${UNIFI_SITE_ID}/dns/policies"
+[[ -n "${SITE_UUID}" ]] || { echo "ERROR: could not resolve UniFi site UUID from ${UNIFI_HOST}"; exit 1; }
+BASE="https://${UNIFI_HOST}/proxy/network/integration/v1/sites/${SITE_UUID}/dns/policies"
 
 IDS=$(
   /usr/bin/curl -sk \
@@ -642,4 +667,63 @@ print(f\"  name:    {c['name']}\")
 print(f\"  issuer:  {c.get('issuer','?')}\")
 print(f\"  until:   {c.get('until','?')}\")
 " 2>/dev/null || echo "  (SSH failed)"
+'''
+
+# --- Port forwarding (WAN ingress) ----------------------------------------
+# Generic against any UniFi gateway: all site-specific values come from env
+# (UNIFI_HOST, UNIFI_SITE_ID, UNIFI_ADMIN_KEY), never hardcoded here.
+#
+# Endpoint verified 2026-08-08 against a UCG Fiber:
+#   GET /proxy/network/api/s/${SITE}/rest/portforward
+# Same rest/* family as networkconf, which unifi:init already uses.
+#
+# READ-ONLY BY DESIGN. Creating or deleting a forward opens (or closes) a path
+# from the public internet, so those are deliberately NOT implemented here yet
+# — adding one is a security decision that should be made deliberately, not as
+# a side effect of running a task.
+
+["unifi:portforward:list"]
+description = "List WAN port-forward rules on the UniFi gateway (read-only)"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+: "${UNIFI_HOST:?set MISE_ENV=portcullis (or another profile defining UNIFI_HOST)}"
+: "${UNIFI_SITE_ID:?run mise run unifi:init first, or check you are in the right profile}"
+KEY=$(keychainctl get "${UNIFI_ADMIN_KEY:?set UNIFI_ADMIN_KEY to the keychain entry name}")
+
+RESP=$(curl -s --max-time 20 --insecure \
+  "https://${UNIFI_HOST}/proxy/network/api/s/${UNIFI_SITE_ID}/rest/portforward" \
+  -H "X-Api-Key: ${KEY}")
+
+# Structured parsing throughout — never awk/grep over the JSON.
+if [ "$(echo "${RESP}" | jq -r '.meta.rc // "error"')" != "ok" ]; then
+  echo "==> API error:"
+  echo "${RESP}" | jq -r '.meta // .' >&2
+  exit 1
+fi
+
+COUNT=$(echo "${RESP}" | jq -r '.data | length')
+echo "── WAN port forwards on ${UNIFI_HOST} (${COUNT}) ─────────────"
+if [ "${COUNT}" -eq 0 ]; then
+  echo "  (none — no inbound path from the internet)"
+  exit 0
+fi
+
+{
+  printf 'ENABLED\tNAME\tPROTO\tWAN_PORT\t->\tDEST\tDEST_PORT\tSRC\n'
+  echo "${RESP}" | jq -r '.data[]
+    | [ (if .enabled then "yes" else "NO" end),
+        .name,
+        (.proto // "?"),
+        (.dst_port // "?"),
+        "->",
+        (.fwd // "?"),
+        (.fwd_port // "?"),
+        (.src // "any")
+      ] | @tsv'
+} | column -t -s "$(printf '\t')"
+
+echo ""
+echo "  Rule IDs (for future set/delete):"
+echo "${RESP}" | jq -r '.data[] | "    \(.name): \(._id)"'
 '''
