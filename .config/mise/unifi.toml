@@ -675,42 +675,64 @@ print(f\"  until:   {c.get('until','?')}\")
 # (UNIFI_HOST, UNIFI_SITE_ID, UNIFI_ADMIN_KEY), never hardcoded here.
 #
 # Endpoint verified 2026-08-08 against a UCG Fiber:
-#   GET  /proxy/network/api/s/${SITE}/rest/portforward         list
-#   POST /proxy/network/api/s/${SITE}/rest/portforward         create
-#   PUT  /proxy/network/api/s/${SITE}/rest/portforward/${ID}   update
+#   GET    /proxy/network/api/s/${SITE}/rest/portforward         list
+#   POST   /proxy/network/api/s/${SITE}/rest/portforward         create
+#   PUT    /proxy/network/api/s/${SITE}/rest/portforward/${ID}   update
+#   DELETE /proxy/network/api/s/${SITE}/rest/portforward/${ID}   remove
 # Same rest/* family as networkconf, which unifi:init already uses. Note this
 # family wants the site *name* ("default") in UNIFI_SITE_ID, not the UUID the
 # integration/v1 DNS endpoints use — see unifi:dns:upsert.
 #
-# One task, two postures, deliberately asymmetric:
+# One task, three postures, deliberately asymmetric:
 #   * the bare invocation is READ-ONLY and always safe;
-#   * --set opens (or re-points) a path from the public internet, so it is
-#     gated behind CONFIRM=forward and always prints the exact rule first.
-# Deleting a rule is still NOT implemented — closing a forward by hand in the
-# UniFi UI is fine, and a delete verb here would be a footgun with no caller.
+#   * --set opens (or re-points) a path from the public internet;
+#   * --delete closes one.
+# Both write verbs print the affected rule and the exact method+URL BEFORE
+# checking their confirmation, and both honour --dry-run ahead of the guard.
 #
-# --set is idempotent on the rule NAME: an existing rule of that name is
-# updated in place (PUT against its _id), never duplicated. That makes "open
-# 443 to the narthex gateway" a re-runnable, reviewable task rather than a UI
-# click, and re-running after an IP change re-points instead of stacking rules.
+# The two confirmation words differ ON PURPOSE, and not because delete is more
+# dangerous — it is less so, since a wrong --delete fails safe (a port shuts)
+# where a wrong --set fails open. They differ so the confirmation token names
+# the intent: CONFIRM=forward copy-pasted out of an "open the port" runbook
+# cannot silently satisfy a --delete, and CONFIRM=close cannot open anything.
+# Same weight, different word. Neither refusal makes you guess — each prints
+# the word it wants.
+#
+# Both write verbs are idempotent on the rule NAME:
+#   * --set updates an existing rule in place (PUT against its _id) rather than
+#     duplicating it, so "open 443 to the narthex gateway" survives a gateway IP
+#     change by re-pointing instead of stacking a second rule;
+#   * --delete on a name that does not exist SUCCEEDS — the desired end state
+#     (no such rule) already holds. Closing a port must never be the step that
+#     fails an incident-response script.
 
 ["unifi:portforward"]
-description = "List WAN port-forward rules; --set creates/updates one (needs CONFIRM=forward)"
+description = "List WAN port forwards; --set / --delete write (each needs a CONFIRM)"
 alias = "unifi:portforward:list"
 usage = '''
 flag "--set"              help="Create or update a rule instead of listing. Opens a path from the internet: requires CONFIRM=forward"
-flag "--name <name>"      help="Rule name. This is the idempotency key — an existing rule with this name is updated in place, not duplicated"
+flag "--delete"           help="Remove the rule named by --name. Closes a path from the internet: requires CONFIRM=close. Mutually exclusive with --set"
+flag "--name <name>"      help="Rule name. This is the idempotency key for both write verbs — --set updates a matching rule in place rather than duplicating it, and --delete of an absent name succeeds"
 flag "--proto <proto>"    help="Protocol: tcp, udp or tcp_udp" default="tcp"
 flag "--wan-port <port>"  help="Public WAN port to open, or a range like 8080:8090"
 flag "--dest <ip>"        help="LAN IPv4 address to forward to"
 flag "--dest-port <port>" help="Port on the destination host (defaults to --wan-port)"
 flag "--src <cidr>"       help="Restrict the source to this CIDR; default any, i.e. the whole internet"
-flag "--disabled"         help="Write the rule in the disabled state (omit to have it enabled)"
+flag "--disabled"         help="Write the rule in the disabled state (omit to have it enabled). --set only"
 flag "--dry-run"          help="Print the rule and the API call that would be made, change nothing. Needs no CONFIRM"
 '''
 run = '''
 #!/usr/bin/env bash
 set -euo pipefail
+
+# Argument validation before anything reaches the network, so a contradictory
+# invocation can never half-execute.
+if [ -n "${usage_set:-}" ] && [ -n "${usage_delete:-}" ]; then
+  echo "ERROR: --set and --delete are mutually exclusive — one opens a path from" >&2
+  echo "       the internet and the other closes it. Pick one." >&2
+  exit 2
+fi
+
 : "${UNIFI_HOST:?set MISE_ENV=portcullis (or another profile defining UNIFI_HOST)}"
 : "${UNIFI_SITE_ID:?run mise run unifi:init first, or check you are in the right profile}"
 KEY=$(keychainctl get "${UNIFI_ADMIN_KEY:?set UNIFI_ADMIN_KEY to the keychain entry name}")
@@ -754,12 +776,67 @@ render() {
 }
 
 # ── Read-only path: the bare invocation, and unifi:portforward:list ────────
-if [ -z "${usage_set:-}" ]; then
+if [ -z "${usage_set:-}" ] && [ -z "${usage_delete:-}" ]; then
   render "${RESP}"
   exit 0
 fi
 
-# ── Write path ────────────────────────────────────────────────────────────
+# ── Delete path ───────────────────────────────────────────────────────────
+if [ -n "${usage_delete:-}" ]; then
+  NAME="${usage_name:-}"
+  [ -n "${NAME}" ] || { echo "ERROR: --delete requires --name" >&2; exit 2; }
+
+  EXISTING_ID=$(echo "${RESP}" | jq -r --arg n "${NAME}" \
+    'first(.data[] | select(.name == $n) | ._id) // empty')
+
+  # Absent is the desired end state, not a failure. An incident-response script
+  # that closes a port must not break because someone already closed it.
+  if [ -z "${EXISTING_ID}" ]; then
+    echo "==> No rule named '${NAME}' on ${UNIFI_HOST} — nothing to close."
+    echo "    The port is already shut; that is the end state you asked for."
+    exit 0
+  fi
+
+  echo "==> DELETE rule '${NAME}' (${EXISTING_ID})"
+  echo "── current ──"
+  echo "${RESP}" | jq --arg n "${NAME}" 'first(.data[] | select(.name == $n))'
+  echo ""
+  echo "  This closes $(echo "${RESP}" | jq -r --arg n "${NAME}" \
+    'first(.data[] | select(.name == $n)) | "\(.src // "any") → WAN \(.proto)/\(.dst_port) → \(.fwd):\(.fwd_port)"')"
+  echo "  DELETE ${BASE}/${EXISTING_ID}"
+
+  if [ -n "${usage_dry_run:-}" ]; then
+    echo ""
+    echo "==> --dry-run: nothing sent."
+    exit 0
+  fi
+
+  # CONFIRM=close, not CONFIRM=forward — see the header comment. The word names
+  # the intent so a token lifted from an "open the port" runbook cannot satisfy
+  # a delete, and vice versa.
+  if [ "${CONFIRM:-}" != "close" ]; then
+    echo ""
+    echo "REFUSED: re-run with CONFIRM=close to remove the rule above." >&2
+    echo "  (--set uses CONFIRM=forward; the words differ so neither can be" >&2
+    echo "   copy-pasted into the other verb by accident.)" >&2
+    exit 3
+  fi
+
+  RESULT=$(curl -s --max-time 20 --insecure -X DELETE "${BASE}/${EXISTING_ID}" \
+    -H "X-Api-Key: ${KEY}")
+  if [ "$(echo "${RESULT}" | jq -r '.meta.rc // "error"')" != "ok" ]; then
+    echo "==> API error:"
+    echo "${RESULT}" | jq -r '.meta // .' >&2
+    exit 1
+  fi
+
+  echo ""
+  echo "==> Removed."
+  render "$(curl -s --max-time 20 --insecure "${BASE}" -H "X-Api-Key: ${KEY}")"
+  exit 0
+fi
+
+# ── Write path (--set) ────────────────────────────────────────────────────
 NAME="${usage_name:-}"
 WAN_PORT="${usage_wan_port:-}"
 DEST="${usage_dest:-}"
