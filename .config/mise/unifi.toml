@@ -669,21 +669,45 @@ print(f\"  until:   {c.get('until','?')}\")
 " 2>/dev/null || echo "  (SSH failed)"
 '''
 
+
 # --- Port forwarding (WAN ingress) ----------------------------------------
 # Generic against any UniFi gateway: all site-specific values come from env
 # (UNIFI_HOST, UNIFI_SITE_ID, UNIFI_ADMIN_KEY), never hardcoded here.
 #
 # Endpoint verified 2026-08-08 against a UCG Fiber:
-#   GET /proxy/network/api/s/${SITE}/rest/portforward
-# Same rest/* family as networkconf, which unifi:init already uses.
+#   GET  /proxy/network/api/s/${SITE}/rest/portforward         list
+#   POST /proxy/network/api/s/${SITE}/rest/portforward         create
+#   PUT  /proxy/network/api/s/${SITE}/rest/portforward/${ID}   update
+# Same rest/* family as networkconf, which unifi:init already uses. Note this
+# family wants the site *name* ("default") in UNIFI_SITE_ID, not the UUID the
+# integration/v1 DNS endpoints use — see unifi:dns:upsert.
 #
-# READ-ONLY BY DESIGN. Creating or deleting a forward opens (or closes) a path
-# from the public internet, so those are deliberately NOT implemented here yet
-# — adding one is a security decision that should be made deliberately, not as
-# a side effect of running a task.
+# One task, two postures, deliberately asymmetric:
+#   * the bare invocation is READ-ONLY and always safe;
+#   * --set opens (or re-points) a path from the public internet, so it is
+#     gated behind CONFIRM=forward and always prints the exact rule first.
+# Deleting a rule is still NOT implemented — closing a forward by hand in the
+# UniFi UI is fine, and a delete verb here would be a footgun with no caller.
+#
+# --set is idempotent on the rule NAME: an existing rule of that name is
+# updated in place (PUT against its _id), never duplicated. That makes "open
+# 443 to the narthex gateway" a re-runnable, reviewable task rather than a UI
+# click, and re-running after an IP change re-points instead of stacking rules.
 
-["unifi:portforward:list"]
-description = "List WAN port-forward rules on the UniFi gateway (read-only)"
+["unifi:portforward"]
+description = "List WAN port-forward rules; --set creates/updates one (needs CONFIRM=forward)"
+alias = "unifi:portforward:list"
+usage = '''
+flag "--set"              help="Create or update a rule instead of listing. Opens a path from the internet: requires CONFIRM=forward"
+flag "--name <name>"      help="Rule name. This is the idempotency key — an existing rule with this name is updated in place, not duplicated"
+flag "--proto <proto>"    help="Protocol: tcp, udp or tcp_udp" default="tcp"
+flag "--wan-port <port>"  help="Public WAN port to open, or a range like 8080:8090"
+flag "--dest <ip>"        help="LAN IPv4 address to forward to"
+flag "--dest-port <port>" help="Port on the destination host (defaults to --wan-port)"
+flag "--src <cidr>"       help="Restrict the source to this CIDR; default any, i.e. the whole internet"
+flag "--disabled"         help="Write the rule in the disabled state (omit to have it enabled)"
+flag "--dry-run"          help="Print the rule and the API call that would be made, change nothing. Needs no CONFIRM"
+'''
 run = '''
 #!/usr/bin/env bash
 set -euo pipefail
@@ -691,9 +715,9 @@ set -euo pipefail
 : "${UNIFI_SITE_ID:?run mise run unifi:init first, or check you are in the right profile}"
 KEY=$(keychainctl get "${UNIFI_ADMIN_KEY:?set UNIFI_ADMIN_KEY to the keychain entry name}")
 
-RESP=$(curl -s --max-time 20 --insecure \
-  "https://${UNIFI_HOST}/proxy/network/api/s/${UNIFI_SITE_ID}/rest/portforward" \
-  -H "X-Api-Key: ${KEY}")
+BASE="https://${UNIFI_HOST}/proxy/network/api/s/${UNIFI_SITE_ID}/rest/portforward"
+
+RESP=$(curl -s --max-time 20 --insecure "${BASE}" -H "X-Api-Key: ${KEY}")
 
 # Structured parsing throughout — never awk/grep over the JSON.
 if [ "$(echo "${RESP}" | jq -r '.meta.rc // "error"')" != "ok" ]; then
@@ -702,28 +726,126 @@ if [ "$(echo "${RESP}" | jq -r '.meta.rc // "error"')" != "ok" ]; then
   exit 1
 fi
 
-COUNT=$(echo "${RESP}" | jq -r '.data | length')
-echo "── WAN port forwards on ${UNIFI_HOST} (${COUNT}) ─────────────"
-if [ "${COUNT}" -eq 0 ]; then
-  echo "  (none — no inbound path from the internet)"
+render() {
+  local resp="$1" count
+  count=$(echo "${resp}" | jq -r '.data | length')
+  echo "── WAN port forwards on ${UNIFI_HOST} (${count}) ─────────────"
+  if [ "${count}" -eq 0 ]; then
+    echo "  (none — no inbound path from the internet)"
+    return 0
+  fi
+  {
+    printf 'ENABLED\tNAME\tPROTO\tWAN_PORT\t->\tDEST\tDEST_PORT\tSRC\n'
+    echo "${resp}" | jq -r '.data[]
+      | [ (if .enabled then "yes" else "NO" end),
+          .name,
+          (.proto // "?"),
+          (.dst_port // "?"),
+          "->",
+          (.fwd // "?"),
+          (.fwd_port // "?"),
+          (.src // "any")
+        ] | @tsv'
+  } | column -t -s "$(printf '\t')"
+
+  echo ""
+  echo "  Rule IDs:"
+  echo "${resp}" | jq -r '.data[] | "    \(.name): \(._id)"'
+}
+
+# ── Read-only path: the bare invocation, and unifi:portforward:list ────────
+if [ -z "${usage_set:-}" ]; then
+  render "${RESP}"
   exit 0
 fi
 
-{
-  printf 'ENABLED\tNAME\tPROTO\tWAN_PORT\t->\tDEST\tDEST_PORT\tSRC\n'
-  echo "${RESP}" | jq -r '.data[]
-    | [ (if .enabled then "yes" else "NO" end),
-        .name,
-        (.proto // "?"),
-        (.dst_port // "?"),
-        "->",
-        (.fwd // "?"),
-        (.fwd_port // "?"),
-        (.src // "any")
-      ] | @tsv'
-} | column -t -s "$(printf '\t')"
+# ── Write path ────────────────────────────────────────────────────────────
+NAME="${usage_name:-}"
+WAN_PORT="${usage_wan_port:-}"
+DEST="${usage_dest:-}"
+DEST_PORT="${usage_dest_port:-${WAN_PORT}}"
+PROTO="${usage_proto:-tcp}"
+SRC="${usage_src:-any}"
+ENABLED=true
+[ -n "${usage_disabled:-}" ] && ENABLED=false
+
+missing=""
+[ -n "${NAME}" ]     || missing="${missing} --name"
+[ -n "${WAN_PORT}" ] || missing="${missing} --wan-port"
+[ -n "${DEST}" ]     || missing="${missing} --dest"
+if [ -n "${missing}" ]; then
+  echo "ERROR: --set requires:${missing}" >&2
+  exit 2
+fi
+
+case "${PROTO}" in
+  tcp|udp|tcp_udp) ;;
+  *) echo "ERROR: --proto must be tcp, udp or tcp_udp (got '${PROTO}')" >&2; exit 2 ;;
+esac
+echo "${DEST}" | grep -Eq '^[0-9]{1,3}(\.[0-9]{1,3}){3}$' \
+  || { echo "ERROR: --dest must be an IPv4 address (got '${DEST}')" >&2; exit 2; }
+for p in "${WAN_PORT}" "${DEST_PORT}"; do
+  echo "${p}" | grep -Eq '^[0-9]+(:[0-9]+)?$' \
+    || { echo "ERROR: port must be a number or a range like 8080:8090 (got '${p}')" >&2; exit 2; }
+done
+
+EXISTING_ID=$(echo "${RESP}" | jq -r --arg n "${NAME}" \
+  'first(.data[] | select(.name == $n) | ._id) // empty')
+
+# Field set mirrors what the gateway itself returns for an existing rule, so an
+# update round-trips instead of silently dropping keys the UI relies on.
+PAYLOAD=$(jq -n \
+  --arg name "${NAME}" --arg proto "${PROTO}" --arg dst "${WAN_PORT}" \
+  --arg fwd "${DEST}" --arg fwd_port "${DEST_PORT}" --arg src "${SRC}" \
+  --argjson enabled "${ENABLED}" \
+  '{pfwd_interface:"wan", name:$name, enabled:$enabled, proto:$proto,
+    dst_port:$dst, fwd:$fwd, fwd_port:$fwd_port, src:$src,
+    destination_ip:"any", destination_ips:[], src_limiting_enabled:false, log:true}')
+
+if [ -n "${EXISTING_ID}" ]; then
+  METHOD=PUT; URL="${BASE}/${EXISTING_ID}"
+  CURRENT=$(echo "${RESP}" | jq --arg n "${NAME}" 'first(.data[] | select(.name == $n))')
+  # Merge onto the live rule rather than replacing it, so an update preserves
+  # server-side keys this task does not model (site_id, and anything a firmware
+  # release adds later) instead of silently dropping them.
+  PAYLOAD=$(jq -n --argjson cur "${CURRENT}" --argjson new "${PAYLOAD}" '$cur + $new')
+  echo "==> UPDATE existing rule '${NAME}' (${EXISTING_ID})"
+  echo "── current ──"
+  echo "${CURRENT}"
+else
+  METHOD=POST; URL="${BASE}"
+  echo "==> CREATE new rule '${NAME}'"
+fi
+
+echo "── proposed ──"
+echo "${PAYLOAD}" | jq .
+echo ""
+echo "  This opens ${SRC} → WAN ${PROTO}/${WAN_PORT} → ${DEST}:${DEST_PORT} (enabled=${ENABLED})"
+echo "  ${METHOD} ${URL}"
+
+if [ -n "${usage_dry_run:-}" ]; then
+  echo ""
+  echo "==> --dry-run: nothing sent."
+  exit 0
+fi
+
+if [ "${CONFIRM:-}" != "forward" ]; then
+  echo ""
+  echo "REFUSED: this opens a path from the public internet." >&2
+  echo "  Re-run with CONFIRM=forward once the rule above is exactly what you want," >&2
+  echo "  or add --dry-run to iterate on it safely." >&2
+  exit 3
+fi
+
+RESULT=$(curl -s --max-time 20 --insecure -X "${METHOD}" "${URL}" \
+  -H "X-Api-Key: ${KEY}" -H "Content-Type: application/json" -d "${PAYLOAD}")
+if [ "$(echo "${RESULT}" | jq -r '.meta.rc // "error"')" != "ok" ]; then
+  echo "==> API error:"
+  echo "${RESULT}" | jq -r '.meta // .' >&2
+  exit 1
+fi
 
 echo ""
-echo "  Rule IDs (for future set/delete):"
-echo "${RESP}" | jq -r '.data[] | "    \(.name): \(._id)"'
+echo "==> Applied."
+render "$(curl -s --max-time 20 --insecure "${BASE}" -H "X-Api-Key: ${KEY}")"
 '''
