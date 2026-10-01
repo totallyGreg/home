@@ -1,3 +1,27 @@
+-- Command the managed Claude terminal runs; nil means plain `claude`.
+local current_cmd
+
+local function claude_running()
+  return require("claudecode.terminal").get_active_terminal_bufnr() ~= nil
+end
+
+---Point claudecode.nvim at `cmd`, then toggle its terminal.
+---Refuses to swap backends while a session is running, since only one terminal is managed.
+---@param cmd string?
+local function toggle_claude(cmd)
+  if cmd ~= current_cmd then
+    if claude_running() then
+      vim.notify("Close the running Claude session before switching backends", vim.log.levels.WARN)
+      return
+    end
+    current_cmd = cmd
+    -- An empty table keeps the terminal settings from setup; only the command changes.
+    ---@diagnostic disable-next-line: missing-fields
+    require("claudecode.terminal").setup({}, cmd, require("claudecode").state.config.env)
+  end
+  vim.cmd("ClaudeCode")
+end
+
 return {
   {
     "coder/claudecode.nvim",
@@ -20,7 +44,23 @@ return {
       { "<leader>a", nil, desc = "AI/Claude Code" },
 
       -- Core Commands
-      { "<leader>ac", "<cmd>ClaudeCode<cr>", desc = "Toggle Claude terminal" },
+      -- Toggles whichever session is running; starts plain Claude when none is.
+      {
+        "<leader>ac",
+        function()
+          toggle_claude(claude_running() and current_cmd or nil)
+        end,
+        desc = "Toggle Claude terminal",
+      },
+      {
+        "<leader>al",
+        function()
+          require("util.omlx").pick("Claude on oMLX profile", function(id)
+            toggle_claude("omlx launch claude --model " .. vim.fn.shellescape(id))
+          end)
+        end,
+        desc = "Claude on local oMLX profile",
+      },
       { "<leader>af", "<cmd>ClaudeCodeFocus<cr>", desc = "Focus Claude terminal" },
       { "<leader>ar", "<cmd>ClaudeCode --resume<cr>", desc = "Resume previous Claude session" },
       { "<leader>aC", "<cmd>ClaudeCode --continue<cr>", desc = "Continue Claude session" },

@@ -1,5 +1,6 @@
 local user_home = vim.fn.expand("~")
 local notes_path = user_home .. "/Notes"
+local obsidian_app = user_home .. "/Applications/Comm/Written/Obsidian.app"
 
 return {
   {
@@ -18,24 +19,21 @@ return {
       "nvim-treesitter",
     },
     keys = {
-      { "<leader>oo", "<cmd>ObsidianOpen<cr>", desc = "Obsidian" },
+      { "<leader>oo", "<cmd>Obsidian open<cr>", desc = "Obsidian" },
       { "<leader>od", "<cmd>Obsidian dailies<cr>", desc = "Open Obsidian Daily Note" },
       {
         "<leader>ont",
         "<cmd>Obsidian new_from_template<cr>",
         desc = "new note with TITLE from a template with the name TEMPLATE",
       },
-      { "<leader>or", "<cmd>ObsidianRename<cr>", desc = "Open Obsidian Rename" },
+      { "<leader>or", "<cmd>Obsidian rename<cr>", desc = "Open Obsidian Rename" },
       { "<leader>os", "<cmd>Obsidian quick_switch<cr>", desc = "Open Obsidian Quick Switch" },
-      { "<leader>ch", "<cmd>ObsidianToggleCheckbox<cr>", desc = "Toggle Checkbox", ft = "markdown" },
-      { "gf", "<cmd>ObsidianFollowLink<cr>", desc = "Follow Link", ft = "markdown" },
+      { "<leader>ch", "<cmd>Obsidian toggle_checkbox<cr>", desc = "Toggle Checkbox", ft = "markdown" },
+      { "gf", "<cmd>Obsidian follow_link<cr>", desc = "Follow Link", ft = "markdown" },
       { "<cr>", "<cmd>Obsidian smart_action<cr>", desc = "Follow Link / Toggle Checkbox", ft = "markdown" },
     },
-    config = function(_, opts)
-      require("obsidian").setup(opts)
-    end,
     opts = {
-      app_path = "~/Applications/Comm/Written/Obsidian.app",
+      legacy_commands = false,
       workspaces = {
         {
           name = "notes",
@@ -46,22 +44,16 @@ return {
         folder = "500 ♽ Cycles/520 🌄 Days",
         date_format = "%Y/%Y-%m-%d",
         alias_format = "%B %-d, %Y",
-        template = "900 📐Templates/🌄 New Day.md",
+        -- Relative to templates.folder below.
+        template = "910 File Templates/🌄 New Day.md",
       },
-      new_notes_location = "700 Notes/Notes",
-
-      ---@param url string
-      follow_url_func = function(url)
-        vim.fn.jobstart({ "open", url })
-      end,
-      ---@param img string
-      follow_img_func = function(img)
-        vim.fn.jobstart({ "qlmanage", "-p", img })
-      end,
+      new_notes_location = "notes_subdir",
+      notes_subdir = "700 Notes/Notes",
+      open_notes_in = "current",
 
       open = {
         func = function(uri)
-          vim.ui.open(uri, { cmd = { "open", "-a", vim.fn.expand("~/Applications/Comm/Written/Obsidian.app") } })
+          vim.ui.open(uri, { cmd = { "open", "-a", obsidian_app } })
         end,
       },
 
@@ -72,46 +64,43 @@ return {
           insert_link = "<C-l>",
         },
       },
-      sort_by = "modified",
-      sort_reversed = true,
-      search_max_lines = 1000,
-      open_notes_in = "current",
+
+      search = {
+        sort_by = "modified",
+        sort_reversed = true,
+        max_lines = 1000,
+      },
 
       attachments = {
-        img_folder = "700 Vaults/Notes/Attachments",
-        ---@param client obsidian.Client
-        ---@param path obsidian.Path
-        ---@return string
-        img_text_func = function(client, path)
-          path = client:vault_relative_path(path) or path
-          return string.format("![%s](%s)", path.name, path)
+        folder = "700 Notes/Notes/Attachments",
+      },
+
+      link = {
+        style = "wiki",
+        format = "shortest",
+      },
+
+      frontmatter = {
+        enabled = true,
+        ---@param note obsidian.Note
+        ---@return table
+        func = function(note)
+          if note.title then
+            note:add_alias(note.title)
+          end
+
+          local out = { id = note.id, aliases = note.aliases, tags = note.tags }
+
+          if note.metadata ~= nil and not vim.tbl_isempty(note.metadata) then
+            for k, v in pairs(note.metadata) do
+              out[k] = v
+            end
+          end
+
+          return out
         end,
       },
-      wiki_link_func = function(opts)
-        return require("obsidian.util").wiki_link_id_prefix(opts)
-      end,
-      markdown_link_func = function(opts)
-        return require("obsidian.util").markdown_link(opts)
-      end,
-      preferred_link_style = "wiki",
-      disable_frontmatter = false,
 
-      ---@return table
-      note_frontmatter_func = function(note)
-        if note.title then
-          note:add_alias(note.title)
-        end
-
-        local out = { id = note.id, aliases = note.aliases, tags = note.tags }
-
-        if note.metadata ~= nil and not vim.tbl_isempty(note.metadata) then
-          for k, v in pairs(note.metadata) do
-            out[k] = v
-          end
-        end
-
-        return out
-      end,
       templates = {
         folder = "900 📐Templates",
         date_format = "%Y-%m-%d-%a",
@@ -129,7 +118,15 @@ return {
       "nvim-treesitter/nvim-treesitter",
       "nvim-tree/nvim-web-devicons",
     },
+    keys = {
+      { "<leader>mr", function() require("render-markdown").buf_toggle() end, ft = "markdown", desc = "Toggle render (buffer)" },
+      { "<leader>me", function() require("render-markdown").expand() end, ft = "markdown", desc = "Expand raw lines" },
+      { "<leader>mc", function() require("render-markdown").contract() end, ft = "markdown", desc = "Contract raw lines" },
+      { "<leader>ms", function() require("render-markdown").preview() end, ft = "markdown", desc = "Rendered preview in split" },
+    },
     opts = {
+      -- Checkbox/callout completions via in-process LSP (picked up by blink.cmp)
+      completions = { lsp = { enabled = true } },
       heading = { enabled = true },
       code = { enabled = true },
       dash = { enabled = true },
@@ -148,6 +145,15 @@ return {
           cancelled = { raw = "[~]", rendered = "󰰱 ", highlight = "RenderMarkdownError" },
           important = { raw = "[!]", rendered = " ", highlight = "DiagnosticError" },
         },
+      },
+    },
+  },
+
+  {
+    "folke/which-key.nvim",
+    opts = {
+      spec = {
+        { "<leader>m", group = "markdown", icon = { icon = " ", color = "purple" } },
       },
     },
   },
