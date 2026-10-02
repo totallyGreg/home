@@ -64,12 +64,9 @@ if command -v rbenv 1>/dev/null 2>&1; then
   eval "$(rbenv init - zsh)"
 fi
 
-# Apple Xcode Path
-if [ -d /Library/Developer/CommandLineTools/usr/bin ]; then
-  path=(/Library/Developer/CommandLineTools/usr/bin $path)
-  export CC=$(xcrun --find clang)
-  export CXX=$(xcrun --find clang++)
-fi
+# Apple toolchain: nothing to add. /usr/bin's clang, swift, git, sourcekit-lsp
+# are xcrun shims that follow `xcode-select -p` (Xcode 27). Putting
+# CommandLineTools first shadowed them with an older toolchain and SDK.
 
 # OpenSSL that generates valid
 if [ -d /usr/local/opt/openssl@3/bin ]; then
@@ -184,8 +181,9 @@ source ${ZDOTDIR:-${HOME}}/.zcomet/bin/zcomet.zsh
 zstyle ':zcomet:compinit' dump-file $XDG_CACHE_HOME/zsh/zcompdump
 
 ## Load some plugins
-# zcomet load jeffreytse/zsh-vi-mode            # Better vim support including surrounds and increments
-# ZVM_VI_HIGHLIGHT_BACKGROUND=yellow            # default is red, but zvm seems to break y)anking
+ZVM_SYSTEM_CLIPBOARD_ENABLED=true
+ZVM_VI_HIGHLIGHT_BACKGROUND=yellow # default is red, but zvm seems to break y)anking
+zcomet load jeffreytse/zsh-vi-mode # Better vim support including surrounds and increments
 #
 # Testing out the auto appearance
 # Export this variable before loading zsh-appearance-control
