@@ -184,12 +184,6 @@ zstyle ':zcomet:compinit' dump-file $XDG_CACHE_HOME/zsh/zcompdump
 ZVM_SYSTEM_CLIPBOARD_ENABLED=true
 ZVM_VI_HIGHLIGHT_BACKGROUND=yellow # default is red, but zvm seems to break y)anking
 zcomet load jeffreytse/zsh-vi-mode # Better vim support including surrounds and increments
-#
-# Testing out the auto appearance
-# Export this variable before loading zsh-appearance-control
-# export ZAC_CALLBACK_FNC=my_zac_callback
-export ZAC_CACHE_DIR=$XDG_CACHE_HOME/zsh
-zcomet load alberti42/zsh-appearance-control
 
 # https://docs.atuin.sh/cli/guide/installation/
 # zcomet load atuinsh/atuin
