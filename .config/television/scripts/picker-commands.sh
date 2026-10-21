@@ -37,6 +37,7 @@ rename-window	Rename current window	command-prompt -I "#W" "rename-window -- '%%
 detach-others	Detach all other clients	detach-client -a
 zoom-pane	Toggle pane zoom	resize-pane -Z
 new-window	Open a new window in cwd	new-window
+pi-local	Local Pi (oMLX code tier) in a split right	split-window -h -c "#{pane_current_path}" zsh -ic pil
 EOF
 }
 

@@ -1,0 +1,25 @@
+# pil: interactive Pi on a local oMLX tier; pi-verdict's judge pinned to the fast tier.
+#   pil [tier] [pi args...]    tier: fast | code | deep (from ~/.pi/agent/models.json), default code
+# Env is scoped to the pi process only. A PI_AUTO_MODE_MODEL already set wins.
+emulate -L zsh
+local models=${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}/models.json
+# One jq call: line 1 = baseUrl, then "tier id" pairs (tier = first word of the model name).
+local -a lines; local -A ids
+lines=(${(f)"$(jq -r '.providers.omlx | .baseUrl, (.models[]? | (.name | split(" ")[0]), .id)' \
+  $models 2>/dev/null)"})
+local url=${lines[1]}; ids=(${lines[2,-1]})
+(( $#ids )) || { print -u2 "pil: no omlx models in $models"; return 1 }
+
+local tier=code
+(( $# )) && (( ${+ids[$1]} )) && { tier=$1; shift }
+
+# oMLX preflight: any HTTP status (even 401) means up; 000 means nothing listening.
+if [[ $(curl -s -o /dev/null -m 1 -w '%{http_code}' $url/models) == 000 ]]; then
+  print -u2 "pil: oMLX down, starting..."
+  omlx start || return
+fi
+
+local judge=${PI_AUTO_MODE_MODEL:-${ids[fast]:+omlx/$ids[fast]}}
+local -x PI_AGENT=1
+[[ -n $judge ]] && local -x PI_AUTO_MODE_MODEL=$judge
+pi --model omlx/$ids[$tier] "$@"

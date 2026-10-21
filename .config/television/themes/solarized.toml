@@ -1,0 +1,23 @@
+# Solarized for Ghostty's dark:solarized-dark,light:solarized-light pair.
+# Both share one 16-color palette and only swap bg/fg, so palette names (no hex, no
+# `background`) follow the OS appearance. tv 0.15.9 rejects "reset"/"default".
+# 0 base02 · 7 base2 · 8 base03 · 9 orange · 10 base01 · 11 base00 · 12 base0 · 13 violet · 14 base1
+border_fg = 'bright-cyan'
+text_fg = 'bright-yellow'
+dimmed_text_fg = 'bright-cyan'
+input_text_fg = 'bright-red'
+result_count_fg = 'bright-red'
+result_name_fg = 'blue'
+result_line_number_fg = 'yellow'
+result_value_fg = 'bright-yellow'
+selection_fg = 'black'     # base02 on base2: readable in both modes
+selection_bg = 'white'
+match_fg = 'bright-red'
+preview_title_fg = 'green'
+channel_mode_fg = 'black'
+channel_mode_bg = 'cyan'
+remote_control_mode_fg = 'black'
+remote_control_mode_bg = 'yellow'
+action_picker_mode_fg = 'black'
+action_picker_mode_bg = 'bright-magenta'
+send_to_channel_mode_fg = 'cyan'

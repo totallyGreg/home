@@ -1,0 +1,11 @@
+#compdef pil
+# _pil: tier (from ~/.pi/agent/models.json), then pi's own options via --help parsing.
+local -a tiers
+tiers=(${(f)"$(jq -r '.providers.omlx.models[]? | (.name | sub(" — "; ":"))' \
+  ${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}/models.json 2>/dev/null)"})
+if (( CURRENT == 2 )); then
+  _describe -t tiers 'oMLX tier' tiers
+  [[ $PREFIX == -* ]] || return   # bare word: tiers only; '-' falls through to pi options
+fi
+words[1]=pi
+_gnu_generic

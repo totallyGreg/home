@@ -12,16 +12,16 @@ description = "Unified tmux picker: sesh sessions + tmux windows + curated tmux 
 requirements = ["sesh", "tmux"]
 
 [source]
-# Four-mode picker, cycled with Ctrl-S (tv's `cycle_sources` action):
+# Four-mode picker, cycled with Tab (tv's `cycle_sources` action; Ctrl-S too):
 #   Mode 0 (default) - sessions: live tmux + sesh configs + top-N zoxide
 #                      (N=ZOXIDE_CAP, default 15). Coloring (scheme C) in
 #                      picker-sessions.sh:
 #                         bold bright green = live tmux session
 #                        (default)                     = sesh config
 #                         dim gray         = zoxide recent
-#   Mode 1 (Ctrl-S)  - windows: every window across all sessions (yellow-bold 🪟)
-#   Mode 2 (Ctrl-S)  - panes:   every pane across all windows (magenta-bold 🧊)
-#   Mode 3 (Ctrl-S)  - commands: the 29 curated tmux subcommands (cyan-bold ⚡)
+#   Mode 1 (Tab)     - windows: every window across all sessions (yellow-bold 🪟)
+#   Mode 2 (Tab)     - panes:   every pane across all windows (magenta-bold 🧊)
+#   Mode 3 (Tab)     - commands: the 30 curated tmux subcommands (cyan-bold ⚡)
 # The shell `t` dispatcher routes by prefix (🪟/🧊/⚡/else).
 # TOML basic strings reject raw 0x1B bytes, so the ANSI ESCs are written as \\u001b.
 command = [
@@ -36,4 +36,13 @@ output = "{strip_ansi}"
 command = "~/.config/television/scripts/picker-preview.sh '{strip_ansi}'"
 
 [ui.input_bar]
-header = "[ Ctrl-S cycles: 0 sessions · 1 windows · 2 panes · 3 commands ]"
+header = "[ Tab cycles: sessions · windows · panes · commands ]  prefix / = keys"
+
+# `t` dispatches exactly one entry, so multi-select means nothing here; Tab steps
+# through the sources. tv 0.15.9 has no reverse cycle_sources, and repeating it in a
+# list collapses to one step, so Shift-Tab is a no-op rather than a fake "back".
+# Ctrl-T (remote control) would switch channels, and `t` would mis-dispatch their output.
+[keybindings]
+tab = "cycle_sources"
+backtab = "no_op"
+ctrl-t = "no_op"
