@@ -15,8 +15,11 @@
 emulate -L zsh
 
 if [[ "$1" == "-p" || "$1" == "--pick" ]]; then
-  local entry
-  entry=$(tv tmux-actions) || return
+  local entry theme=solarized-light
+  [[ $(defaults read -g AppleInterfaceStyle 2>/dev/null) == Dark ]] && theme=solarized-dark
+  # tv has no --theme flag: hand it a copy of config.toml with the theme line swapped.
+  local cfg=${TELEVISION_CONFIG:-$HOME/.config/television}/config.toml
+  entry=$(tv --config-file =(sed "s/^theme = .*/theme = \"$theme\"/" $cfg) tmux-actions) || return
   [[ -z "$entry" ]] && return
 
   case "$entry" in
