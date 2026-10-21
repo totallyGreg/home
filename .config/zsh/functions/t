@@ -3,7 +3,7 @@
 #
 # - t            connect to a session named after the current directory
 # - t <name>     connect to a named session (sesh resolves config/tmux/zoxide)
-# - t -p         interactive picker (tv `tmux-actions` channel); dispatches by entry type:
+# - t -p         interactive picker (fzf; ~/.config/tmux/scripts/picker); dispatches by entry type:
 #                  🪟  prefix → tmux select-window (cross-session)
 #                  🧊  prefix → switch-client + select-window + select-pane
 #                  ⚡  prefix → run curated tmux subcommand
@@ -15,11 +15,16 @@
 emulate -L zsh
 
 if [[ "$1" == "-p" || "$1" == "--pick" ]]; then
-  local entry theme=solarized-light
-  [[ $(defaults read -g AppleInterfaceStyle 2>/dev/null) == Dark ]] && theme=solarized-dark
-  # tv has no --theme flag: hand it a copy of config.toml with the theme line swapped.
-  local cfg=${TELEVISION_CONFIG:-$HOME/.config/television}/config.toml
-  entry=$(tv --config-file =(sed "s/^theme = .*/theme = \"$theme\"/" $cfg) tmux-actions) || return
+  local entry s=$HOME/.config/tmux/scripts/picker
+  # Self-contained opts: FZF_DEFAULT_OPTS carries --tmux and a hidden preview. The 16-colour
+  # base and -1 (terminal fg/bg) follow Ghostty's light/dark swap. The popup draws the border.
+  entry=$($s/source.sh 0 | FZF_DEFAULT_OPTS= fzf --ansi --layout reverse \
+    --prompt 'sessions> ' --header 'Tab / Shift-Tab: sessions · windows · panes · commands   prefix / = keys' \
+    --pointer '▶' \
+    --color '16,fg+:-1:bold,bg+:-1,hl:9,hl+:9:bold,header:-1:dim,pointer:2,prompt:4' \
+    --preview "$s/preview.sh {}" --preview-window 'right,50%' \
+    --bind "tab:transform:$s/source.sh step 1" \
+    --bind "btab:transform:$s/source.sh step -1") || return
   [[ -z "$entry" ]] && return
 
   case "$entry" in

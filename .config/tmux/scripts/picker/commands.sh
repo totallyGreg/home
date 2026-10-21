@@ -1,10 +1,9 @@
 #!/bin/sh
-# Curated tmux operations — single source of truth shared by the `picker` and
-# `tmux-commands` tv channels.
+# Curated tmux operations: source 3 of the M-` tmux picker (see source.sh).
 #
 # Usage:
-#   picker-commands.sh             output raw: name<TAB>description<TAB>tmux-subcommand
-#   picker-commands.sh formatted   output unified-picker form: "⚡  name — description ‖ subcommand"
+#   commands.sh             output raw: name<TAB>description<TAB>tmux-subcommand
+#   commands.sh formatted   output unified-picker form: "⚡  name — description ‖ subcommand"
 
 output_raw() {
   cat <<'EOF'
@@ -44,7 +43,7 @@ EOF
 case "${1:-raw}" in
   formatted)
     # ANSI: cyan+bold ⚡ marker so the commands source is visually distinct
-    # when cycled via Ctrl-S in the unified picker channel.
+    # when cycled with Tab in the picker.
     output_raw | awk -F'\t' 'NF>=3 {printf "\033[36;1m⚡\033[0m  %s — %s ‖ %s\n", $1, $2, $3}'
     ;;
   *)

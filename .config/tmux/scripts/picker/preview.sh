@@ -1,8 +1,8 @@
 #!/bin/sh
-# Dispatch preview rendering based on entry type from the `picker` tv channel.
+# Preview for the M-` tmux picker (fzf, see source.sh), by entry type.
 # Action dispatch lives in the zsh `t` function — this is preview-only.
 #
-# Usage: picker-preview.sh "<entry>"
+# Usage: preview.sh "<entry>"
 
 entry="$1"
 

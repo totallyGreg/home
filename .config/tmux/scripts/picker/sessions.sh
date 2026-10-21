@@ -1,5 +1,5 @@
 #!/bin/sh
-# Source for mode 1 of the tmux-actions tv channel: live tmux sessions +
+# Source 0 of the M-` tmux picker (see source.sh): live tmux sessions +
 # sesh configs + top-N zoxide recents, color-coded per the picker scheme.
 #
 #   bold green  -> live tmux sessions
