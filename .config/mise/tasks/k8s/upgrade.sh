@@ -24,8 +24,26 @@ if ! mise run cluster:status; then
   exit 1
 fi
 
-echo "==> Upgrading Kubernetes → ${VERSION} (rolling control-plane + kubelets)..."
-talosctl --talosconfig "${TALOSCONFIG}" -e "${TALOS_ENDPOINT}" -n "${TALOS_ENDPOINT}" \
+# Drive upgrade-k8s through a control-plane node's own IP, not the VIP. upgrade-k8s
+# restarts kube-apiserver on every control-plane node, and the VIP follows apiserver
+# health — so with the VIP as endpoint/node the session can move or drop mid-run
+# (2026-10-22: the same VIP drop broke a Talos upgrade's --wait stream). A node's
+# Talos API (apid) stays up while its apiserver restarts, and upgrade-k8s run against
+# any one control-plane node upgrades all of them.
+K8S_EP=""
+for cand in $(kubectl get nodes -l node-role.kubernetes.io/control-plane -o json 2>/dev/null \
+    | jq -r '.items[].status.addresses[] | select(.type=="InternalIP") | .address'); do
+  if talosctl --talosconfig "${TALOSCONFIG}" -e "${cand}" -n "${cand}" version >/dev/null 2>&1; then
+    K8S_EP="${cand}"; break
+  fi
+done
+if [[ -z "${K8S_EP}" ]]; then
+  K8S_EP="${TALOS_ENDPOINT}"
+  echo "  ⚠ no control-plane node answers the Talos API directly — falling back to ${K8S_EP}"
+fi
+
+echo "==> Upgrading Kubernetes → ${VERSION} via ${K8S_EP} (rolling control-plane + kubelets)..."
+talosctl --talosconfig "${TALOSCONFIG}" -e "${K8S_EP}" -n "${K8S_EP}" \
   upgrade-k8s --to "${VERSION}"
 
 echo "==> Post-upgrade versions:"
