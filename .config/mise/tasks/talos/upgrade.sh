@@ -59,8 +59,27 @@ if [[ -n "$NODE_NAME" ]]; then
   done
 fi
 
-echo "==> Upgrading ${IP}: ${CUR:-unknown} → Talos ${TALOS_VERSION} (schematic ${SCHEMATIC_ID})..."
-talosctl --talosconfig "${TALOSCONFIG}" -e "${TALOS_ENDPOINT}" -n "${IP}" upgrade \
+# Drive the upgrade through a control-plane node that is NOT the one rebooting. With
+# the VIP (or the target itself) as endpoint, the --wait stream dies when that node
+# goes down: 2026-10-22, minix4 held the VIP, talosctl exited non-zero after "post
+# check passed", and its own uncordon never ran — the node stayed cordoned and Longhorn
+# could not place its instance-manager there. Talos docs: never use the VIP as the
+# Talos API endpoint.
+UPGRADE_EP=""
+for cand in $(kubectl get nodes -l node-role.kubernetes.io/control-plane -o json 2>/dev/null \
+    | jq -r '.items[].status.addresses[] | select(.type=="InternalIP") | .address'); do
+  [[ "${cand}" == "${IP}" ]] && continue
+  if talosctl --talosconfig "${TALOSCONFIG}" -e "${cand}" -n "${cand}" version >/dev/null 2>&1; then
+    UPGRADE_EP="${cand}"; break
+  fi
+done
+if [[ -z "${UPGRADE_EP}" ]]; then
+  UPGRADE_EP="${TALOS_ENDPOINT}"
+  echo "  ⚠ no other control-plane node answers the Talos API — falling back to ${UPGRADE_EP}; the --wait stream may drop at reboot"
+fi
+
+echo "==> Upgrading ${IP} via endpoint ${UPGRADE_EP}: ${CUR:-unknown} → Talos ${TALOS_VERSION} (schematic ${SCHEMATIC_ID})..."
+talosctl --talosconfig "${TALOSCONFIG}" -e "${UPGRADE_EP}" -n "${IP}" upgrade \
   --image "factory.talos.dev/installer/${SCHEMATIC_ID}:${TALOS_VERSION}" --wait
 
 if [[ -n "${NODE_NAME}" ]]; then
