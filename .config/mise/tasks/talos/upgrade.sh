@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#MISE description="Upgrade Talos in place on ONE node to TALOS_VERSION (reboots ~2 min; data preserved). Gates on cluster:status; no-op if already current."
+#MISE description="Upgrade Talos in place on ONE node to TALOS_VERSION + the schematic from bare-metal.yaml (reboots ~2 min; data preserved). Gates on cluster:status; no-op if version and schematic are current."
 #USAGE arg "<ip>" help="Mgmt IP of the node to upgrade (e.g. 10.0.0.18)" env="UPGRADE_IP"
 set -euo pipefail
 # Global file tasks execute with $PWD outside the project (mise sets MISE_ORIGINAL_CWD
@@ -22,20 +22,28 @@ IP="${usage_ip}"
 
 CUR=$(talosctl --talosconfig "${TALOSCONFIG}" -e "${TALOS_ENDPOINT}" -n "${IP}" version 2>/dev/null \
   | awk '/Server:/{s=1} s&&/Tag:/{print $2; exit}')
-if [[ "${CUR}" == "${TALOS_VERSION}" ]]; then
-  echo "  ✓ ${IP} already on Talos ${TALOS_VERSION} — nothing to do"
+
+SCHEMATIC_ID=$(curl -sX POST --data-binary @"${CLUSTER_PATCHES}/bare-metal.yaml" \
+  https://factory.talos.dev/schematics | jq -r .id)
+[[ -z "${SCHEMATIC_ID}" || "${SCHEMATIC_ID}" == "null" ]] && { echo "ERROR: no schematic ID"; exit 1; }
+
+# "Current" means version AND schematic. Comparing the version alone skipped a node
+# whose extensions changed (2026-10-22: adding util-linux-tools, which Longhorn needs
+# for fstrim, would never have reached a node already on TALOS_VERSION).
+CUR_SCHEMATIC=$(talosctl --talosconfig "${TALOSCONFIG}" -e "${TALOS_ENDPOINT}" -n "${IP}" get extensions -o json 2>/dev/null \
+  | jq -r 'select(.spec.metadata.name=="schematic") | .spec.metadata.version' || true)
+if [[ "${CUR}" == "${TALOS_VERSION}" && "${CUR_SCHEMATIC}" == "${SCHEMATIC_ID}" ]]; then
+  echo "  ✓ ${IP} already on Talos ${TALOS_VERSION}, schematic ${SCHEMATIC_ID:0:12}… — nothing to do"
   exit 0
 fi
+[[ "${CUR}" == "${TALOS_VERSION}" ]] && \
+  echo "==> ${IP} is on ${TALOS_VERSION} but schematic ${CUR_SCHEMATIC:0:12}… ≠ ${SCHEMATIC_ID:0:12}… — upgrading to apply extensions"
 
 echo "==> Pre-flight: quorum gate (the upgrade reboots ${IP})"
 if ! mise run cluster:status; then
   echo "ERROR: cluster not healthy — refusing to reboot a node for upgrade. Resolve first." >&2
   exit 1
 fi
-
-SCHEMATIC_ID=$(curl -sX POST --data-binary @"${CLUSTER_PATCHES}/bare-metal.yaml" \
-  https://factory.talos.dev/schematics | jq -r .id)
-[[ -z "${SCHEMATIC_ID}" || "${SCHEMATIC_ID}" == "null" ]] && { echo "ERROR: no schematic ID"; exit 1; }
 
 # Longhorn instance-manager PDBs have 0 allowed disruptions — they block kubectl drain.
 NODE_NAME=$(kubectl get nodes -o json 2>/dev/null \
