@@ -2,12 +2,13 @@
 # Reusable across projects. Requires TALOSCONFIG + TALOS_ENDPOINT set in the
 # project's [env]; talos:reset additionally requires CLUSTER_NAME (confirmation
 # prompt). Set TALOS_NODE to target a node other than TALOS_ENDPOINT.
+# -e prefers TALOS_ENDPOINTS (comma list of control-plane nodes; talosctl fails over
+# client-side) when the project sets it, so calls do not ride a VIP.
 #
-# STOPGAP: these tasks pass --talosconfig/-e/-n explicitly because the generated
-# talosconfig contexts carry certs but an empty `endpoints: []`, so a bare
-# `talosctl ...` fails with "failed to determine endpoints". The durable fix is to
-# populate the context (talosctl config endpoint/node) from the node registry and
-# drop these flags — see the talos:context:sync design work.
+# Flags stay explicit even where a project writes its endpoints into the talosconfig
+# (homestack-2026: talos:endpoints:sync) — a project that hasn't still has an empty
+# `endpoints: []`, and a bare `talosctl ...` there fails with "failed to determine
+# endpoints".
 
 ["talos:extensions"]
 description = "List Talos extensions installed on the target node"
@@ -19,7 +20,7 @@ set -euo pipefail
 TARGET="${TALOS_NODE:-}"
 [[ -z "${TARGET}" ]] && TARGET="${TALOS_ENDPOINT}"
 talosctl --talosconfig "${TALOSCONFIG}" \
-  -e "${TALOS_ENDPOINT}" -n "${TARGET}" get extensions
+  -e "${TALOS_ENDPOINTS:-${TALOS_ENDPOINT}}" -n "${TARGET}" get extensions
 '''
 
 ["talos:reset"]
@@ -38,7 +39,7 @@ echo "  node:    ${TARGET}"
 read -r -p "Type cluster name to confirm: " _confirm
 [[ "$_confirm" != "${CLUSTER_NAME}" ]] && { echo "Aborted."; exit 1; }
 talosctl --talosconfig "${TALOSCONFIG}" \
-  -e "${TALOS_ENDPOINT}" -n "${TARGET}" reset \
+  -e "${TALOS_ENDPOINTS:-${TALOS_ENDPOINT}}" -n "${TARGET}" reset \
   --system-labels-to-wipe STATE \
   --system-labels-to-wipe EPHEMERAL \
   --reboot --graceful=false
@@ -54,5 +55,5 @@ set -euo pipefail
 TARGET="${TALOS_NODE:-}"
 [[ -z "${TARGET}" ]] && TARGET="${TALOS_ENDPOINT}"
 talosctl --talosconfig "${TALOSCONFIG}" \
-  -e "${TALOS_ENDPOINT}" -n "${TARGET}" patch mc "$@"
+  -e "${TALOS_ENDPOINTS:-${TALOS_ENDPOINT}}" -n "${TARGET}" patch mc "$@"
 '''

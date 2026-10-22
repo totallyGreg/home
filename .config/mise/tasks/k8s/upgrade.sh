@@ -11,8 +11,8 @@ cd "${MISE_ORIGINAL_CWD}" || exit 1
 # Outside a cluster project mise resolves no [env] and stale values leak in from the
 # ambient login shell — which would point this rolling upgrade at the wrong cluster.
 # Drop the ambient values, then trust only what mise resolves here.
-unset TALOSCONFIG TALOS_ENDPOINT
-eval "$(mise env 2>/dev/null | grep -E '^export (TALOSCONFIG|TALOS_ENDPOINT)=' || true)"
+unset TALOSCONFIG TALOS_ENDPOINT TALOS_ENDPOINTS
+eval "$(mise env 2>/dev/null | grep -E '^export (TALOSCONFIG|TALOS_ENDPOINTS?)=' || true)"
 : "${TALOSCONFIG:?no cluster env resolved at ${MISE_ORIGINAL_CWD} — run from a cluster project directory, or activate a profile with MISE_ENV=<target>}" \
   "${TALOS_ENDPOINT:?not set in the active profile [env]}"
 
@@ -38,7 +38,7 @@ for cand in $(kubectl get nodes -l node-role.kubernetes.io/control-plane -o json
   fi
 done
 if [[ -z "${K8S_EP}" ]]; then
-  K8S_EP="${TALOS_ENDPOINT}"
+  K8S_EP="${TALOS_ENDPOINTS:-${TALOS_ENDPOINT}}"
   echo "  ⚠ no control-plane node answers the Talos API directly — falling back to ${K8S_EP}"
 fi
 

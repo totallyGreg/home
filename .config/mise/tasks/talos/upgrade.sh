@@ -11,16 +11,17 @@ cd "${MISE_ORIGINAL_CWD}" || exit 1
 # Outside a cluster project mise resolves no [env] and stale values leak in from the
 # ambient login shell — which would point this upgrade (and its reboot) at the wrong
 # node. Drop the ambient values, then trust only what mise resolves here.
-unset TALOSCONFIG TALOS_ENDPOINT TALOS_VERSION CLUSTER_PATCHES
-eval "$(mise env 2>/dev/null | grep -E '^export (TALOSCONFIG|TALOS_ENDPOINT|TALOS_VERSION|CLUSTER_PATCHES)=' || true)"
+unset TALOSCONFIG TALOS_ENDPOINT TALOS_ENDPOINTS TALOS_VERSION CLUSTER_PATCHES
+eval "$(mise env 2>/dev/null | grep -E '^export (TALOSCONFIG|TALOS_ENDPOINTS?|TALOS_VERSION|CLUSTER_PATCHES)=' || true)"
 : "${TALOSCONFIG:?no cluster env resolved at ${MISE_ORIGINAL_CWD} — run from a cluster project directory, or activate a profile with MISE_ENV=<target>}" \
   "${TALOS_ENDPOINT:?not set in the active profile [env]}" \
   "${TALOS_VERSION:?not set in the active profile [env]}" \
   "${CLUSTER_PATCHES:?not set in the active profile [env]}"
 
 IP="${usage_ip}"
+EP="${TALOS_ENDPOINTS:-${TALOS_ENDPOINT}}"
 
-CUR=$(talosctl --talosconfig "${TALOSCONFIG}" -e "${TALOS_ENDPOINT}" -n "${IP}" version 2>/dev/null \
+CUR=$(talosctl --talosconfig "${TALOSCONFIG}" -e "${EP}" -n "${IP}" version 2>/dev/null \
   | awk '/Server:/{s=1} s&&/Tag:/{print $2; exit}')
 
 SCHEMATIC_ID=$(curl -sX POST --data-binary @"${CLUSTER_PATCHES}/bare-metal.yaml" \
@@ -30,7 +31,7 @@ SCHEMATIC_ID=$(curl -sX POST --data-binary @"${CLUSTER_PATCHES}/bare-metal.yaml"
 # "Current" means version AND schematic. Comparing the version alone skipped a node
 # whose extensions changed (2026-10-22: adding util-linux-tools, which Longhorn needs
 # for fstrim, would never have reached a node already on TALOS_VERSION).
-CUR_SCHEMATIC=$(talosctl --talosconfig "${TALOSCONFIG}" -e "${TALOS_ENDPOINT}" -n "${IP}" get extensions -o json 2>/dev/null \
+CUR_SCHEMATIC=$(talosctl --talosconfig "${TALOSCONFIG}" -e "${EP}" -n "${IP}" get extensions -o json 2>/dev/null \
   | jq -r 'select(.spec.metadata.name=="schematic") | .spec.metadata.version' || true)
 if [[ "${CUR}" == "${TALOS_VERSION}" && "${CUR_SCHEMATIC}" == "${SCHEMATIC_ID}" ]]; then
   echo "  ✓ ${IP} already on Talos ${TALOS_VERSION}, schematic ${SCHEMATIC_ID:0:12}… — nothing to do"
@@ -74,7 +75,7 @@ for cand in $(kubectl get nodes -l node-role.kubernetes.io/control-plane -o json
   fi
 done
 if [[ -z "${UPGRADE_EP}" ]]; then
-  UPGRADE_EP="${TALOS_ENDPOINT}"
+  UPGRADE_EP="${EP}"
   echo "  ⚠ no other control-plane node answers the Talos API — falling back to ${UPGRADE_EP}; the --wait stream may drop at reboot"
 fi
 
