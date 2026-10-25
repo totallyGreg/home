@@ -376,17 +376,24 @@ trap 'rm -f "${COOKIE_JAR}" "${HEADER_DUMP}"' EXIT
 ADMIN_PASS=$(keychainctl get "${UNIFI_ADMIN_PASSWORD_SECRET}" 2>/dev/null) \
   || { echo "ERROR: ${UNIFI_ADMIN_PASSWORD_SECRET} not in keychain"; exit 1; }
 
+# Secrets (password, private key) go to curl on stdin, never argv, where ps shows them.
 echo "==> Logging in to ${UNIFI_HOST}..."
-/usr/bin/curl -sk -c "${COOKIE_JAR}" -D "${HEADER_DUMP}" -X POST \
-  -H "Content-Type: application/json" \
-  -d "{\"username\":\"${UNIFI_ADMIN_USER:?set UNIFI_ADMIN_USER in .mise.portcullis.toml}\",\"password\":\"${ADMIN_PASS}\"}" \
-  "https://${UNIFI_HOST}/api/auth/login" > /dev/null
+jq -nc --arg u "${UNIFI_ADMIN_USER:?set UNIFI_ADMIN_USER in .mise.portcullis.toml}" --arg p "${ADMIN_PASS}" \
+  '{username: $u, password: $p}' \
+  | /usr/bin/curl -sk -c "${COOKIE_JAR}" -D "${HEADER_DUMP}" -X POST \
+      -H "Content-Type: application/json" -d @- \
+      "https://${UNIFI_HOST}/api/auth/login" > /dev/null
 TOKEN=$(awk '/TOKEN/{print $NF}' "${COOKIE_JAR}")
 CSRF=$(awk -F': ' '/x-csrf-token:/{print $2}' "${HEADER_DUMP}" | tr -d '\r')
 [[ -n "${TOKEN}" ]] || { echo "ERROR: login failed — check ${UNIFI_ADMIN_PASSWORD_SECRET}"; exit 1; }
 
 CERT_NAME=$(openssl x509 -noout -subject -in "${CERT_FILE}" \
   | sed 's/.*CN=//' | sed 's/^\*\.//' | tr -d ' \r\n')
+# UniFi rejects a second cert with the same name, and the new one must be uploaded
+# before the old is removed (no window without a cert), so each upload is named
+# for its expiry. Old ones match either form.
+UPLOAD_NAME="${CERT_NAME} until $(python3 -c "import ssl, sys, time; print(time.strftime('%Y-%m-%d', time.gmtime(ssl.cert_time_to_seconds(sys.argv[1]))))" \
+  "$(openssl x509 -noout -enddate -in "${CERT_FILE}" | cut -d= -f2)")"
 
 echo "==> Fetching existing certs for ${CERT_NAME}..."
 OLD_IDS=$(/usr/bin/curl -sk \
@@ -398,33 +405,50 @@ import sys, json
 data = json.load(sys.stdin)
 certs = data if isinstance(data, list) else data.get('data', [])
 for c in certs:
-    if c.get('name','') == '${CERT_NAME}':
+    n = c.get('name', '')
+    if n == '${CERT_NAME}' or n.startswith('${CERT_NAME} until '):
         print(c['id'])
 " 2>/dev/null || true)
 
-echo "==> Uploading cert for ${CERT_NAME}..."
-RESULT=$(/usr/bin/curl -sk -X POST \
-  -H "Content-Type: application/json" \
-  -H "Cookie: TOKEN=${TOKEN}" \
-  -H "X-Csrf-Token: ${CSRF}" \
-  -d "$(python3 -c "
-import json
-crt = open('${CERT_FILE}').read()
-key = open('${KEY_FILE}').read()
-print(json.dumps({'cert': crt, 'key': key, 'name': '${CERT_NAME}'}))
-")" \
-  "https://${UNIFI_HOST}/api/userCertificates")
+# Idempotent: a cert already uploaded with this fingerprint (UniFi shows SHA-1) is reused.
+FP=$(openssl x509 -in "${CERT_FILE}" -noout -fingerprint -sha1 | cut -d= -f2)
+UUID=$(/usr/bin/curl -sk -H "Cookie: TOKEN=${TOKEN}" -H "X-Csrf-Token: ${CSRF}" \
+  "https://${UNIFI_HOST}/api/userCertificates" \
+  | jq -r --arg fp "${FP}" '(if type == "array" then . else .data end)[] | select(.fingerprint == $fp) | .id' | head -1)
+if [[ -n "${UUID}" ]]; then
+  echo "==> Already uploaded as ${UUID}"
+else
+  echo "==> Uploading cert as '${UPLOAD_NAME}'..."
+  RESULT=$(jq -nc --rawfile c "${CERT_FILE}" --rawfile k "${KEY_FILE}" --arg n "${UPLOAD_NAME}" \
+      '{cert: $c, key: $k, name: $n}' \
+    | /usr/bin/curl -sk -X POST \
+        -H "Content-Type: application/json" \
+        -H "Cookie: TOKEN=${TOKEN}" \
+        -H "X-Csrf-Token: ${CSRF}" \
+        -d @- \
+        "https://${UNIFI_HOST}/api/userCertificates")
+  UUID=$(echo "${RESULT}" | jq -r '.id // empty' 2>/dev/null)
+  [[ -n "${UUID}" ]] || { echo "ERROR: no cert ID — ${RESULT}"; exit 1; }
+fi
 
-UUID=$(echo "${RESULT}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('id',''))" 2>/dev/null)
-[[ -n "${UUID}" ]] || { echo "ERROR: no cert ID — ${RESULT}"; exit 1; }
-
+# Undocumented UniFi OS endpoint (verified 2026-10-25). The previous
+# PUT /api/system {"activeCertId"} returned success and activated nothing.
 echo "==> Activating ${UUID}..."
-/usr/bin/curl -sk -X PUT \
+CODE=$(/usr/bin/curl -sk -o /dev/null -w '%{http_code}' -X PUT \
   -H "Content-Type: application/json" \
   -H "Cookie: TOKEN=${TOKEN}" \
   -H "X-Csrf-Token: ${CSRF}" \
-  -d "{\"activeCertId\":\"${UUID}\"}" \
-  "https://${UNIFI_HOST}/api/system" > /dev/null
+  -d '{"active":true}' \
+  "https://${UNIFI_HOST}/api/userCertificates/${UUID}/status")
+[[ "${CODE}" == "200" ]] || { echo "ERROR: activation returned HTTP ${CODE}; old certs left in place"; exit 1; }
+
+# Delete the old certs only once the new one is confirmed active. Deleting the
+# active cert after a no-op activation dropped portcullis to its self-signed
+# default on 2026-10-25.
+ACTIVE=$(/usr/bin/curl -sk -H "Cookie: TOKEN=${TOKEN}" -H "X-Csrf-Token: ${CSRF}" \
+  "https://${UNIFI_HOST}/api/userCertificates" \
+  | jq -r --arg id "${UUID}" '(if type == "array" then . else .data end)[] | select(.id == $id) | .active')
+[[ "${ACTIVE}" == "true" ]] || { echo "ERROR: ${UUID} is not active after activation; old certs left in place"; exit 1; }
 
 if [[ -n "${OLD_IDS}" ]]; then
   while IFS= read -r old_id; do
