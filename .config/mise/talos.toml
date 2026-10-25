@@ -1,7 +1,8 @@
 # ── Talos operations (global) ───────────────────────────────────
 # Reusable across projects. Requires TALOSCONFIG + TALOS_ENDPOINT set in the
 # project's [env]; talos:reset additionally requires CLUSTER_NAME (confirmation
-# prompt). Set TALOS_NODE to target a node other than TALOS_ENDPOINT.
+# prompt). The per-node tasks act on TALOS_NODE, which is required on a multi-node
+# cluster (talos:target); only a one-node cluster defaults to TALOS_ENDPOINT.
 # -e prefers TALOS_ENDPOINTS (comma list of control-plane nodes; talosctl fails over
 # client-side) when the project sets it, so calls do not ride a VIP.
 #
@@ -10,29 +11,44 @@
 # `endpoints: []`, and a bare `talosctl ...` there fails with "failed to determine
 # endpoints".
 
-["talos:extensions"]
-description = "List Talos extensions installed on the target node"
+["talos:target"]
+description = "Print the node a per-node task acts on: TALOS_NODE, or TALOS_ENDPOINT on a one-node cluster. Refuses the VIP on a multi-node cluster."
+hide = true
 run = '''
 #!/usr/bin/env bash
 set -euo pipefail
-: "${TALOSCONFIG:?not set — activate a cluster profile with MISE_ENV=<target>}" \
-  "${TALOS_ENDPOINT:?not set — activate a cluster profile with MISE_ENV=<target>}"
+# On a multi-node cluster TALOS_ENDPOINT is a VIP: whichever control-plane node
+# holds it answers, so a default would let talos:reset wipe an arbitrary node.
+: "${TALOS_ENDPOINT:?not set — activate a cluster profile with MISE_ENV=<target>}"
+NODES="${TALOS_ENDPOINTS:-${TALOS_ENDPOINT}}"
 TARGET="${TALOS_NODE:-}"
-[[ -z "${TARGET}" ]] && TARGET="${TALOS_ENDPOINT}"
+if [[ "${NODES}" == *,* ]]; then
+  [[ -n "${TARGET}" ]] || { echo "ERROR: set TALOS_NODE=<node> — this cluster has several nodes (${NODES}), and the default would be whichever one holds the VIP" >&2; exit 1; }
+  [[ "${TARGET}" != "${TALOS_ENDPOINT}" || ",${NODES}," == *",${TARGET},"* ]] \
+    || { echo "ERROR: TALOS_NODE=${TARGET} is the VIP, not a node — name one of ${NODES}" >&2; exit 1; }
+fi
+echo "${TARGET:-${TALOS_ENDPOINT}}"
+'''
+
+["talos:extensions"]
+description = "List Talos extensions installed on the target node (TALOS_NODE, required on a multi-node cluster)"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+: "${TALOSCONFIG:?not set — activate a cluster profile with MISE_ENV=<target>}"
+TARGET=$(mise run -q talos:target)
 talosctl --talosconfig "${TALOSCONFIG}" \
   -e "${TALOS_ENDPOINTS:-${TALOS_ENDPOINT}}" -n "${TARGET}" get extensions
 '''
 
 ["talos:reset"]
-description = "Reset Talos node — wipes STATE + EPHEMERAL and reboots. Run bootstrap:apply after."
+description = "Reset Talos node (TALOS_NODE, required on a multi-node cluster) — wipes STATE + EPHEMERAL and reboots. Run bootstrap:apply after."
 run = '''
 #!/usr/bin/env bash
 set -euo pipefail
 : "${TALOSCONFIG:?not set — activate a cluster profile with MISE_ENV=<target>}" \
-  "${TALOS_ENDPOINT:?not set — activate a cluster profile with MISE_ENV=<target>}" \
   "${CLUSTER_NAME:?not set — activate a cluster profile with MISE_ENV=<target>}"
-TARGET="${TALOS_NODE:-}"
-[[ -z "${TARGET}" ]] && TARGET="${TALOS_ENDPOINT}"
+TARGET=$(mise run -q talos:target)
 echo "WARNING: This wipes cluster state and reboots the node."
 echo "  cluster: ${CLUSTER_NAME}"
 echo "  node:    ${TARGET}"
@@ -46,14 +62,12 @@ talosctl --talosconfig "${TALOSCONFIG}" \
 '''
 
 ["talos:patch"]
-description = "Apply a machine config patch. Usage: mise run talos:patch -- --patch '[{...}]'"
+description = "Apply a machine config patch to TALOS_NODE (required on a multi-node cluster). Usage: mise run talos:patch -- --patch '[{...}]'"
 run = '''
 #!/usr/bin/env bash
 set -euo pipefail
-: "${TALOSCONFIG:?not set — activate a cluster profile with MISE_ENV=<target>}" \
-  "${TALOS_ENDPOINT:?not set — activate a cluster profile with MISE_ENV=<target>}"
-TARGET="${TALOS_NODE:-}"
-[[ -z "${TARGET}" ]] && TARGET="${TALOS_ENDPOINT}"
+: "${TALOSCONFIG:?not set — activate a cluster profile with MISE_ENV=<target>}"
+TARGET=$(mise run -q talos:target)
 talosctl --talosconfig "${TALOSCONFIG}" \
   -e "${TALOS_ENDPOINTS:-${TALOS_ENDPOINT}}" -n "${TARGET}" patch mc "$@"
 '''
